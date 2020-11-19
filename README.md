@@ -1,6 +1,6 @@
 # Event Bus
 
-## Use
+## Usage
 ```
 $bus = Jine\EventBus\Bus::create();
 
