@@ -20,8 +20,7 @@ class TaskManager
         Rollback $rollback,
         ResultStorage $resultStorage,
         TaskStorage $taskStorage
-    )
-    {
+    ) {
         $this->config = $config;
         $this->rollback = $rollback;
         $this->resultStorage = $resultStorage;

@@ -10,7 +10,6 @@ class Result implements ResultInterface
 {
     public const STATUS_SUCCESS = 'Success';
     public const STATUS_FAIL = 'Fail';
-    public const STATUS_AWAIT = 'Await';
 
     public string $status;
     public $data = null;
