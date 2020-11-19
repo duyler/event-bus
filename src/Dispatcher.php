@@ -41,8 +41,7 @@ class Dispatcher
         $this->serviceStorage = $serviceStorage;
         $this->actionStorage = $actionStorage;
     }
-    
-    // Вызывается из фасада Bus
+
     public function startLoop(string $startAction): void
     {
         $action = $this->actionStorage->get($startAction);
@@ -63,8 +62,7 @@ class Dispatcher
             }
         );
     }
-    
-    // Обрабатывает результат текущего таска. Вызывается из TaskManager
+
     public function dispatchResultEvent(Result $result): void
     {
         $resultTask = $this->loop->getCurrentTask();

@@ -16,7 +16,7 @@ class ActionStorage
     public function save(Action $action): void
     {
         if (array_key_exists($action->serviceId . '.' . $action->name, $this->actions)) {
-            throw new RuntimeException('Service ' . $service . 'already registered');
+            throw new RuntimeException('Service ' . $action->serviceId . ' already registered');
         }
         $this->actions[$action->serviceId . '.' . $action->name] = $action;
     }

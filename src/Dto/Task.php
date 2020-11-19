@@ -15,6 +15,4 @@ class Task
     public array $required = [];
     
     public string $rollback = '';
-
-    public string $timeout = '';
 }

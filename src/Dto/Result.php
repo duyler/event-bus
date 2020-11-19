@@ -14,12 +14,10 @@ class Result implements ResultInterface
 
     public string $status;
     public $data = null;
-    public string $timeout;
 
-    public function __construct(string $status, $data = null, string $timeout = '')
+    public function __construct(string $status, $data = null)
     {
         $this->status = $status;
         $this->data = $data;
-        $this->timeout = $timeout;
     }
 }

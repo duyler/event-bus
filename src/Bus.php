@@ -49,7 +49,6 @@ class Bus
         return $service;
     }
 
-    // $subject - serviceId.Action.done $action - serviceId.Action
     public function subscribe(string $subject, string $action): self
     {
         $this->subscribeStorage->save(new Subscribe($subject, $action));

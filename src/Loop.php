@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Jine\EventBus;
 
 use Jine\EventBus\Dto\Task;
+use RuntimeException;
+use OutOfBoundsException;
 
 class Loop
 {
@@ -41,11 +43,11 @@ class Loop
         $this->callback = $callback;
 
         if ($this->loopStarted) {
-            // Исключение
+            throw new RuntimeException('Event bas is already started');
         }
     
         if ($this->queue->isEmpty()) {
-            // Исключение
+            throw new OutOfBoundsException('Task not found for run of event bus');
         }
         
         $this->currentTask = $this->queue->dequeue();
@@ -61,15 +63,5 @@ class Loop
         } else {
             $this->loopStarted = false;
         }
-    }
-
-    public function isEmpty(): bool
-    {
-        return $this->queue->isEmpty();
-    }
-
-    public function started(): bool
-    {
-        return $this->loopStarted;
     }
 }
