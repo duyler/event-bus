@@ -2,7 +2,7 @@
 
 ## Use
 ```
-$bus = \Jine\EventBus\Bus::create();
+$bus = Jine\EventBus\Bus::create();
 
 $bus->setCachePath('path to cache dir');
 
