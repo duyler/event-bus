@@ -26,15 +26,13 @@ class TaskManager
         $this->resultStorage = $resultStorage;
         $this->taskStorage = $taskStorage;
     }
-    
-    // Принимает задачу на обработку
+
     public function handle(Task $task, \Closure $callback): void
     {
         $handler = new $task->handler;
         $this->run($handler, $task, $callback);
     }
-    
-    // Передает задачу в обработчик // Здесь происходит ожидание результата
+
     private function run(HandlerInterface $handler, Task $task, \Closure $callback)
     {
         $container = new Container();
