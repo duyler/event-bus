@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/jine-framework/event-bus.svg?branch=main)](https://travis-ci.org/jine-framework/event-bus)
+![PHP Composer](https://github.com/jine-framework/event-bus/workflows/PHP%20Composer/badge.svg)
 # Event Bus
 
 ## Usage
