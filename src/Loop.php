@@ -7,6 +7,8 @@ namespace Jine\EventBus;
 use Jine\EventBus\Dto\Task;
 use RuntimeException;
 use OutOfBoundsException;
+use SplQueue;
+use Closure;
 
 class Loop
 {
@@ -18,14 +20,14 @@ class Loop
     
     private bool $loopStarted = false;
 
-    private \Closure $callback;
+    private Closure $callback;
 
     public function __construct(TaskManager $taskManager)
     {
         $this->taskManager = $taskManager;
         
         $this->queue = new TaskQueue();
-        $this->queue->setIteratorMode(\SplQueue::IT_MODE_DELETE);
+        $this->queue->setIteratorMode(SplQueue::IT_MODE_DELETE);
     }
     
     public function addTask(Task $task): void
