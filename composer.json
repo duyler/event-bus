@@ -1,0 +1,35 @@
+{
+    "name": "jine/event-bus",
+    "type": "library",
+    "description": "Jine event bus",
+    "license": "MIT",
+    "keywords": [
+        "event-bus"
+    ],
+    "authors": [
+        {
+            "name": "Mikhail Ilinsky",
+            "email": "mail@milinsky.ru"
+        }
+    ],
+    "support": {
+        "docs": "https://framework.jine.io/docs/event-bus/"
+    },
+    "require": {
+        "php": "^7.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    },
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Jine\\EventBus\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Jine\\EventBus\\Test\\": ["tests/"]
+        }
+    }
+}
