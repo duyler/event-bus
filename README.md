@@ -1,4 +1,4 @@
-![PHP Composer](https://github.com/jine-framework/event-bus/workflows/PHP%20Composer/badge.svg)
+![build](https://github.com/jine-framework/event-bus/workflows/build/badge.svg)
 # Event Bus
 
 ## Usage
