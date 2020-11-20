@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/jine-framework/event-bus.svg?branch=main)](https://travis-ci.org/jine-framework/event-bus)
 # Event Bus
 
 ## Usage
