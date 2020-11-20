@@ -33,7 +33,6 @@ jobs:
     - name: PHPUnit tests
       uses: php-actions/phpunit@v1
       with:
-        configuration: custom/path/to/phpunit.xml
         memory_limit: 256M
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
