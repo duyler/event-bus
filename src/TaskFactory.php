@@ -10,12 +10,11 @@ use Jine\EventBus\Dto\Action;
 
 class TaskFactory
 {
-    // Репозиторий всех участников
-    private ServiceStorage $repository;
+    private ServiceStorage $serviceStorage;
     
-    public function __construct(ServiceStorage $repository)
+    public function __construct(ServiceStorage $serviceStorage)
     {
-        $this->repository = $repository;
+        $this->serviceStorage = $serviceStorage;
     }
     
     public function create(Action $action): Task

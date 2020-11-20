@@ -11,10 +11,8 @@ use function array_key_exists;
 
 class ServiceStorage
 {
-    // Массив участников
     private array $services = [];
-    
-    // Регистрирует участника в репозитории шиныF
+
     public function save(Service $service) : void
     {
         if (array_key_exists($service->id, $this->services)) {
