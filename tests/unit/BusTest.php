@@ -43,6 +43,24 @@ class BusTest extends TestCase
         $this->assertInstanceOf( Service::class, $bus->registerService('OneService'));
     }
 
+    public function testSubscribe()
+    {
+        $this->subscribeStorage->method('save');
+
+        $bus = $this->createBus();
+
+        $this->assertInstanceOf( Bus::class, $bus->subscribe('OneService.Done', 'TwoService.Show'));
+    }
+
+    public function testSetCachePath()
+    {
+        $this->configProvider->method('setCachePath');
+
+        $bus = $this->createBus();
+
+        $this->assertInstanceOf( Bus::class, $bus->setCachePath('path\to\cache'));
+    }
+
     private function createBus(): Bus
     {
         return new Bus(
