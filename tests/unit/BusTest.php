@@ -61,6 +61,15 @@ class BusTest extends TestCase
         $this->assertInstanceOf( Bus::class, $bus->setCachePath('path\to\cache'));
     }
 
+    public function testActionIsExists()
+    {
+        $this->actionStorage->method('isExists')->willReturn(true);
+
+        $bus = $this->createBus();
+
+        $this->assertTrue($bus->actionIsExists('Service.Action'));
+    }
+
     private function createBus(): Bus
     {
         return new Bus(
