@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jine\EventBus;
 
+use http\Encoding\Stream\Inflate;
 use Jine\EventBus\Dto\Service;
 use Jine\EventBus\Dto\Subscribe;
 
@@ -65,5 +66,10 @@ class Bus
     {
         $this->config->setCachePath($path);
         return $this;
+    }
+
+    public function actionIsExists(string $actionFullName): bool
+    {
+        return $this->actionStorage->isExists($actionFullName);
     }
 }
