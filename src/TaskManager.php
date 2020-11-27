@@ -13,6 +13,7 @@ class TaskManager
     private Rollback $rollback;
     private ResultStorage $resultStorage;
     private TaskStorage $taskStorage;
+    private Container $container;
     private array $containers = [];
     
     public function __construct(
@@ -25,6 +26,7 @@ class TaskManager
         $this->rollback = $rollback;
         $this->resultStorage = $resultStorage;
         $this->taskStorage = $taskStorage;
+        $this->container = new Container();
     }
 
     public function handle(Task $task, \Closure $callback): void
@@ -71,5 +73,12 @@ class TaskManager
         $this->taskStorage->save($task);
 
         $this->rollback->run($this->taskStorage->getAll());
+    }
+
+    public function registerSharedDefinitions(array $definitions): void
+    {
+        foreach ($definitions as $definition) {
+            $this->container->set($definition);
+        }
     }
 }

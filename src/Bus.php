@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Jine\EventBus;
 
-use http\Encoding\Stream\Inflate;
 use Jine\EventBus\Dto\Service;
 use Jine\EventBus\Dto\Subscribe;
 
@@ -16,6 +15,7 @@ class Bus
     private SubscribeStorage $subscribeStorage;
     private ActionStorage $actionStorage;
     private BusValidator $busValidator;
+    private TaskManager $taskManager;
     
     public function __construct(
         Dispatcher $dispatcher,
@@ -23,7 +23,8 @@ class Bus
         ServiceStorage $serviceStorage,
         SubscribeStorage $subscribeStorage,
         ActionStorage $actionStorage,
-        BusValidator $busValidator
+        BusValidator $busValidator,
+        TaskManager $taskManager
 
     ) {
         $this->actionStorage = $actionStorage;
@@ -32,9 +33,10 @@ class Bus
         $this->subscribeStorage = $subscribeStorage;
         $this->dispatcher = $dispatcher;
         $this->busValidator = $busValidator;
+        $this->taskManager = $taskManager;
     }
     
-    public static function create(): self
+    public static function create(): static
     {
         $container = new Container();
         return $container->instance(static::class);
@@ -50,19 +52,19 @@ class Bus
         return $service;
     }
 
-    public function subscribe(string $subject, string $action): self
+    public function subscribe(string $subject, string $action): static
     {
         $this->subscribeStorage->save(new Subscribe($subject, $action));
         return $this;
     }
 
-    public function run(string $startAction) : void
+    public function run(string $startAction): void
     {
         $this->busValidator->validate();
         $this->dispatcher->startLoop($startAction);
     }
 
-    public function setCachePath(string $path): self
+    public function setCachePath(string $path): static
     {
         $this->config->setCachePath($path);
         return $this;
@@ -71,5 +73,11 @@ class Bus
     public function actionIsExists(string $actionFullName): bool
     {
         return $this->actionStorage->isExists($actionFullName);
+    }
+
+    public function registerSharedDefinitions(array $definitions): static
+    {
+        $this->taskManager->registerSharedDefinitions($definitions);
+        return $this;
     }
 }

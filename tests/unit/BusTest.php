@@ -12,6 +12,7 @@ use Jine\EventBus\ServiceStorage;
 use Jine\EventBus\SubscribeStorage;
 use Jine\EventBus\Dispatcher;
 use Jine\EventBus\Dto\Service;
+use Jine\EventBus\TaskManager;
 use PHPUnit\Framework\TestCase;
 
 class BusTest extends TestCase
@@ -22,6 +23,7 @@ class BusTest extends TestCase
     private SubscribeStorage $subscribeStorage;
     private ActionStorage $actionStorage;
     private BusValidator $busValidator;
+    private TaskManager $taskManager;
 
     public function setUp(): void
     {
@@ -31,6 +33,7 @@ class BusTest extends TestCase
         $this->subscribeStorage = $this->createMock(SubscribeStorage::class);
         $this->dispatcher = $this->createMock(Dispatcher::class);
         $this->busValidator = $this->createMock(BusValidator::class);
+        $this->taskManager = $this->createMock(TaskManager::class);
         parent::setUp();
     }
 
@@ -70,6 +73,15 @@ class BusTest extends TestCase
         $this->assertTrue($bus->actionIsExists('Service.Action'));
     }
 
+    public function testRegisterSharedDefinitions()
+    {
+        $this->taskManager->method('registerSharedDefinitions');
+
+        $bus = $this->createBus();
+
+        $this->assertInstanceOf( Bus::class, $bus->registerSharedDefinitions([]));
+    }
+
     private function createBus(): Bus
     {
         return new Bus(
@@ -79,6 +91,7 @@ class BusTest extends TestCase
             $this->subscribeStorage,
             $this->actionStorage,
             $this->busValidator,
+            $this->taskManager
         );
     }
 }
