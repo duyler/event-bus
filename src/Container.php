@@ -74,7 +74,7 @@ class Container
         if (!is_object($definition)) {
             throw new DefinitionIsNotObjectTypeException(gettype($definition));
         }
-        $className = get_class($definition);
+        $className = $definition::class;
 
         $this->definitions[$className] = $definition;
     }
