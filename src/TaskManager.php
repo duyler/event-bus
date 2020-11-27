@@ -37,7 +37,7 @@ class TaskManager
 
     private function run(HandlerInterface $handler, Task $task, \Closure $callback)
     {
-        $container = new Container();
+        $container = clone $this->container;
 
         $data = $this->resultStorage->getAllByArray($task->required);
 
