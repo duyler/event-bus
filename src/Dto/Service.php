@@ -27,7 +27,7 @@ class Service
         return $action;
     }
 
-    public function handler(string $handler): self
+    public function handler(string $handler): static
     {
         $this->handler = $handler;
         return $this;
