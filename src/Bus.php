@@ -80,4 +80,9 @@ class Bus
         $this->taskManager->registerSharedDefinitions($definitions);
         return $this;
     }
+
+    public function getResult(): ?object
+    {
+        return $this->dispatcher->getResult();
+    }
 }

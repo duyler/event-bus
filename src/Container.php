@@ -51,7 +51,7 @@ class Container
         $this->providers = $providers;
     }
     
-    public static function create(array $providers = []): self
+    public static function create(array $providers = []): static
     {
         return new static($providers);
     }

@@ -25,4 +25,9 @@ class ResultStorage
 
         return $data;
     }
+
+    public function getResult(string $id): Result
+    {
+        return $this->data[$id];
+    }
 }
