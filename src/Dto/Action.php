@@ -18,19 +18,19 @@ class Action
         $this->serviceId = $serviceId;
     }
 
-    public function required(array $required): self
+    public function required(array $required): static
     {
         $this->required = $required;
         return $this;
     }
 
-    public function handler(string $handler): self
+    public function handler(string $handler): static
     {
         $this->handler = $handler;
         return $this;
     }
 
-    public function rollback(string $rollbackHandler): self
+    public function rollback(string $rollbackHandler): static
     {
         $this->rollback = $rollbackHandler;
     }

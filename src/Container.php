@@ -151,7 +151,17 @@ class Container
         foreach ($constructor->getParameters() as $param) {
 
             // Получаем класс из подсказки типа
-            $class = $param->getClass();
+            $type = $param->getType();
+
+            $paramClassName = $type->getName();
+
+            if (class_exists($paramClassName) === false) {
+                continue;
+            }
+
+            $this->reflections[$paramClassName] = new \ReflectionClass($paramClassName);
+
+            $class = $this->reflections[$paramClassName];
 
             // Если в параметрах есть зависимость то получаем её
             if (null !== $class) {
