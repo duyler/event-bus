@@ -16,8 +16,7 @@
         "docs": "https://framework.jine.io/docs/event-bus/"
     },
     "require": {
-        "php": "^8.0",
-        "jine/contracts": "^0.1"
+        "php": "^8.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9"
