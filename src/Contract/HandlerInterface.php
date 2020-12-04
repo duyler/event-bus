@@ -8,7 +8,7 @@ use Jine\EventBus\Dto\Result;
 
 interface HandlerInterface
 {
-    public function run(object $action): Result;
+    public function run(object $action): ?Result;
 
     public function getClass(): string;
 

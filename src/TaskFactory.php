@@ -10,20 +10,14 @@ use Jine\EventBus\Dto\Action;
 
 class TaskFactory
 {
-    private ServiceStorage $serviceStorage;
-    
-    public function __construct(ServiceStorage $serviceStorage)
-    {
-        $this->serviceStorage = $serviceStorage;
-    }
-    
-    public function create(Action $action): Task
+    public function create(Action $action, Subscribe $subscribe): Task
     {
         $task = new Task();
         $task->serviceId = $action->serviceId;
         $task->action = $action->name;
         $task->handler = $action->handler;
         $task->required = $action->required;
+        $task->subscribe = $subscribe->subject;
         
         return $task;
     }

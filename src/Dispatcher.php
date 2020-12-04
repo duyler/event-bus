@@ -22,9 +22,7 @@ class Dispatcher
     private SubscribeStorage $subscribeStorage;
     private ServiceStorage $serviceStorage;
     private ActionStorage $actionStorage;
-    private ResultStorage $resultStorage;
     private array $heldTasks = [];
-    private string $startAction = '';
     
     public function __construct(
         TaskFactory $taskFactory,
@@ -33,8 +31,7 @@ class Dispatcher
         ConfigProvider $config,
         SubscribeStorage $subscribeManager,
         ServiceStorage $serviceStorage,
-        ActionStorage $actionStorage,
-        ResultStorage $resultStorage
+        ActionStorage $actionStorage
     ) {
         $this->loop = $loop;
         $this->taskFactory = $taskFactory;
@@ -43,13 +40,10 @@ class Dispatcher
         $this->subscribeStorage = $subscribeManager;
         $this->serviceStorage = $serviceStorage;
         $this->actionStorage = $actionStorage;
-        $this->resultStorage = $resultStorage;
     }
 
     public function startLoop(string $startAction): void
     {
-        $this->startAction = $startAction;
-
         $action = $this->actionStorage->get($startAction);
 
         $task = $this->taskFactory->create($action);
@@ -67,12 +61,6 @@ class Dispatcher
                 }
             }
         );
-    }
-
-    public function getResult(): ?object
-    {
-        $result = $this->resultStorage->getResult($this->startAction);
-        return $result->data;
     }
 
     public function dispatchResultEvent(Result $result): void
@@ -101,7 +89,7 @@ class Dispatcher
 
                 $action = $this->actionStorage->get($subscribe->actionFullName);
 
-                $task = $this->taskFactory->create($action);
+                $task = $this->taskFactory->create($action, $subscribe);
 
                 $this->dispatchRequired($task);
 

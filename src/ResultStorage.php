@@ -6,6 +6,8 @@ namespace Jine\EventBus;
 
 use Jine\EventBus\Dto\Result;
 
+use function array_key_exists;
+
 class ResultStorage
 {
     private array $data = [];
@@ -29,5 +31,10 @@ class ResultStorage
     public function getResult(string $id): Result
     {
         return $this->data[$id];
+    }
+
+    public function isExists(string $id): bool
+    {
+        return array_key_exists($id, $this->data);
     }
 }
