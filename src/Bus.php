@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jine\EventBus;
 
+use Jine\EventBus\Dto\Result;
 use Jine\EventBus\Dto\Service;
 use Jine\EventBus\Dto\Subscribe;
 
@@ -16,6 +17,7 @@ class Bus
     private ActionStorage $actionStorage;
     private BusValidator $busValidator;
     private TaskManager $taskManager;
+    private ResultStorage $resultStorage;
     
     public function __construct(
         Dispatcher $dispatcher,
@@ -24,7 +26,8 @@ class Bus
         SubscribeStorage $subscribeStorage,
         ActionStorage $actionStorage,
         BusValidator $busValidator,
-        TaskManager $taskManager
+        TaskManager $taskManager,
+        ResultStorage $resultStorage
 
     ) {
         $this->actionStorage = $actionStorage;
@@ -34,6 +37,7 @@ class Bus
         $this->dispatcher = $dispatcher;
         $this->busValidator = $busValidator;
         $this->taskManager = $taskManager;
+        $this->resultStorage = $resultStorage;
     }
     
     public static function create(): static
@@ -81,8 +85,11 @@ class Bus
         return $this;
     }
 
-    public function getResult(): ?object
+    public function getResult(string $actionFullName): ?Result
     {
-        return $this->dispatcher->getResult();
+        if ($this->resultStorage->isExists($actionFullName)) {
+            return $this->resultStorage->getResult($actionFullName);
+        }
+        return null;
     }
 }

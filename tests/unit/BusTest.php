@@ -8,6 +8,8 @@ use Jine\EventBus\ActionStorage;
 use Jine\EventBus\Bus;
 use Jine\EventBus\BusValidator;
 use Jine\EventBus\ConfigProvider;
+use Jine\EventBus\Dto\Result;
+use Jine\EventBus\ResultStorage;
 use Jine\EventBus\ServiceStorage;
 use Jine\EventBus\SubscribeStorage;
 use Jine\EventBus\Dispatcher;
@@ -24,6 +26,7 @@ class BusTest extends TestCase
     private ActionStorage $actionStorage;
     private BusValidator $busValidator;
     private TaskManager $taskManager;
+    private ResultStorage $resultStorage;
 
     public function setUp(): void
     {
@@ -34,6 +37,7 @@ class BusTest extends TestCase
         $this->dispatcher = $this->createMock(Dispatcher::class);
         $this->busValidator = $this->createMock(BusValidator::class);
         $this->taskManager = $this->createMock(TaskManager::class);
+        $this->resultStorage = $this->createMock(ResultStorage::class);
         parent::setUp();
     }
 
@@ -82,6 +86,15 @@ class BusTest extends TestCase
         $this->assertInstanceOf( Bus::class, $bus->registerSharedDefinitions([]));
     }
 
+    public function testGetResult()
+    {
+        $this->resultStorage->method('isExists')->willReturn(false);
+
+        $bus = $this->createBus();
+
+        $this->assertNull($bus->getResult('Service.Action'));
+    }
+
     private function createBus(): Bus
     {
         return new Bus(
@@ -91,7 +104,8 @@ class BusTest extends TestCase
             $this->subscribeStorage,
             $this->actionStorage,
             $this->busValidator,
-            $this->taskManager
+            $this->taskManager,
+            $this->resultStorage
         );
     }
 }
