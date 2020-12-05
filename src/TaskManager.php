@@ -13,7 +13,6 @@ use Throwable;
 
 class TaskManager
 {
-    private ConfigProvider $config;
     private Rollback $rollback;
     private ResultStorage $resultStorage;
     private TaskStorage $taskStorage;
@@ -21,15 +20,14 @@ class TaskManager
     private array $containers = [];
     
     public function __construct(
-        ConfigProvider $config,
         Rollback $rollback,
         ResultStorage $resultStorage,
         TaskStorage $taskStorage
     ) {
-        $this->config = $config;
         $this->rollback = $rollback;
         $this->resultStorage = $resultStorage;
         $this->taskStorage = $taskStorage;
+
         $this->container = new Container();
     }
 
@@ -46,20 +44,16 @@ class TaskManager
         }
     }
 
-    private function prepareService(HandlerInterface $handler, Task $task): Service
+    private function prepareService(HandlerInterface $handler, Task $task)
     {
         $this->containers[$task->serviceId] = clone $this->container;
 
-        $prevResult = $this->resultStorage->getResult($task->subscribe);
+        $results = $this->resultStorage->getAllByArray($task->required);
 
-        if ($prevResult->data !== null) {
-            $this->containers[$task->serviceId]->set($prevResult->data);
-        }
-
-        $data = $this->resultStorage->getAllByArray($task->required);
-
-        foreach ($data as $value) {
-            $this->containers[$task->serviceId]->set($value);
+        foreach ($results as $result) {
+            if (is_null($result->data)) {
+                $this->containers[$task->serviceId]->set($result->data);
+            }
         }
 
         $classMap = $handler->getClassMap();
@@ -73,7 +67,7 @@ class TaskManager
         return $service;
     }
 
-    private function run(HandlerInterface $handler, Task $task, Service $service): ?Result
+    private function run(HandlerInterface $handler, Task $task, $service): ?Result
     {
         $result = null;
         $result ??= $handler->run($service);

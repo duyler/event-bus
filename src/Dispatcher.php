@@ -17,10 +17,8 @@ class Dispatcher
 {
     private TaskFactory $taskFactory;
     private TaskStorage $taskStorage;
-    private ConfigProvider $config;
     private Loop $loop;
     private SubscribeStorage $subscribeStorage;
-    private ServiceStorage $serviceStorage;
     private ActionStorage $actionStorage;
     private array $heldTasks = [];
     
@@ -28,17 +26,13 @@ class Dispatcher
         TaskFactory $taskFactory,
         TaskStorage $taskStorage,
         Loop $loop,
-        ConfigProvider $config,
         SubscribeStorage $subscribeManager,
-        ServiceStorage $serviceStorage,
         ActionStorage $actionStorage
     ) {
         $this->loop = $loop;
         $this->taskFactory = $taskFactory;
         $this->taskStorage = $taskStorage;
-        $this->config = $config;
         $this->subscribeStorage = $subscribeManager;
-        $this->serviceStorage = $serviceStorage;
         $this->actionStorage = $actionStorage;
     }
 
@@ -89,7 +83,7 @@ class Dispatcher
 
                 $action = $this->actionStorage->get($subscribe->actionFullName);
 
-                $task = $this->taskFactory->create($action, $subscribe);
+                $task = $this->taskFactory->create($action);
 
                 $this->dispatchRequired($task);
 
@@ -148,7 +142,7 @@ class Dispatcher
     {
         $completeTasks = $this->taskStorage->getAll();
 
-        $requiredTasksData = array_intersect_key(array_flip($task->required), $completeTasks);
+        $requiredTasksData = array_intersect_key($completeTasks, array_flip($task->required));
 
         return count($requiredTasksData) === count($task->required);
     }
