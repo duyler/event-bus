@@ -9,8 +9,6 @@ class Task
     public string $serviceId;
     
     public string $action;
-
-    public string $subscribe;
     
     public string $handler = '';
 

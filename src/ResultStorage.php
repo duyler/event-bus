@@ -7,6 +7,8 @@ namespace Jine\EventBus;
 use Jine\EventBus\Dto\Result;
 
 use function array_key_exists;
+use function array_intersect_key;
+use function array_flip;
 
 class ResultStorage
 {
@@ -19,13 +21,7 @@ class ResultStorage
 
     public function getAllByArray(array $required): array
     {
-        $data = [];
-
-        foreach ($required as $serviceId) {
-            $data[$serviceId] = $this->data[$serviceId]->data;
-        }
-
-        return $data;
+        return array_intersect_key($this->data, array_flip($required));
     }
 
     public function getResult(string $id): Result
