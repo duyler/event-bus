@@ -22,7 +22,6 @@ class BusTest extends TestCase
     private SubscribeStorage $subscribeStorage;
     private ActionStorage $actionStorage;
     private BusValidator $busValidator;
-    private TaskManager $taskManager;
     private ResultStorage $resultStorage;
 
     public function setUp(): void
@@ -32,7 +31,6 @@ class BusTest extends TestCase
         $this->subscribeStorage = $this->createMock(SubscribeStorage::class);
         $this->dispatcher = $this->createMock(Dispatcher::class);
         $this->busValidator = $this->createMock(BusValidator::class);
-        $this->taskManager = $this->createMock(TaskManager::class);
         $this->resultStorage = $this->createMock(ResultStorage::class);
         parent::setUp();
     }
@@ -64,15 +62,6 @@ class BusTest extends TestCase
         $this->assertTrue($bus->actionIsExists('Service.Action'));
     }
 
-    public function testRegisterSharedDefinitions()
-    {
-        $this->taskManager->method('registerSharedDefinitions');
-
-        $bus = $this->createBus();
-
-        $this->assertInstanceOf( Bus::class, $bus->registerSharedDefinitions([]));
-    }
-
     public function testGetResult()
     {
         $this->resultStorage->method('isExists')->willReturn(false);
@@ -90,7 +79,6 @@ class BusTest extends TestCase
             $this->subscribeStorage,
             $this->actionStorage,
             $this->busValidator,
-            $this->taskManager,
             $this->resultStorage
         );
     }

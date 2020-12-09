@@ -38,7 +38,8 @@ class TaskManager
             $result = $this->run($handler, $task);
             $callback($result);
         } catch(Throwable $exception) {
-            $this->rollback($task, $exception);
+            $this->taskStorage->save($task);
+            $this->rollback();
             throw $exception;
         }
     }
@@ -74,17 +75,8 @@ class TaskManager
         return $result;
     }
 
-    public function rollback(Task $task, \Throwable $exception): void
+    public function rollback(): void
     {
-        $this->taskStorage->save($task);
-
-        $this->rollback->run($this->taskStorage->getAll());
-    }
-
-    public function registerSharedDefinitions(array $definitions): void
-    {
-        foreach ($definitions as $definition) {
-            $this->container->set($definition);
-        }
+        $this->rollback->run($this->containers);
     }
 }

@@ -16,7 +16,6 @@ class Bus
     private SubscribeStorage $subscribeStorage;
     private ActionStorage $actionStorage;
     private BusValidator $busValidator;
-    private TaskManager $taskManager;
     private ResultStorage $resultStorage;
     
     public function __construct(
@@ -25,7 +24,6 @@ class Bus
         SubscribeStorage $subscribeStorage,
         ActionStorage $actionStorage,
         BusValidator $busValidator,
-        TaskManager $taskManager,
         ResultStorage $resultStorage
 
     ) {
@@ -34,7 +32,6 @@ class Bus
         $this->subscribeStorage = $subscribeStorage;
         $this->dispatcher = $dispatcher;
         $this->busValidator = $busValidator;
-        $this->taskManager = $taskManager;
         $this->resultStorage = $resultStorage;
     }
     
@@ -75,12 +72,6 @@ class Bus
     public function actionIsExists(string $actionFullName): bool
     {
         return $this->actionStorage->isExists($actionFullName);
-    }
-
-    public function registerSharedDefinitions(array $definitions): static
-    {
-        $this->taskManager->registerSharedDefinitions($definitions);
-        return $this;
     }
 
     public function getResult(string $actionFullName): ?Result
