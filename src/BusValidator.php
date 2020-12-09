@@ -7,6 +7,7 @@ namespace Jine\EventBus;
 use Jine\EventBus\Dto\Action;
 use Jine\EventBus\Contract\HandlerInterface;
 use Jine\EventBus\Contract\RollbackInterface;
+use Jine\EventBus\Contract\ValidateCacheHandlerInterface;
 use OutOfBoundsException;
 use DomainException;
 use LogicException;
@@ -21,31 +22,33 @@ class BusValidator
 {
     private ServiceStorage $serviceStorage;
     private SubscribeStorage $subscribeStorage;
-    private ConfigProvider $configProvider;
+    private ?ValidateCacheHandlerInterface $validateCacheHandler = null;
     private ActionStorage $actionStorage;
-
-    private const FILE_NAME = 'bus_validation';
 
     public function __construct(
         ServiceStorage $serviceStorage,
         SubscribeStorage $subscribeStorage,
-        ConfigProvider $configProvider,
         ActionStorage $actionStorage
     ) {
         $this->serviceStorage = $serviceStorage;
         $this->subscribeStorage = $subscribeStorage;
-        $this->configProvider = $configProvider;
         $this->actionStorage = $actionStorage;
+    }
+
+    public function setValidateCacheHandler(ValidateCacheHandlerInterface $validateCacheHandler): static
+    {
+        $this->validateCacheHandler = $validateCacheHandler;
+        return $this;
     }
 
     public function validate(): void
     {
-        if (empty($this->configProvider->getCachePath())) {
+        if ($this->validateCacheHandler === null) {
             $this->runValidation();
             return;
         }
 
-        $dataHash = $this->getDataHash();
+        $dataHash = $this->createDataHash();
 
         if ($this->isValidCache($dataHash) === false) {
             $this->runValidation();
@@ -132,27 +135,26 @@ class BusValidator
         }
     }
 
-    private function getDataHash(): string
+    private function createDataHash(): string
     {
         return md5(serialize($this->subscribeStorage)) . md5(serialize($this->actionStorage));
     }
 
     private function isValidCache(string $dataHash): bool
     {
-        $filePath = $this->configProvider->getCachePath() . '/' . self::FILE_NAME;
-
-        if (is_file($filePath) === false) {
+        if ($this->validateCacheHandler === null) {
             return false;
         }
 
-        $hash = file_get_contents($filePath);
+        $hash = $this->validateCacheHandler->readHash();
 
         return $hash === $dataHash;
     }
 
     private function updateCache(string $dataHash): void
     {
-        $filePath = $this->configProvider->getCachePath() . '/' . self::FILE_NAME;
-        file_put_contents($filePath, $dataHash);
+        if ($this->validateCacheHandler !== null) {
+            $this->validateCacheHandler->writeHash($dataHash);
+        }
     }
 }

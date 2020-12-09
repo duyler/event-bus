@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jine\EventBus;
 
+use Jine\EventBus\Contract\ValidateCacheHandlerInterface;
 use Jine\EventBus\Dto\Result;
 use Jine\EventBus\Dto\Service;
 use Jine\EventBus\Dto\Subscribe;
@@ -11,7 +12,6 @@ use Jine\EventBus\Dto\Subscribe;
 class Bus
 {
     private Dispatcher $dispatcher;
-    private ConfigProvider $config;
     private ServiceStorage $serviceStorage;
     private SubscribeStorage $subscribeStorage;
     private ActionStorage $actionStorage;
@@ -21,7 +21,6 @@ class Bus
     
     public function __construct(
         Dispatcher $dispatcher,
-        ConfigProvider $config,
         ServiceStorage $serviceStorage,
         SubscribeStorage $subscribeStorage,
         ActionStorage $actionStorage,
@@ -32,7 +31,6 @@ class Bus
     ) {
         $this->actionStorage = $actionStorage;
         $this->serviceStorage = $serviceStorage;
-        $this->config = $config;
         $this->subscribeStorage = $subscribeStorage;
         $this->dispatcher = $dispatcher;
         $this->busValidator = $busValidator;
@@ -68,9 +66,9 @@ class Bus
         $this->dispatcher->startLoop($startAction);
     }
 
-    public function setCachePath(string $path): static
+    public function setValidateCacheHandler(ValidateCacheHandlerInterface $validateCacheHandler): static
     {
-        $this->config->setCachePath($path);
+        $this->busValidator->setValidateCacheHandler($validateCacheHandler);
         return $this;
     }
 
