@@ -10,6 +10,7 @@ class Action
     public string $serviceId;
     public string $handler = '';
     public array $required = [];
+    public array $classMap = [];
     public string $rollback = '';
 
     public function __construct(string $name, string $serviceId)
@@ -28,6 +29,11 @@ class Action
     {
         $this->handler = $handler;
         return $this;
+    }
+
+    public function classMap(array $classMap): static
+    {
+        $this->classMap = $classMap;
     }
 
     public function rollback(string $rollbackHandler): static

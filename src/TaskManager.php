@@ -22,21 +22,20 @@ class TaskManager
     public function __construct(
         Rollback $rollback,
         ResultStorage $resultStorage,
-        TaskStorage $taskStorage
+        TaskStorage $taskStorage,
+        Container $container
     ) {
         $this->rollback = $rollback;
         $this->resultStorage = $resultStorage;
         $this->taskStorage = $taskStorage;
-
-        $this->container = new Container();
+        $this->container = $container;
     }
 
     public function handle(Task $task, Closure $callback): void
     {
         try {
-            $handler = new $task->handler;
-            $service = $this->prepareService($handler, $task);
-            $result = $this->run($handler, $task, $service);
+            $handler = $this->prepareService($task);
+            $result = $this->run($handler, $task);
             $callback($result);
         } catch(Throwable $exception) {
             $this->rollback($task, $exception);
@@ -44,11 +43,11 @@ class TaskManager
         }
     }
 
-    private function prepareService(HandlerInterface $handler, Task $task)
+    private function prepareService(Task $task): HandlerInterface
     {
         $this->containers[$task->serviceId] = clone $this->container;
 
-        $results = $this->resultStorage->getAllByArray($task->required);
+        $results = $this->resultStorage->getAllByRequired($task->required);
 
         foreach ($results as $result) {
             if (is_null($result->data)) {
@@ -56,21 +55,17 @@ class TaskManager
             }
         }
 
-        $classMap = $handler->getClassMap();
-
-        if (!empty($classMap)) {
-            $this->containers[$task->serviceId]->setClassMap($classMap);
+        if (!empty($task->classMap)) {
+            $this->containers[$task->serviceId]->setClassMap($task->classMap);
         }
 
-        $service = $this->containers[$task->serviceId]->instance($handler->getClass());
-
-        return $service;
+        return $this->containers[$task->serviceId]->instance($task->handler);
     }
 
-    private function run(HandlerInterface $handler, Task $task, $service): ?Result
+    private function run(HandlerInterface $handler, Task $task): ?Result
     {
         $result = null;
-        $result ??= $handler->run($service);
+        $result ??= $handler->run();
 
         if ($result !== null) {
             $this->resultStorage->save($task->serviceId . '.' . $task->action, $result);
