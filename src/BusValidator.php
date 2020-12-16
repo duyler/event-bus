@@ -15,6 +15,7 @@ use LogicException;
 use function serialize;
 use function md5;
 use function class_exists;
+use function class_implements;
 use function in_array;
 use function explode;
 
@@ -123,13 +124,20 @@ class BusValidator
         foreach ($subscribes as $subscribe) {
             $segments = explode('.', $subscribe->subject);
 
-            $actionFullName = $segments[0] . '.' . $segments[1];
+            $subjectActionFullName = $segments[0] . '.' . $segments[1];
 
-            if ($this->actionStorage->isExists($actionFullName) === false) {
-                throw new OutOfBoundsException('Subscribed action ' . $actionFullName . ' not registered in the bus');
+            if ($this->actionStorage->isExists($subjectActionFullName) === false) {
+                throw new OutOfBoundsException('Subscribed action ' . $subjectActionFullName . ' not registered in the bus');
             }
 
             if ($this->actionStorage->isExists($subscribe->actionFullName) === false) {
+                throw new OutOfBoundsException('Action ' . $subscribe->actionFullName . ' not registered in the bus');
+            }
+
+            $subjectAction = $this->actionStorage->get($subjectActionFullName);
+            $requireAction = $this->actionStorage->get($subscribe->actionFullName);
+
+            if ($subjectAction->preload && $requireAction->preload === false) {
                 throw new OutOfBoundsException('Action ' . $subscribe->actionFullName . ' not registered in the bus');
             }
         }

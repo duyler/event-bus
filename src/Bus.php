@@ -11,6 +11,7 @@ use Jine\EventBus\Dto\Subscribe;
 
 class Bus
 {
+    private PreloadDispatcher $preloadDispatcher;
     private Dispatcher $dispatcher;
     private ServiceStorage $serviceStorage;
     private SubscribeStorage $subscribeStorage;
@@ -19,6 +20,7 @@ class Bus
     private ResultStorage $resultStorage;
     
     public function __construct(
+        PreloadDispatcher $preloadDispatcher,
         Dispatcher $dispatcher,
         ServiceStorage $serviceStorage,
         SubscribeStorage $subscribeStorage,
@@ -27,6 +29,7 @@ class Bus
         ResultStorage $resultStorage
 
     ) {
+        $this->preloadDispatcher = $preloadDispatcher;
         $this->actionStorage = $actionStorage;
         $this->serviceStorage = $serviceStorage;
         $this->subscribeStorage = $subscribeStorage;
@@ -57,10 +60,20 @@ class Bus
         return $this;
     }
 
+    public function preload(string $startAction): void
+    {
+        $this->preloadDispatcher->run($startAction);
+    }
+
     public function run(string $startAction): void
     {
+        $this->dispatcher->run($startAction);
+    }
+
+    public function validate(): static
+    {
         $this->busValidator->validate();
-        $this->dispatcher->startLoop($startAction);
+        return $this;
     }
 
     public function setValidateCacheHandler(ValidateCacheHandlerInterface $validateCacheHandler): static
