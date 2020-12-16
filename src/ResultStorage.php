@@ -19,7 +19,7 @@ class ResultStorage
         $this->data[$id] = $result;
     }
 
-    public function getAllByArray(array $required): array
+    public function getAllByRequired(array $required): array
     {
         return array_intersect_key($this->data, array_flip($required));
     }

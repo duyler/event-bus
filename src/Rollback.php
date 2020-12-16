@@ -6,15 +6,25 @@ namespace Jine\EventBus;
 
 use Jine\EventBus\Contract\RollbackInterface;
 
-class Rollback extends Container
+class Rollback
 {
-    public function run(array $completeTasks)
+    private Container $container;
+    private TaskStorage $taskStorage;
+
+    public function __construct(Container $container, TaskStorage $taskStorage)
     {
-        foreach ($completeTasks as $task) {
+        $this->container = $container;
+        $this->taskStorage = $taskStorage;
+    }
+
+    public function run(array $taskContainers)
+    {
+        foreach ($this->taskStorage->getAll() as $task) {
             if (empty($task->rollback)) {
                 continue;
             }
-            $this->rollback($this->instance($task->rollback));
+            $taskContainer = $taskContainers($task->serviceId . '.' . $task->action);
+            $this->rollback($taskContainer->instance($task->rollback));
         }
     }
     
@@ -23,4 +33,3 @@ class Rollback extends Container
         $rollback->run();
     }
 }
-

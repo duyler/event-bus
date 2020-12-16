@@ -10,7 +10,9 @@ class Action
     public string $serviceId;
     public string $handler = '';
     public array $required = [];
+    public array $classMap = [];
     public string $rollback = '';
+    public bool $preload = false;
 
     public function __construct(string $name, string $serviceId)
     {
@@ -30,8 +32,19 @@ class Action
         return $this;
     }
 
+    public function classMap(array $classMap): static
+    {
+        $this->classMap = $classMap;
+    }
+
     public function rollback(string $rollbackHandler): static
     {
         $this->rollback = $rollbackHandler;
+    }
+
+    public function preload(bool $flag): static
+    {
+        $this->preload = $flag;
+        return $this;
     }
 }

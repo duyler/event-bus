@@ -4,39 +4,37 @@ declare(strict_types=1);
 
 namespace Jine\EventBus;
 
+use Jine\EventBus\Contract\ValidateCacheHandlerInterface;
 use Jine\EventBus\Dto\Result;
 use Jine\EventBus\Dto\Service;
 use Jine\EventBus\Dto\Subscribe;
 
 class Bus
 {
+    private PreloadDispatcher $preloadDispatcher;
     private Dispatcher $dispatcher;
-    private ConfigProvider $config;
     private ServiceStorage $serviceStorage;
     private SubscribeStorage $subscribeStorage;
     private ActionStorage $actionStorage;
     private BusValidator $busValidator;
-    private TaskManager $taskManager;
     private ResultStorage $resultStorage;
     
     public function __construct(
+        PreloadDispatcher $preloadDispatcher,
         Dispatcher $dispatcher,
-        ConfigProvider $config,
         ServiceStorage $serviceStorage,
         SubscribeStorage $subscribeStorage,
         ActionStorage $actionStorage,
         BusValidator $busValidator,
-        TaskManager $taskManager,
         ResultStorage $resultStorage
 
     ) {
+        $this->preloadDispatcher = $preloadDispatcher;
         $this->actionStorage = $actionStorage;
         $this->serviceStorage = $serviceStorage;
-        $this->config = $config;
         $this->subscribeStorage = $subscribeStorage;
         $this->dispatcher = $dispatcher;
         $this->busValidator = $busValidator;
-        $this->taskManager = $taskManager;
         $this->resultStorage = $resultStorage;
     }
     
@@ -62,27 +60,31 @@ class Bus
         return $this;
     }
 
-    public function run(string $startAction): void
+    public function preload(string $startAction): void
     {
-        $this->busValidator->validate();
-        $this->dispatcher->startLoop($startAction);
+        $this->preloadDispatcher->run($startAction);
     }
 
-    public function setCachePath(string $path): static
+    public function run(string $startAction): void
     {
-        $this->config->setCachePath($path);
+        $this->dispatcher->run($startAction);
+    }
+
+    public function validate(): static
+    {
+        $this->busValidator->validate();
+        return $this;
+    }
+
+    public function setValidateCacheHandler(ValidateCacheHandlerInterface $validateCacheHandler): static
+    {
+        $this->busValidator->setValidateCacheHandler($validateCacheHandler);
         return $this;
     }
 
     public function actionIsExists(string $actionFullName): bool
     {
         return $this->actionStorage->isExists($actionFullName);
-    }
-
-    public function registerSharedDefinitions(array $definitions): static
-    {
-        $this->taskManager->registerSharedDefinitions($definitions);
-        return $this;
     }
 
     public function getResult(string $actionFullName): ?Result
