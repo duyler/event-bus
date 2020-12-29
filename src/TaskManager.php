@@ -50,7 +50,7 @@ class TaskManager
         $results = $this->resultStorage->getAllByRequired($task->required);
 
         foreach ($results as $result) {
-            if (is_null($result->data)) {
+            if ($result->data !== null) {
                 $this->containers[$task->serviceId]->set($result->data);
             }
         }

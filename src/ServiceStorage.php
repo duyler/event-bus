@@ -16,7 +16,7 @@ class ServiceStorage
     public function save(Service $service) : void
     {
         if (array_key_exists($service->id, $this->services)) {
-            throw new RuntimeException('Service ' . $service . ' already registered');
+            throw new RuntimeException('Service ' . $service->id . ' already registered');
         }
 
         $this->services[$service->id] = $service;

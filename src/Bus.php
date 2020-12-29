@@ -65,9 +65,9 @@ class Bus
         $this->preloadDispatcher->run($startAction);
     }
 
-    public function run(string $startAction): void
+    public function run(string $startAction, callable $callback = null): void
     {
-        $this->dispatcher->run($startAction);
+        $this->dispatcher->run($startAction, $callback);
     }
 
     public function validate(): static
