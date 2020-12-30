@@ -7,11 +7,13 @@ namespace Jine\EventBus;
 use Jine\EventBus\Dto\Action;
 use Jine\EventBus\Dto\Result;
 use Jine\EventBus\Dto\Task;
+use Closure;
 
 use function array_flip;
 use function array_intersect_key;
 use function count;
 use function key;
+use function call_user_func;
 
 abstract class AbstractDispatcher
 {
@@ -21,7 +23,10 @@ abstract class AbstractDispatcher
     protected SubscribeStorage $subscribeStorage;
     protected ActionStorage $actionStorage;
     protected ServiceStorage $serviceStorage;
+    protected ResultStorage $resultStorage;
+    protected ?Closure $externalCallback;
     protected array $heldTasks = [];
+    protected string $startAction;
 
     public function __construct(
         TaskFactory $taskFactory,
@@ -29,7 +34,8 @@ abstract class AbstractDispatcher
         Loop $loop,
         SubscribeStorage $subscribeManager,
         ActionStorage $actionStorage,
-        ServiceStorage $serviceStorage
+        ServiceStorage $serviceStorage,
+        ResultStorage $resultStorage
     ) {
         $this->loop = $loop;
         $this->taskFactory = $taskFactory;
@@ -37,13 +43,18 @@ abstract class AbstractDispatcher
         $this->subscribeStorage = $subscribeManager;
         $this->actionStorage = $actionStorage;
         $this->serviceStorage = $serviceStorage;
+        $this->resultStorage = $resultStorage;
     }
 
-    protected function startLoop(string $startAction)
+    protected function startLoop(string $startAction, ?callable $externalCallback): void
     {
         $action = $this->actionStorage->get($startAction);
 
         $task = $this->taskFactory->create($action);
+
+        $this->externalCallback = $externalCallback;
+
+        $this->startAction = $startAction;
 
         $this->dispatchRequired($task);
 
@@ -87,6 +98,12 @@ abstract class AbstractDispatcher
 
     protected function dispatchResultEvent(Result $result): void
     {
+        if ($this->loop->isEmpty() && $this->externalCallback !== null) {
+            $busResult = $this->resultStorage->getResult($this->startAction);
+            call_user_func($this->externalCallback, $busResult);
+            return;
+        }
+
         $resultTask = $this->loop->getCurrentTask();
 
         if ($result->status === Result::STATUS_SUCCESS) {

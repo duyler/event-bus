@@ -17,10 +17,10 @@ class Loop
     private TaskQueue $queue;
     
     private Task $currentTask;
+
+    private Closure $busCallback;
     
     private bool $loopStarted = false;
-
-    private Closure $callback;
 
     public function __construct(TaskManager $taskManager)
     {
@@ -40,9 +40,9 @@ class Loop
         return $this->currentTask;
     }
     
-    public function run($callback): void
+    public function run(callable $busCallback): void
     {
-        $this->callback = $callback;
+        $this->busCallback = $busCallback;
 
         if ($this->loopStarted) {
             throw new RuntimeException('Event bas is already started');
@@ -54,16 +54,21 @@ class Loop
         
         $this->currentTask = $this->queue->dequeue();
         $this->loopStarted = true;
-        $this->taskManager->handle($this->currentTask, $this->callback);
+        $this->taskManager->handle($this->currentTask, $this->busCallback);
     }
     
     public function next(): void
     {
-        if (!$this->queue->isEmpty()) {
-            $this->currentTask = $this->queue->dequeue();
-            $this->taskManager->handle($this->currentTask, $this->callback);
-        } else {
+        if ($this->queue->isEmpty()) {
             $this->loopStarted = false;
+        } else {
+            $this->currentTask = $this->queue->dequeue();
+            $this->taskManager->handle($this->currentTask, $this->busCallback);
         }
+    }
+
+    public function isEmpty(): bool
+    {
+        return $this->queue->isEmpty();
     }
 }
