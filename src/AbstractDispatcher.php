@@ -67,7 +67,7 @@ abstract class AbstractDispatcher
                 } else {
                     $this->dispatchResultEvent($result);
                 }
-            },
+            }
         );
     }
 
