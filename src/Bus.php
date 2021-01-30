@@ -60,20 +60,16 @@ class Bus
         return $this;
     }
 
-    public function preload(string $startAction): void
+    public function preload(string $startAction, callable $callback = null): void
     {
-        $this->preloadDispatcher->run($startAction);
+        $this->busValidator->validate();
+        $this->preloadDispatcher->run($startAction, $callback);
     }
 
     public function run(string $startAction, callable $callback = null): void
     {
-        $this->dispatcher->run($startAction, $callback);
-    }
-
-    public function validate(): static
-    {
         $this->busValidator->validate();
-        return $this;
+        $this->dispatcher->run($startAction, $callback);
     }
 
     public function setValidateCacheHandler(ValidateCacheHandlerInterface $validateCacheHandler): static

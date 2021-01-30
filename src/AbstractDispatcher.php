@@ -46,7 +46,22 @@ abstract class AbstractDispatcher
         $this->resultStorage = $resultStorage;
     }
 
-    protected function startLoop(string $startAction, ?callable $externalCallback): void
+    protected function runLoop(string $startAction, ?callable $externalCallback): void
+    {
+        $this->prepareToRun($startAction, $externalCallback);
+
+        $this->loop->run(
+            function ($result) {
+                if ($result === null) {
+                    $this->loop->next();
+                } else {
+                    $this->dispatchResultEvent($result);
+                }
+            }
+        );
+    }
+
+    protected function prepareToRun(string $startAction, ?callable $externalCallback): void
     {
         $action = $this->actionStorage->get($startAction);
 
@@ -59,16 +74,6 @@ abstract class AbstractDispatcher
         $this->dispatchRequired($task);
 
         $this->loop->addTask($task);
-
-        $this->loop->run(
-            function ($result) {
-                if ($result === null) {
-                    $this->loop->next();
-                } else {
-                    $this->dispatchResultEvent($result);
-                }
-            }
-        );
     }
 
     protected function dispatchSubscribersTasks(Result $result, Task $resultTask): void
