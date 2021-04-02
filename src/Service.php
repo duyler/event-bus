@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jine\EventBus\Dto;
-
-use Jine\EventBus\ActionStorage;
+namespace Jine\EventBus;
 
 class Service
 {
@@ -13,6 +11,8 @@ class Service
     public string $id;
 
     public string $handler = '';
+
+    public string $channel = 'default';
 
     public function __construct(ActionStorage $actionStorage)
     {
@@ -30,6 +30,12 @@ class Service
     public function handler(string $handler): static
     {
         $this->handler = $handler;
+        return $this;
+    }
+
+    public function channel(string $channel): static
+    {
+        $this->channel = $channel;
         return $this;
     }
 }

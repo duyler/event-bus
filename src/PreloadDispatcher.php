@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jine\EventBus;
 
-use http\Exception\RuntimeException;
+use RuntimeException;
 
 class PreloadDispatcher extends AbstractDispatcher
 {

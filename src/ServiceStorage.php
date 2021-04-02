@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Jine\EventBus;
 
-use Jine\EventBus\Dto\Service;
 use RuntimeException;
 
 use function array_key_exists;

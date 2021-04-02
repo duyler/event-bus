@@ -6,7 +6,6 @@ namespace Jine\EventBus;
 
 use Jine\EventBus\Contract\ValidateCacheHandlerInterface;
 use Jine\EventBus\Dto\Result;
-use Jine\EventBus\Dto\Service;
 use Jine\EventBus\Dto\Subscribe;
 
 class Bus

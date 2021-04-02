@@ -12,7 +12,7 @@ use Jine\EventBus\ResultStorage;
 use Jine\EventBus\ServiceStorage;
 use Jine\EventBus\SubscribeStorage;
 use Jine\EventBus\Dispatcher;
-use Jine\EventBus\Dto\Service;
+use Jine\EventBus\Service;
 use PHPUnit\Framework\TestCase;
 
 class BusTest extends TestCase

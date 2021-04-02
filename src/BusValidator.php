@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Jine\EventBus;
 
-use Jine\EventBus\Dto\Action;
 use Jine\EventBus\Contract\HandlerInterface;
 use Jine\EventBus\Contract\RollbackInterface;
 use Jine\EventBus\Contract\ValidateCacheHandlerInterface;

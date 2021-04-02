@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jine\EventBus\Dto;
+namespace Jine\EventBus;
 
 class Action
 {
@@ -13,6 +13,7 @@ class Action
     public array $classMap = [];
     public string $rollback = '';
     public bool $preload = false;
+    public bool $repeat = true;
 
     public function __construct(string $name, string $serviceId)
     {
@@ -45,6 +46,12 @@ class Action
     public function preload(bool $flag): static
     {
         $this->preload = $flag;
+        return $this;
+    }
+
+    public function repeat(bool $flag): static
+    {
+        $this->repeat = $flag;
         return $this;
     }
 }
