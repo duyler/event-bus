@@ -9,17 +9,15 @@ use Jine\EventBus\Bus;
 use Jine\EventBus\BusValidator;
 use Jine\EventBus\PreloadDispatcher;
 use Jine\EventBus\ResultStorage;
-use Jine\EventBus\ServiceStorage;
 use Jine\EventBus\SubscribeStorage;
 use Jine\EventBus\Dispatcher;
-use Jine\EventBus\Dto\Service;
+use Jine\EventBus\Action;
 use PHPUnit\Framework\TestCase;
 
 class BusTest extends TestCase
 {
     private PreloadDispatcher $preloadDispatcher;
     private Dispatcher $dispatcher;
-    private ServiceStorage $serviceStorage;
     private SubscribeStorage $subscribeStorage;
     private ActionStorage $actionStorage;
     private BusValidator $busValidator;
@@ -28,7 +26,6 @@ class BusTest extends TestCase
     public function setUp(): void
     {
         $this->actionStorage = $this->createMock(ActionStorage::class);
-        $this->serviceStorage = $this->createMock(ServiceStorage::class);
         $this->subscribeStorage = $this->createMock(SubscribeStorage::class);
         $this->dispatcher = $this->createMock(Dispatcher::class);
         $this->busValidator = $this->createMock(BusValidator::class);
@@ -37,13 +34,13 @@ class BusTest extends TestCase
         parent::setUp();
     }
 
-    public function testRegisterService()
+    public function testAddAction()
     {
-        $this->serviceStorage->method('Save');
+        $this->actionStorage->method('save');
 
         $bus = $this->createBus();
 
-        $this->assertInstanceOf( Service::class, $bus->registerService('OneService'));
+        $this->assertInstanceOf( Bus::class, $bus->addAction(new Action('Start', 'Handler')));
     }
 
     public function testSubscribe()
@@ -78,7 +75,6 @@ class BusTest extends TestCase
         return new Bus(
             $this->preloadDispatcher,
             $this->dispatcher,
-            $this->serviceStorage,
             $this->subscribeStorage,
             $this->actionStorage,
             $this->busValidator,

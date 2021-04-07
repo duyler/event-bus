@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Jine\EventBus;
 
-use Jine\EventBus\Dto\Action;
 use Jine\EventBus\Dto\Result;
 use Jine\EventBus\Dto\Task;
 use Closure;
@@ -22,7 +21,6 @@ abstract class AbstractDispatcher
     protected Loop $loop;
     protected SubscribeStorage $subscribeStorage;
     protected ActionStorage $actionStorage;
-    protected ServiceStorage $serviceStorage;
     protected ResultStorage $resultStorage;
     protected ?Closure $externalCallback;
     protected array $heldTasks = [];
@@ -34,7 +32,6 @@ abstract class AbstractDispatcher
         Loop $loop,
         SubscribeStorage $subscribeManager,
         ActionStorage $actionStorage,
-        ServiceStorage $serviceStorage,
         ResultStorage $resultStorage
     ) {
         $this->loop = $loop;
@@ -42,23 +39,12 @@ abstract class AbstractDispatcher
         $this->taskStorage = $taskStorage;
         $this->subscribeStorage = $subscribeManager;
         $this->actionStorage = $actionStorage;
-        $this->serviceStorage = $serviceStorage;
         $this->resultStorage = $resultStorage;
     }
 
-    protected function startLoop(string $startAction, ?callable $externalCallback): void
+    protected function runLoop(string $startAction, ?Closure $externalCallback): void
     {
-        $action = $this->actionStorage->get($startAction);
-
-        $task = $this->taskFactory->create($action);
-
-        $this->externalCallback = $externalCallback;
-
-        $this->startAction = $startAction;
-
-        $this->dispatchRequired($task);
-
-        $this->loop->addTask($task);
+        $this->prepareToRun($startAction, $externalCallback);
 
         $this->loop->run(
             function ($result) {
@@ -71,11 +57,24 @@ abstract class AbstractDispatcher
         );
     }
 
+    protected function prepareToRun(string $startAction, ?Closure $externalCallback): void
+    {
+        $action = $this->actionStorage->get($startAction);
+
+        $task = $this->taskFactory->create($action);
+
+        $this->externalCallback = $externalCallback;
+
+        $this->startAction = $startAction;
+
+        $this->dispatchRequired($task);
+
+        $this->loop->addTask($task);
+    }
+
     protected function dispatchSubscribersTasks(Result $result, Task $resultTask): void
     {
-        $subject = $this->getSubject($result, $resultTask);
-
-        $subscribers = $this->subscribeStorage->getSubscribers($subject);
+        $subscribers = $this->getSubscribers($result, $resultTask);
 
         if (!empty($subscribers)) {
             foreach ($subscribers as $subscribe) {
@@ -91,9 +90,11 @@ abstract class AbstractDispatcher
         }
     }
 
-    protected function getSubject(Result $result, Task $resultTask): string
+    protected function getSubscribers(Result $result, Task $resultTask): array
     {
-        return $resultTask->serviceId . '.' . $resultTask->action . '.' . $result->status;
+        $subject = $resultTask->serviceId . '.' . $resultTask->action . '.' . $result->status;
+
+        return $this->subscribeStorage->getSubscribers($subject);
     }
 
     protected function dispatchResultEvent(Result $result): void
@@ -127,13 +128,13 @@ abstract class AbstractDispatcher
 
             $serviceAction = $this->actionStorage->get($subject);
 
-            $this->prepareRequiredTasks($serviceAction,);
+            $this->prepareRequiredTasks($serviceAction);
         }
     }
 
     private function prepareRequiredTasks(Action $action): void
     {
-        if ($this->taskStorage->isExists($action->serviceId . '.' . $action->name)) {
+        if ($this->taskStorage->isExistsByActionFullName($action->serviceId . '.' . $action->name)) {
             return;
         }
 
@@ -146,10 +147,12 @@ abstract class AbstractDispatcher
 
     protected function dispatchTask(Task $task): void
     {
-        if ($this->isSatisfied($task)) {
-            $this->loop->addTask($task);
-        } else {
-            $this->heldTasks[$task->serviceId . '.' . $task->action] = $task;
+        if ($this->isDispatchable($task)) {
+            if ($this->isSatisfied($task)) {
+                $this->loop->addTask($task);
+            } else {
+                $this->heldTasks[$task->serviceId . '.' . $task->action] = $task;
+            }
         }
     }
 
@@ -170,5 +173,18 @@ abstract class AbstractDispatcher
         $requiredTasksData = array_intersect_key($completeTasks, array_flip($task->required));
 
         return count($requiredTasksData) === count($task->required);
+    }
+
+    protected function isDispatchable(Task $task): bool
+    {
+        if ($task->repeat) {
+            return true;
+        }
+
+        if ($this->taskStorage->isExists($task)) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Jine\EventBus;
 
 use Jine\EventBus\Dto\Task;
-use Jine\EventBus\Dto\Subscribe;
-use Jine\EventBus\Dto\Action;
 
 class TaskFactory
 {
@@ -19,6 +17,7 @@ class TaskFactory
         $task->required = $action->required;
         $task->classMap = $action->classMap;
         $task->rollback = $action->rollback;
+        $task->repeat = $action->repeat;
         
         return $task;
     }

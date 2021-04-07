@@ -12,4 +12,5 @@ class Task
     public array $required = [];
     public array $classMap = [];
     public string $rollback = '';
+    public bool $repeat = false;
 }

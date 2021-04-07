@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Jine\EventBus;
 
-use Jine\EventBus\Dto\Action;
 use Jine\EventBus\Contract\HandlerInterface;
 use Jine\EventBus\Contract\RollbackInterface;
 use Jine\EventBus\Contract\ValidateCacheHandlerInterface;
@@ -21,17 +20,14 @@ use function explode;
 
 class BusValidator
 {
-    private ServiceStorage $serviceStorage;
     private SubscribeStorage $subscribeStorage;
     private ?ValidateCacheHandlerInterface $validateCacheHandler = null;
     private ActionStorage $actionStorage;
 
     public function __construct(
-        ServiceStorage $serviceStorage,
         SubscribeStorage $subscribeStorage,
         ActionStorage $actionStorage
     ) {
-        $this->serviceStorage = $serviceStorage;
         $this->subscribeStorage = $subscribeStorage;
         $this->actionStorage = $actionStorage;
     }

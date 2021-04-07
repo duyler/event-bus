@@ -12,7 +12,7 @@ use Closure;
 
 class Loop
 {
-    private TaskManager $taskManager;
+    private TaskHandler $taskHandler;
 
     private TaskQueue $queue;
     
@@ -22,9 +22,9 @@ class Loop
     
     private bool $loopStarted = false;
 
-    public function __construct(TaskManager $taskManager)
+    public function __construct(TaskHandler $taskHandler)
     {
-        $this->taskManager = $taskManager;
+        $this->taskHandler = $taskHandler;
         
         $this->queue = new TaskQueue();
         $this->queue->setIteratorMode(SplQueue::IT_MODE_DELETE);
@@ -54,7 +54,7 @@ class Loop
         
         $this->currentTask = $this->queue->dequeue();
         $this->loopStarted = true;
-        $this->taskManager->handle($this->currentTask, $this->busCallback);
+        $this->taskHandler->handle($this->currentTask, $this->busCallback);
     }
     
     public function next(): void
@@ -63,7 +63,7 @@ class Loop
             $this->loopStarted = false;
         } else {
             $this->currentTask = $this->queue->dequeue();
-            $this->taskManager->handle($this->currentTask, $this->busCallback);
+            $this->taskHandler->handle($this->currentTask, $this->busCallback);
         }
     }
 

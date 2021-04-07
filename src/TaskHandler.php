@@ -10,7 +10,7 @@ use Jine\EventBus\Contract\HandlerInterface;
 use Closure;
 use Throwable;
 
-class TaskManager
+class TaskHandler
 {
     private Rollback $rollback;
     private ResultStorage $resultStorage;
