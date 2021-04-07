@@ -22,7 +22,12 @@ class TaskStorage
         return $this->data;
     }
 
-    public function isExists(string $actionFullName): bool
+    public function isExists(Task $task): bool
+    {
+        return array_key_exists($task->serviceId . '.' . $task->action, $this->data);
+    }
+
+    public function isExistsByActionFullName(string $actionFullName): bool
     {
         return array_key_exists($actionFullName, $this->data);
     }

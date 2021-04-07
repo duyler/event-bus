@@ -20,17 +20,14 @@ use function explode;
 
 class BusValidator
 {
-    private ServiceStorage $serviceStorage;
     private SubscribeStorage $subscribeStorage;
     private ?ValidateCacheHandlerInterface $validateCacheHandler = null;
     private ActionStorage $actionStorage;
 
     public function __construct(
-        ServiceStorage $serviceStorage,
         SubscribeStorage $subscribeStorage,
         ActionStorage $actionStorage
     ) {
-        $this->serviceStorage = $serviceStorage;
         $this->subscribeStorage = $subscribeStorage;
         $this->actionStorage = $actionStorage;
     }

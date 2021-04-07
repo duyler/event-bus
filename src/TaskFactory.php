@@ -17,6 +17,7 @@ class TaskFactory
         $task->required = $action->required;
         $task->classMap = $action->classMap;
         $task->rollback = $action->rollback;
+        $task->repeat = $action->repeat;
         
         return $task;
     }
