@@ -1,24 +1,25 @@
 ![build](https://github.com/jine-framework/event-bus/workflows/build/badge.svg)
 # Event Bus
 
-## Usage
+## Base usage
 ```
 $bus = Jine\EventBus\Bus::create();
 
-$bus->setCachePath('path to cache dir');
+$actionStart = new Action('Start', 'App\Handlers\First\Handler');
+$actionStart->serviceId('First');
 
-$bus->registerService('First')
-    ->action('Start')
-    ->handler('App\Handlers\First\Handler');
+$bus->addAction($actionStart);
 
-$bus->registerService('Second')
-    ->action('Show')
-    ->handler('App\Handlers\Second\Handler')
-    ->required(['First.Start', 'Third.Description']);
+$actionShow = new Action('Show', 'App\Handlers\Second\Handler');
+$actionShow->serviceId('Second')
+             ->required(['First.Start', 'Third.Description']);
 
-$bus->registerService('Third')
-    ->action('Description')
-    ->handler('App\Handlers\Third\Handler');
+$bus->addAction($actionShow);
+
+$actionDescription = new Action('Description', 'App\Handlers\Third\Handler');
+$actionDescription->serviceId('Third');
+
+$bus->addAction($actionDescription);
 
 $bus->subscribe('First.Start.Success', 'Second.Show');
 
