@@ -7,6 +7,7 @@ namespace Jine\EventBus;
 use Jine\EventBus\Contract\HandlerInterface;
 use Jine\EventBus\Contract\RollbackInterface;
 use Jine\EventBus\Contract\ValidateCacheHandlerInterface;
+use Jine\EventBus\Enum\ChannelType;
 use OutOfBoundsException;
 use DomainException;
 use LogicException;
@@ -65,8 +66,8 @@ class BusValidator
 
         $allSubscribes = $this->subscribeStorage->getAll();
 
-        foreach ($allSubscribes as $subscribes) {
-            $this->checkSubscribes($subscribes);
+        foreach ($allSubscribes as $subjectActionFullName => $subscribes) {
+            $this->checkSubscribes($subjectActionFullName, $subscribes);
         }
     }
 
@@ -115,12 +116,9 @@ class BusValidator
         }
     }
 
-    private function checkSubscribes(array $subscribes): void
+    private function checkSubscribes(string $subjectActionFullName, array $subscribes): void
     {
         foreach ($subscribes as $subscribe) {
-            $segments = explode('.', $subscribe->subject);
-
-            $subjectActionFullName = $segments[0] . '.' . $segments[1];
 
             if ($this->actionStorage->isExists($subjectActionFullName) === false) {
                 throw new OutOfBoundsException('Subscribed action ' . $subjectActionFullName . ' not registered in the bus');
@@ -133,8 +131,10 @@ class BusValidator
             $subjectAction = $this->actionStorage->get($subjectActionFullName);
             $requireAction = $this->actionStorage->get($subscribe->actionFullName);
 
-            if ($subjectAction->preload && $requireAction->preload === false) {
-                throw new OutOfBoundsException('Action ' . $subscribe->actionFullName . ' not registered in the bus');
+            if ($subjectAction->channel !== $requireAction->channel) {
+                if ($requireAction->channel !== ChannelType::DEFAULT) {
+                    throw new OutOfBoundsException('Action ' . $subscribe->actionFullName . ' not available for channel ' . $subjectAction->channel);
+                }
             }
         }
     }

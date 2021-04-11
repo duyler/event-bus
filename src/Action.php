@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Jine\EventBus;
 
+use Jine\EventBus\Enum\ChannelType;
+
 class Action
 {
     public string $name;
@@ -12,7 +14,7 @@ class Action
     public array $required = [];
     public array $classMap = [];
     public string $rollback = '';
-    public bool $preload = false;
+    public string $channel = ChannelType::DEFAULT;
     public bool $repeat = true;
 
     public function __construct(string $name, string $handler)
@@ -37,9 +39,9 @@ class Action
         $this->rollback = $rollbackHandler;
     }
 
-    public function preload(bool $flag): static
+    public function channel(string $channel): static
     {
-        $this->preload = $flag;
+        $this->channel = $channel;
         return $this;
     }
 
