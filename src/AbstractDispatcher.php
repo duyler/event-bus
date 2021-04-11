@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jine\EventBus;
 
+use Jine\EventBus\Enum\ResultStatus;
 use Jine\EventBus\Dto\Result;
 use Jine\EventBus\Dto\Task;
 use Closure;
@@ -107,7 +108,7 @@ abstract class AbstractDispatcher
 
         $resultTask = $this->loop->getCurrentTask();
 
-        if ($result->status === Result::STATUS_SUCCESS) {
+        if ($result->status === ResultStatus::SUCCESS) {
             $this->taskStorage->save($resultTask);
         }
 

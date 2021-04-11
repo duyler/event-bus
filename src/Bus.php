@@ -10,7 +10,6 @@ use Jine\EventBus\Dto\Subscribe;
 
 class Bus
 {
-    private PreloadDispatcher $preloadDispatcher;
     private Dispatcher $dispatcher;
     private SubscribeStorage $subscribeStorage;
     private ActionStorage $actionStorage;
@@ -18,7 +17,6 @@ class Bus
     private ResultStorage $resultStorage;
     
     public function __construct(
-        PreloadDispatcher $preloadDispatcher,
         Dispatcher $dispatcher,
         SubscribeStorage $subscribeStorage,
         ActionStorage $actionStorage,
@@ -26,7 +24,6 @@ class Bus
         ResultStorage $resultStorage
 
     ) {
-        $this->preloadDispatcher = $preloadDispatcher;
         $this->actionStorage = $actionStorage;
         $this->subscribeStorage = $subscribeStorage;
         $this->dispatcher = $dispatcher;
@@ -50,12 +47,6 @@ class Bus
     {
         $this->subscribeStorage->save(new Subscribe($subject, $action));
         return $this;
-    }
-
-    public function preload(string $startAction, callable $callback = null): void
-    {
-        $this->busValidator->validate();
-        $this->preloadDispatcher->run($startAction, $callback);
     }
 
     public function run(string $startAction, callable $callback = null): void

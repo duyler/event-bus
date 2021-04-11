@@ -7,7 +7,6 @@ namespace Jine\EventBus\Test\unit;
 use Jine\EventBus\ActionStorage;
 use Jine\EventBus\Bus;
 use Jine\EventBus\BusValidator;
-use Jine\EventBus\PreloadDispatcher;
 use Jine\EventBus\ResultStorage;
 use Jine\EventBus\SubscribeStorage;
 use Jine\EventBus\Dispatcher;
@@ -16,7 +15,6 @@ use PHPUnit\Framework\TestCase;
 
 class BusTest extends TestCase
 {
-    private PreloadDispatcher $preloadDispatcher;
     private Dispatcher $dispatcher;
     private SubscribeStorage $subscribeStorage;
     private ActionStorage $actionStorage;
@@ -30,7 +28,6 @@ class BusTest extends TestCase
         $this->dispatcher = $this->createMock(Dispatcher::class);
         $this->busValidator = $this->createMock(BusValidator::class);
         $this->resultStorage = $this->createMock(ResultStorage::class);
-        $this->preloadDispatcher = $this->createMock(PreloadDispatcher::class);
         parent::setUp();
     }
 
@@ -73,7 +70,6 @@ class BusTest extends TestCase
     private function createBus(): Bus
     {
         return new Bus(
-            $this->preloadDispatcher,
             $this->dispatcher,
             $this->subscribeStorage,
             $this->actionStorage,

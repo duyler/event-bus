@@ -8,9 +8,6 @@ use Jine\EventBus\Contract\ResultInterface;
 
 class Result implements ResultInterface
 {
-    public const STATUS_SUCCESS = 'Success';
-    public const STATUS_FAIL = 'Fail';
-
     public string $status;
     public object|null $data = null;
 
