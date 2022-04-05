@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Konveyer\EventBus\Contract;
 
-interface RollbackInterface
+interface AfterAdviceInterface
 {
-    public function run();
+
 }

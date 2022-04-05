@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Jine\EventBus\Dto;
+namespace Konveyer\EventBus\DTO;
 
-use Jine\EventBus\Contract\ResultInterface;
+use Konveyer\EventBus\Enum\ResultStatus;
 
-class Result implements ResultInterface
+class Result
 {
-    public string $status;
-    public object|null $data = null;
+    public readonly ResultStatus $status;
+    public readonly object|null $data;
 
-    public function __construct(string $status, object $data = null)
+    public function __construct(ResultStatus $status, mixed $data = null)
     {
         $this->status = $status;
         $this->data = $data;

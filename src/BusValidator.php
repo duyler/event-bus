@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Jine\EventBus;
+namespace Konveyer\EventBus;
 
-use Jine\EventBus\Contract\HandlerInterface;
-use Jine\EventBus\Contract\RollbackInterface;
-use Jine\EventBus\Contract\ValidateCacheHandlerInterface;
-use Jine\EventBus\Enum\ChannelType;
+use Konveyer\EventBus\Contract\HandlerInterface;
+use Konveyer\EventBus\Contract\RollbackInterface;
+use Konveyer\EventBus\Contract\ValidateCacheHandlerInterface;
 use OutOfBoundsException;
 use DomainException;
+use Konveyer\EventBus\Storage\ActionStorage;
+use Konveyer\EventBus\Storage\SubscribeStorage;
 use LogicException;
 
 use function serialize;
@@ -86,15 +87,15 @@ class BusValidator
 
     private function checkRequired(Action $action): void
     {
-        foreach ($action->required as $subject) {
+        foreach ($action->require as $subject) {
             if ($this->actionStorage->isExists($subject) === false) {
                 throw new OutOfBoundsException('Required action ' . $subject . ' not registered in the bus');
             }
 
             $requiredAction = $this->actionStorage->get($subject);
 
-            if (in_array($action->serviceId . '.' . $action->name, $requiredAction->required)) {
-                throw new LogicException('Action ' . $action->serviceId . '.' . $action->name . ' require action');
+            if (in_array($action->service . '.' . $action->name, $requiredAction->require)) {
+                throw new LogicException('Action ' . $action->service . '.' . $action->name . ' require action');
             }
         }
     }
@@ -126,15 +127,6 @@ class BusValidator
 
             if ($this->actionStorage->isExists($subscribe->actionFullName) === false) {
                 throw new OutOfBoundsException('Action ' . $subscribe->actionFullName . ' not registered in the bus');
-            }
-
-            $subjectAction = $this->actionStorage->get($subjectActionFullName);
-            $requireAction = $this->actionStorage->get($subscribe->actionFullName);
-
-            if ($subjectAction->channel !== $requireAction->channel) {
-                if ($requireAction->channel !== ChannelType::DEFAULT) {
-                    throw new OutOfBoundsException('Action ' . $subscribe->actionFullName . ' not available for channel ' . $subjectAction->channel);
-                }
             }
         }
     }

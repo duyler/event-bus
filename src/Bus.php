@@ -2,11 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Jine\EventBus;
+namespace Konveyer\EventBus;
 
-use Jine\EventBus\Contract\ValidateCacheHandlerInterface;
-use Jine\EventBus\Dto\Result;
-use Jine\EventBus\Dto\Subscribe;
+use Konveyer\EventBus\Contract\ValidateCacheHandlerInterface;
+use Konveyer\EventBus\Dto\Result;
+use Konveyer\EventBus\DTO\Subscribe;
+use Konveyer\EventBus\Enum\ResultStatus;
+use Konveyer\EventBus\Storage\SubscribeStorage;
+use Konveyer\EventBus\Storage\ActionStorage;
+use Konveyer\EventBus\Storage\TaskStorage;
+use Throwable;
 
 class Bus
 {
@@ -14,21 +19,26 @@ class Bus
     private SubscribeStorage $subscribeStorage;
     private ActionStorage $actionStorage;
     private BusValidator $busValidator;
-    private ResultStorage $resultStorage;
+    private Loop $loop;
+    private Rollback $rollback;
+    private TaskStorage $taskStorage;
     
     public function __construct(
         Dispatcher $dispatcher,
         SubscribeStorage $subscribeStorage,
         ActionStorage $actionStorage,
         BusValidator $busValidator,
-        ResultStorage $resultStorage
-
+        Loop $loop,
+        Rollback $rollback,
+        TaskStorage $taskStorage
     ) {
         $this->actionStorage = $actionStorage;
         $this->subscribeStorage = $subscribeStorage;
         $this->dispatcher = $dispatcher;
         $this->busValidator = $busValidator;
-        $this->resultStorage = $resultStorage;
+        $this->loop = $loop;
+        $this->rollback = $rollback;
+        $this->taskStorage = $taskStorage;
     }
     
     public static function create(): static
@@ -43,16 +53,23 @@ class Bus
         return $this;
     }
 
-    public function subscribe(string $subject, string $action): static
+    public function addSubscribe(Subscribe $subscribe): static
     {
-        $this->subscribeStorage->save(new Subscribe($subject, $action));
+        $this->subscribeStorage->save($subscribe);
         return $this;
     }
 
-    public function run(string $startAction, callable $callback = null): void
+    public function run(string $startAction): void
     {
-        $this->busValidator->validate();
-        $this->dispatcher->run($startAction, $callback);
+        $this->dispatcher->prepareStartedTask($startAction);
+
+        $this->loop->run();
+        // try {
+        //     $this->loop->run();
+        // } catch (Throwable $th) {
+        //     $this->rollback->run();
+        //     throw $th;
+        // }
     }
 
     public function setValidateCacheHandler(ValidateCacheHandlerInterface $validateCacheHandler): static
@@ -68,9 +85,6 @@ class Bus
 
     public function getResult(string $actionFullName): ?Result
     {
-        if ($this->resultStorage->isExists($actionFullName)) {
-            return $this->resultStorage->getResult($actionFullName);
-        }
-        return null;
+        return $this->taskStorage->getResult($actionFullName);
     }
 }
