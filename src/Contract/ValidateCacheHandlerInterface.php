@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jine\EventBus\Contract;
+namespace Konveyer\EventBus\Contract;
 
 interface ValidateCacheHandlerInterface
 {

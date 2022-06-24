@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Jine\EventBus;
+namespace Konveyer\EventBus\Storage;
 
-use Jine\EventBus\Dto\Subscribe;
+use Konveyer\EventBus\DTO\Result;
+use Konveyer\EventBus\DTO\Subscribe;
+use Konveyer\EventBus\ActionIdBuilder;
+use Konveyer\EventBus\Task;
 use RuntimeException;
 
 use function array_key_exists;
@@ -24,15 +27,19 @@ class SubscribeStorage
 
     public function save(Subscribe $subscribe): void
     {
-        if (array_key_exists($subscribe->subject, $this->subscribes)) {
-            array_walk($this->subscribes[$subscribe->subject], function ($value) use ($subscribe) {
+        $subjectId = ActionIdBuilder::bySubscribe($subscribe);
+
+        if (array_key_exists($subjectId, $this->subscribes)) {
+            array_walk($this->subscribes[$subjectId], function ($value) use ($subscribe, $subjectId) {
                 if ($value->actionFullName === $subscribe->actionFullName) {
-                    throw new RuntimeException('Subscribe ' . $subscribe->subject . ' already registered for ' . $subscribe->actionFullName);
+                    throw new RuntimeException(
+                        'Subscribe ' . $subjectId . ' already registered for ' . $subscribe->actionFullName
+                    );
                 }
             });
         }
 
-        $this->subscribes[$subscribe->subject][] = $subscribe;
+        $this->subscribes[$subjectId][] = $subscribe;
     }
 
     public function getAll(): array

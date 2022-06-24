@@ -1,74 +1,29 @@
-<?php 
+<?php
 
 declare(strict_types=1);
 
-namespace Jine\EventBus;
-
-use Jine\EventBus\Dto\Task;
-use RuntimeException;
-use OutOfBoundsException;
-use SplQueue;
-use Closure;
+namespace Konveyer\EventBus;
 
 class Loop
 {
-    private TaskHandler $taskHandler;
+    private TaskRunner $taskRunner;
+    private TaskQueue $taskQueue;
 
-    private TaskQueue $queue;
-    
-    private Task $currentTask;
-
-    private Closure $busCallback;
-    
-    private bool $loopStarted = false;
-
-    public function __construct(TaskHandler $taskHandler)
+    public function __construct(TaskRunner $taskRunner, TaskQueue $taskQueue)
     {
-        $this->taskHandler = $taskHandler;
-        
-        $this->queue = new TaskQueue();
-        $this->queue->setIteratorMode(SplQueue::IT_MODE_DELETE);
-    }
-    
-    public function addTask(Task $task): void
-    {
-        $this->queue->addTask($task);
-    }
-    
-    public function getCurrentTask(): Task
-    {
-        return $this->currentTask;
-    }
-    
-    public function run(callable $busCallback): void
-    {
-        $this->busCallback = $busCallback;
-
-        if ($this->loopStarted) {
-            throw new RuntimeException('Event bas is already started');
-        }
-    
-        if ($this->queue->isEmpty()) {
-            throw new OutOfBoundsException('Task not found for run of event bus');
-        }
-        
-        $this->currentTask = $this->queue->dequeue();
-        $this->loopStarted = true;
-        $this->taskHandler->handle($this->currentTask, $this->busCallback);
-    }
-    
-    public function next(): void
-    {
-        if ($this->queue->isEmpty()) {
-            $this->loopStarted = false;
-        } else {
-            $this->currentTask = $this->queue->dequeue();
-            $this->taskHandler->handle($this->currentTask, $this->busCallback);
-        }
+        $this->taskRunner = $taskRunner;
+        $this->taskQueue = $taskQueue;
     }
 
-    public function isEmpty(): bool
+    public function run(): void
     {
-        return $this->queue->isEmpty();
+        do {
+            $task = $this->taskQueue->dequeue();
+            if ($task->isRunning()) {
+                $this->taskRunner->resume($task);
+                continue;
+            }
+            $this->taskRunner->run($task);
+        } while ($this->taskQueue->isNotEmpty());
     }
 }

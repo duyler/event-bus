@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Jine\EventBus\Enum;
+namespace Konveyer\EventBus\Enum;
 
-class ResultStatus
+enum ResultStatus: string
 {
-    public const SUCCESS = 'Success';
-    public const FAIL = 'Fail';
+    case POSITIVE = 'Positive';
+    case NEGATIVE = 'Negative';
 }

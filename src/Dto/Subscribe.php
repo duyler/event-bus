@@ -2,17 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Jine\EventBus\Dto;
+namespace Konveyer\EventBus\DTO;
+
+use Konveyer\EventBus\Enum\ResultStatus;
 
 class Subscribe
 {
-    public string $subject;
+    public function __construct(
+        public readonly string $subject,
+        public readonly string $actionFullName,
+        public readonly ResultStatus $status = ResultStatus::POSITIVE,
+        public readonly bool $silent = false
+    ) {
 
-    public string $actionFullName;
-    
-    public function __construct(string $subject, string $actionFullName)
-    {
-        $this->subject = $subject;
-        $this->actionFullName = $actionFullName;
     }
 }

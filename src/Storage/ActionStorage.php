@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Jine\EventBus;
+namespace Konveyer\EventBus\Storage;
 
 use RuntimeException;
+use Konveyer\EventBus\Action;
 
 use function array_key_exists;
 
@@ -14,14 +15,17 @@ class ActionStorage
 
     public function save(Action $action): void
     {
-        if (array_key_exists($action->serviceId . '.' . $action->name, $this->actions)) {
-            throw new RuntimeException('Service ' . $action->serviceId . ' already registered');
+        if (array_key_exists($action->service . '.' . $action->name, $this->actions)) {
+            throw new RuntimeException('Service ' . $action->service . ' already registered');
         }
-        $this->actions[$action->serviceId . '.' . $action->name] = $action;
+        $this->actions[$action->service . '.' . $action->name] = $action;
     }
 
     public function get(string $actionFullName): Action
     {
+        if ($this->isExists($actionFullName) === false) {
+            throw new RuntimeException('Service ' . $actionFullName . 'not found in the storage');
+        }
         return $this->actions[$actionFullName];
     }
 

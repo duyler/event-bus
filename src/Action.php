@@ -2,58 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Jine\EventBus;
+namespace Konveyer\EventBus;
 
-use Jine\EventBus\Enum\ChannelType;
+use Closure;
 
 class Action
 {
-    public string $name;
-    public string $handler;
-    public string $serviceId = 'common';
-    public array $required = [];
-    public array $classMap = [];
-    public string $rollback = '';
-    public string $channel = ChannelType::DEFAULT;
-    public bool $repeat = true;
-
-    public function __construct(string $name, string $handler)
-    {
-        $this->name = $name;
-        $this->handler = $handler;
-    }
-
-    public function required(array $required): static
-    {
-        $this->required = $required;
-        return $this;
-    }
-
-    public function classMap(array $classMap): static
-    {
-        $this->classMap = $classMap;
-    }
-
-    public function rollback(string $rollbackHandler): static
-    {
-        $this->rollback = $rollbackHandler;
-    }
-
-    public function channel(string $channel): static
-    {
-        $this->channel = $channel;
-        return $this;
-    }
-
-    public function repeat(bool $flag): static
-    {
-        $this->repeat = $flag;
-        return $this;
-    }
-
-    public function serviceId(string $serviceId): static
-    {
-        $this->serviceId = $serviceId;
-        return $this;
+    public function __construct(
+        public readonly string $name,
+        public readonly string $service,
+        public readonly string | Closure $handler,
+        public readonly array $require = [],
+        public readonly array $classMap = [],
+        public readonly string | Closure $rollback = '',
+        public readonly array $arguments = [],
+        public readonly array $before = [],
+        public readonly array $after = [],
+        public readonly string | Closure $around = '',
+        public readonly bool $void = false
+    ) {
     }
 }
