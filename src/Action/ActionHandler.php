@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Action;
 
 use Duyler\EventBus\AspectHandler;
-use Duyler\EventBus\Contract\AroundAdviceInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;

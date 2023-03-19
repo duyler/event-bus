@@ -52,13 +52,13 @@ class Bus
         return $this;
     }
 
-    public function actionIsExists(string $actionFullName): bool
+    public function actionIsExists(string $actionId): bool
     {
-        return $this->storage->action()->isExists($actionFullName);
+        return $this->storage->action()->isExists($actionId);
     }
 
-    public function getResult(string $actionFullName): ?Result
+    public function getResult(string $actionId): ?Result
     {
-        return $this->storage->task()->getResult($actionFullName);
+        return $this->storage->task()->getResult($actionId);
     }
 }

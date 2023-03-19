@@ -44,27 +44,27 @@ class BusControlService
         $this->busControl->removeSubscribe();
     }
 
-    public function getResult(string $actionFullName): Result
+    public function getResult(string $actionId): Result
     {
-        return $this->busControl->getResult($actionFullName);
+        return $this->busControl->getResult($actionId);
     }
 
-    public function resultIsExists(string $actionFullName): bool
+    public function resultIsExists(string $actionId): bool
     {
-        return $this->busControl->resultIsExists($actionFullName);
+        return $this->busControl->resultIsExists($actionId);
     }
 
-    public function actionIsExists(string $actionFullName): bool
+    public function actionIsExists(string $actionId): bool
     {
-        return $this->busControl->actionIsExists($actionFullName);
+        return $this->busControl->actionIsExists($actionId);
     }
 
-    public function subscribeIsExists(string $actionFullName): bool
+    public function subscribeIsExists(string $actionId): bool
     {
-        return $this->busControl->subscribeIsExists($actionFullName);
+        return $this->busControl->subscribeIsExists($actionId);
     }
 
-    public function taskIsInQueue(string $actionFullName): bool
+    public function taskIsInQueue(string $actionId): bool
     {
 
     }

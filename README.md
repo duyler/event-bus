@@ -42,7 +42,7 @@ $bus->addAction($blogAction);
 
 $blogActionSubscribe = new Subscribe(
     subject: 'Request.GetRequest',
-    actionFullName: 'Blog.GetPostById',
+    actionId: 'Blog.GetPostById',
     status: ResultStatus::Success,
 );
 

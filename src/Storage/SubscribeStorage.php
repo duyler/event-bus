@@ -32,9 +32,9 @@ class SubscribeStorage extends AbstractStorage
 
         if (array_key_exists($subjectId, $this->data)) {
             array_walk($this->data[$subjectId], function ($value) use ($subscribe, $subjectId) {
-                if ($value->actionFullName === $subscribe->actionFullName) {
+                if ($value->actionId === $subscribe->actionId) {
                     throw new RuntimeException(
-                        'Subscribe ' . $subjectId . ' already registered for ' . $subscribe->actionFullName
+                        'Subscribe ' . $subjectId . ' already registered for ' . $subscribe->actionId
                     );
                 }
             });

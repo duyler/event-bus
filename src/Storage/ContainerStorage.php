@@ -11,8 +11,8 @@ class ContainerStorage extends AbstractStorage
         $this->data[$container->actionId] = $container;
     }
 
-    public function get(string $actionFullName): ActionContainer
+    public function get(string $actionId): ActionContainer
     {
-        return $this->data[$actionFullName];
+        return $this->data[$actionId];
     }
 }

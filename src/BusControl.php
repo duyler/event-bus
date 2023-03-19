@@ -39,33 +39,33 @@ class BusControl
         $this->busValidator->validate();
     }
 
-    public function getResult(string $actionFullName): Result
+    public function getResult(string $actionId): Result
     {
-        return $this->taskStorage->getResult($actionFullName);
+        return $this->taskStorage->getResult($actionId);
     }
 
-    public function removeAction(string $actionFullName): void
+    public function removeAction(string $actionId): void
     {
-        $this->actionStorage->remove($actionFullName);
+        $this->actionStorage->remove($actionId);
     }
 
-    public function removeSubscribe(string $actionFullName): void
+    public function removeSubscribe(string $actionId): void
     {
-        $this->subscribeStorage->remove($actionFullName);
+        $this->subscribeStorage->remove($actionId);
     }
 
-    public function resultIsExists(string $actionFullName): bool
+    public function resultIsExists(string $actionId): bool
     {
-        return $this->taskStorage->isExists($actionFullName);
+        return $this->taskStorage->isExists($actionId);
     }
 
-    public function actionIsExists(string $actionFullName): bool
+    public function actionIsExists(string $actionId): bool
     {
-        return $this->actionStorage->isExists($actionFullName);
+        return $this->actionStorage->isExists($actionId);
     }
 
-    public function subscribeIsExists(string $actionFullName): bool
+    public function subscribeIsExists(string $actionId): bool
     {
-        return $this->subscribeStorage->isExists($actionFullName);
+        return $this->subscribeStorage->isExists($actionId);
     }
 }
