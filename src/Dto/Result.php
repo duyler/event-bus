@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Konveyer\EventBus\DTO;
+namespace Duyler\EventBus\Dto;
 
-use Konveyer\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Enum\ResultStatus;
 
 class Result
 {
     public readonly ResultStatus $status;
     public readonly object|null $data;
 
-    public function __construct(ResultStatus $status, mixed $data = null)
+    public function __construct(ResultStatus $status, object $data = null)
     {
         $this->status = $status;
         $this->data = $data;

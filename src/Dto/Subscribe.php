@@ -2,18 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Konveyer\EventBus\DTO;
+namespace Duyler\EventBus\Dto;
 
-use Konveyer\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Enum\ResultStatus;
 
 class Subscribe
 {
     public function __construct(
         public readonly string $subject,
         public readonly string $actionFullName,
-        public readonly ResultStatus $status = ResultStatus::POSITIVE,
+        public readonly ResultStatus $status = ResultStatus::Success,
         public readonly bool $silent = false
     ) {
-
     }
 }

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Konveyer\EventBus\Enum;
+namespace Duyler\EventBus\Enum;
 
 enum ResultStatus: string
 {
-    case POSITIVE = 'Positive';
-    case NEGATIVE = 'Negative';
+    case Success = 'Success';
+    case Fail = 'Fail';
 }

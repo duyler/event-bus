@@ -2,35 +2,36 @@
 
 declare(strict_types=1);
 
-namespace Konveyer\EventBus\Storage;
+namespace Duyler\EventBus\Storage;
 
-use Konveyer\EventBus\DTO\Result;
-use Konveyer\EventBus\DTO\Subscribe;
-use Konveyer\EventBus\ActionIdBuilder;
-use Konveyer\EventBus\Task;
+use Duyler\EventBus\Dto\Subscribe;
+use Duyler\EventBus\Enum\ResultStatus;
 use RuntimeException;
 
 use function array_key_exists;
 use function array_walk;
 
-class SubscribeStorage
+class SubscribeStorage extends AbstractStorage
 {
-    private array $subscribes = [];
-
-    public function getSubscribers(string $subject): array
+    /**
+     * @return Subscribe[]
+     */
+    public function getSubscribers(string $actionId, ResultStatus $status): array
     {
-        if (array_key_exists($subject, $this->subscribes)) {
-            return $this->subscribes[$subject];
+        $subject = $this->makeActionIdWithStatus($actionId, $status);
+
+        if (array_key_exists($subject, $this->data)) {
+            return $this->data[$subject];
         }
         return [];
     }
 
     public function save(Subscribe $subscribe): void
     {
-        $subjectId = ActionIdBuilder::bySubscribe($subscribe);
+        $subjectId = $this->makeActionIdWithStatus($subscribe->subject, $subscribe->status);
 
-        if (array_key_exists($subjectId, $this->subscribes)) {
-            array_walk($this->subscribes[$subjectId], function ($value) use ($subscribe, $subjectId) {
+        if (array_key_exists($subjectId, $this->data)) {
+            array_walk($this->data[$subjectId], function ($value) use ($subscribe, $subjectId) {
                 if ($value->actionFullName === $subscribe->actionFullName) {
                     throw new RuntimeException(
                         'Subscribe ' . $subjectId . ' already registered for ' . $subscribe->actionFullName
@@ -39,11 +40,6 @@ class SubscribeStorage
             });
         }
 
-        $this->subscribes[$subjectId][] = $subscribe;
-    }
-
-    public function getAll(): array
-    {
-        return $this->subscribes;
+        $this->data[$subjectId][] = $subscribe;
     }
 }

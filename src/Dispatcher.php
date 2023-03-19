@@ -2,43 +2,36 @@
 
 declare(strict_types=1);
 
-namespace Konveyer\EventBus;
+namespace Duyler\EventBus;
 
-use Konveyer\EventBus\DTO\Subscribe;
-use Konveyer\EventBus\Enum\ResultStatus;
-use Konveyer\EventBus\Exception\CyclicCallActionException;
-use Konveyer\EventBus\Storage\TaskStorage;
-use Konveyer\EventBus\Storage\ActionStorage;
-use Konveyer\EventBus\Storage\SubscribeStorage;
+use Duyler\EventBus\Action\ActionRequiredIterator;
+use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Dto\Subscribe;
+use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Exception\CyclicCallActionException;
 
 use function count;
-use function key;
+use function in_array;
 
 class Dispatcher
 {
-    protected TaskStorage $taskStorage;
-    protected TaskQueue $taskQueue;
-    protected SubscribeStorage $subscribeStorage;
-    protected ActionStorage $actionStorage;
     protected array $heldTasks = [];
     protected array $mainEventLog = [];
     protected array $repeatedEventLog = [];
+    protected string $startActionId = '';
 
     public function __construct(
-        TaskStorage $taskStorage,
-        TaskQueue $taskQueue,
-        SubscribeStorage $subscribeManager,
-        ActionStorage $actionStorage
+        private readonly Storage          $storage,
+        private readonly TaskQueue        $taskQueue,
+        private readonly State            $state
     ) {
-        $this->taskQueue = $taskQueue;
-        $this->taskStorage = $taskStorage;
-        $this->subscribeStorage = $subscribeManager;
-        $this->actionStorage = $actionStorage;
     }
 
-    public function prepareStartedTask(string $startAction): void
+    public function prepareStartedTask(string $startActionId): void
     {
-        $action = $this->actionStorage->get($startAction);
+        $this->startActionId = $startActionId;
+
+        $action = $this->storage->action()->get($startActionId);
 
         $task = $this->createTask($action);
 
@@ -49,7 +42,7 @@ class Dispatcher
 
     public function dispatchResultEvent(Task $resultTask): void
     {
-        $this->taskStorage->save($resultTask);
+        $this->storage->task()->save($resultTask);
 
         $this->checkCyclicActionCalls($resultTask);
 
@@ -58,22 +51,26 @@ class Dispatcher
         if (!$resultTask->subscribe?->silent) {
             $this->dispatchSubscribersTasks($resultTask);
         }
+
+        $this->state->tick($resultTask);
     }
 
     protected function checkCyclicActionCalls(Task $task): void
     {
-        if ($this->taskStorage->isExists(ActionIdBuilder::byAction($task->action))) {
+        if ($this->storage->task()->isExists($task->action->id)) {
 
-            if (in_array(ActionIdBuilder::byTask($task), $this->mainEventLog)) {
-                $this->repeatedEventLog[] = ActionIdBuilder::byTask($task);
+            $actionId = $task->action->id . $task->result->status->value;
+
+            if (in_array($actionId, $this->mainEventLog)) {
+                $this->repeatedEventLog[] = $actionId;
             } else {
-                $this->mainEventLog[] = ActionIdBuilder::byTask($task);
+                $this->mainEventLog[] = $actionId;
             }
 
             if (count($this->mainEventLog) === count($this->repeatedEventLog)) {
                 throw new CyclicCallActionException(
-                    ActionIdBuilder::byAction($task->action),
-                    $task->subscribe->subject ?? "started task"
+                    $task->action->id,
+                    $task->subscribe->subject ?? $this->startActionId
                 );
             }
         }
@@ -81,11 +78,11 @@ class Dispatcher
 
     protected function dispatchSubscribersTasks(Task $resultTask): void
     {
-        $subscribers = $this->subscribeStorage->getSubscribers(ActionIdBuilder::byTask($resultTask));
+        $subscribers = $this->storage->subscribe()->getSubscribers($resultTask->action->id, $resultTask->result->status);
 
         foreach ($subscribers as $subscribe) {
 
-            $action = $this->actionStorage->get($subscribe->actionFullName);
+            $action = $this->storage->action()->get($subscribe->actionFullName);
 
             $task = $this->createTask($action, $subscribe);
 
@@ -96,22 +93,21 @@ class Dispatcher
 
     protected function dispatchRequired(Action $action): void
     {
-        foreach ($action->require as $subject) {
+        $requiredIterator = new ActionRequiredIterator($action->require, $this->storage->action());
 
-            $requiredAction = $this->actionStorage->get($subject);
-            
-            $requiredTask = $this->createTask($requiredAction);
+        foreach ($requiredIterator as $subject) {
 
-            if ($this->taskStorage->isExists(ActionIdBuilder::byAction($requiredTask->action))) {
-                $result = $this->taskStorage->getResult(ActionIdBuilder::byAction($requiredTask->action));
-                if ($result->status === ResultStatus::POSITIVE) {
+            $requiredAction = $this->storage->action()->get($subject);
+
+            if ($this->storage->task()->isExists($requiredAction->id)) {
+                $result = $this->storage->task()->getResult($requiredAction->id);
+                if ($result->status === ResultStatus::Success) {
                     continue;
                 }
                 break;
             }
 
-            $this->dispatchTask($requiredTask);
-            $this->dispatchRequired($requiredAction);
+            $this->dispatchTask($this->createTask($requiredAction));
         }
     }
 
@@ -120,16 +116,16 @@ class Dispatcher
         if ($this->isSatisfiedConditions($task)) {
             $this->taskQueue->add($task);
         } else {
-            $this->heldTasks[ActionIdBuilder::byAction($task->action)] = $task;
+            $this->heldTasks[$task->action->id] = $task;
         }
     }
 
     private function dispatchHeld(): void
     {
-        foreach($this->heldTasks as $task) {
+        foreach($this->heldTasks as $key => $task) {
             if ($this->isSatisfiedConditions($task)) {
                 $this->taskQueue->add($task);
-                unset($this->heldTasks[key($this->heldTasks)]);
+                unset($this->heldTasks[$key]);
             }
         }
     }
@@ -140,10 +136,10 @@ class Dispatcher
             return true;
         }
 
-        $completeTasks = $this->taskStorage->getAllByRequested($task->action->require);
+        $completeTasks = $this->storage->task()->getAllByRequired($task->action->require);
 
         foreach ($completeTasks as $completeTask) {
-            if ($completeTask->result->status === ResultStatus::NEGATIVE) {
+            if ($completeTask->result->status === ResultStatus::Fail) {
                 return false;
             }
         }

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Konveyer\EventBus;
+namespace Duyler\EventBus;
 
 use Fiber;
-use Konveyer\EventBus\DTO\Result;
-use Konveyer\EventBus\Action;
-use Konveyer\EventBus\ActionHandler;
-use Konveyer\EventBus\DTO\Subscribe;
+use Duyler\EventBus\Action\ActionHandler;
+use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Dto\Result;
+use Duyler\EventBus\Dto\Subscribe;
 
 class Task
 {
@@ -25,13 +25,8 @@ class Task
 
     public function run(ActionHandler $actionHandler): void
     {
-        $this->fiber = new Fiber(
-            function (ActionHandler $actionHandler): Result {
-                return $actionHandler->handle();
-            }
-        );
-
-        $this->fiber->start($actionHandler);
+        $this->fiber = new Fiber(fn(): Result => $actionHandler->handle($this->action));
+        $this->fiber->start();
     }
 
     public function isRunning(): bool

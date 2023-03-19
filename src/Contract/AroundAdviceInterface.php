@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Konveyer\EventBus\Contract;
+namespace Duyler\EventBus\Contract;
 
-use Konveyer\EventBus\DTO\Result;
+use Duyler\EventBus\Dto\Result;
 
 interface AroundAdviceInterface
 {
