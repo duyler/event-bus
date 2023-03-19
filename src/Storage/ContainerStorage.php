@@ -1,20 +1,18 @@
 <?php
 
-namespace Konveyer\EventBus\Storage;
+namespace Duyler\EventBus\Storage;
 
-use Konveyer\EventBus\Container;
+use Duyler\EventBus\Action\ActionContainer;
 
-class ContainerStorage
+class ContainerStorage extends AbstractStorage
 {
-    private array $containers = [];
-
-    public function save(string $actionFullName, Container $container): void
+    public function save(ActionContainer $container): void
     {
-        $this->containers[$actionFullName] = $container;
+        $this->data[$container->actionId] = $container;
     }
 
-    public function get(string $actionFullName): Container
+    public function get(string $actionFullName): ActionContainer
     {
-        return $this->containers[$actionFullName];
+        return $this->data[$actionFullName];
     }
 }

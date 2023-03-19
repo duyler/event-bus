@@ -2,51 +2,41 @@
 
 declare(strict_types=1);
 
-namespace Konveyer\EventBus;
+namespace Duyler\EventBus;
 
-use Konveyer\EventBus\Contract\RollbackInterface;
-use Konveyer\EventBus\Storage\ContainerStorage;
-use Konveyer\EventBus\Storage\TaskStorage;
+use Duyler\EventBus\Contract\RollbackActionInterface;
+
+use function is_callable;
 
 class Rollback
 {
-    private TaskStorage $taskStorage;
-    private ContainerStorage $containerStorage;
-
-    public function __construct(
-        TaskStorage $taskStorage,
-        ContainerStorage $containerStorage
-    ) {
-        $this->taskStorage = $taskStorage;
-        $this->containerStorage = $containerStorage;
+    public function __construct(private readonly Storage $storage)
+    {
     }
 
     public function run(): void
     {
-        foreach ($this->taskStorage->getAll() as $task) {
+        /** @var Task $task */
+        foreach ($this->storage->task()->getAll() as $task) {
             if (empty($task->action->rollback)) {
                 continue;
             }
-
-            $taskContainer = $this->containerStorage->get(
-                ActionIdBuilder::byAction($task->action)
-            );
 
             if (is_callable($task->action->rollback)) {
                 ($task->action->rollback)();
                 continue;
             }
 
-            $taskContainer = $this->containerStorage->get(
-                ActionIdBuilder::byAction($task->action)
-            );
+            $taskContainer = $this->storage->container()->get($task->action->id);
 
-            $this->rollback($taskContainer->instance($task->action->rollback));
+            $this->rollback($taskContainer->make($task->action->rollback));
         }
     }
     
-    private function rollback(RollbackInterface $rollback): void
+    private function rollback(RollbackActionInterface $rollback): void
     {
+        //TODO Catch exceptions
+        //TODO LoggerInterface or console
         $rollback->run();
     }
 }

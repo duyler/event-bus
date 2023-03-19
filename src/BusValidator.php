@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Konveyer\EventBus;
+namespace Duyler\EventBus;
 
-use Konveyer\EventBus\Contract\HandlerInterface;
-use Konveyer\EventBus\Contract\RollbackInterface;
-use Konveyer\EventBus\Contract\ValidateCacheHandlerInterface;
-use OutOfBoundsException;
 use DomainException;
-use Konveyer\EventBus\Storage\ActionStorage;
-use Konveyer\EventBus\Storage\SubscribeStorage;
+use Duyler\EventBus\Contract\HandlerInterface;
+use Duyler\EventBus\Contract\RollbackActionInterface;
+use Duyler\EventBus\Contract\ValidateCacheHandlerInterface;
+use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Storage\ActionStorage;
+use Duyler\EventBus\Storage\SubscribeStorage;
 use LogicException;
-
-use function serialize;
-use function md5;
+use OutOfBoundsException;
 use function class_exists;
 use function class_implements;
 use function in_array;
-use function explode;
+use function md5;
+use function serialize;
 
+// TODO валидатор переписать он не рабочий при этом валидатор часть логики
 class BusValidator
 {
     private SubscribeStorage $subscribeStorage;
@@ -94,8 +94,8 @@ class BusValidator
 
             $requiredAction = $this->actionStorage->get($subject);
 
-            if (in_array($action->service . '.' . $action->name, $requiredAction->require)) {
-                throw new LogicException('Action ' . $action->service . '.' . $action->name . ' require action');
+            if (in_array($action->id, $requiredAction->require->getArrayCopy())) {
+                throw new LogicException('Action ' . $action->id . ' require action');
             }
         }
     }
@@ -112,8 +112,8 @@ class BusValidator
 
         $interfaces = class_implements($rollbackHandler);
 
-        if (empty($interfaces) or in_array(RollbackInterface::class, $interfaces) === false) {
-            throw new DomainException('Rollback handler class must be implements ' . RollbackInterface::class);
+        if (empty($interfaces) or in_array(RollbackActionInterface::class, $interfaces) === false) {
+            throw new DomainException('Rollback handler class must be implements ' . RollbackActionInterface::class);
         }
     }
 

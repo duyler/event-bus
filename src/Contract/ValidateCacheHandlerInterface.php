@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Konveyer\EventBus\Contract;
+namespace Duyler\EventBus\Contract;
 
 interface ValidateCacheHandlerInterface
 {

@@ -2,48 +2,42 @@
 
 declare(strict_types=1);
 
-namespace Konveyer\EventBus;
+namespace Duyler\EventBus;
 
 use RuntimeException;
 use SplQueue;
 
 class TaskQueue
 {
-    private SplQueue $runningQueue;
-    private SplQueue $notRunningQueue;
+    private SplQueue $queue;
 
     public function __construct()
     {
-        $this->runningQueue = new SplQueue();
-        $this->runningQueue->setIteratorMode(SplQueue::IT_MODE_DELETE);
-        $this->notRunningQueue = new SplQueue();
-        $this->notRunningQueue->setIteratorMode(SplQueue::IT_MODE_DELETE);
+        $this->queue = new SplQueue();
+        $this->queue->setIteratorMode(SplQueue::IT_MODE_DELETE);
     }
 
     public function add(Task $task): void
     {
-        if ($task->isRunning()) {
-            $this->runningQueue->push($task);
-        } else {
-            $this->runningQueue->push($task);
-        }
+        $this->queue->push($task);
     }
 
     public function isNotEmpty(): bool
     {
-        return $this->runningQueue->isEmpty() === false || $this->notRunningQueue->isEmpty() === false;
+        return $this->queue->isEmpty() === false;
+    }
+
+    public function isEmpty(): bool
+    {
+        return $this->queue->isEmpty();
     }
 
     public function dequeue(): mixed
     {
-        if ($this->notRunningQueue->isEmpty() === false) {
-            return $this->notRunningQueue->dequeue();
+        if ($this->queue->isEmpty()) {
+            throw new RuntimeException("TaskQueue is empty");
         }
 
-        if ($this->runningQueue->isEmpty()) {
-            throw new RuntimeException("Queue is empty");
-        }
-
-        return $this->runningQueue->dequeue();
+        return $this->queue->dequeue();
     }
 }

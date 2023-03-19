@@ -2,40 +2,27 @@
 
 declare(strict_types=1);
 
-namespace Konveyer\EventBus\Storage;
+namespace Duyler\EventBus\Storage;
 
+use Duyler\EventBus\Dto\Action;
 use RuntimeException;
-use Konveyer\EventBus\Action;
-
 use function array_key_exists;
 
-class ActionStorage
+class ActionStorage extends AbstractStorage
 {
-    private array $actions = [];
-
     public function save(Action $action): void
     {
-        if (array_key_exists($action->service . '.' . $action->name, $this->actions)) {
-            throw new RuntimeException('Service ' . $action->service . ' already registered');
+        if (array_key_exists($action->id, $this->data)) {
+            throw new RuntimeException('Action ' . $action->id . ' already registered');
         }
-        $this->actions[$action->service . '.' . $action->name] = $action;
+        $this->data[$action->id] = $action;
     }
 
-    public function get(string $actionFullName): Action
+    public function get(string $actionId): Action
     {
-        if ($this->isExists($actionFullName) === false) {
-            throw new RuntimeException('Service ' . $actionFullName . 'not found in the storage');
+        if ($this->isExists($actionId) === false) {
+            throw new RuntimeException('Action ' . $actionId . ' not found in the storage');
         }
-        return $this->actions[$actionFullName];
-    }
-
-    public function getAll(): array
-    {
-        return $this->actions;
-    }
-
-    public function isExists(string $actionFullName): bool
-    {
-        return array_key_exists($actionFullName, $this->actions);
+        return $this->data[$actionId];
     }
 }

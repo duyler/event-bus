@@ -2,47 +2,33 @@
 
 declare(strict_types=1);
 
-namespace Konveyer\EventBus\Storage;
+namespace Duyler\EventBus\Storage;
 
-use Konveyer\EventBus\DTO\Result;
-use Konveyer\EventBus\ActionIdBuilder;
-use Konveyer\EventBus\Task;
-
-use function array_key_exists;
-use function array_intersect_key;
+use Duyler\EventBus\Dto\Result;
+use Duyler\EventBus\Task;
+use RecursiveArrayIterator;
 use function array_flip;
+use function array_intersect_key;
 
-class TaskStorage
+class TaskStorage extends AbstractStorage
 {
-    private array $tasks = [];
-
     public function save(Task $task): void
     {
-        $this->tasks[ActionIdBuilder::byAction($task->action)] = $task;
+        $this->data[$task->action->id] = $task;
     }
 
-    public function getAll(): array
+    public function getAllByRequired(RecursiveArrayIterator $required): array
     {
-        return $this->tasks;
+        return array_intersect_key($this->data, array_flip($required->getArrayCopy()));
     }
 
-    public function isExists(string $actionFullName): bool
+    public function getResult(string $actionId): ?Result
     {
-        return array_key_exists($actionFullName, $this->tasks);
+        return $this->data[$actionId]->result ?? null;
     }
 
-    public function getByActionFullName(string $actionFullName): Task
+    public function get(string $actionId): Task
     {
-        return $this->tasks[$actionFullName];
-    }
-
-    public function getAllByRequested(array $required): array
-    {
-        return array_intersect_key($this->tasks, array_flip($required));
-    }
-
-    public function getResult(string $actionFullName): Result
-    {
-        return $this->tasks[$actionFullName]->result;
+        return $this->data[$actionId];
     }
 }

@@ -3,24 +3,51 @@
 
 ## Base usage
 ```
-$bus = Jine\EventBus\Bus::create();
 
-$actionStart = new Action('Start', 'App\Handlers\First\Handler');
-$actionStart->serviceId('First');
+use Duyler\EventBus\BusFactory;
+use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Dto\Subscribe;
+use Duyler\EventBus\Enum\ResultStatus;
 
-$bus->addAction($actionStart);
+$bus = BusFactory::create();
 
-$actionShow = new Action('Show', 'App\Handlers\Second\Handler');
-$actionShow->serviceId('Second')
-             ->required(['First.Start', 'Third.Description']);
+$requestAction = new Action(
+    id: 'Request.GetRequest',
+    handler: GetRequestAction::class,
+    require: [
+        'Request.RequestReq'
+    ],
+);
 
-$bus->addAction($actionShow);
+$blogAction = new Action(
+    id: 'Blog.GetPostById',
+    handler: GetPostByIdActionInterface::class,
+    require: [
+        'Request.GetRequest',
+    ],
+    classMap: [
+        GetPostByIdActionInterface::class => GetPostByIdAction::class,
+    ],
+    providers: [
+        PostRepository::class => BlogRepositoryProvider::class,
+        GetPostByIdAction::class => GetPostByIdActionProvider::class,
+    ],
+    arguments: [
+        'postId' => PostIdFactory::class
+    ],
+);
 
-$actionDescription = new Action('Description', 'App\Handlers\Third\Handler');
-$actionDescription->serviceId('Third');
+$bus->addAction($requestAction);
+$bus->addAction($blogAction);
 
-$bus->addAction($actionDescription);
+$blogActionSubscribe = new Subscribe(
+    subject: 'Request.GetRequest',
+    actionFullName: 'Blog.GetPostById',
+    status: ResultStatus::Success,
+);
 
-$bus->subscribe('First.Start.Success', 'Second.Show');
+$bus->addSubscribe($blogActionSubscribe);
 
-$bus->run('First.Start');
+$bus->run('Request.GetRequest');
+
+$result = $bus->getResult('Blog.GetPostById');

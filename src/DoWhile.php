@@ -2,17 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Konveyer\EventBus;
+namespace Duyler\EventBus;
 
-class Loop
+class DoWhile
 {
-    private TaskRunner $taskRunner;
-    private TaskQueue $taskQueue;
-
-    public function __construct(TaskRunner $taskRunner, TaskQueue $taskQueue)
-    {
-        $this->taskRunner = $taskRunner;
-        $this->taskQueue = $taskQueue;
+    public function __construct(
+        private readonly TaskRunner $taskRunner,
+        private readonly TaskQueue $taskQueue
+    ) {
     }
 
     public function run(): void
