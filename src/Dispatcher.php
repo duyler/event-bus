@@ -82,7 +82,7 @@ class Dispatcher
 
         foreach ($subscribers as $subscribe) {
 
-            $action = $this->storage->action()->get($subscribe->actionFullName);
+            $action = $this->storage->action()->get($subscribe->actionId);
 
             $task = $this->createTask($action, $subscribe);
 

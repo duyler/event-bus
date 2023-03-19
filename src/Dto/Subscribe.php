@@ -10,7 +10,7 @@ class Subscribe
 {
     public function __construct(
         public readonly string $subject,
-        public readonly string $actionFullName,
+        public readonly string $actionId,
         public readonly ResultStatus $status = ResultStatus::Success,
         public readonly bool $silent = false
     ) {

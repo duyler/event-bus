@@ -125,8 +125,8 @@ class BusValidator
                 throw new OutOfBoundsException('Subscribed action ' . $subjectActionFullName . ' not registered in the bus');
             }
 
-            if ($this->actionStorage->isExists($subscribe->actionFullName) === false) {
-                throw new OutOfBoundsException('Action ' . $subscribe->actionFullName . ' not registered in the bus');
+            if ($this->actionStorage->isExists($subscribe->actionId) === false) {
+                throw new OutOfBoundsException('Action ' . $subscribe->actionId . ' not registered in the bus');
             }
         }
     }

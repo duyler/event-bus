@@ -16,14 +16,14 @@ abstract class AbstractStorage
         return $this->data;
     }
 
-    public function isExists(string $actionFullName): bool
+    public function isExists(string $actionId): bool
     {
-        return array_key_exists($actionFullName, $this->data);
+        return array_key_exists($actionId, $this->data);
     }
 
-    public function remove(string $actionFullName): void
+    public function remove(string $actionId): void
     {
-        unset($actionFullName, $this->data);
+        unset($actionId, $this->data);
     }
 
     protected function makeActionIdWithStatus(string $actionId, ResultStatus $status): string
