@@ -4,7 +4,7 @@ namespace Duyler\EventBus\Exception;
 
 use Exception;
 
-class CyclicCallActionException extends Exception
+class CircularCallActionException extends Exception
 {
     public function __construct(string $actionName, string $callingAction)
     {

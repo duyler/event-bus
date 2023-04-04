@@ -11,13 +11,12 @@ use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Storage;
 
 use function is_callable;
-use function is_object;
 
-class ActionHandler
+readonly class ActionHandler
 {
     public function __construct(
-        private readonly AspectHandler $aspectHandler,
-        private readonly Storage $storage,
+        private AspectHandler $aspectHandler,
+        private Storage       $storage,
     ) {
     }
 
@@ -70,9 +69,7 @@ class ActionHandler
         $completeTasks = $this->storage->task()->getAllByRequired($action->require);
 
         foreach ($completeTasks as $task) {
-            if (is_object($task->result->data)) {
-                $container->set($task->result->data);
-            }
+            $container->set($task->result->data);
         }
     }
 

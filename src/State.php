@@ -31,7 +31,7 @@ class State
             $task->result->status->value,
             $task->result->data,
             $task->action->id,
-            $task->subscribe?->subject,
+            $task->subscribe?->subjectId,
             $this->busControl
         );
 

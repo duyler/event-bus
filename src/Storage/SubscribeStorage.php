@@ -28,7 +28,7 @@ class SubscribeStorage extends AbstractStorage
 
     public function save(Subscribe $subscribe): void
     {
-        $subjectId = $this->makeActionIdWithStatus($subscribe->subject, $subscribe->status);
+        $subjectId = $this->makeActionIdWithStatus($subscribe->subjectId, $subscribe->status);
 
         if (array_key_exists($subjectId, $this->data)) {
             array_walk($this->data[$subjectId], function ($value) use ($subscribe, $subjectId) {
