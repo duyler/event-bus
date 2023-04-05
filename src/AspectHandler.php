@@ -15,7 +15,7 @@ class AspectHandler
 
         foreach ($action->before as $advice) {
             if (is_callable($advice)) {
-                $this->before[] = $advice;
+                $before[] = $advice;
                 continue;
             }
             $before[] = $container->make($advice);
@@ -32,7 +32,7 @@ class AspectHandler
 
         foreach ($action->after as $advice) {
             if (is_callable($advice)) {
-                $this->after[] = $advice;
+                $after[] = $advice;
                 continue;
             }
             $after[] = $container->make($advice);

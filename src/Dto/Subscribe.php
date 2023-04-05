@@ -9,7 +9,7 @@ use Duyler\EventBus\Enum\ResultStatus;
 class Subscribe
 {
     public function __construct(
-        public readonly string $subject,
+        public readonly string $subjectId,
         public readonly string $actionId,
         public readonly ResultStatus $status = ResultStatus::Success,
         public readonly bool $silent = false

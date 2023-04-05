@@ -8,7 +8,7 @@ use Duyler\EventBus\Action\ActionRequiredIterator;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Subscribe;
 use Duyler\EventBus\Enum\ResultStatus;
-use Duyler\EventBus\Exception\CyclicCallActionException;
+use Duyler\EventBus\Exception\CircularCallActionException;
 
 use function count;
 use function in_array;
@@ -68,9 +68,9 @@ class Dispatcher
             }
 
             if (count($this->mainEventLog) === count($this->repeatedEventLog)) {
-                throw new CyclicCallActionException(
+                throw new CircularCallActionException(
                     $task->action->id,
-                    $task->subscribe->subject ?? $this->startActionId
+                    $task->subscribe->subjectId ?? $this->startActionId
                 );
             }
         }

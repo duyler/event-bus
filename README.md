@@ -14,9 +14,6 @@ $bus = BusFactory::create();
 $requestAction = new Action(
     id: 'Request.GetRequest',
     handler: GetRequestAction::class,
-    require: [
-        'Request.RequestReq'
-    ],
 );
 
 $blogAction = new Action(
