@@ -17,7 +17,7 @@ class TaskQueue
         $this->queue->setIteratorMode(SplQueue::IT_MODE_DELETE);
     }
 
-    public function add(Task $task): void
+    public function push(Task $task): void
     {
         $this->queue->push($task);
     }

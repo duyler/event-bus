@@ -13,14 +13,12 @@ use Duyler\EventBus\Dto\Subscribe;
 class Task
 {
     public readonly Action $action;
-    public readonly ?Subscribe $subscribe;
     public readonly ?Result $result;
     private ?Fiber $fiber = null;
 
-    public function __construct(Action $action, Subscribe $subscribe = null)
+    public function __construct(Action $action)
     {
         $this->action = $action;
-        $this->subscribe = $subscribe;
     }
 
     public function run(ActionHandler $actionHandler): void

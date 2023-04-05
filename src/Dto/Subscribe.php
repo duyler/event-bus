@@ -12,7 +12,6 @@ class Subscribe
         public readonly string $subjectId,
         public readonly string $actionId,
         public readonly ResultStatus $status = ResultStatus::Success,
-        public readonly bool $silent = false
     ) {
     }
 }
