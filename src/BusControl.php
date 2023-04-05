@@ -83,7 +83,7 @@ class BusControl
 
     public function resolveAction(Action $action): void
     {
-        $requiredIterator = new ActionRequiredIterator($action->require, $this->storage->action());
+        $requiredIterator = new ActionRequiredIterator($action->required, $this->storage->action());
 
         foreach ($requiredIterator as $subject) {
 
@@ -124,11 +124,11 @@ class BusControl
 
     protected function isSatisfiedConditions(Task $task): bool
     {
-        if (empty($task->action->require)) {
+        if (empty($task->action->required)) {
             return true;
         }
 
-        $completeTasks = $this->storage->task()->getAllByRequired($task->action->require);
+        $completeTasks = $this->storage->task()->getAllByRequired($task->action->required);
 
         foreach ($completeTasks as $completeTask) {
             if ($completeTask->result->status === ResultStatus::Fail) {
@@ -136,6 +136,6 @@ class BusControl
             }
         }
 
-        return count($completeTasks) === count($task->action->require);
+        return count($completeTasks) === count($task->action->required);
     }
 }

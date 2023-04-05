@@ -21,11 +21,11 @@ class ActionRequiredIterator extends RecursiveIteratorIterator
 
     public function callHasChildren(): bool
     {
-        return $this->actionStorage->get($this->current())->require->valid();
+        return $this->actionStorage->get($this->current())->required->valid();
     }
 
     public function callGetChildren(): ?RecursiveIterator
     {
-        return $this->actionStorage->get($this->current())->require;
+        return $this->actionStorage->get($this->current())->required;
     }
 }

@@ -87,14 +87,14 @@ class BusValidator
 
     private function checkRequired(Action $action): void
     {
-        foreach ($action->require as $subject) {
+        foreach ($action->required as $subject) {
             if ($this->actionStorage->isExists($subject) === false) {
                 throw new OutOfBoundsException('Required action ' . $subject . ' not registered in the bus');
             }
 
             $requiredAction = $this->actionStorage->get($subject);
 
-            if (in_array($action->id, $requiredAction->require->getArrayCopy())) {
+            if (in_array($action->id, $requiredAction->required->getArrayCopy())) {
                 throw new LogicException('Action ' . $action->id . ' require action');
             }
         }
