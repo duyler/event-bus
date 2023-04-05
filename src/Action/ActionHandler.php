@@ -66,7 +66,7 @@ readonly class ActionHandler
 
     private function prepareResults(Action $action, ActionContainer $container): void
     {
-        $completeTasks = $this->storage->task()->getAllByRequired($action->require);
+        $completeTasks = $this->storage->task()->getAllByRequired($action->required);
 
         foreach ($completeTasks as $task) {
             $container->set($task->result->data);

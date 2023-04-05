@@ -7,23 +7,23 @@ namespace Duyler\EventBus\Dto;
 use Closure;
 use RecursiveArrayIterator;
 
-class Action
+readonly class Action
 {
-    public readonly RecursiveArrayIterator $require;
+    public RecursiveArrayIterator $required;
 
     public function __construct(
-        public readonly string           $id,
-        public readonly string | Closure $handler,
-        array                            $require = [],
-        public readonly array            $classMap = [],
-        public readonly array            $providers = [],
-        public readonly string | Closure $rollback = '',
-        public readonly array            $arguments = [],
-        public readonly array            $before = [],
-        public readonly array            $after = [],
-        public readonly string | Closure $around = '',
-        public readonly bool $void = false
+        public string           $id,
+        public string | Closure $handler,
+        array                  $required = [],
+        public array            $classMap = [],
+        public array            $providers = [],
+        public string | Closure $rollback = '',
+        public array            $arguments = [],
+        public array            $before = [],
+        public array            $after = [],
+        public string | Closure $around = '',
+        public bool             $void = false
     ) {
-        $this->require = new RecursiveArrayIterator($require);
+        $this->required = new RecursiveArrayIterator($required);
     }
 }
