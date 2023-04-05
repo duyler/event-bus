@@ -6,10 +6,10 @@ namespace Duyler\EventBus\Dto;
 
 use Duyler\EventBus\Enum\ResultStatus;
 
-class Result
+readonly class Result
 {
-    public readonly ResultStatus $status;
-    public readonly object|null $data;
+    public ResultStatus $status;
+    public object|null $data;
 
     public function __construct(ResultStatus $status, object $data = null)
     {

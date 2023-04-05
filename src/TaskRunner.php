@@ -32,7 +32,7 @@ class TaskRunner
     private function dispatch(Task $task): void
     {
         if ($task->isRunning()) {
-            $this->taskQueue->add($task);
+            $this->taskQueue->push($task);
         } else {
             $task->takeResult();
             $this->dispatcher->dispatchResultEvent($task);

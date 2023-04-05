@@ -42,17 +42,17 @@ class BusValidator
 
     public function validate(): void
     {
-        if ($this->validateCacheHandler === null) {
-            $this->runValidation();
-            return;
-        }
-
-        $dataHash = $this->createDataHash();
-
-        if ($this->isValidCache($dataHash) === false) {
-            $this->runValidation();
-            $this->updateCache($dataHash);
-        }
+//        if ($this->validateCacheHandler === null) {
+//            $this->runValidation();
+//            return;
+//        }
+//
+//        $dataHash = $this->createDataHash();
+//
+//        if ($this->isValidCache($dataHash) === false) {
+//            $this->runValidation();
+//            $this->updateCache($dataHash);
+//        }
     }
 
     private function runValidation(): void

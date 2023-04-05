@@ -4,20 +4,23 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
+use Duyler\EventBus\Contract\FinalStateHandlerInterface;
+use Duyler\EventBus\Contract\StateHandlerInterface;
 use Duyler\EventBus\Contract\ValidateCacheHandlerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Subscribe;
 use Throwable;
 
-class Bus
+readonly class Bus
 {
     public function __construct(
-        private readonly Dispatcher   $dispatcher,
-        private readonly BusValidator $busValidator,
-        private readonly DoWhile      $doWhile,
-        private readonly Rollback     $rollback,
-        private readonly Storage      $storage,
+        private Dispatcher   $dispatcher,
+        private BusValidator $busValidator,
+        private DoWhile      $doWhile,
+        private Rollback     $rollback,
+        private Storage      $storage,
+        private State        $state,
     ) {
     }
 
@@ -39,9 +42,9 @@ class Bus
 
          try {
              $this->doWhile->run();
-         } catch (Throwable $th) {
+         } catch (Throwable $exception) {
              $this->rollback->run();
-             throw $th;
+             throw $exception;
          }
     }
 
@@ -60,5 +63,15 @@ class Bus
     public function getResult(string $actionId): ?Result
     {
         return $this->storage->task()->getResult($actionId);
+    }
+
+    public function addStateHandler(StateHandlerInterface $stateHandler): void
+    {
+        $this->state->addStateHandler($stateHandler);
+    }
+
+    public function addFinalStateHandler(FinalStateHandlerInterface $stateHandler): void
+    {
+        $this->state->addFinalStateHandler($stateHandler);
     }
 }

@@ -7,15 +7,15 @@ namespace Duyler\EventBus;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Subscribe;
+use Duyler\EventBus\Enum\ResultStatus;
 
-class BusControlService
+readonly class BusControlService
 {
     public function __construct(
-        public readonly string        $resultStatus,
-        public readonly object | null $resultData,
-        public readonly string        $actionId,
-        public readonly string | null $event,
-        private readonly BusControl   $busControl
+        public ResultStatus  $resultStatus,
+        public object | null $resultData,
+        public string        $actionId,
+        private BusControl   $busControl
     ) {
     }
 
@@ -62,10 +62,5 @@ class BusControlService
     public function subscribeIsExists(string $actionId): bool
     {
         return $this->busControl->subscribeIsExists($actionId);
-    }
-
-    public function taskIsInQueue(string $actionId): bool
-    {
-
     }
 }

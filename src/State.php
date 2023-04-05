@@ -13,6 +13,10 @@ class State
      * @var StateHandlerInterface[]
      */
     private array $stateHandlers = [];
+
+    /**
+     * @var FinalStateHandlerInterface[]
+     */
     private array $finalStateHandlers = [];
 
     public function __construct(
@@ -28,16 +32,17 @@ class State
         }
 
         $busControlService = new BusControlService(
-            $task->result->status->value,
+            $task->result->status,
             $task->result->data,
             $task->action->id,
-            $task->subscribe?->subjectId,
             $this->busControl
         );
 
         foreach ($this->stateHandlers as $handler) {
             $handler->handle($busControlService);
         }
+
+        $this->busControl->resolveSubscribers($task->action->id, $task->result->status);
 
         if ($this->taskQueue->isEmpty()) {
             foreach ($this->finalStateHandlers as $handler) {
