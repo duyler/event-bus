@@ -20,7 +20,7 @@ class State
     private array $finalStateHandlers = [];
 
     public function __construct(
-        private readonly BusControl $busControl,
+        private readonly Control   $control,
         private readonly TaskQueue $taskQueue
     ) {
     }
@@ -31,22 +31,22 @@ class State
             return;
         }
 
-        $busControlService = new BusControlService(
+        $stateService = new StateService(
             $task->result->status,
             $task->result->data,
             $task->action->id,
-            $this->busControl
+            $this->control
         );
 
         foreach ($this->stateHandlers as $handler) {
-            $handler->handle($busControlService);
+            $handler->handle($stateService);
         }
 
-        $this->busControl->resolveSubscribers($task->action->id, $task->result->status);
+        $this->control->resolveSubscribers($task->action->id, $task->result->status);
 
         if ($this->taskQueue->isEmpty()) {
             foreach ($this->finalStateHandlers as $handler) {
-                $handler->handle($busControlService);
+                $handler->handle($stateService);
             }
         }
     }

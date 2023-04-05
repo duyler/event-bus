@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Contract;
 
-use Duyler\EventBus\BusControlService;
+use Duyler\EventBus\StateService;
 
 interface StateHandlerInterface
 {
-    public function handle(BusControlService $busControlService): void;
+    public function handle(StateService $stateService): void;
 }

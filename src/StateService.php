@@ -9,58 +9,43 @@ use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Subscribe;
 use Duyler\EventBus\Enum\ResultStatus;
 
-readonly class BusControlService
+readonly class StateService
 {
     public function __construct(
         public ResultStatus  $resultStatus,
         public object | null $resultData,
         public string        $actionId,
-        private BusControl   $busControl
+        private Control $control
     ) {
     }
 
     public function addSubscribe(Subscribe $subscribe): void
     {
-        $this->busControl->addSubscribe($subscribe);
+        $this->control->addSubscribe($subscribe);
     }
 
     public function rollback(): void
     {
-        $this->busControl->rollback();
+        $this->control->rollback();
     }
 
     public function addAction(Action $action): void
     {
-        $this->busControl->addAction($action);
-    }
-
-    public function removeAction(): void
-    {
-        $this->busControl->removeAction();
-    }
-
-    public function removeSubscribe(): void
-    {
-        $this->busControl->removeSubscribe();
+        $this->control->addAction($action);
     }
 
     public function getResult(string $actionId): Result
     {
-        return $this->busControl->getResult($actionId);
+        return $this->control->getResult($actionId);
     }
 
     public function resultIsExists(string $actionId): bool
     {
-        return $this->busControl->resultIsExists($actionId);
+        return $this->control->resultIsExists($actionId);
     }
 
     public function actionIsExists(string $actionId): bool
     {
-        return $this->busControl->actionIsExists($actionId);
-    }
-
-    public function subscribeIsExists(string $actionId): bool
-    {
-        return $this->busControl->subscribeIsExists($actionId);
+        return $this->control->actionIsExists($actionId);
     }
 }

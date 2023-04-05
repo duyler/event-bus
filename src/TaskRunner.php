@@ -35,7 +35,7 @@ class TaskRunner
             $this->taskQueue->push($task);
         } else {
             $task->takeResult();
-            $this->dispatcher->dispatchResultEvent($task);
+            $this->dispatcher->dispatchResultTask($task);
         }
     }
 }

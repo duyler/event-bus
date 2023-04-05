@@ -15,12 +15,12 @@ use Throwable;
 readonly class Bus
 {
     public function __construct(
-        private Dispatcher   $dispatcher,
-        private BusValidator $busValidator,
-        private DoWhile      $doWhile,
-        private Rollback     $rollback,
-        private Storage      $storage,
-        private State        $state,
+        private Dispatcher $dispatcher,
+        private Validator  $validator,
+        private DoWhile    $doWhile,
+        private Rollback   $rollback,
+        private Storage    $storage,
+        private State      $state,
     ) {
     }
 
@@ -38,20 +38,20 @@ readonly class Bus
 
     public function run(string $startAction): void
     {
-        $this->dispatcher->prepareStartedTask($startAction);
+        $this->dispatcher->dispatchStartedTask($startAction);
+        $this->validator->validate();
 
-         try {
-             $this->doWhile->run();
-         } catch (Throwable $exception) {
-             $this->rollback->run();
-             throw $exception;
-         }
+        try {
+            $this->doWhile->run();
+        } catch (Throwable $exception) {
+            $this->rollback->run();
+            throw $exception;
+        }
     }
 
     public function setValidateCacheHandler(ValidateCacheHandlerInterface $validateCacheHandler): static
     {
-        //TODO validation
-        $this->busValidator->setValidateCacheHandler($validateCacheHandler);
+        $this->validator->setValidateCacheHandler($validateCacheHandler);
         return $this;
     }
 
