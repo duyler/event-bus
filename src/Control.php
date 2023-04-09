@@ -78,6 +78,11 @@ class Control
         return array_key_last($this->log);
     }
 
+    public function validate(Task $task): void
+    {
+        $this->validator->checkCyclicActionCalls($task);
+    }
+
     public function resolveSubscribers(string $actionId, ResultStatus $status): void
     {
         $subscribers = $this->storage->subscribe()->getSubscribers($actionId, $status);

@@ -10,7 +10,6 @@ readonly class Dispatcher
         private Storage   $storage,
         private State     $state,
         private Control   $control,
-        private Validator $validator
     ) {
     }
 
@@ -25,8 +24,7 @@ readonly class Dispatcher
     {
         $this->storage->task()->save($resultTask);
 
-        $this->validator->checkCyclicActionCalls($resultTask);
-
+        $this->control->validate($resultTask);
         $this->control->log($resultTask);
         $this->control->resolveHeldTasks();
         $this->control->resolveSubscribers($resultTask->action->id, $resultTask->result->status);

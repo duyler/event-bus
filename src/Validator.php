@@ -75,9 +75,7 @@ class Validator
 
     private function updateCache(string $dataHash): void
     {
-        if ($this->validateCacheHandler !== null) {
-            $this->validateCacheHandler->writeHash($dataHash);
-        }
+        $this->validateCacheHandler?->writeHash($dataHash);
     }
 
     public function validateActions(): void
@@ -114,9 +112,9 @@ class Validator
         }
     }
 
-    private function validateRollback(string $rollbackHandler): void
+    private function validateRollback(callable|string $rollbackHandler): void
     {
-        if (empty($rollbackHandler)) {
+        if (empty($rollbackHandler) || is_callable($rollbackHandler)) {
             return;
         }
 
