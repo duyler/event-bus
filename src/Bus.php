@@ -4,23 +4,25 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
-use Duyler\EventBus\Contract\FinalStateHandlerInterface;
-use Duyler\EventBus\Contract\StateHandlerInterface;
 use Duyler\EventBus\Contract\ValidateCacheHandlerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
+use Duyler\EventBus\Dto\StateAfterHandler;
+use Duyler\EventBus\Dto\StateBeforeHandler;
+use Duyler\EventBus\Dto\StateFinalHandler;
 use Duyler\EventBus\Dto\Subscribe;
+use Duyler\EventBus\State\StateHandlerBuilder;
 use Throwable;
 
 readonly class Bus
 {
     public function __construct(
-        private Dispatcher   $dispatcher,
-        private BusValidator $busValidator,
-        private DoWhile      $doWhile,
-        private Rollback     $rollback,
-        private Storage      $storage,
-        private State        $state,
+        private Dispatcher          $dispatcher,
+        private Validator           $validator,
+        private DoWhile             $doWhile,
+        private Rollback            $rollback,
+        private Storage             $storage,
+        private StateHandlerBuilder $stateHandlerBuilder,
     ) {
     }
 
@@ -36,22 +38,25 @@ readonly class Bus
         return $this;
     }
 
+    /**
+     * @throws Throwable
+     */
     public function run(string $startAction): void
     {
-        $this->dispatcher->prepareStartedTask($startAction);
+        $this->dispatcher->dispatchStartedTask($startAction);
+        $this->validator->validate();
 
-         try {
-             $this->doWhile->run();
-         } catch (Throwable $exception) {
-             $this->rollback->run();
-             throw $exception;
-         }
+        try {
+            $this->doWhile->run();
+        } catch (Throwable $exception) {
+            $this->rollback->run();
+            throw $exception;
+        }
     }
 
     public function setValidateCacheHandler(ValidateCacheHandlerInterface $validateCacheHandler): static
     {
-        //TODO validation
-        $this->busValidator->setValidateCacheHandler($validateCacheHandler);
+        $this->validator->setValidateCacheHandler($validateCacheHandler);
         return $this;
     }
 
@@ -65,13 +70,18 @@ readonly class Bus
         return $this->storage->task()->getResult($actionId);
     }
 
-    public function addStateHandler(StateHandlerInterface $stateHandler): void
+    public function addStateAfterHandler(StateAfterHandler $afterHandler): void
     {
-        $this->state->addStateHandler($stateHandler);
+        $this->stateHandlerBuilder->createAfter($afterHandler);
     }
 
-    public function addFinalStateHandler(FinalStateHandlerInterface $stateHandler): void
+    public function addStateBeforeHandler(StateBeforeHandler $beforeHandler): void
     {
-        $this->state->addFinalStateHandler($stateHandler);
+        $this->stateHandlerBuilder->createBefore($beforeHandler);
+    }
+
+    public function addStateFinalHandler(StateFinalHandler $finalHandler): void
+    {
+        $this->stateHandlerBuilder->createFinal($finalHandler);
     }
 }

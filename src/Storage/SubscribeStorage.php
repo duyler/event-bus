@@ -9,37 +9,38 @@ use Duyler\EventBus\Enum\ResultStatus;
 use RuntimeException;
 
 use function array_key_exists;
-use function array_walk;
+use function array_intersect_key;
+use function array_flip;
+use function preg_quote;
+use function preg_grep;
+use function array_keys;
 
 class SubscribeStorage extends AbstractStorage
 {
+    public function save(Subscribe $subscribe): void
+    {
+        $id = $subscribe->subjectId . '.' . $subscribe->status->value . '@' . $subscribe->actionId;
+
+        if (array_key_exists($id, $this->data)) {
+            throw new RuntimeException(
+            'Subscribe ' . $id . ' already registered for ' . $subscribe->actionId
+            );
+        }
+
+        $this->data[$id] = $subscribe;
+    }
+
     /**
      * @return Subscribe[]
      */
     public function getSubscribers(string $actionId, ResultStatus $status): array
     {
-        $subject = $this->makeActionIdWithStatus($actionId, $status);
+        $pattern = '/' . preg_quote($this->makeActionIdWithStatus($actionId, $status) . '@') . '/';
 
-        if (array_key_exists($subject, $this->data)) {
-            return $this->data[$subject];
-        }
-        return [];
-    }
-
-    public function save(Subscribe $subscribe): void
-    {
-        $subjectId = $this->makeActionIdWithStatus($subscribe->subjectId, $subscribe->status);
-
-        if (array_key_exists($subjectId, $this->data)) {
-            array_walk($this->data[$subjectId], function ($value) use ($subscribe, $subjectId) {
-                if ($value->actionId === $subscribe->actionId) {
-                    throw new RuntimeException(
-                        'Subscribe ' . $subjectId . ' already registered for ' . $subscribe->actionId
-                    );
-                }
-            });
-        }
-
-        $this->data[$subjectId][] = $subscribe;
+        return array_intersect_key(
+            $this->data, array_flip(
+                preg_grep($pattern, array_keys($this->data))
+            )
+        );
     }
 }

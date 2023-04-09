@@ -8,7 +8,6 @@ use Fiber;
 use Duyler\EventBus\Action\ActionHandler;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Dto\Subscribe;
 
 class Task
 {

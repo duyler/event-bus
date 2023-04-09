@@ -4,60 +4,61 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
-use Duyler\EventBus\Contract\FinalStateHandlerInterface;
-use Duyler\EventBus\Contract\StateHandlerInterface;
+use Duyler\EventBus\Contract\State\StateBeforeHandlerInterface;
+use Duyler\EventBus\Contract\State\StateFinalHandlerInterface;
+use Duyler\EventBus\Contract\State\StateAfterHandlerInterface;
+use Duyler\EventBus\State\StateAfterService;
+use Duyler\EventBus\State\StateBeforeService;
+use Duyler\EventBus\State\StateFinalService;
 
-class State
+readonly class State
 {
-    /**
-     * @var StateHandlerInterface[]
-     */
-    private array $stateHandlers = [];
-
-    /**
-     * @var FinalStateHandlerInterface[]
-     */
-    private array $finalStateHandlers = [];
-
     public function __construct(
-        private readonly BusControl $busControl,
-        private readonly TaskQueue $taskQueue
+        private Control $control,
+        private Storage $storage,
     ) {
     }
 
-    public function tick(Task $task): void
+    public function before(Task $task): void
     {
-        if (empty($this->stateHandlers)) {
-            return;
-        }
+        $stateService = new StateBeforeService(
+            $task->action->id,
+            $this->control
+        );
 
-        $busControlService = new BusControlService(
+        /** @var StateBeforeHandlerInterface $handler */
+        foreach ($this->storage->state()->get(StateBeforeHandlerInterface::TYPE_KEY) as $handler) {
+            $handler->handle($stateService);
+        }
+    }
+
+    public function after(Task $task): void
+    {
+        $stateService = new StateAfterService(
             $task->result->status,
             $task->result->data,
             $task->action->id,
-            $this->busControl
+            $this->control
         );
 
-        foreach ($this->stateHandlers as $handler) {
-            $handler->handle($busControlService);
+        /** @var StateAfterHandlerInterface $handler */
+        foreach ($this->storage->state()->get(StateAfterHandlerInterface::TYPE_KEY) as $handler) {
+            $handler->handle($stateService);
         }
 
-        $this->busControl->resolveSubscribers($task->action->id, $task->result->status);
+        $this->control->validateSubscribers();
+        $this->control->resolveSubscribers($task->action->id, $task->result->status);
+    }
 
-        if ($this->taskQueue->isEmpty()) {
-            foreach ($this->finalStateHandlers as $handler) {
-                $handler->handle($busControlService);
-            }
+    public function final(): void
+    {
+        $stateService = new StateFinalService(
+            $this->control
+        );
+
+        /** @var StateFinalHandlerInterface $handler */
+        foreach ($this->storage->state()->get(StateFinalHandlerInterface::TYPE_KEY) as $handler) {
+            $handler->handle($stateService);
         }
-    }
-
-    public function addStateHandler(StateHandlerInterface $stateHandler): void
-    {
-        $this->stateHandlers[] = $stateHandler;
-    }
-
-    public function addFinalStateHandler(FinalStateHandlerInterface $finalStateHandler): void
-    {
-        $this->finalStateHandlers[] = $finalStateHandler;
     }
 }

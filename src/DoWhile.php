@@ -8,7 +8,8 @@ class DoWhile
 {
     public function __construct(
         private readonly TaskRunner $taskRunner,
-        private readonly TaskQueue $taskQueue
+        private readonly TaskQueue $taskQueue,
+        private readonly State $state,
     ) {
     }
 
@@ -20,7 +21,10 @@ class DoWhile
                 $this->taskRunner->resume($task);
                 continue;
             }
+            $this->state->before($task);
             $this->taskRunner->run($task);
         } while ($this->taskQueue->isNotEmpty());
+
+        $this->state->final();
     }
 }

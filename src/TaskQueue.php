@@ -11,9 +11,9 @@ class TaskQueue
 {
     private SplQueue $queue;
 
-    public function __construct()
+    public function __construct(SplQueue $splQueue)
     {
-        $this->queue = new SplQueue();
+        $this->queue = $splQueue;
         $this->queue->setIteratorMode(SplQueue::IT_MODE_DELETE);
     }
 

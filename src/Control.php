@@ -10,22 +10,36 @@ use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Subscribe;
 use Duyler\EventBus\Enum\ResultStatus;
 
-class BusControl
+use function array_key_first;
+use function array_key_last;
+use function count;
+
+class Control
 {
     protected array $heldTasks = [];
+    protected array $log = [];
 
     public function __construct(
-        private readonly BusValidator $busValidator,
-        private readonly Rollback     $rollback,
-        private readonly Storage      $storage,
-        private readonly TaskQueue    $taskQueue,
+        private readonly Validator $validator,
+        private readonly Rollback  $rollback,
+        private readonly Storage   $storage,
+        private readonly TaskQueue $taskQueue,
     ) {
+    }
+
+    public function log(Task $task): void
+    {
+        $this->log[$task->action->id] = $task;
     }
 
     public function addSubscribe(Subscribe $subscribe): void
     {
         $this->storage->subscribe()->save($subscribe);
-        $this->busValidator->validate();
+    }
+
+    public function validateSubscribers()
+    {
+        $this->validator->validateSubscribes();
     }
 
     public function rollback(): void
@@ -36,22 +50,12 @@ class BusControl
     public function addAction(Action $action): void
     {
         $this->storage->action()->save($action);
-        $this->busValidator->validate();
+        $this->validator->validateAction($action);
     }
 
     public function getResult(string $actionId): Result
     {
         return $this->storage->task()->getResult($actionId);
-    }
-
-    public function removeAction(string $actionId): void
-    {
-        $this->storage->action()->remove($actionId);
-    }
-
-    public function removeSubscribe(string $actionId): void
-    {
-        $this->storage->subscribe()->remove($actionId);
     }
 
     public function resultIsExists(string $actionId): bool
@@ -64,9 +68,14 @@ class BusControl
         return $this->storage->action()->isExists($actionId);
     }
 
-    public function subscribeIsExists(string $actionId): bool
+    public function getFirstAction(): string
     {
-        return $this->storage->subscribe()->isExists($actionId);
+        return array_key_first($this->log);
+    }
+
+    public function getLastAction(): string
+    {
+        return array_key_last($this->log);
     }
 
     public function resolveSubscribers(string $actionId, ResultStatus $status): void
@@ -114,6 +123,7 @@ class BusControl
 
     public function resolveHeldTasks(): void
     {
+        /** @var Task $task */
         foreach($this->heldTasks as $key => $task) {
             if ($this->isSatisfiedConditions($task)) {
                 $this->taskQueue->push($task);
@@ -130,6 +140,7 @@ class BusControl
 
         $completeTasks = $this->storage->task()->getAllByRequired($task->action->required);
 
+        /** @var Task $completeTask */
         foreach ($completeTasks as $completeTask) {
             if ($completeTask->result->status === ResultStatus::Fail) {
                 return false;

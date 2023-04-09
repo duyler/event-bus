@@ -6,12 +6,12 @@ namespace Duyler\EventBus;
 
 use Duyler\EventBus\Action\ActionHandler;
 
-class TaskRunner
+readonly class TaskRunner
 {
     public function __construct(
-        private readonly Dispatcher $dispatcher,
-        private readonly ActionHandler $actionHandler,
-        private readonly TaskQueue $taskQueue
+        private Dispatcher    $dispatcher,
+        private ActionHandler $actionHandler,
+        private TaskQueue     $taskQueue
     ) {
     }
 
@@ -35,7 +35,7 @@ class TaskRunner
             $this->taskQueue->push($task);
         } else {
             $task->takeResult();
-            $this->dispatcher->dispatchResultEvent($task);
+            $this->dispatcher->dispatchResultTask($task);
         }
     }
 }
