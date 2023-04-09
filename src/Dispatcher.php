@@ -30,6 +30,6 @@ readonly class Dispatcher
         $this->control->resolveHeldTasks();
         $this->control->resolveSubscribers($resultTask->action->id, $resultTask->result->status);
 
-        $this->state->tick($resultTask);
+        $this->state->after($resultTask);
     }
 }

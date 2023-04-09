@@ -53,17 +53,8 @@ class Validator
 
     private function runValidation(): void
     {
-        $actions = $this->storage->action()->getAll();
-
-        foreach ($actions as $action) {
-            $this->validateAction($action);
-        }
-
-        $allSubscribes = $this->storage->subscribe()->getAll();
-
-        foreach ($allSubscribes as $subscribes) {
-            $this->validateSubscribes($subscribes);
-        }
+        $this->validateActions();
+        $this->validateSubscribes();
     }
 
     private function createDataHash(): string
@@ -86,6 +77,13 @@ class Validator
     {
         if ($this->validateCacheHandler !== null) {
             $this->validateCacheHandler->writeHash($dataHash);
+        }
+    }
+
+    public function validateActions(): void
+    {
+        foreach ($this->storage->action()->getAll() as $action) {
+            $this->validateAction($action);
         }
     }
 
@@ -135,10 +133,10 @@ class Validator
         }
     }
 
-    public function validateSubscribes(array $subscribes): void
+    public function validateSubscribes(): void
     {
         /** @var Subscribe $subscribe */
-        foreach ($subscribes as $subscribe) {
+        foreach ($this->storage->subscribe()->getAll() as $subscribe) {
             $this->validateSubscribe($subscribe);
         }
     }

@@ -25,7 +25,11 @@ class Control
     public function addSubscribe(Subscribe $subscribe): void
     {
         $this->storage->subscribe()->save($subscribe);
-        $this->validator->validateSubscribe($subscribe);
+    }
+
+    public function validateSubscribers()
+    {
+        $this->validator->validateSubscribes();
     }
 
     public function rollback(): void

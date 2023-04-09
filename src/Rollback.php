@@ -8,9 +8,9 @@ use Duyler\EventBus\Contract\RollbackActionInterface;
 
 use function is_callable;
 
-class Rollback
+readonly class Rollback
 {
-    public function __construct(private readonly Storage $storage)
+    public function __construct(private Storage $storage)
     {
     }
 
@@ -35,8 +35,6 @@ class Rollback
     
     private function rollback(RollbackActionInterface $rollback): void
     {
-        //TODO Catch exceptions
-        //TODO LoggerInterface or console
         $rollback->run();
     }
 }

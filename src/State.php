@@ -4,60 +4,62 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
-use Duyler\EventBus\Contract\FinalStateHandlerInterface;
-use Duyler\EventBus\Contract\StateHandlerInterface;
+use Duyler\EventBus\Contract\State\StateBeforeHandlerInterface;
+use Duyler\EventBus\Contract\State\StateFinalHandlerInterface;
+use Duyler\EventBus\Contract\State\StateAfterHandlerInterface;
+use Duyler\EventBus\Dto\StateAfterHandler;
+use Duyler\EventBus\Dto\StateBeforeHandler;
+use Duyler\EventBus\Dto\StateFinalHandler;
+use Duyler\EventBus\State\StateAfterService;
+use Duyler\EventBus\State\StateBeforeService;
+use Duyler\EventBus\State\StateFinalService;
+use Duyler\EventBus\State\StateHandlerBuilder;
 
 class State
 {
-    /**
-     * @var StateHandlerInterface[]
-     */
-    private array $stateHandlers = [];
-
-    /**
-     * @var FinalStateHandlerInterface[]
-     */
-    private array $finalStateHandlers = [];
-
     public function __construct(
-        private readonly Control   $control,
-        private readonly TaskQueue $taskQueue
+        private readonly Control             $control,
+        private readonly Storage             $storage,
     ) {
     }
 
-    public function tick(Task $task): void
+    public function after(Task $task): void
     {
-        if (empty($this->stateHandlers)) {
-            return;
-        }
-
-        $stateService = new StateService(
+        $stateService = new StateAfterService(
             $task->result->status,
             $task->result->data,
             $task->action->id,
             $this->control
         );
 
-        foreach ($this->stateHandlers as $handler) {
+        foreach ($this->storage->state()->get(StateAfterHandlerInterface::TYPE_KEY) as $handler) {
             $handler->handle($stateService);
         }
 
+        $this->control->validateSubscribers();
         $this->control->resolveSubscribers($task->action->id, $task->result->status);
+    }
 
-        if ($this->taskQueue->isEmpty()) {
-            foreach ($this->finalStateHandlers as $handler) {
-                $handler->handle($stateService);
-            }
+    public function before(Task $task): void
+    {
+        $stateService = new StateBeforeService(
+            $task->action->id,
+            $this->control
+        );
+
+        foreach ($this->storage->state()->get(StateBeforeHandlerInterface::TYPE_KEY) as $handler) {
+            $handler->handle($stateService);
         }
     }
 
-    public function addStateHandler(StateHandlerInterface $stateHandler): void
+    public function final(): void
     {
-        $this->stateHandlers[] = $stateHandler;
-    }
+        $stateService = new StateFinalService(
+            $this->control
+        );
 
-    public function addFinalStateHandler(FinalStateHandlerInterface $finalStateHandler): void
-    {
-        $this->finalStateHandlers[] = $finalStateHandler;
+        foreach ($this->storage->state()->get(StateFinalHandlerInterface::TYPE_KEY) as $handler) {
+            $handler->handle($stateService);
+        }
     }
 }
