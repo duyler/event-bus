@@ -27,6 +27,7 @@ readonly class Dispatcher
 
         $this->validator->checkCyclicActionCalls($resultTask);
 
+        $this->control->log($resultTask);
         $this->control->resolveHeldTasks();
         $this->control->resolveSubscribers($resultTask->action->id, $resultTask->result->status);
 

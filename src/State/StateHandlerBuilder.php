@@ -6,6 +6,9 @@ namespace Duyler\EventBus\State;
 
 use Duyler\DependencyInjection\ContainerBuilder;
 use Duyler\DependencyInjection\ContainerInterface;
+use Duyler\EventBus\Contract\State\StateAfterHandlerInterface;
+use Duyler\EventBus\Contract\State\StateBeforeHandlerInterface;
+use Duyler\EventBus\Contract\State\StateFinalHandlerInterface;
 use Duyler\EventBus\Dto\StateAfterHandler;
 use Duyler\EventBus\Dto\StateBeforeHandler;
 use Duyler\EventBus\Dto\StateFinalHandler;
@@ -33,8 +36,9 @@ readonly class StateHandlerBuilder
         $this->storage->state()->save($this->create($finalStateHandler));
     }
 
-    private function create(StateBeforeHandler|StateAfterHandler|StateFinalHandler $handler)
-    {
+    private function create(
+        StateBeforeHandler|StateAfterHandler|StateFinalHandler $handler,
+    ): StateAfterHandlerInterface|StateBeforeHandlerInterface|StateFinalHandlerInterface {
         $this->container->setProviders($handler->providers);
         $this->container->bind($handler->classMap);
         return $this->container->make($handler->class);

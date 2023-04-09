@@ -38,6 +38,9 @@ readonly class Bus
         return $this;
     }
 
+    /**
+     * @throws Throwable
+     */
     public function run(string $startAction): void
     {
         $this->dispatcher->dispatchStartedTask($startAction);

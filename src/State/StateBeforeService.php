@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Duyler\EventBus\State;
 
 use Duyler\EventBus\Control;
-use Duyler\EventBus\Enum\ResultStatus;
 
 class StateBeforeService extends AbstractStateService
 {

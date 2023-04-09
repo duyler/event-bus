@@ -10,9 +10,14 @@ use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Subscribe;
 use Duyler\EventBus\Enum\ResultStatus;
 
+use function array_key_first;
+use function array_key_last;
+use function count;
+
 class Control
 {
     protected array $heldTasks = [];
+    protected array $log = [];
 
     public function __construct(
         private readonly Validator $validator,
@@ -20,6 +25,11 @@ class Control
         private readonly Storage   $storage,
         private readonly TaskQueue $taskQueue,
     ) {
+    }
+
+    public function log(Task $task): void
+    {
+        $this->log[$task->action->id] = $task;
     }
 
     public function addSubscribe(Subscribe $subscribe): void
@@ -56,6 +66,16 @@ class Control
     public function actionIsExists(string $actionId): bool
     {
         return $this->storage->action()->isExists($actionId);
+    }
+
+    public function getFirstAction(): string
+    {
+        return array_key_first($this->log);
+    }
+
+    public function getLastAction(): string
+    {
+        return array_key_last($this->log);
     }
 
     public function resolveSubscribers(string $actionId, ResultStatus $status): void
