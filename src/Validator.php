@@ -30,10 +30,9 @@ class Validator
     {
     }
 
-    public function setValidateCacheHandler(ValidateCacheHandlerInterface $validateCacheHandler): static
+    public function setValidateCacheHandler(ValidateCacheHandlerInterface $validateCacheHandler): void
     {
         $this->validateCacheHandler = $validateCacheHandler;
-        return $this;
     }
 
     public function validate(): void

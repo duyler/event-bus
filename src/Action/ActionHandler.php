@@ -23,7 +23,6 @@ readonly class ActionHandler
     public function handle(Action $action): Result
     {
         $container = $this->prepareContainer($action);
-        $this->prepareResults($action, $container);
         $arguments = $this->prepareArguments($action, $container);
 
         $this->aspectHandler->runBefore($action, $container, $arguments);
@@ -57,20 +56,19 @@ readonly class ActionHandler
     private function prepareContainer(Action $action): ActionContainer
     {
         $container = ActionContainer::build($action->id);
-        $container->bind($action->classMap);
-        $container->setProviders($action->providers);
-        $this->storage->container()->save($container);
 
-        return $container;
-    }
-
-    private function prepareResults(Action $action, ActionContainer $container): void
-    {
         $completeTasks = $this->storage->task()->getAllByRequired($action->required);
 
         foreach ($completeTasks as $task) {
             $container->set($task->result->data);
         }
+
+        $container->bind($action->classMap);
+        $container->setProviders($action->providers);
+
+        $this->storage->container()->save($container);
+
+        return $container;
     }
 
     private function prepareArguments(Action $action, ActionContainer $container): array
