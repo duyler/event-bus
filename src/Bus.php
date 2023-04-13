@@ -10,7 +10,7 @@ use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\StateAfterHandler;
 use Duyler\EventBus\Dto\StateBeforeHandler;
 use Duyler\EventBus\Dto\StateFinalHandler;
-use Duyler\EventBus\Dto\Subscribe;
+use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\State\StateHandlerBuilder;
 use Throwable;
 
@@ -32,9 +32,9 @@ readonly class Bus
         return $this;
     }
 
-    public function addSubscribe(Subscribe $subscribe): static
+    public function addSubscription(Subscription $subscription): static
     {
-        $this->storage->subscribe()->save($subscribe);
+        $this->storage->subscription()->save($subscription);
         return $this;
     }
 
@@ -43,7 +43,7 @@ readonly class Bus
      */
     public function run(string $startAction): void
     {
-        $this->dispatcher->dispatchStartedTask($startAction);
+        $this->dispatcher->dispatchStartedAction($startAction);
         $this->validator->validate();
 
         try {

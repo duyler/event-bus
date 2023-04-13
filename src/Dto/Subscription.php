@@ -6,7 +6,7 @@ namespace Duyler\EventBus\Dto;
 
 use Duyler\EventBus\Enum\ResultStatus;
 
-readonly class Subscribe
+readonly class Subscription
 {
     public function __construct(
         public string       $subjectId,

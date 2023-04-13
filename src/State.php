@@ -45,9 +45,6 @@ readonly class State
         foreach ($this->storage->state()->get(StateAfterHandlerInterface::TYPE_KEY) as $handler) {
             $handler->handle($stateService);
         }
-
-        $this->control->validateSubscribers();
-        $this->control->resolveSubscribers($task->action->id, $task->result->status);
     }
 
     public function final(): void

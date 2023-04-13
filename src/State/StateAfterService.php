@@ -6,7 +6,7 @@ namespace Duyler\EventBus\State;
 
 use Duyler\EventBus\Control;
 use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Subscribe;
+use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 
 class StateAfterService extends AbstractStateService
@@ -20,13 +20,30 @@ class StateAfterService extends AbstractStateService
         parent::__construct($control);
     }
 
-    public function addSubscribe(Subscribe $subscribe): void
+    public function addSubscription(Subscription $subscription): void
     {
-        $this->control->addSubscribe($subscribe);
+        $this->control->addSubscription($subscription);
+    }
+
+    public function subscriptionIsExists(Subscription $subscription): bool
+    {
+        return $this->control->subscriptionIsExists($subscription);
     }
 
     public function addAction(Action $action): void
     {
-        $this->control->addAction($action);
+        if ($this->control->actionIsExists($action->id) === false) {
+            $this->control->addAction($action);
+        }
+    }
+
+    public function doAction(Action $action): void
+    {
+        $this->control->doAction($action);
+    }
+
+    public function doExistsAction(string $actionId): void
+    {
+        $this->control->doExistsAction($actionId);
     }
 }
