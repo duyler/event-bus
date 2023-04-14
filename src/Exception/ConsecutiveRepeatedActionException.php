@@ -4,11 +4,11 @@ namespace Duyler\EventBus\Exception;
 
 use Exception;
 
-class CircularCallActionException extends Exception
+class ConsecutiveRepeatedActionException extends Exception
 {
     public function __construct(string $actionName, string $statue)
     {
-        $message = 'The event "' . $actionName . '" has a cyclic call after action "' . $statue . '"';
+        $message = 'The action "' . $actionName . '" consecutive repeated with status"' . $statue . '"';
     
         parent::__construct($message);
     }

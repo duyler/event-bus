@@ -9,6 +9,7 @@ use Duyler\EventBus\Contract\ValidateCacheHandlerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Exception\CircularCallActionException;
+use Duyler\EventBus\Exception\ConsecutiveRepeatedActionException;
 use InvalidArgumentException;
 use LogicException;
 use function in_array;
@@ -154,7 +155,7 @@ class Validator
     }
 
 
-    public function checkCyclicActionCalls(Task $task): void
+    public function validateResultTask(Task $task): void
     {
         if ($this->storage->task()->isExists($task->action->id)) {
 
@@ -164,6 +165,13 @@ class Validator
                 $this->repeatedEventLog[] = $actionId;
             } else {
                 $this->mainEventLog[] = $actionId;
+            }
+
+            if (end($this->repeatedEventLog) === $actionId) {
+                throw new ConsecutiveRepeatedActionException(
+                    $task->action->id,
+                    $task->result->status->value
+                );
             }
 
             if (count($this->mainEventLog) === count($this->repeatedEventLog)) {

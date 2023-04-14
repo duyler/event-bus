@@ -15,6 +15,7 @@ class DoWhile
 
     public function run(): void
     {
+        $this->state->start();
         do {
             $task = $this->taskQueue->dequeue();
             if ($task->isRunning()) {

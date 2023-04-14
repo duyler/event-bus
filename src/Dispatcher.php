@@ -13,11 +13,6 @@ readonly class Dispatcher
     ) {
     }
 
-    public function dispatchStartedAction(string $startActionId): void
-    {
-        $this->control->doExistsAction($startActionId);
-    }
-
     public function dispatchResultTask(Task $resultTask): void
     {
         $this->storage->task()->save($resultTask);

@@ -15,7 +15,7 @@ class Storage
     public function __construct(
         private readonly ActionStorage       $actionStorage,
         private readonly ContainerStorage    $containerStorage,
-        private readonly SubscriptionStorage    $subscriptionStorage,
+        private readonly SubscriptionStorage $subscriptionStorage,
         private readonly TaskStorage         $taskStorage,
         private readonly StateHandlerStorage $stateHandlerStorage,
     ) {

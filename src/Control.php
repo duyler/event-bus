@@ -85,7 +85,7 @@ class Control
 
     public function validateResultTask(Task $task): void
     {
-        $this->validator->checkCyclicActionCalls($task);
+        $this->validator->validateResultTask($task);
     }
 
     public function resolveSubscriptions(string $actionId, ResultStatus $status): void
