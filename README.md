@@ -6,7 +6,7 @@
 
 use Duyler\EventBus\BusFactory;
 use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Subscribe;
+use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 
 $bus = BusFactory::create();
@@ -37,13 +37,13 @@ $blogAction = new Action(
 $bus->addAction($requestAction);
 $bus->addAction($blogAction);
 
-$blogActionSubscribe = new Subscribe(
+$blogActionSubscription = new Subscription(
     subject: 'Request.GetRequest',
     actionId: 'Blog.GetPostById',
     status: ResultStatus::Success,
 );
 
-$bus->addSubscribe($blogActionSubscribe);
+$bus->addSubscription($blogActionSubscription);
 
 $bus->run('Request.GetRequest');
 

@@ -7,7 +7,7 @@ namespace Duyler\EventBus;
 use Duyler\EventBus\Action\ActionRequiredIterator;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Dto\Subscribe;
+use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 
 use function array_key_first;
@@ -32,14 +32,19 @@ class Control
         $this->log[$task->action->id] = $task;
     }
 
-    public function addSubscribe(Subscribe $subscribe): void
+    public function addSubscription(Subscription $subscription): void
     {
-        $this->storage->subscribe()->save($subscribe);
+        $this->storage->subscription()->save($subscription);
     }
 
-    public function validateSubscribers()
+    public function subscriptionIsExists(Subscription $subscription): bool
     {
-        $this->validator->validateSubscribes();
+        return $this->storage->subscription()->isExists($subscription);
+    }
+
+    public function validateSubscriptions()
+    {
+        $this->validator->validateSubscriptions();
     }
 
     public function rollback(): void
@@ -78,25 +83,36 @@ class Control
         return array_key_last($this->log);
     }
 
-    public function validate(Task $task): void
+    public function validateResultTask(Task $task): void
     {
-        $this->validator->checkCyclicActionCalls($task);
+        $this->validator->validateResultTask($task);
     }
 
-    public function resolveSubscribers(string $actionId, ResultStatus $status): void
+    public function resolveSubscriptions(string $actionId, ResultStatus $status): void
     {
-        $subscribers = $this->storage->subscribe()->getSubscribers($actionId, $status);
+        $subscriptions = $this->storage->subscription()->getSubscriptions($actionId, $status);
 
-        foreach ($subscribers as $subscribe) {
+        foreach ($subscriptions as $subscription) {
 
-            $action = $this->storage->action()->get($subscribe->actionId);
+            $action = $this->storage->action()->get($subscription->actionId);
 
-            $this->resolveAction($action);
+            $this->doAction($action);
         }
     }
 
-    public function resolveAction(Action $action): void
+    public function doExistsAction(string $actionId): void
     {
+        $action = $this->storage->action()->get($actionId);
+
+        $this->doAction($action);
+    }
+
+    public function doAction(Action $action): void
+    {
+        if ($this->actionIsExists($action->id) === false) {
+            $this->addAction($action);
+        }
+
         $requiredIterator = new ActionRequiredIterator($action->required, $this->storage->action());
 
         foreach ($requiredIterator as $subject) {

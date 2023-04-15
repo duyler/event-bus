@@ -8,6 +8,8 @@ use Duyler\EventBus\AspectHandler;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Exception\ActionReturnValueExistsException;
+use Duyler\EventBus\Exception\ActionReturnValueNotExistsException;
 use Duyler\EventBus\Storage;
 
 use function is_callable;
@@ -35,11 +37,19 @@ readonly class ActionHandler
             return $resultData;
         }
 
-        if (empty($resultData) && !$action->void) {
-            return new Result(ResultStatus::Fail);
+        if (empty($resultData) === false) {
+            if ($action->void === true) {
+                throw new ActionReturnValueExistsException($action->id);
+            }
+
+            return new Result(ResultStatus::Success, $resultData);
         }
 
-        return new Result(ResultStatus::Success, $resultData);
+        if ($action->void === false) {
+            throw new ActionReturnValueNotExistsException($action->id);
+        }
+
+        return new Result(ResultStatus::Success);
     }
 
     private function runAction(Action $action, ActionContainer $container, array $arguments): mixed

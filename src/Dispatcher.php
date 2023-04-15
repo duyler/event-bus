@@ -13,22 +13,15 @@ readonly class Dispatcher
     ) {
     }
 
-    public function dispatchStartedTask(string $startActionId): void
-    {
-        $action = $this->storage->action()->get($startActionId);
-
-        $this->control->resolveAction($action);
-    }
-
     public function dispatchResultTask(Task $resultTask): void
     {
         $this->storage->task()->save($resultTask);
-
-        $this->control->validate($resultTask);
-        $this->control->log($resultTask);
-        $this->control->resolveHeldTasks();
-        $this->control->resolveSubscribers($resultTask->action->id, $resultTask->result->status);
-
         $this->state->after($resultTask);
+
+        $this->control->log($resultTask);
+        $this->control->validateResultTask($resultTask);
+        $this->control->validateSubscriptions();
+        $this->control->resolveHeldTasks();
+        $this->control->resolveSubscriptions($resultTask->action->id, $resultTask->result->status);
     }
 }

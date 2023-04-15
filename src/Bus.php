@@ -10,14 +10,15 @@ use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\StateAfterHandler;
 use Duyler\EventBus\Dto\StateBeforeHandler;
 use Duyler\EventBus\Dto\StateFinalHandler;
-use Duyler\EventBus\Dto\Subscribe;
+use Duyler\EventBus\Dto\StateStartHandler;
+use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\State\StateHandlerBuilder;
 use Throwable;
 
 readonly class Bus
 {
     public function __construct(
-        private Dispatcher          $dispatcher,
+        private Control             $control,
         private Validator           $validator,
         private DoWhile             $doWhile,
         private Rollback            $rollback,
@@ -32,18 +33,17 @@ readonly class Bus
         return $this;
     }
 
-    public function addSubscribe(Subscribe $subscribe): static
+    public function addSubscription(Subscription $subscription): static
     {
-        $this->storage->subscribe()->save($subscribe);
+        $this->storage->subscription()->save($subscription);
         return $this;
     }
 
     /**
      * @throws Throwable
      */
-    public function run(string $startAction): void
+    public function run(): void
     {
-        $this->dispatcher->dispatchStartedTask($startAction);
         $this->validator->validate();
 
         try {
@@ -52,6 +52,16 @@ readonly class Bus
             $this->rollback->run();
             throw $exception;
         }
+    }
+
+    public function doAction(Action $action): void
+    {
+        $this->control->doAction($action);
+    }
+
+    public function doExistsAction(string $actionId): void
+    {
+        $this->control->doExistsAction($actionId);
     }
 
     public function setValidateCacheHandler(ValidateCacheHandlerInterface $validateCacheHandler): static
@@ -70,14 +80,19 @@ readonly class Bus
         return $this->storage->task()->getResult($actionId);
     }
 
-    public function addStateAfterHandler(StateAfterHandler $afterHandler): void
+    public function addStateStartHandler(StateStartHandler $startHandler): void
     {
-        $this->stateHandlerBuilder->createAfter($afterHandler);
+        $this->stateHandlerBuilder->createStart($startHandler);
     }
 
     public function addStateBeforeHandler(StateBeforeHandler $beforeHandler): void
     {
         $this->stateHandlerBuilder->createBefore($beforeHandler);
+    }
+
+    public function addStateAfterHandler(StateAfterHandler $afterHandler): void
+    {
+        $this->stateHandlerBuilder->createAfter($afterHandler);
     }
 
     public function addStateFinalHandler(StateFinalHandler $finalHandler): void

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Storage;
 
-use Duyler\EventBus\Dto\Subscribe;
+use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 use RuntimeException;
 
@@ -15,25 +15,31 @@ use function preg_quote;
 use function preg_grep;
 use function array_keys;
 
-class SubscribeStorage extends AbstractStorage
+class SubscriptionStorage extends AbstractStorage
 {
-    public function save(Subscribe $subscribe): void
+    public function save(Subscription $subscription): void
     {
-        $id = $subscribe->subjectId . '.' . $subscribe->status->value . '@' . $subscribe->actionId;
+        $id = $this->makeSubscriptionId($subscription);
 
         if (array_key_exists($id, $this->data)) {
             throw new RuntimeException(
-            'Subscribe ' . $id . ' already registered for ' . $subscribe->actionId
+            'Subscription ' . $id . ' already registered for ' . $subscription->actionId
             );
         }
 
-        $this->data[$id] = $subscribe;
+        $this->data[$id] = $subscription;
+    }
+
+    public function isExists(Subscription $subscription): bool
+    {
+        $id = $this->makeSubscriptionId($subscription);
+        return array_key_exists($id, $this->data);
     }
 
     /**
-     * @return Subscribe[]
+     * @return Subscription[]
      */
-    public function getSubscribers(string $actionId, ResultStatus $status): array
+    public function getSubscriptions(string $actionId, ResultStatus $status): array
     {
         $pattern = '/' . preg_quote($this->makeActionIdWithStatus($actionId, $status) . '@') . '/';
 

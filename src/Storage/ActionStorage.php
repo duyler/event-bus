@@ -25,4 +25,14 @@ class ActionStorage extends AbstractStorage
         }
         return $this->data[$actionId];
     }
+
+    public function isExists(string $actionId): bool
+    {
+        return array_key_exists($actionId, $this->data);
+    }
+
+    public function remove(string $actionId): void
+    {
+        unset($actionId, $this->data);
+    }
 }

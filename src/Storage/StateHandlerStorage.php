@@ -7,11 +7,15 @@ namespace Duyler\EventBus\Storage;
 use Duyler\EventBus\Contract\State\StateAfterHandlerInterface;
 use Duyler\EventBus\Contract\State\StateBeforeHandlerInterface;
 use Duyler\EventBus\Contract\State\StateFinalHandlerInterface;
+use Duyler\EventBus\Contract\State\StateStartHandlerInterface;
 
 class StateHandlerStorage extends AbstractStorage
 {
-    public function save(StateAfterHandlerInterface|StateBeforeHandlerInterface|StateFinalHandlerInterface $stateHandler)
-    {
+    public function save(
+        StateStartHandlerInterface
+        |StateAfterHandlerInterface
+        |StateBeforeHandlerInterface
+        |StateFinalHandlerInterface $stateHandler): void {
         $this->data[$stateHandler::TYPE_KEY][] = $stateHandler;
     }
 

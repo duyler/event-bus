@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State;
 
-class StateFinalService extends AbstractStateService
+class StateFinalService extends AbstractStateService implements StateServiceInterface
 {
     public function getFirstAction(): string
     {

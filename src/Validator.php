@@ -7,8 +7,9 @@ namespace Duyler\EventBus;
 use Duyler\EventBus\Contract\RollbackActionInterface;
 use Duyler\EventBus\Contract\ValidateCacheHandlerInterface;
 use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Subscribe;
+use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Exception\CircularCallActionException;
+use Duyler\EventBus\Exception\ConsecutiveRepeatedActionException;
 use InvalidArgumentException;
 use LogicException;
 use function in_array;
@@ -53,7 +54,7 @@ class Validator
     private function runValidation(): void
     {
         $this->validateActions();
-        $this->validateSubscribes();
+        $this->validateSubscriptions();
     }
 
     private function createDataHash(): string
@@ -130,31 +131,31 @@ class Validator
         }
     }
 
-    public function validateSubscribes(): void
+    public function validateSubscriptions(): void
     {
-        /** @var Subscribe $subscribe */
-        foreach ($this->storage->subscribe()->getAll() as $subscribe) {
-            $this->validateSubscribe($subscribe);
+        /** @var Subscription $subscription */
+        foreach ($this->storage->subscription()->getAll() as $subscription) {
+            $this->validateSubscription($subscription);
         }
     }
 
-    public function validateSubscribe(Subscribe $subscribe): void
+    public function validateSubscription(Subscription $subscription): void
     {
-        if ($this->storage->action()->isExists($subscribe->actionId) === false) {
+        if ($this->storage->action()->isExists($subscription->actionId) === false) {
             throw new InvalidArgumentException(
-                'Action ' . $subscribe->actionId . ' not registered in the bus'
+                'Action ' . $subscription->actionId . ' not registered in the bus'
             );
         }
 
-        if ($this->storage->action()->isExists($subscribe->subjectId) === false) {
+        if ($this->storage->action()->isExists($subscription->subjectId) === false) {
             throw new InvalidArgumentException(
-                'Subscribed action ' . $subscribe->subjectId . ' not registered in the bus'
+                'Subscribed action ' . $subscription->subjectId . ' not registered in the bus'
             );
         }
     }
 
 
-    public function checkCyclicActionCalls(Task $task): void
+    public function validateResultTask(Task $task): void
     {
         if ($this->storage->task()->isExists($task->action->id)) {
 
@@ -166,10 +167,17 @@ class Validator
                 $this->mainEventLog[] = $actionId;
             }
 
+            if (end($this->repeatedEventLog) === $actionId) {
+                throw new ConsecutiveRepeatedActionException(
+                    $task->action->id,
+                    $task->result->status->value
+                );
+            }
+
             if (count($this->mainEventLog) === count($this->repeatedEventLog)) {
                 throw new CircularCallActionException(
                     $task->action->id,
-                    $task->subscribe->subjectId ?? end($this->mainEventLog)
+                    end($this->mainEventLog)
                 );
             }
         }

@@ -9,9 +9,11 @@ use Duyler\DependencyInjection\ContainerInterface;
 use Duyler\EventBus\Contract\State\StateAfterHandlerInterface;
 use Duyler\EventBus\Contract\State\StateBeforeHandlerInterface;
 use Duyler\EventBus\Contract\State\StateFinalHandlerInterface;
+use Duyler\EventBus\Contract\State\StateStartHandlerInterface;
 use Duyler\EventBus\Dto\StateAfterHandler;
 use Duyler\EventBus\Dto\StateBeforeHandler;
 use Duyler\EventBus\Dto\StateFinalHandler;
+use Duyler\EventBus\Dto\StateStartHandler;
 use Duyler\EventBus\Storage;
 
 readonly class StateHandlerBuilder
@@ -21,24 +23,29 @@ readonly class StateHandlerBuilder
     {
         $this->container = ContainerBuilder::build();
     }
-    public function createBefore(StateBeforeHandler $beforeStateHandler): void
+    public function createStart(StateStartHandler $stateStartHandler): void
     {
-        $this->storage->state()->save($this->create($beforeStateHandler));
+        $this->storage->state()->save($this->create($stateStartHandler));
     }
 
-    public function createAfter(StateAfterHandler $afterStateHandler): void
+    public function createBefore(StateBeforeHandler $stateBeforeHandler): void
     {
-        $this->storage->state()->save($this->create($afterStateHandler));
+        $this->storage->state()->save($this->create($stateBeforeHandler));
     }
 
-    public function createFinal(StateFinalHandler $finalStateHandler): void
+    public function createAfter(StateAfterHandler $stateAfterHandler): void
     {
-        $this->storage->state()->save($this->create($finalStateHandler));
+        $this->storage->state()->save($this->create($stateAfterHandler));
+    }
+
+    public function createFinal(StateFinalHandler $stateFinalHandler): void
+    {
+        $this->storage->state()->save($this->create($stateFinalHandler));
     }
 
     private function create(
-        StateBeforeHandler|StateAfterHandler|StateFinalHandler $handler,
-    ): StateAfterHandlerInterface|StateBeforeHandlerInterface|StateFinalHandlerInterface {
+        StateStartHandler|StateBeforeHandler|StateAfterHandler|StateFinalHandler $handler,
+    ): StateStartHandlerInterface|StateAfterHandlerInterface|StateBeforeHandlerInterface|StateFinalHandlerInterface {
         $this->container->setProviders($handler->providers);
         $this->container->bind($handler->classMap);
         return $this->container->make($handler->class);

@@ -6,7 +6,7 @@ namespace Duyler\EventBus\State;
 
 use Duyler\EventBus\Control;
 
-class StateBeforeService extends AbstractStateService
+class StateBeforeService extends AbstractStateService implements StateServiceInterface
 {
     public function __construct(
         public readonly string $actionId,

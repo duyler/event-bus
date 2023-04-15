@@ -15,6 +15,7 @@ class DoWhile
 
     public function run(): void
     {
+        $this->state->start();
         do {
             $task = $this->taskQueue->dequeue();
             if ($task->isRunning()) {
@@ -24,7 +25,6 @@ class DoWhile
             $this->state->before($task);
             $this->taskRunner->run($task);
         } while ($this->taskQueue->isNotEmpty());
-
         $this->state->final();
     }
 }

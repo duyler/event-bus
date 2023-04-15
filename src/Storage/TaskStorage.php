@@ -31,4 +31,9 @@ class TaskStorage extends AbstractStorage
     {
         return $this->data[$actionId];
     }
+
+    public function isExists(string $actionId): bool
+    {
+        return array_key_exists($actionId, $this->data);
+    }
 }

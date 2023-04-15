@@ -11,36 +11,12 @@ class AspectHandler
 {
     public function runBefore(Action $action, ActionContainer $container, array $arguments): void
     {
-        $before = [];
-
-        foreach ($action->before as $advice) {
-            if (is_callable($advice)) {
-                $before[] = $advice;
-                continue;
-            }
-            $before[] = $container->make($advice);
-        }
-
-        foreach ($before as $advice) {
-            $advice(...$arguments);
-        }
+        $this->runAdvice($action->before, $container, $arguments);
     }
 
     public function runAfter(Action $action, ActionContainer $container, array $arguments): void
     {
-        $after = [];
-
-        foreach ($action->after as $advice) {
-            if (is_callable($advice)) {
-                $after[] = $advice;
-                continue;
-            }
-            $after[] = $container->make($advice);
-        }
-
-        foreach ($after as $advice) {
-            $advice(...$arguments);
-        }
+        $this->runAdvice($action->after, $container, $arguments);
     }
 
     public function runAround(Action $action, ActionContainer $container, array $arguments): mixed
@@ -51,5 +27,15 @@ class AspectHandler
 
         $around = $container->make($action->around);
         return ($around)(...$arguments);
+    }
+
+    private function runAdvice(array $advices, ActionContainer $container, array $arguments): void
+    {
+        foreach ($advices as $advice) {
+            if (is_callable($advice) === false) {
+                $advice = $container->make($advice);
+            }
+            $advice(...$arguments);
+        }
     }
 }
