@@ -10,10 +10,10 @@ use Duyler\EventBus\Contract\State\StateAfterHandlerInterface;
 use Duyler\EventBus\Contract\State\StateBeforeHandlerInterface;
 use Duyler\EventBus\Contract\State\StateFinalHandlerInterface;
 use Duyler\EventBus\Contract\State\StateStartHandlerInterface;
-use Duyler\EventBus\Dto\StateAfterHandler;
-use Duyler\EventBus\Dto\StateBeforeHandler;
-use Duyler\EventBus\Dto\StateFinalHandler;
-use Duyler\EventBus\Dto\StateStartHandler;
+use Duyler\EventBus\Dto\State\StateAfterHandler;
+use Duyler\EventBus\Dto\State\StateBeforeHandler;
+use Duyler\EventBus\Dto\State\StateFinalHandler;
+use Duyler\EventBus\Dto\State\StateStartHandler;
 use Duyler\EventBus\Storage;
 
 readonly class StateHandlerBuilder

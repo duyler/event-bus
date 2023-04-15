@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Dto;
+namespace Duyler\EventBus\Dto\State;
 
-readonly class StateStartHandler
+readonly class StateBeforeHandler
 {
     public function __construct(
         public string $class,
