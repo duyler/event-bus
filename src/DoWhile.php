@@ -25,7 +25,6 @@ class DoWhile
             $this->state->before($task);
             $this->taskRunner->run($task);
         } while ($this->taskQueue->isNotEmpty());
-
         $this->state->final();
     }
 }
