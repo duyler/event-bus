@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-class ActionContainerBuilder
-{
-    private const CACHE_DIR = 'action-container';
+use Duyler\EventBus\Config;
 
-    public function __construct(private readonly string $containerCacheDir)
+readonly class ActionContainerBuilder
+{
+    public function __construct(private Config $config)
     {
     }
 
     public function build(string $actionId): ActionContainer
     {
-        return ActionContainer::build($actionId, $this->containerCacheDir . self::CACHE_DIR);
+        return ActionContainer::build($actionId, $this->config->actionContainerCacheDir);
     }
 }

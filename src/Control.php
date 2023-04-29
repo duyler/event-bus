@@ -29,7 +29,7 @@ class Control
 
     public function log(Task $task): void
     {
-        $this->log[$task->action->id] = $task;
+        $this->log[] = $task->action->id;
     }
 
     public function addSubscription(Subscription $subscription): void
@@ -75,12 +75,12 @@ class Control
 
     public function getFirstAction(): string
     {
-        return array_key_first($this->log);
+        return $this->log[array_key_first($this->log)];
     }
 
     public function getLastAction(): string
     {
-        return array_key_last($this->log);
+        return $this->log[array_key_last($this->log)];
     }
 
     public function validateResultTask(Task $task): void

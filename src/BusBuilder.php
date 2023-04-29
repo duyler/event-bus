@@ -5,17 +5,11 @@ declare(strict_types=1);
 namespace Duyler\EventBus;
 
 use Duyler\DependencyInjection\ContainerBuilder;
-use Duyler\EventBus\Action\ActionContainerBuilder;
-use Duyler\EventBus\DI\ActionContainerBuilderProvider;
 use Duyler\EventBus\Dto\Config;
 use Duyler\DependencyInjection\Config as DIConfig;
 
 class BusBuilder
 {
-    private const PROVIDERS = [
-        ActionContainerBuilder::class => ActionContainerBuilderProvider::class
-    ];
-
     private const CACHE_DIR = '/../var/cache/event-bus/';
 
     public static function build(Config $config = null): Bus
@@ -26,13 +20,12 @@ class BusBuilder
             );
         }
 
-        $diConfig = new DIConfig(
+        $DIConfig = new DIConfig(
             cacheDirPath: $config->defaultCacheDir,
         );
 
-        $container = ContainerBuilder::build($diConfig);
+        $container = ContainerBuilder::build($DIConfig);
         $container->set($config);
-        $container->setProviders(self::PROVIDERS);
 
         return $container->make(Bus::class);
     }
