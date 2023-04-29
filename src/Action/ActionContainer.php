@@ -13,10 +13,12 @@ use Duyler\DependencyInjection\ServiceStorage;
 
 class ActionContainer extends Container
 {
-    public function __construct(public readonly string $actionId)
-    {
+    public function __construct(
+        public readonly string $actionId,
+        public readonly ?string $containerCacheDir = null,
+    ) {
         $cacheHandler = new FileCacheHandler(
-            dirname('__DIR__'). '/../var/cache/event-bus/container/'
+            $containerCacheDir ?? dirname('__DIR__'). '/../var/cache/event-bus/container/'
         );
         $reflectionStorage = new ReflectionStorage();
         $serviceStorage = new ServiceStorage();
@@ -24,8 +26,8 @@ class ActionContainer extends Container
         parent::__construct(new Compiler($serviceStorage), $dependencyMapper, $serviceStorage, $cacheHandler);
     }
 
-    public static function build(string $actionId): self
+    public static function build(string $actionId, ?string $containerCacheDir): self
     {
-        return new self($actionId);
+        return new self($actionId, $containerCacheDir);
     }
 }

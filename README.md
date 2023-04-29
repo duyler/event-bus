@@ -1,8 +1,11 @@
-![build](https://github.com/jine-framework/event-bus/workflows/build/badge.svg)
+![build](https://github.com/duyler/event-bus/workflows/build/badge.svg)
 # Event Bus
 
 ## Base usage
-```
+
+```php
+
+<?php
 
 use Duyler\EventBus\BusFactory;
 use Duyler\EventBus\Dto\Action;
@@ -47,4 +50,6 @@ $bus->addSubscription($blogActionSubscription);
 
 $bus->run('Request.GetRequest');
 
-$result = $bus->getResult('Blog.GetPostById');
+$blogPost = $bus->getResult('Blog.GetPostById');
+
+```

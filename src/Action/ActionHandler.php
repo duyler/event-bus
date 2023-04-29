@@ -19,6 +19,7 @@ readonly class ActionHandler
     public function __construct(
         private AspectHandler $aspectHandler,
         private Storage       $storage,
+        private ActionContainerBuilder $containerBuilder,
     ) {
     }
 
@@ -65,7 +66,7 @@ readonly class ActionHandler
 
     private function prepareContainer(Action $action): ActionContainer
     {
-        $container = ActionContainer::build($action->id);
+        $container = $this->containerBuilder->build($action->id);
 
         $completeTasks = $this->storage->task()->getAllByRequired($action->required);
 

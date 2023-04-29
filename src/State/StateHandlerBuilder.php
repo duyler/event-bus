@@ -10,18 +10,21 @@ use Duyler\EventBus\Contract\State\StateAfterHandlerInterface;
 use Duyler\EventBus\Contract\State\StateBeforeHandlerInterface;
 use Duyler\EventBus\Contract\State\StateFinalHandlerInterface;
 use Duyler\EventBus\Contract\State\StateStartHandlerInterface;
-use Duyler\EventBus\Dto\StateAfterHandler;
-use Duyler\EventBus\Dto\StateBeforeHandler;
-use Duyler\EventBus\Dto\StateFinalHandler;
-use Duyler\EventBus\Dto\StateStartHandler;
+use Duyler\EventBus\Config;
+use Duyler\EventBus\Dto\State\StateAfterHandler;
+use Duyler\EventBus\Dto\State\StateBeforeHandler;
+use Duyler\EventBus\Dto\State\StateFinalHandler;
+use Duyler\EventBus\Dto\State\StateStartHandler;
 use Duyler\EventBus\Storage;
 
 readonly class StateHandlerBuilder
 {
     private ContainerInterface $container;
-    public function __construct(private Storage $storage,)
+    public function __construct(private Storage $storage, Config $config)
     {
-        $this->container = ContainerBuilder::build();
+        $this->container = ContainerBuilder::build(new \Duyler\DependencyInjection\Config(
+            cacheDirPath: $config->stateHandlerBuilderCacheDir,
+        ));
     }
     public function createStart(StateStartHandler $stateStartHandler): void
     {
