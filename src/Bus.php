@@ -6,6 +6,7 @@ namespace Duyler\EventBus;
 
 use Duyler\EventBus\Contract\ValidateCacheHandlerInterface;
 use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Dto\Coroutine;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\State\StateAfterHandler;
 use Duyler\EventBus\Dto\State\StateBeforeHandler;
@@ -30,6 +31,12 @@ readonly class Bus
     public function addAction(Action $action): static
     {
         $this->storage->action()->save($action);
+        return $this;
+    }
+
+    public function addCoroutine(Coroutine $coroutine): static
+    {
+        $this->storage->coroutine()->save($coroutine);
         return $this;
     }
 

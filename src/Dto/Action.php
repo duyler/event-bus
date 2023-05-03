@@ -22,7 +22,7 @@ readonly class Action
         public array            $before = [],
         public array            $after = [],
         public string | Closure $around = '',
-        public string | Closure $coroutine = '',
+        public string           $coroutine = '',
         public bool             $void = false
     ) {
         $this->required = new RecursiveArrayIterator($required);

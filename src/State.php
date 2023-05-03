@@ -48,6 +48,11 @@ readonly class State
         }
     }
 
+    public function suspend(Task $task): void
+    {
+        // TODO doStuff
+    }
+
     public function after(Task $task): void
     {
         $stateService = new StateAfterService(

@@ -16,7 +16,8 @@
         "docs": "https://duyler.org/docs/event-bus/"
     },
     "require": {
-        "php": "^8.2"
+        "php": "^8.2",
+        "ext-pcntl": "^8.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.0"

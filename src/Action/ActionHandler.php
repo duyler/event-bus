@@ -6,6 +6,7 @@ namespace Duyler\EventBus\Action;
 
 use Duyler\EventBus\AspectHandler;
 use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Dto\Coroutine;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\ActionReturnValueExistsException;
@@ -105,18 +106,24 @@ readonly class ActionHandler
         return $container->make($action->handler);
     }
 
-    public function handleCoroutine(Action $action, mixed $value, callable $callback): mixed
+    public function handleCoroutine(Action $action, Coroutine $coroutine, mixed $value): void
     {
-        if (empty($action->coroutine)) {
-            return null;
+        if (is_callable($coroutine->handler)) {
+            $coroutine = $coroutine->handler;
+        } else {
+            $container = $this->storage->container()->get($action->id);
+            $container->bind($coroutine->classMap);
+            $container->setProviders($coroutine->providers);
+            $coroutine = $container->make($coroutine->handler);
         }
 
-        if (is_callable($action->coroutine)) {
-            return ($action->coroutine)($value, $callback);
+        if (extension_loaded('pcntl')) {
+            $pid = pcntl_fork();
+            if (0 === $pid) {
+                $coroutine($value);
+            }
+        } else {
+            $coroutine($value);
         }
-
-        $container = $this->storage->container()->get($action->id);
-        $coroutine = $container->make($action->coroutine);
-        return $coroutine($value, $callback);
     }
 }
