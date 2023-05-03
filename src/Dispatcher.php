@@ -8,7 +8,6 @@ readonly class Dispatcher
 {
     public function __construct(
         private Storage   $storage,
-        private State     $state,
         private Control   $control,
     ) {
     }
@@ -16,7 +15,6 @@ readonly class Dispatcher
     public function dispatchResultTask(Task $resultTask): void
     {
         $this->storage->task()->save($resultTask);
-        $this->state->after($resultTask);
 
         $this->control->log($resultTask);
         $this->control->validateResultTask($resultTask);

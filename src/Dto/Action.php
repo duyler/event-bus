@@ -14,7 +14,7 @@ readonly class Action
     public function __construct(
         public string           $id,
         public string | Closure $handler,
-        array                  $required = [],
+        array                   $required = [],
         public array            $classMap = [],
         public array            $providers = [],
         public string | Closure $rollback = '',
@@ -22,6 +22,7 @@ readonly class Action
         public array            $before = [],
         public array            $after = [],
         public string | Closure $around = '',
+        public string | Closure $coroutine = '',
         public bool             $void = false
     ) {
         $this->required = new RecursiveArrayIterator($required);

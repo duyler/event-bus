@@ -104,4 +104,19 @@ readonly class ActionHandler
 
         return $container->make($action->handler);
     }
+
+    public function handleCoroutine(Action $action, mixed $value, callable $callback): mixed
+    {
+        if (empty($action->coroutine)) {
+            return null;
+        }
+
+        if (is_callable($action->coroutine)) {
+            return ($action->coroutine)($value, $callback);
+        }
+
+        $container = $this->storage->container()->get($action->id);
+        $coroutine = $container->make($action->coroutine);
+        return $coroutine($value, $callback);
+    }
 }
