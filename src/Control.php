@@ -127,10 +127,18 @@ class Control
                 break;
             }
 
-            $this->pushTask(new Task($requiredAction));
+            $this->pushTask($this->createTask($requiredAction));
         }
 
-        $this->pushTask(new Task($action));
+        $this->pushTask($this->createTask($action));
+    }
+
+    protected function createTask(Action $action): Task
+    {
+        return new Task(
+            $action,
+            $this->storage->coroutine()->get($action->coroutine)
+        );
     }
 
     protected function pushTask(Task $task): void

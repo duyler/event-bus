@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Contract;
+namespace Duyler\EventBus\Contract\Aspect;
 
 interface BeforeAdviceInterface
 {

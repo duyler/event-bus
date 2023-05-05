@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus;
 
 use Closure;
-use Duyler\EventBus\Exception\ActionCoroutineNotSetException;
+use Duyler\EventBus\Dto\Coroutine;
 use Fiber;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
@@ -13,13 +13,15 @@ use Duyler\EventBus\Dto\Result;
 class Task
 {
     public readonly Action $action;
+    public readonly ?Coroutine $coroutine;
     public readonly ?Result $result;
     private ?Fiber $fiber = null;
     private mixed $value = null;
 
-    public function __construct(Action $action)
+    public function __construct(Action $action, ?Coroutine $coroutine = null)
     {
         $this->action = $action;
+        $this->coroutine = $coroutine;
     }
 
     public function run(Closure $actionHandler): void
@@ -33,23 +35,18 @@ class Task
         return $this->fiber && $this->fiber->isSuspended();
     }
 
-    public function resume(Closure $coroutineHandler): void
+    public function resume(): void
     {
-        if (empty($this->action->coroutine) && $this->value !== null) {
-            throw new ActionCoroutineNotSetException($this->action->id);
-        }
-
-        if (empty($this->action->coroutine)) {
-            $this->fiber->resume();
-        } else {
-            $this->value = $coroutineHandler($this->value, fn (mixed $value): mixed
-                => $this->fiber->resume($value)
-            );
-        }
+        $this->value = $this->fiber->resume($this->coroutine?->callback);
     }
 
     public function takeResult(): void
     {
         $this->result = $this->fiber->getReturn();
+    }
+
+    public function getValue(): mixed
+    {
+        return $this->value;
     }
 }
