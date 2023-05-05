@@ -7,13 +7,13 @@ namespace Duyler\EventBus;
 use Duyler\EventBus\Action\ActionHandler;
 use Duyler\EventBus\Dto\Result;
 
-class DoWhile
+readonly class DoWhile
 {
     public function __construct(
-        private readonly Dispatcher    $dispatcher,
-        private readonly ActionHandler $actionHandler,
-        private readonly TaskQueue $taskQueue,
-        private readonly State $state,
+        private Dispatcher    $dispatcher,
+        private ActionHandler $actionHandler,
+        private TaskQueue     $taskQueue,
+        private State         $state,
     ) {
     }
 

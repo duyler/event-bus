@@ -14,6 +14,7 @@ readonly class Coroutine
         public string | Closure $callback,
         public array            $classMap = [],
         public array            $providers = [],
+        public string           $driver = 'pcntl',
     ) {
     }
 }

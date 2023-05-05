@@ -37,7 +37,7 @@ class Task
 
     public function resume(): void
     {
-        $this->fiber->resume($this->coroutine?->callback);
+        $this->value = $this->fiber->resume($this->coroutine?->callback);
     }
 
     public function takeResult(): void

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Duyler\EventBus;
 
 use Duyler\EventBus\Contract\ValidateCacheHandlerInterface;
+use Duyler\EventBus\Coroutine\CoroutineDriverProvider;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Coroutine;
+use Duyler\EventBus\Dto\CoroutineDriver;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\State\StateAfterHandler;
 use Duyler\EventBus\Dto\State\StateBeforeHandler;
@@ -19,12 +21,14 @@ use Throwable;
 readonly class Bus
 {
     public function __construct(
-        private Control             $control,
-        private Validator           $validator,
-        private DoWhile             $doWhile,
-        private Rollback            $rollback,
-        private Storage             $storage,
-        private StateHandlerBuilder $stateHandlerBuilder,
+        private Control                 $control,
+        private Validator               $validator,
+        private DoWhile                 $doWhile,
+        private Rollback                $rollback,
+        private Storage                 $storage,
+        private StateHandlerBuilder     $stateHandlerBuilder,
+        private Config                  $config,
+        private CoroutineDriverProvider $coroutineDriverProvider,
     ) {
     }
 
@@ -40,6 +44,12 @@ readonly class Bus
         return $this;
     }
 
+    public function addCoroutineDriver(CoroutineDriver $coroutineDriver): static
+    {
+        $this->coroutineDriverProvider->register($coroutineDriver);
+        return $this;
+    }
+
     public function addSubscription(Subscription $subscription): static
     {
         $this->storage->subscription()->save($subscription);
@@ -51,7 +61,9 @@ readonly class Bus
      */
     public function run(): void
     {
-        $this->validator->validate();
+        if ($this->config->enabledValidation) {
+            $this->validator->validate();
+        }
 
         try {
             $this->doWhile->run();
