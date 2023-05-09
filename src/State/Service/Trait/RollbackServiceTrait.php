@@ -11,8 +11,8 @@ use Duyler\EventBus\Control;
  */
 trait RollbackServiceTrait
 {
-    public function rollback(): void
+    public function rollbackWithoutException(int $step = 0): void
     {
-        $this->control->rollback();
+        $this->control->rollbackWithoutException($step);
     }
 }

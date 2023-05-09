@@ -47,9 +47,11 @@ class Control
         $this->validator->validateSubscriptions();
     }
 
-    public function rollback(): void
+    public function rollbackWithoutException(int $step = 0): void
     {
-        $this->rollback->run();
+        $slice = $step > 0 ? array_slice($this->log, -1, $step) : [];
+
+        $this->rollback->run($slice);
     }
 
     public function addAction(Action $action): void
@@ -167,7 +169,7 @@ class Control
             return true;
         }
 
-        $completeTasks = $this->storage->task()->getAllByRequired($task->action->required);
+        $completeTasks = $this->storage->task()->getAllByArray($task->action->required->getArrayCopy());
 
         /** @var Task $completeTask */
         foreach ($completeTasks as $completeTask) {

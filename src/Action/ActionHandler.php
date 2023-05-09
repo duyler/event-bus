@@ -70,7 +70,7 @@ readonly class ActionHandler
     {
         $container = $this->containerBuilder->build($action->id);
 
-        $completeTasks = $this->storage->task()->getAllByRequired($action->required);
+        $completeTasks = $this->storage->task()->getAllByArray($action->required->getArrayCopy());
 
         foreach ($completeTasks as $task) {
             $container->set($task->result->data);

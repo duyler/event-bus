@@ -17,9 +17,9 @@ class TaskStorage extends AbstractStorage
         $this->data[$task->action->id] = $task;
     }
 
-    public function getAllByRequired(RecursiveArrayIterator $required): array
+    public function getAllByArray(array $array): array
     {
-        return array_intersect_key($this->data, array_flip($required->getArrayCopy()));
+        return array_intersect_key($this->data, array_flip($array));
     }
 
     public function getResult(string $actionId): ?Result
