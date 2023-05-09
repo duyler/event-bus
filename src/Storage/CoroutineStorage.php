@@ -17,4 +17,9 @@ class CoroutineStorage extends AbstractStorage
     {
         return $this->data[$id] ?? null;
     }
+
+    public function isExists(string $id): bool
+    {
+        return array_key_exists($id, $this->data);
+    }
 }

@@ -105,8 +105,8 @@ readonly class State
     private function handle(
         StateHandlerInterface $handler,
         StateServiceInterface $stateService,
-        string $actionId): void
-    {
+        string $actionId,
+    ): void {
         if (empty($handler->observed()) || in_array($actionId, $handler->observed())) {
             $handler->handle($stateService);
         }
