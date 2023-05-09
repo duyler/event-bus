@@ -22,7 +22,7 @@ $requestAction = new Action(
 $blogAction = new Action(
     id: 'Blog.GetPostById',
     handler: GetPostByIdActionInterface::class,
-    require: [
+    required: [
         'Request.GetRequest',
     ],
     classMap: [
