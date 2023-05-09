@@ -7,7 +7,6 @@ namespace Duyler\EventBus;
 use Duyler\EventBus\Storage\ActionStorage;
 use Duyler\EventBus\Storage\ContainerStorage;
 use Duyler\EventBus\Storage\CoroutineStorage;
-use Duyler\EventBus\Storage\StateHandlerStorage;
 use Duyler\EventBus\Storage\SubscriptionStorage;
 use Duyler\EventBus\Storage\TaskStorage;
 
@@ -18,7 +17,6 @@ readonly class Storage
         private ContainerStorage    $containerStorage,
         private SubscriptionStorage $subscriptionStorage,
         private TaskStorage         $taskStorage,
-        private StateHandlerStorage $stateHandlerStorage,
         private CoroutineStorage    $coroutineStorage,
     ) {
     }
@@ -41,11 +39,6 @@ readonly class Storage
     public function task(): TaskStorage
     {
         return $this->taskStorage;
-    }
-
-    public function state(): StateHandlerStorage
-    {
-        return $this->stateHandlerStorage;
     }
 
     public function coroutine(): CoroutineStorage

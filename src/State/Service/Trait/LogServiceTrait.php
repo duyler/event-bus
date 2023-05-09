@@ -2,9 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\State;
+namespace Duyler\EventBus\State\Service\Trait;
 
-class StateFinalService extends AbstractStateService implements StateServiceInterface
+use Duyler\EventBus\Control;
+
+/**
+ * @property Control $control
+ */
+trait LogServiceTrait
 {
     public function getFirstAction(): string
     {

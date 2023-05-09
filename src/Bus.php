@@ -14,8 +14,10 @@ use Duyler\EventBus\Dto\State\StateAfterHandler;
 use Duyler\EventBus\Dto\State\StateBeforeHandler;
 use Duyler\EventBus\Dto\State\StateFinalHandler;
 use Duyler\EventBus\Dto\State\StateStartHandler;
+use Duyler\EventBus\Dto\State\StateSuspendHandler;
 use Duyler\EventBus\Dto\Subscription;
-use Duyler\EventBus\State\StateHandlerBuilder;
+use Duyler\EventBus\State\StateHandlerProvider;
+use Duyler\EventBus\State\StateHandlerContainer;
 use Throwable;
 
 readonly class Bus
@@ -26,9 +28,9 @@ readonly class Bus
         private DoWhile                 $doWhile,
         private Rollback                $rollback,
         private Storage                 $storage,
-        private StateHandlerBuilder     $stateHandlerBuilder,
         private Config                  $config,
         private CoroutineDriverProvider $coroutineDriverProvider,
+        private StateHandlerContainer   $stateHandlerContainer,
     ) {
     }
 
@@ -101,21 +103,26 @@ readonly class Bus
 
     public function addStateStartHandler(StateStartHandler $startHandler): void
     {
-        $this->stateHandlerBuilder->createStart($startHandler);
+        $this->stateHandlerContainer->registerStartHandler($startHandler);
     }
 
     public function addStateBeforeHandler(StateBeforeHandler $beforeHandler): void
     {
-        $this->stateHandlerBuilder->createBefore($beforeHandler);
+        $this->stateHandlerContainer->registerBeforeHandler($beforeHandler);
     }
 
     public function addStateAfterHandler(StateAfterHandler $afterHandler): void
     {
-        $this->stateHandlerBuilder->createAfter($afterHandler);
+        $this->stateHandlerContainer->registerAfterHandler($afterHandler);
     }
 
     public function addStateFinalHandler(StateFinalHandler $finalHandler): void
     {
-        $this->stateHandlerBuilder->createFinal($finalHandler);
+        $this->stateHandlerContainer->registerFinalHandler($finalHandler);
+    }
+
+    public function addStateSuspendHandler(StateSuspendHandler $suspendHandler): void
+    {
+        $this->stateHandlerContainer->registerSuspendHandler($suspendHandler);
     }
 }
