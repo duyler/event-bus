@@ -102,6 +102,7 @@ class Validator
         }
 
         $this->validateHandler($action->handler);
+        $this->validateCoroutine($action->coroutine);
         $this->validateRollback($action->rollback);
     }
 
@@ -109,6 +110,27 @@ class Validator
     {
         if (is_string($handler) && class_exists($handler) === false && interface_exists($handler) === false) {
             throw new InvalidArgumentException('Class ' . $handler . ' not found');
+        }
+    }
+
+    private function validateCoroutine(string $coroutineId): void
+    {
+        if (empty($coroutineId) === false) {
+            if ($this->storage->coroutine()->isExists($coroutineId) === false) {
+                throw new InvalidArgumentException(
+                    'Required coroutine ' . $coroutineId . ' not registered in the bus'
+                );
+            }
+
+            $coroutine = $this->storage->coroutine()->get($coroutineId);
+
+            if (is_string($coroutine->handler) && class_exists($coroutine->handler) === false && interface_exists($coroutine->handler) === false) {
+                throw new InvalidArgumentException('Coroutine handler class ' . $coroutine->handler . ' not found');
+            }
+
+            if (is_string($coroutine->callback) && class_exists($coroutine->callback) === false && interface_exists($coroutine->callback) === false) {
+                throw new InvalidArgumentException('Coroutine callback class ' . $coroutine->callback . ' not found');
+            }
         }
     }
 
