@@ -16,7 +16,6 @@ use Duyler\EventBus\Dto\State\StateFinalHandler;
 use Duyler\EventBus\Dto\State\StateStartHandler;
 use Duyler\EventBus\Dto\State\StateSuspendHandler;
 use Duyler\EventBus\Dto\Subscription;
-use Duyler\EventBus\State\StateHandlerProvider;
 use Duyler\EventBus\State\StateHandlerContainer;
 use Throwable;
 

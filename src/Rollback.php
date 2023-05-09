@@ -14,10 +14,12 @@ readonly class Rollback
     {
     }
 
-    public function run(): void
+    public function run(array $slice = []): void
     {
+        $tasks = empty($slice) ? $this->storage->task()->getAll() : $this->storage->task()->getAllByArray($slice);
+
         /** @var Task $task */
-        foreach ($this->storage->task()->getAll() as $task) {
+        foreach ($tasks as $task) {
             if (empty($task->action->rollback)) {
                 continue;
             }
