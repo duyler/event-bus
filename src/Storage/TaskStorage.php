@@ -6,7 +6,6 @@ namespace Duyler\EventBus\Storage;
 
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Task;
-use RecursiveArrayIterator;
 use function array_flip;
 use function array_intersect_key;
 

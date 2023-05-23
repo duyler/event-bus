@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Duyler\EventBus;
 
 use Duyler\EventBus\Contract\RollbackActionInterface;
-
 use function is_callable;
 
 readonly class Rollback
@@ -29,9 +28,9 @@ readonly class Rollback
                 continue;
             }
 
-            $taskContainer = $this->storage->container()->get($task->action->id);
+            $actionContainer = $this->storage->container()->get($task->action->id);
 
-            $this->rollback($taskContainer->make($task->action->rollback));
+            $this->rollback($actionContainer->make($task->action->rollback));
         }
     }
     

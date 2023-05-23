@@ -7,13 +7,12 @@ namespace Duyler\EventBus\Storage;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 use RuntimeException;
-
-use function array_key_exists;
-use function array_intersect_key;
 use function array_flip;
-use function preg_quote;
-use function preg_grep;
+use function array_intersect_key;
+use function array_key_exists;
 use function array_keys;
+use function preg_grep;
+use function preg_quote;
 
 class SubscriptionStorage extends AbstractStorage
 {

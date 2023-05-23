@@ -6,7 +6,6 @@ namespace Duyler\EventBus\Storage;
 
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
-use function array_key_exists;
 
 abstract class AbstractStorage
 {

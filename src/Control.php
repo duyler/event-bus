@@ -9,7 +9,6 @@ use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
-
 use function array_key_first;
 use function array_key_last;
 use function count;
@@ -137,10 +136,7 @@ class Control
 
     protected function createTask(Action $action): Task
     {
-        return new Task(
-            $action,
-            $this->storage->coroutine()->get($action->coroutine)
-        );
+        return new Task($action);
     }
 
     protected function pushTask(Task $task): void
