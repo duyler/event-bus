@@ -27,7 +27,7 @@ class Validator
     private array $mainEventLog = [];
     private array $repeatedEventLog = [];
 
-    public function __construct(private readonly Storage $storage)
+    public function __construct(private readonly Collections $collections)
     {
     }
 
@@ -59,7 +59,7 @@ class Validator
 
     private function createDataHash(): string
     {
-        return md5(serialize($this->storage));
+        return md5(serialize($this->collections));
     }
 
     private function isValidCache(string $dataHash): bool
@@ -80,7 +80,7 @@ class Validator
 
     public function validateActions(): void
     {
-        foreach ($this->storage->action()->getAll() as $action) {
+        foreach ($this->collections->action()->getAll() as $action) {
             $this->validateAction($action);
         }
     }
@@ -88,13 +88,13 @@ class Validator
     public function validateAction(Action $action): void
     {
         foreach ($action->required as $subject) {
-            if ($this->storage->action()->isExists($subject) === false) {
+            if ($this->collections->action()->isExists($subject) === false) {
                 throw new InvalidArgumentException(
                     'Required action ' . $subject . ' not registered in the bus'
                 );
             }
 
-            $requiredAction = $this->storage->action()->get($subject);
+            $requiredAction = $this->collections->action()->get($subject);
 
             if (in_array($action->id, $requiredAction->required->getArrayCopy())) {
                 throw new LogicException('Action ' . $action->id . ' require action');
@@ -134,20 +134,20 @@ class Validator
     public function validateSubscriptions(): void
     {
         /** @var Subscription $subscription */
-        foreach ($this->storage->subscription()->getAll() as $subscription) {
+        foreach ($this->collections->subscription()->getAll() as $subscription) {
             $this->validateSubscription($subscription);
         }
     }
 
     public function validateSubscription(Subscription $subscription): void
     {
-        if ($this->storage->action()->isExists($subscription->actionId) === false) {
+        if ($this->collections->action()->isExists($subscription->actionId) === false) {
             throw new InvalidArgumentException(
                 'Action ' . $subscription->actionId . ' not registered in the bus'
             );
         }
 
-        if ($this->storage->action()->isExists($subscription->subjectId) === false) {
+        if ($this->collections->action()->isExists($subscription->subjectId) === false) {
             throw new InvalidArgumentException(
                 'Subscribed action ' . $subscription->subjectId . ' not registered in the bus'
             );
@@ -157,7 +157,7 @@ class Validator
 
     public function validateResultTask(Task $task): void
     {
-        if ($this->storage->task()->isExists($task->action->id)) {
+        if ($this->collections->task()->isExists($task->action->id)) {
 
             $actionId = $task->action->id . '.' . $task->result->status->value;
 

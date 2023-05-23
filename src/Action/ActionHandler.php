@@ -11,13 +11,13 @@ use Duyler\EventBus\Enum\StateType;
 use Duyler\EventBus\Exception\ActionReturnValueExistsException;
 use Duyler\EventBus\Exception\ActionReturnValueNotExistsException;
 use Duyler\EventBus\State;
-use Duyler\EventBus\Storage;
+use Duyler\EventBus\Collections;
 use Throwable;
 
 readonly class ActionHandler
 {
     public function __construct(
-        private Storage                $storage,
+        private Collections            $collections,
         private ActionContainerBuilder $containerBuilder,
         private State                  $state,
     ) {
@@ -68,7 +68,7 @@ readonly class ActionHandler
     {
         $container = $this->containerBuilder->build($action->id);
 
-        $completeTasks = $this->storage->task()->getAllByArray($action->required->getArrayCopy());
+        $completeTasks = $this->collections->task()->getAllByArray($action->required->getArrayCopy());
 
         foreach ($completeTasks as $task) {
             $container->set($task->result->data);
@@ -77,7 +77,7 @@ readonly class ActionHandler
         $container->bind($action->classMap);
         $container->setProviders($action->providers);
 
-        $this->storage->container()->add($container);
+        $this->collections->container()->add($container);
 
         return $container;
     }

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Storage;
+namespace Duyler\EventBus\Collection;
 
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 
-abstract class AbstractStorage
+abstract class AbstractCollection
 {
     protected array $data = [];
 

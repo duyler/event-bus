@@ -1,13 +1,13 @@
 <?php
 
-namespace Duyler\EventBus\Storage;
+namespace Duyler\EventBus\Collection;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Duyler\EventBus\Action\ActionContainer;
 
-class ActionContainerStorage extends ArrayCollection
+class ActionContainerCollection extends ArrayCollection
 {
     public function get(string|int $key): ActionContainer
     {

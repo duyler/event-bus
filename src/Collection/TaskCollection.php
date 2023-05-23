@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Storage;
+namespace Duyler\EventBus\Collection;
 
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Task;
 use function array_flip;
 use function array_intersect_key;
 
-class TaskStorage extends AbstractStorage
+class TaskCollection extends AbstractCollection
 {
     public function save(Task $task): void
     {

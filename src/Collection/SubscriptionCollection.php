@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Storage;
+namespace Duyler\EventBus\Collection;
 
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
@@ -14,7 +14,7 @@ use function array_keys;
 use function preg_grep;
 use function preg_quote;
 
-class SubscriptionStorage extends AbstractStorage
+class SubscriptionCollection extends AbstractCollection
 {
     public function save(Subscription $subscription): void
     {

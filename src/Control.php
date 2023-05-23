@@ -19,10 +19,10 @@ class Control
     protected array $log = [];
 
     public function __construct(
-        private readonly Validator $validator,
-        private readonly Rollback  $rollback,
-        private readonly Storage   $storage,
-        private readonly TaskQueue $taskQueue,
+        private readonly Validator   $validator,
+        private readonly Rollback    $rollback,
+        private readonly Collections $collections,
+        private readonly TaskQueue   $taskQueue,
     ) {
     }
 
@@ -33,12 +33,12 @@ class Control
 
     public function addSubscription(Subscription $subscription): void
     {
-        $this->storage->subscription()->save($subscription);
+        $this->collections->subscription()->save($subscription);
     }
 
     public function subscriptionIsExists(Subscription $subscription): bool
     {
-        return $this->storage->subscription()->isExists($subscription);
+        return $this->collections->subscription()->isExists($subscription);
     }
 
     public function validateSubscriptions()
@@ -55,23 +55,23 @@ class Control
 
     public function addAction(Action $action): void
     {
-        $this->storage->action()->save($action);
+        $this->collections->action()->save($action);
         $this->validator->validateAction($action);
     }
 
     public function getResult(string $actionId): Result
     {
-        return $this->storage->task()->getResult($actionId);
+        return $this->collections->task()->getResult($actionId);
     }
 
     public function resultIsExists(string $actionId): bool
     {
-        return $this->storage->task()->isExists($actionId);
+        return $this->collections->task()->isExists($actionId);
     }
 
     public function actionIsExists(string $actionId): bool
     {
-        return $this->storage->action()->isExists($actionId);
+        return $this->collections->action()->isExists($actionId);
     }
 
     public function getFirstAction(): string
@@ -91,11 +91,11 @@ class Control
 
     public function resolveSubscriptions(string $actionId, ResultStatus $status): void
     {
-        $subscriptions = $this->storage->subscription()->getSubscriptions($actionId, $status);
+        $subscriptions = $this->collections->subscription()->getSubscriptions($actionId, $status);
 
         foreach ($subscriptions as $subscription) {
 
-            $action = $this->storage->action()->get($subscription->actionId);
+            $action = $this->collections->action()->get($subscription->actionId);
 
             $this->doAction($action);
         }
@@ -103,7 +103,7 @@ class Control
 
     public function doExistsAction(string $actionId): void
     {
-        $action = $this->storage->action()->get($actionId);
+        $action = $this->collections->action()->get($actionId);
 
         $this->doAction($action);
     }
@@ -114,14 +114,14 @@ class Control
             $this->addAction($action);
         }
 
-        $requiredIterator = new ActionRequiredIterator($action->required, $this->storage->action());
+        $requiredIterator = new ActionRequiredIterator($action->required, $this->collections->action());
 
         foreach ($requiredIterator as $subject) {
 
-            $requiredAction = $this->storage->action()->get($subject);
+            $requiredAction = $this->collections->action()->get($subject);
 
-            if ($this->storage->task()->isExists($requiredAction->id)) {
-                $result = $this->storage->task()->getResult($requiredAction->id);
+            if ($this->collections->task()->isExists($requiredAction->id)) {
+                $result = $this->collections->task()->getResult($requiredAction->id);
                 if ($result->status === ResultStatus::Success) {
                     continue;
                 }
@@ -165,7 +165,7 @@ class Control
             return true;
         }
 
-        $completeTasks = $this->storage->task()->getAllByArray($task->action->required->getArrayCopy());
+        $completeTasks = $this->collections->task()->getAllByArray($task->action->required->getArrayCopy());
 
         /** @var Task $completeTask */
         foreach ($completeTasks as $completeTask) {

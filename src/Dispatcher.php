@@ -7,14 +7,14 @@ namespace Duyler\EventBus;
 readonly class Dispatcher
 {
     public function __construct(
-        private Storage   $storage,
-        private Control   $control,
+        private Collections $collections,
+        private Control     $control,
     ) {
     }
 
     public function dispatchResultTask(Task $resultTask): void
     {
-        $this->storage->task()->save($resultTask);
+        $this->collections->task()->save($resultTask);
 
         $this->control->log($resultTask);
         $this->control->validateResultTask($resultTask);

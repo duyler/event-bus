@@ -12,21 +12,21 @@ use Duyler\EventBus\Enum\StateType;
 use Duyler\EventBus\State\Service\StateActionAfterService;
 use Duyler\EventBus\State\Service\StateActionBeforeService;
 use Duyler\EventBus\State\Service\StateActionThrowingService;
-use Duyler\EventBus\Storage\ActionContainerStorage;
+use Duyler\EventBus\Collection\ActionContainerCollection;
 use Throwable;
 
 readonly class StateAction
 {
     public function __construct(
         private StateHandlerProvider   $stateHandlerProvider,
-        private ActionContainerStorage $actionContainerStorage,
+        private ActionContainerCollection $actionContainerCollection,
     ) {
     }
 
     public function before(Action $action): void
     {
         $stateService = new StateActionBeforeService(
-            $this->actionContainerStorage->get($action->id),
+            $this->actionContainerCollection->get($action->id),
             $action->id,
         );
 
@@ -41,7 +41,7 @@ readonly class StateAction
     public function after(Action $action): void
     {
         $stateService = new StateActionAfterService(
-            $this->actionContainerStorage->get($action->id),
+            $this->actionContainerCollection->get($action->id),
             $action->id,
         );
 
@@ -56,7 +56,7 @@ readonly class StateAction
     public function throwing(Action $action, Throwable $exception): void
     {
         $stateService = new StateActionThrowingService(
-            $this->actionContainerStorage->get($action->id),
+            $this->actionContainerCollection->get($action->id),
             $exception,
             $action->id,
         );

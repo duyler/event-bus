@@ -16,7 +16,7 @@ use Duyler\EventBus\State\Service\StateMainBeforeService;
 use Duyler\EventBus\State\Service\StateMainFinalService;
 use Duyler\EventBus\State\Service\StateMainStartService;
 use Duyler\EventBus\State\Service\StateMainSuspendService;
-use Duyler\EventBus\Storage\ActionContainerStorage;
+use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Task;
 
 readonly class StateMain
@@ -24,7 +24,7 @@ readonly class StateMain
     public function __construct(
         private Control                $control,
         private StateHandlerProvider   $stateHandlerProvider,
-        private ActionContainerStorage $actionContainerStorage,
+        private ActionContainerCollection $actionContainerCollection,
     ) {
     }
 
@@ -67,7 +67,7 @@ readonly class StateMain
         $stateService = new StateMainSuspendService(
             $this->control,
             $task,
-            $this->actionContainerStorage->get($task->action->id),
+            $this->actionContainerCollection->get($task->action->id),
         );
 
         /** @var StateMainSuspendHandlerInterface $handler */

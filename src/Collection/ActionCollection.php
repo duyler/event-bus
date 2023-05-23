@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Storage;
+namespace Duyler\EventBus\Collection;
 
 use Duyler\EventBus\Dto\Action;
 use RuntimeException;
 use function array_key_exists;
 
-class ActionStorage extends AbstractStorage
+class ActionCollection extends AbstractCollection
 {
     public function save(Action $action): void
     {
@@ -21,7 +21,7 @@ class ActionStorage extends AbstractStorage
     public function get(string $actionId): Action
     {
         if ($this->isExists($actionId) === false) {
-            throw new RuntimeException('Action ' . $actionId . ' not found in the storage');
+            throw new RuntimeException('Action ' . $actionId . ' not found in the collection');
         }
         return $this->data[$actionId];
     }

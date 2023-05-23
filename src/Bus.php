@@ -15,25 +15,25 @@ use Throwable;
 readonly class Bus
 {
     public function __construct(
-        private Control                 $control,
-        private Validator               $validator,
-        private DoWhile                 $doWhile,
-        private Rollback                $rollback,
-        private Storage                 $storage,
-        private Config                  $config,
-        private StateHandlerContainer   $stateHandlerContainer,
+        private Control               $control,
+        private Validator             $validator,
+        private DoWhile               $doWhile,
+        private Rollback              $rollback,
+        private Collections           $collections,
+        private Config                $config,
+        private StateHandlerContainer $stateHandlerContainer,
     ) {
     }
 
     public function addAction(Action $action): static
     {
-        $this->storage->action()->save($action);
+        $this->collections->action()->save($action);
         return $this;
     }
 
     public function addSubscription(Subscription $subscription): static
     {
-        $this->storage->subscription()->save($subscription);
+        $this->collections->subscription()->save($subscription);
         return $this;
     }
 
@@ -72,12 +72,12 @@ readonly class Bus
 
     public function actionIsExists(string $actionId): bool
     {
-        return $this->storage->action()->isExists($actionId);
+        return $this->collections->action()->isExists($actionId);
     }
 
     public function getResult(string $actionId): ?Result
     {
-        return $this->storage->task()->getResult($actionId);
+        return $this->collections->task()->getResult($actionId);
     }
 
     public function addStateHandler(StateHandler $stateHandler): void
