@@ -7,12 +7,12 @@
 
 <?php
 
-use Duyler\EventBus\BusFactory;
+use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 
-$bus = BusFactory::create();
+$bus = BusBuilder::build();
 
 $requestAction = new Action(
     id: 'Request.GetRequest',
@@ -37,7 +37,6 @@ $blogAction = new Action(
     ],
 );
 
-$bus->addAction($requestAction);
 $bus->addAction($blogAction);
 
 $blogActionSubscription = new Subscription(
@@ -48,7 +47,9 @@ $blogActionSubscription = new Subscription(
 
 $bus->addSubscription($blogActionSubscription);
 
-$bus->run('Request.GetRequest');
+$bus->doAction($requestAction);
+
+$bus->run();
 
 $blogPost = $bus->getResult('Blog.GetPostById');
 

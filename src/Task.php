@@ -5,23 +5,20 @@ declare(strict_types=1);
 namespace Duyler\EventBus;
 
 use Closure;
-use Duyler\EventBus\Dto\Coroutine;
-use Fiber;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
+use Fiber;
 
 class Task
 {
     public readonly Action $action;
-    public readonly ?Coroutine $coroutine;
     public readonly ?Result $result;
-    private ?Fiber $fiber = null;
     private mixed $value = null;
+    private ?Fiber $fiber = null;
 
-    public function __construct(Action $action, ?Coroutine $coroutine = null)
+    public function __construct(Action $action)
     {
         $this->action = $action;
-        $this->coroutine = $coroutine;
     }
 
     public function run(Closure $actionHandler): void
@@ -35,9 +32,9 @@ class Task
         return $this->fiber && $this->fiber->isSuspended();
     }
 
-    public function resume(): void
+    public function resume(mixed $data = null): void
     {
-        $this->value = $this->fiber->resume($this->coroutine?->callback);
+        $this->value = $this->fiber->resume($data);
     }
 
     public function takeResult(): void

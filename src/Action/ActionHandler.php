@@ -4,24 +4,22 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-use Duyler\EventBus\AspectHandler;
-use Duyler\EventBus\Coroutine\CoroutineHandler;
 use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Coroutine;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Enum\StateType;
 use Duyler\EventBus\Exception\ActionReturnValueExistsException;
 use Duyler\EventBus\Exception\ActionReturnValueNotExistsException;
-use Duyler\EventBus\Storage;
-use function is_callable;
+use Duyler\EventBus\State;
+use Duyler\EventBus\Collections;
+use Throwable;
 
 readonly class ActionHandler
 {
     public function __construct(
-        private AspectHandler           $aspectHandler,
-        private Storage                 $storage,
-        private ActionContainerBuilder  $containerBuilder,
-        private CoroutineHandler        $coroutineHandler,
+        private Collections            $collections,
+        private ActionContainerBuilder $containerBuilder,
+        private State                  $state,
     ) {
     }
 
@@ -30,11 +28,16 @@ readonly class ActionHandler
         $container = $this->prepareContainer($action);
         $arguments = $this->prepareArguments($action, $container);
 
-        $this->aspectHandler->runBefore($action, $container, $arguments);
+        $this->state->declare(StateType::ActionBefore, $action);
 
-        $resultData = $this->runAction($action, $container, $arguments);
+        try {
+            $resultData = $this->runAction($action, $container, $arguments);
+        } catch (Throwable $exception) {
+            $this->state->declare(StateType::ActionThrowing, $action, $exception);
+            throw $exception;
+        }
 
-        $this->aspectHandler->runAfter($action, $container, $arguments);
+        $this->state->declare(StateType::ActionAfter, $action);
 
         if ($resultData instanceof Result) {
             return $resultData;
@@ -58,19 +61,14 @@ readonly class ActionHandler
     private function runAction(Action $action, ActionContainer $container, array $arguments): mixed
     {
         $actionInstance = $this->prepareAction($action, $container);
-
-        if (empty($action->around)) {
-            return ($actionInstance)(...$arguments);
-        }
-
-        return $this->aspectHandler->runAround($action, $container, $arguments);
+        return ($actionInstance)(...$arguments);
     }
 
     private function prepareContainer(Action $action): ActionContainer
     {
         $container = $this->containerBuilder->build($action->id);
 
-        $completeTasks = $this->storage->task()->getAllByArray($action->required->getArrayCopy());
+        $completeTasks = $this->collections->task()->getAllByArray($action->required->getArrayCopy());
 
         foreach ($completeTasks as $task) {
             $container->set($task->result->data);
@@ -79,7 +77,7 @@ readonly class ActionHandler
         $container->bind($action->classMap);
         $container->setProviders($action->providers);
 
-        $this->storage->container()->save($container);
+        $this->collections->container()->add($container);
 
         return $container;
     }
@@ -105,10 +103,5 @@ readonly class ActionHandler
         }
 
         return $container->make($action->handler);
-    }
-
-    public function handleCoroutine(Action $action, Coroutine $coroutine, mixed $value): void
-    {
-        $this->coroutineHandler->handle($action, $coroutine, $value);
     }
 }

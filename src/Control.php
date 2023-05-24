@@ -9,7 +9,8 @@ use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
-
+use Duyler\EventBus\Exception\CircularCallActionException;
+use Duyler\EventBus\Exception\ConsecutiveRepeatedActionException;
 use function array_key_first;
 use function array_key_last;
 use function count;
@@ -18,12 +19,15 @@ class Control
 {
     protected array $heldTasks = [];
     protected array $log = [];
+    private array $mainEventLog = [];
+    private array $repeatedEventLog = [];
 
     public function __construct(
-        private readonly Validator $validator,
-        private readonly Rollback  $rollback,
-        private readonly Storage   $storage,
-        private readonly TaskQueue $taskQueue,
+        private readonly Rollback             $rollback,
+        private readonly Collections          $collections,
+        private readonly TaskQueue            $taskQueue,
+        private readonly ActionRegister       $actionRegister,
+        private readonly SubscriptionRegister $subscriptionRegister
     ) {
     }
 
@@ -34,45 +38,37 @@ class Control
 
     public function addSubscription(Subscription $subscription): void
     {
-        $this->storage->subscription()->save($subscription);
+        $this->subscriptionRegister->add($subscription);
     }
 
     public function subscriptionIsExists(Subscription $subscription): bool
     {
-        return $this->storage->subscription()->isExists($subscription);
-    }
-
-    public function validateSubscriptions()
-    {
-        $this->validator->validateSubscriptions();
+        return $this->collections->subscription()->isExists($subscription);
     }
 
     public function rollbackWithoutException(int $step = 0): void
     {
-        $slice = $step > 0 ? array_slice($this->log, -1, $step) : [];
-
-        $this->rollback->run($slice);
+        $this->rollback->run($step > 0 ? array_slice($this->log, -1, $step) : []);
     }
 
     public function addAction(Action $action): void
     {
-        $this->storage->action()->save($action);
-        $this->validator->validateAction($action);
+        $this->actionRegister->add($action);
     }
 
     public function getResult(string $actionId): Result
     {
-        return $this->storage->task()->getResult($actionId);
+        return $this->collections->task()->getResult($actionId);
     }
 
     public function resultIsExists(string $actionId): bool
     {
-        return $this->storage->task()->isExists($actionId);
+        return $this->collections->task()->isExists($actionId);
     }
 
     public function actionIsExists(string $actionId): bool
     {
-        return $this->storage->action()->isExists($actionId);
+        return $this->collections->action()->isExists($actionId);
     }
 
     public function getFirstAction(): string
@@ -87,16 +83,39 @@ class Control
 
     public function validateResultTask(Task $task): void
     {
-        $this->validator->validateResultTask($task);
+        if ($this->collections->task()->isExists($task->action->id)) {
+
+            $actionId = $task->action->id . '.' . $task->result->status->value;
+
+            if (in_array($actionId, $this->mainEventLog)) {
+                $this->repeatedEventLog[] = $actionId;
+            } else {
+                $this->mainEventLog[] = $actionId;
+            }
+
+            if (end($this->repeatedEventLog) === $actionId) {
+                throw new ConsecutiveRepeatedActionException(
+                    $task->action->id,
+                    $task->result->status->value
+                );
+            }
+
+            if (count($this->mainEventLog) === count($this->repeatedEventLog)) {
+                throw new CircularCallActionException(
+                    $task->action->id,
+                    end($this->mainEventLog)
+                );
+            }
+        }
     }
 
     public function resolveSubscriptions(string $actionId, ResultStatus $status): void
     {
-        $subscriptions = $this->storage->subscription()->getSubscriptions($actionId, $status);
+        $subscriptions = $this->collections->subscription()->getSubscriptions($actionId, $status);
 
         foreach ($subscriptions as $subscription) {
 
-            $action = $this->storage->action()->get($subscription->actionId);
+            $action = $this->collections->action()->get($subscription->actionId);
 
             $this->doAction($action);
         }
@@ -104,7 +123,7 @@ class Control
 
     public function doExistsAction(string $actionId): void
     {
-        $action = $this->storage->action()->get($actionId);
+        $action = $this->collections->action()->get($actionId);
 
         $this->doAction($action);
     }
@@ -115,14 +134,14 @@ class Control
             $this->addAction($action);
         }
 
-        $requiredIterator = new ActionRequiredIterator($action->required, $this->storage->action());
+        $requiredIterator = new ActionRequiredIterator($action->required, $this->collections->action());
 
         foreach ($requiredIterator as $subject) {
 
-            $requiredAction = $this->storage->action()->get($subject);
+            $requiredAction = $this->collections->action()->get($subject);
 
-            if ($this->storage->task()->isExists($requiredAction->id)) {
-                $result = $this->storage->task()->getResult($requiredAction->id);
+            if ($this->collections->task()->isExists($requiredAction->id)) {
+                $result = $this->collections->task()->getResult($requiredAction->id);
                 if ($result->status === ResultStatus::Success) {
                     continue;
                 }
@@ -137,10 +156,7 @@ class Control
 
     protected function createTask(Action $action): Task
     {
-        return new Task(
-            $action,
-            $this->storage->coroutine()->get($action->coroutine)
-        );
+        return new Task($action);
     }
 
     protected function pushTask(Task $task): void
@@ -169,7 +185,7 @@ class Control
             return true;
         }
 
-        $completeTasks = $this->storage->task()->getAllByArray($task->action->required->getArrayCopy());
+        $completeTasks = $this->collections->task()->getAllByArray($task->action->required->getArrayCopy());
 
         /** @var Task $completeTask */
         foreach ($completeTasks as $completeTask) {
