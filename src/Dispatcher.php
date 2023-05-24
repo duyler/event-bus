@@ -18,7 +18,6 @@ readonly class Dispatcher
 
         $this->control->log($resultTask);
         $this->control->validateResultTask($resultTask);
-        $this->control->validateSubscriptions();
         $this->control->resolveHeldTasks();
         $this->control->resolveSubscriptions($resultTask->action->id, $resultTask->result->status);
     }

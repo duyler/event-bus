@@ -9,6 +9,8 @@ use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Exception\CircularCallActionException;
+use Duyler\EventBus\Exception\ConsecutiveRepeatedActionException;
 use function array_key_first;
 use function array_key_last;
 use function count;
@@ -17,12 +19,15 @@ class Control
 {
     protected array $heldTasks = [];
     protected array $log = [];
+    private array $mainEventLog = [];
+    private array $repeatedEventLog = [];
 
     public function __construct(
-        private readonly Validator   $validator,
-        private readonly Rollback    $rollback,
-        private readonly Collections $collections,
-        private readonly TaskQueue   $taskQueue,
+        private readonly Rollback             $rollback,
+        private readonly Collections          $collections,
+        private readonly TaskQueue            $taskQueue,
+        private readonly ActionRegister       $actionRegister,
+        private readonly SubscriptionRegister $subscriptionRegister
     ) {
     }
 
@@ -33,7 +38,7 @@ class Control
 
     public function addSubscription(Subscription $subscription): void
     {
-        $this->collections->subscription()->save($subscription);
+        $this->subscriptionRegister->add($subscription);
     }
 
     public function subscriptionIsExists(Subscription $subscription): bool
@@ -41,22 +46,14 @@ class Control
         return $this->collections->subscription()->isExists($subscription);
     }
 
-    public function validateSubscriptions()
-    {
-        $this->validator->validateSubscriptions();
-    }
-
     public function rollbackWithoutException(int $step = 0): void
     {
-        $slice = $step > 0 ? array_slice($this->log, -1, $step) : [];
-
-        $this->rollback->run($slice);
+        $this->rollback->run($step > 0 ? array_slice($this->log, -1, $step) : []);
     }
 
     public function addAction(Action $action): void
     {
-        $this->collections->action()->save($action);
-        $this->validator->validateAction($action);
+        $this->actionRegister->add($action);
     }
 
     public function getResult(string $actionId): Result
@@ -86,7 +83,30 @@ class Control
 
     public function validateResultTask(Task $task): void
     {
-        $this->validator->validateResultTask($task);
+        if ($this->collections->task()->isExists($task->action->id)) {
+
+            $actionId = $task->action->id . '.' . $task->result->status->value;
+
+            if (in_array($actionId, $this->mainEventLog)) {
+                $this->repeatedEventLog[] = $actionId;
+            } else {
+                $this->mainEventLog[] = $actionId;
+            }
+
+            if (end($this->repeatedEventLog) === $actionId) {
+                throw new ConsecutiveRepeatedActionException(
+                    $task->action->id,
+                    $task->result->status->value
+                );
+            }
+
+            if (count($this->mainEventLog) === count($this->repeatedEventLog)) {
+                throw new CircularCallActionException(
+                    $task->action->id,
+                    end($this->mainEventLog)
+                );
+            }
+        }
     }
 
     public function resolveSubscriptions(string $actionId, ResultStatus $status): void

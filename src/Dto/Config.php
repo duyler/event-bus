@@ -8,7 +8,6 @@ readonly class Config
 {
     public function __construct(
         public string $defaultCacheDir = '',
-        public bool   $enabledValidation = true,
     ) {
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
-use Duyler\EventBus\Contract\ValidateCacheHandlerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\StateHandler;
@@ -16,24 +15,21 @@ readonly class Bus
 {
     public function __construct(
         private Control               $control,
-        private Validator             $validator,
         private DoWhile               $doWhile,
         private Rollback              $rollback,
-        private Collections           $collections,
-        private Config                $config,
         private StateHandlerContainer $stateHandlerContainer,
     ) {
     }
 
     public function addAction(Action $action): static
     {
-        $this->collections->action()->save($action);
+        $this->control->addAction($action);
         return $this;
     }
 
     public function addSubscription(Subscription $subscription): static
     {
-        $this->collections->subscription()->save($subscription);
+        $this->control->addSubscription($subscription);
         return $this;
     }
 
@@ -42,10 +38,6 @@ readonly class Bus
      */
     public function run(): void
     {
-        if ($this->config->enabledValidation) {
-            $this->validator->validate();
-        }
-
         try {
             $this->doWhile->run();
         } catch (Throwable $exception) {
@@ -64,20 +56,14 @@ readonly class Bus
         $this->control->doExistsAction($actionId);
     }
 
-    public function setValidateCacheHandler(ValidateCacheHandlerInterface $validateCacheHandler): static
-    {
-        $this->validator->setValidateCacheHandler($validateCacheHandler);
-        return $this;
-    }
-
     public function actionIsExists(string $actionId): bool
     {
-        return $this->collections->action()->isExists($actionId);
+        return $this->control->actionIsExists($actionId);
     }
 
     public function getResult(string $actionId): ?Result
     {
-        return $this->collections->task()->getResult($actionId);
+        return $this->control->getResult($actionId);
     }
 
     public function addStateHandler(StateHandler $stateHandler): void
