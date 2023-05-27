@@ -13,10 +13,12 @@ class Config
 
     public readonly string $actionContainerCacheDir;
     public readonly string $stateHandlerContainerCacheDir;
+    public readonly string $coroutineHandler;
 
     public function __construct(ConfigDTO $config)
     {
         $this->actionContainerCacheDir = $config->defaultCacheDir . self::ACTION_CONTAINER_CACHE_DIR;
         $this->stateHandlerContainerCacheDir = $config->defaultCacheDir . self::STATE_HANDLER_CONTAINER_CACHE_DIR;
+        $this->coroutineHandler = $config->coroutineHandler;
     }
 }

@@ -13,6 +13,7 @@ readonly class StateHandler
         public string $class,
         public array $providers = [],
         public array $classMap = [],
+        public string $alias = '',
     ) {
     }
 }

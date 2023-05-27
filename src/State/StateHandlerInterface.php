@@ -7,4 +7,5 @@ namespace Duyler\EventBus\State;
 interface StateHandlerInterface
 {
     public function observed(): array;
+    public function prepare(): void;
 }
