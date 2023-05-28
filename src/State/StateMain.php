@@ -76,9 +76,7 @@ readonly class StateMain
             $this->actionContainerCollection->get($task->action->id),
         );
 
-        if (empty($handler->observed()) || in_array($task->action->id, $handler->observed())) {
-            $handler->handle($stateService);
-        }
+        $task->resume($handler->getResume($stateService));
     }
 
     public function after(Task $task): void
