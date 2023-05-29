@@ -11,11 +11,6 @@ use Duyler\EventBus\Task;
  */
 trait TaskSuspendService
 {
-    public function resume(mixed $data): void
-    {
-        $this->task->resume($data);
-    }
-
     public function getValue(): mixed
     {
         return $this->task->getValue();

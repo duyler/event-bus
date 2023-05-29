@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State;
 
+use Duyler\EventBus\Config;
 use Duyler\EventBus\Contract\State\StateMainAfterHandlerInterface;
 use Duyler\EventBus\Contract\State\StateMainBeforeHandlerInterface;
 use Duyler\EventBus\Contract\State\StateMainFinalHandlerInterface;
@@ -25,6 +26,7 @@ readonly class StateMain
         private Control                $control,
         private StateHandlerProvider   $stateHandlerProvider,
         private ActionContainerCollection $actionContainerCollection,
+        private Config $config,
     ) {
     }
 
@@ -57,10 +59,14 @@ readonly class StateMain
 
     public function suspend(Task $task): void
     {
-        $handlers = $this->stateHandlerProvider->getHandlers(StateType::MainSuspendAction);
+        /** @var StateMainSuspendHandlerInterface $handler */
+        $handler = $this->stateHandlerProvider->getHandlers(StateType::MainSuspendAction)
+            ->get($this->config->coroutineHandler);
 
-        if ($handlers->isEmpty()) {
-            $task->resume($task->getValue());
+        if (empty($handler)) {
+            $value = $task->getValue();
+            $result = is_callable($value) ? $value() : $value;
+            $task->resume($result);
             return;
         }
 
@@ -70,12 +76,7 @@ readonly class StateMain
             $this->actionContainerCollection->get($task->action->id),
         );
 
-        /** @var StateMainSuspendHandlerInterface $handler */
-        foreach ($handlers as $handler) {
-            if (empty($handler->observed()) || in_array($task->action->id, $handler->observed())) {
-                $handler->handle($stateService);
-            }
-        }
+        $task->resume($handler->getResume($stateService));
     }
 
     public function after(Task $task): void

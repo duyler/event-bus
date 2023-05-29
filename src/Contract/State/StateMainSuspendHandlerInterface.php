@@ -9,5 +9,5 @@ use Duyler\EventBus\State\StateHandlerInterface;
 
 interface StateMainSuspendHandlerInterface extends StateHandlerInterface
 {
-    public function handle(StateMainSuspendService $stateService): void;
+    public function getResume(StateMainSuspendService $stateService): mixed;
 }

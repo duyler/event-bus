@@ -19,6 +19,7 @@
         "php": "^8.2",
         "ext-pcntl": "^8.2",
         "duyler/dependency-injection": "dev-main",
+        "duyler/event-bus-coroutine": "dev-main",
         "doctrine/collections": "^2.1"
     },
     "require-dev": {

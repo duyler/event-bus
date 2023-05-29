@@ -40,14 +40,15 @@ class StateHandlerContainer
     {
         $handlers = new ArrayCollection();
 
+        /** @var StateHandler $handlerData */
         foreach ($handlersData as $handlerData) {
             if ($this->container->has($handlerData->class) === false) {
                 $this->container->setProviders($handlerData->providers);
                 $this->container->bind($handlerData->classMap);
-                $this->container->make($handlerData->class);
+                $this->container->make($handlerData->class)->prepare();
             }
 
-            $handlers->add($this->container->get($handlerData->class));
+            $handlers->set($handlerData->alias ?? $handlerData->class, $this->container->get($handlerData->class));
         }
 
         return $handlers;

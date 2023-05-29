@@ -6,8 +6,9 @@ namespace Duyler\EventBus\Contract\State;
 
 use Duyler\EventBus\State\Service\StateActionThrowingService;
 use Duyler\EventBus\State\StateHandlerInterface;
+use Duyler\EventBus\State\StateHandlerObservedInterface;
 
-interface StateActionThrowingHandlerInterface extends StateHandlerInterface
+interface StateActionThrowingHandlerInterface extends StateHandlerInterface, StateHandlerObservedInterface
 {
     public function handle(StateActionThrowingService $stateService): void;
 }
