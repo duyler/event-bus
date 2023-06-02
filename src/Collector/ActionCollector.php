@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus;
+namespace Duyler\EventBus\Collector;
 
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Dto\Action;
 use InvalidArgumentException;
 
-readonly class ActionRegister
+readonly class ActionCollector
 {
     public function __construct(private ActionCollection $collection)
     {

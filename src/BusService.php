@@ -5,17 +5,20 @@ declare(strict_types=1);
 namespace Duyler\EventBus;
 
 use Duyler\EventBus\Action\ActionRequiredIterator;
+use Duyler\EventBus\Collector\ActionCollector;
+use Duyler\EventBus\Collector\SubscriptionCollector;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\CircularCallActionException;
 use Duyler\EventBus\Exception\ConsecutiveRepeatedActionException;
+
 use function array_key_first;
 use function array_key_last;
 use function count;
 
-class Control
+class BusService
 {
     protected array $heldTasks = [];
     protected array $log = [];
@@ -26,8 +29,8 @@ class Control
         private readonly Rollback             $rollback,
         private readonly Collections          $collections,
         private readonly TaskQueue            $taskQueue,
-        private readonly ActionRegister       $actionRegister,
-        private readonly SubscriptionRegister $subscriptionRegister
+        private readonly ActionCollector      $actionCollector,
+        private readonly SubscriptionCollector $subscriptionCollector
     ) {
     }
 
@@ -38,7 +41,7 @@ class Control
 
     public function addSubscription(Subscription $subscription): void
     {
-        $this->subscriptionRegister->add($subscription);
+        $this->subscriptionCollector->add($subscription);
     }
 
     public function subscriptionIsExists(Subscription $subscription): bool
@@ -53,7 +56,7 @@ class Control
 
     public function addAction(Action $action): void
     {
-        $this->actionRegister->add($action);
+        $this->actionCollector->add($action);
     }
 
     public function getResult(string $actionId): Result

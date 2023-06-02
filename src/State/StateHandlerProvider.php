@@ -9,12 +9,18 @@ use Duyler\EventBus\Enum\StateType;
 
 readonly class StateHandlerProvider
 {
-    public function __construct(private StateHandlerContainer $container)
+    public function __construct(private StateHandlerCollection $handlerCollection)
     {
     }
 
     public function getHandlers(StateType $stateType): ArrayCollection
     {
-        return $this->container->get($stateType);
+        $handlers = new ArrayCollection();
+
+        foreach ($this->handlerCollection->where('type', $stateType) as $handlerDto) {
+            $handlers->add($handlerDto->handler);
+        }
+
+        return $handlers;
     }
 }

@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service\Trait;
 
-use Duyler\EventBus\Control;
+use Duyler\EventBus\BusService;
 use Duyler\EventBus\Dto\Subscription;
 
 /**
- * @property Control $control
+ * @property BusService $busService
  */
 trait SubscriptionService
 {
     public function addSubscription(Subscription $subscription): void
     {
-        $this->control->addSubscription($subscription);
+        $this->busService->addSubscription($subscription);
     }
 
     public function subscriptionIsExists(Subscription $subscription): bool
     {
-        return $this->control->subscriptionIsExists($subscription);
+        return $this->busService->subscriptionIsExists($subscription);
     }
 }
