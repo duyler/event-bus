@@ -7,11 +7,10 @@ namespace Duyler\EventBus\Action;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
-use Duyler\EventBus\Enum\StateType;
 use Duyler\EventBus\Exception\ActionReturnValueExistsException;
 use Duyler\EventBus\Exception\ActionReturnValueNotExistsException;
-use Duyler\EventBus\State;
 use Duyler\EventBus\Collections;
+use Duyler\EventBus\State\StateAction;
 use Throwable;
 
 readonly class ActionHandler
@@ -19,7 +18,7 @@ readonly class ActionHandler
     public function __construct(
         private Collections            $collections,
         private ActionContainerBuilder $containerBuilder,
-        private State                  $state,
+        private StateAction            $stateAction,
     ) {
     }
 
@@ -28,16 +27,16 @@ readonly class ActionHandler
         $container = $this->prepareContainer($action);
         $arguments = $this->prepareArguments($action, $container);
 
-        $this->state->declare(StateType::ActionBefore, $action);
+        $this->stateAction->before($action);
 
         try {
             $resultData = $this->runAction($action, $container, $arguments);
         } catch (Throwable $exception) {
-            $this->state->declare(StateType::ActionThrowing, $action, $exception);
+            $this->stateAction->throwing($action, $exception);
             throw $exception;
         }
 
-        $this->state->declare(StateType::ActionAfter, $action);
+        $this->stateAction->after($action);
 
         if ($resultData instanceof Result) {
             return $resultData;

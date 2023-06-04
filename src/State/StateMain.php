@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State;
 
-use Duyler\EventBus\Contract\State\StateMainAfterHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainBeforeHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainFinalHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainStartHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainSuspendHandlerInterface;
 use Duyler\EventBus\BusService;
-use Duyler\EventBus\Enum\StateType;
 use Duyler\EventBus\State\Service\StateMainAfterService;
 use Duyler\EventBus\State\Service\StateMainBeforeService;
 use Duyler\EventBus\State\Service\StateMainFinalService;
@@ -23,7 +17,7 @@ readonly class StateMain
 {
     public function __construct(
         private BusService                $busService,
-        private StateHandlerProvider      $stateHandlerProvider,
+        private StateHandlerStorage       $stateHandlerStorage,
         private ActionContainerCollection $actionContainerCollection,
     ) {
     }
@@ -34,8 +28,7 @@ readonly class StateMain
             $this->busService,
         );
 
-        /** @var StateMainStartHandlerInterface $handler */
-        foreach ($this->stateHandlerProvider->getHandlers(StateType::MainBeforeStart) as $handler) {
+        foreach ($this->stateHandlerStorage->getStateMainStart() as $handler) {
             $handler->handle($stateService);
         }
     }
@@ -47,8 +40,7 @@ readonly class StateMain
             $this->busService,
         );
 
-        /** @var StateMainBeforeHandlerInterface $handler */
-        foreach ($this->stateHandlerProvider->getHandlers(StateType::MainBeforeAction) as $handler) {
+        foreach ($this->stateHandlerStorage->getStateMainBefore() as $handler) {
             if (empty($handler->observed()) || in_array($task->action->id, $handler->observed())) {
                 $handler->handle($stateService);
             }
@@ -57,8 +49,7 @@ readonly class StateMain
 
     public function suspend(Task $task): void
     {
-        /** @var StateMainSuspendHandlerInterface $handler */
-        $handler = $this->stateHandlerProvider->getHandlers(StateType::MainSuspendAction)->first();
+        $handler = $this->stateHandlerStorage->getStateMainSuspend();
 
         if (empty($handler)) {
             $value = $task->getValue();
@@ -85,8 +76,7 @@ readonly class StateMain
             $this->busService,
         );
 
-        /** @var StateMainAfterHandlerInterface $handler */
-        foreach ($this->stateHandlerProvider->getHandlers(StateType::MainAfterAction) as $handler) {
+        foreach ($this->stateHandlerStorage->getStateMainAfter() as $handler) {
             if (empty($handler->observed()) || in_array($task->action->id, $handler->observed())) {
                 $handler->handle($stateService);
             }
@@ -99,8 +89,7 @@ readonly class StateMain
             $this->busService,
         );
 
-        /** @var StateMainFinalHandlerInterface $handler */
-        foreach ($this->stateHandlerProvider->getHandlers(StateType::MainFinal) as $handler) {
+        foreach ($this->stateHandlerStorage->getStateMainFinal() as $handler) {
             $handler->handle($stateService);
         }
     }

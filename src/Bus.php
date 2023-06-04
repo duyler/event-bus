@@ -12,10 +12,10 @@ use Duyler\EventBus\Contract\State\StateMainBeforeHandlerInterface;
 use Duyler\EventBus\Contract\State\StateMainFinalHandlerInterface;
 use Duyler\EventBus\Contract\State\StateMainStartHandlerInterface;
 use Duyler\EventBus\Contract\State\StateMainSuspendHandlerInterface;
-use Duyler\EventBus\Collector\StateHandlerCollector;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Subscription;
+use Duyler\EventBus\State\StateHandlerStorage;
 use Throwable;
 
 readonly class Bus
@@ -24,7 +24,7 @@ readonly class Bus
         private BusService            $busService,
         private DoWhile               $doWhile,
         private Rollback              $rollback,
-        private StateHandlerCollector $stateHandlerCollector,
+        private StateHandlerStorage   $stateHandlerStorage,
     ) {
     }
 
@@ -75,41 +75,41 @@ readonly class Bus
 
     public function addStateMainStartHandler(StateMainStartHandlerInterface $startHandler): void
     {
-        $this->stateHandlerCollector->addStateMainStartHandler($startHandler);
+        $this->stateHandlerStorage->addStateMainStartHandler($startHandler);
     }
 
     public function addStateMainBeforeHandler(StateMainBeforeHandlerInterface $beforeActionHandler): void
     {
-        $this->stateHandlerCollector->addStateMainBeforeHandler($beforeActionHandler);
+        $this->stateHandlerStorage->addStateMainBeforeHandler($beforeActionHandler);
     }
 
     public function setStateMainSuspendHandler(StateMainSuspendHandlerInterface $suspendHandler): void
     {
-        $this->stateHandlerCollector->setStateMainSuspendHandler($suspendHandler);
+        $this->stateHandlerStorage->setStateMainSuspendHandler($suspendHandler);
     }
 
     public function addStateMainAfterHandler(StateMainAfterHandlerInterface $afterActionHandler): void
     {
-        $this->stateHandlerCollector->addStateMainAfterHandler($afterActionHandler);
+        $this->stateHandlerStorage->addStateMainAfterHandler($afterActionHandler);
     }
 
-    public function addStateMainFinalHandler(StateMainFinalHandlerInterface $finalHandler)
+    public function addStateMainFinalHandler(StateMainFinalHandlerInterface $finalHandler): void
     {
-        $this->stateHandlerCollector->addStateMainFinalHandler($finalHandler);
+        $this->stateHandlerStorage->addStateMainFinalHandler($finalHandler);
     }
 
     public function addStateActionBeforeHandler(StateActionBeforeHandlerInterface $actionBeforeHandler): void
     {
-        $this->stateHandlerCollector->addStateActionBeforeHandler($actionBeforeHandler);
+        $this->stateHandlerStorage->addStateActionBeforeHandler($actionBeforeHandler);
     }
 
     public function addStateActionThrowingHandler(StateActionThrowingHandlerInterface $actionThrowingHandler): void
     {
-        $this->stateHandlerCollector->addStateActionThrowingHandler($actionThrowingHandler);
+        $this->stateHandlerStorage->addStateActionThrowingHandler($actionThrowingHandler);
     }
 
     public function addStateActionAfterHandler(StateActionAfterHandlerInterface $actionAfterHandler): void
     {
-        $this->stateHandlerCollector->addStateActionAfterHandler($actionAfterHandler);
+        $this->stateHandlerStorage->addStateActionAfterHandler($actionAfterHandler);
     }
 }
