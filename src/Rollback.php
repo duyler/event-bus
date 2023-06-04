@@ -4,18 +4,23 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
+use Duyler\EventBus\Collection\ActionContainerCollection;
+use Duyler\EventBus\Collection\TaskCollection;
 use Duyler\EventBus\Contract\RollbackActionInterface;
+
 use function is_callable;
 
 readonly class Rollback
 {
-    public function __construct(private Collections $collections)
-    {
+    public function __construct(
+        private TaskCollection            $taskCollection,
+        private ActionContainerCollection $containerCollection,
+    ) {
     }
 
     public function run(array $slice = []): void
     {
-        $tasks = empty($slice) ? $this->collections->task()->getAll() : $this->collections->task()->getAllByArray($slice);
+        $tasks = empty($slice) ? $this->taskCollection->getAll() : $this->taskCollection->getAllByArray($slice);
 
         /** @var Task $task */
         foreach ($tasks as $task) {
@@ -28,7 +33,7 @@ readonly class Rollback
                 continue;
             }
 
-            $actionContainer = $this->collections->container()->get($task->action->id);
+            $actionContainer = $this->containerCollection->get($task->action->id);
 
             $this->rollback($actionContainer->make($task->action->rollback));
         }

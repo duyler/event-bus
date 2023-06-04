@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service;
 
-use Duyler\EventBus\BusService;
-use Duyler\EventBus\State\Service\Trait\LogService;
+use Duyler\EventBus\Service\LogService;
+use Duyler\EventBus\State\Service\Trait\LogService as LogServiceTrait;
 
 class StateMainBeforeService
 {
-    use LogService;
+    use LogServiceTrait;
 
     public function __construct(
         public readonly string      $actionId,
-        private readonly BusService $busService,
+        private readonly LogService $logService,
     ) {
     }
 }

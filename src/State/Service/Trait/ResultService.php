@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service\Trait;
 
-use Duyler\EventBus\BusService;
 use Duyler\EventBus\Dto\Result;
 
 /**
- * @property BusService $busService
+ * @property \Duyler\EventBus\Service\ResultService $resultService
  */
 trait ResultService
 {
     public function getResult(string $actionId): Result
     {
-        return $this->busService->getResult($actionId);
+        return $this->resultService->getResult($actionId);
     }
 
     public function resultIsExists(string $actionId): bool
     {
-        return $this->busService->resultIsExists($actionId);
+        return $this->resultService->resultIsExists($actionId);
     }
 }

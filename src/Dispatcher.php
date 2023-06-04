@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
+use Duyler\EventBus\Service\SubscriptionService;
+use Duyler\EventBus\Service\TaskService;
+
 readonly class Dispatcher
 {
     public function __construct(
-        private Collections $collections,
-        private BusService  $busService,
+        private TaskService         $taskService,
+        private SubscriptionService $subscriptionService,
     ) {
     }
 
     public function dispatchResultTask(Task $resultTask): void
     {
-        $this->collections->task()->save($resultTask);
-
-        $this->busService->log($resultTask);
-        $this->busService->validateResultTask($resultTask);
-        $this->busService->resolveHeldTasks();
-        $this->busService->resolveSubscriptions($resultTask->action->id, $resultTask->result->status);
+        $this->taskService->saveResultTask($resultTask);
+        $this->taskService->validateResultTask($resultTask);
+        $this->taskService->resolveHeldTasks();
+        $this->subscriptionService->resolveSubscriptions($resultTask->action->id, $resultTask->result->status);
     }
 }

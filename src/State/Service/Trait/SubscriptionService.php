@@ -8,17 +8,17 @@ use Duyler\EventBus\BusService;
 use Duyler\EventBus\Dto\Subscription;
 
 /**
- * @property BusService $busService
+ * @property \Duyler\EventBus\Service\SubscriptionService $subscriptionService
  */
 trait SubscriptionService
 {
     public function addSubscription(Subscription $subscription): void
     {
-        $this->busService->addSubscription($subscription);
+        $this->subscriptionService->addSubscription($subscription);
     }
 
     public function subscriptionIsExists(Subscription $subscription): bool
     {
-        return $this->busService->subscriptionIsExists($subscription);
+        return $this->subscriptionService->subscriptionIsExists($subscription);
     }
 }

@@ -15,28 +15,33 @@ use Duyler\EventBus\Contract\State\StateMainSuspendHandlerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Subscription;
+use Duyler\EventBus\Service\ActionService;
+use Duyler\EventBus\Service\ResultService;
+use Duyler\EventBus\Service\SubscriptionService;
 use Duyler\EventBus\State\StateHandlerStorage;
 use Throwable;
 
 readonly class Bus
 {
     public function __construct(
-        private BusService            $busService,
         private DoWhile               $doWhile,
         private Rollback              $rollback,
         private StateHandlerStorage   $stateHandlerStorage,
+        private ActionService         $actionService,
+        private SubscriptionService   $subscriptionService,
+        private ResultService         $resultService,
     ) {
     }
 
     public function addAction(Action $action): static
     {
-        $this->busService->addAction($action);
+        $this->actionService->addAction($action);
         return $this;
     }
 
     public function addSubscription(Subscription $subscription): static
     {
-        $this->busService->addSubscription($subscription);
+        $this->subscriptionService->addSubscription($subscription);
         return $this;
     }
 
@@ -55,22 +60,22 @@ readonly class Bus
 
     public function doAction(Action $action): void
     {
-        $this->busService->doAction($action);
+        $this->actionService->doAction($action);
     }
 
     public function doExistsAction(string $actionId): void
     {
-        $this->busService->doExistsAction($actionId);
+        $this->actionService->doExistsAction($actionId);
     }
 
     public function actionIsExists(string $actionId): bool
     {
-        return $this->busService->actionIsExists($actionId);
+        return $this->actionService->actionIsExists($actionId);
     }
 
     public function getResult(string $actionId): ?Result
     {
-        return $this->busService->getResult($actionId);
+        return $this->resultService->getResult($actionId);
     }
 
     public function addStateMainStartHandler(StateMainStartHandlerInterface $startHandler): void
