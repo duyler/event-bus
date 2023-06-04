@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Service;
 
-use Duyler\EventBus\BusService;
+use Duyler\EventBus\Bus;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\SubscriptionCollection;
 use Duyler\EventBus\Dto\Subscription;
@@ -16,7 +16,7 @@ readonly class SubscriptionService
     public function __construct(
         private SubscriptionCollection $subscriptionCollection,
         private ActionCollection       $actionCollection,
-        private BusService             $busService,
+        private Bus                    $bus,
     ) {
     }
 
@@ -50,7 +50,7 @@ readonly class SubscriptionService
 
             $action = $this->actionCollection->get($subscription->actionId);
 
-            $this->busService->doAction($action);
+            $this->bus->doAction($action);
         }
     }
 }

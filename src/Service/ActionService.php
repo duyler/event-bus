@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Service;
 
-use Duyler\EventBus\BusService;
+use Duyler\EventBus\Bus;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Dto\Action;
 use InvalidArgumentException;
@@ -13,7 +13,7 @@ readonly class ActionService
 {
     public function __construct(
         private ActionCollection $actionCollection,
-        private BusService       $busService,
+        private Bus              $bus,
     ) {
     }
 
@@ -38,7 +38,7 @@ readonly class ActionService
             $this->addAction($action);
         }
 
-        $this->busService->doAction($action);
+        $this->bus->doAction($action);
     }
 
     public function doExistsAction(string $actionId): void

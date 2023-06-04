@@ -1,120 +1,90 @@
-<?php 
+<?php
 
 declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
-use Duyler\EventBus\Contract\State\StateActionAfterHandlerInterface;
-use Duyler\EventBus\Contract\State\StateActionBeforeHandlerInterface;
-use Duyler\EventBus\Contract\State\StateActionThrowingHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainAfterHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainBeforeHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainFinalHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainStartHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainSuspendHandlerInterface;
+use Duyler\EventBus\Action\ActionRequiredIterator;
+use Duyler\EventBus\Collection\ActionCollection;
+use Duyler\EventBus\Collection\TaskCollection;
 use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Dto\Subscription;
-use Duyler\EventBus\Service\ActionService;
-use Duyler\EventBus\Service\ResultService;
-use Duyler\EventBus\Service\SubscriptionService;
-use Duyler\EventBus\State\StateHandlerStorage;
-use Throwable;
+use Duyler\EventBus\Enum\ResultStatus;
 
-readonly class Bus
+use function count;
+
+class Bus
 {
+    protected array $heldTasks = [];
+
     public function __construct(
-        private DoWhile               $doWhile,
-        private Rollback              $rollback,
-        private StateHandlerStorage   $stateHandlerStorage,
-        private ActionService         $actionService,
-        private SubscriptionService   $subscriptionService,
-        private ResultService         $resultService,
+        private readonly TaskQueue            $taskQueue,
+        private readonly TaskCollection       $taskCollection,
+        private readonly ActionCollection     $actionCollection,
     ) {
-    }
-
-    public function addAction(Action $action): static
-    {
-        $this->actionService->addAction($action);
-        return $this;
-    }
-
-    public function addSubscription(Subscription $subscription): static
-    {
-        $this->subscriptionService->addSubscription($subscription);
-        return $this;
-    }
-
-    /**
-     * @throws Throwable
-     */
-    public function run(): void
-    {
-        try {
-            $this->doWhile->run();
-        } catch (Throwable $exception) {
-            $this->rollback->run();
-            throw $exception;
-        }
     }
 
     public function doAction(Action $action): void
     {
-        $this->actionService->doAction($action);
+        $requiredIterator = new ActionRequiredIterator($action->required, $this->actionCollection);
+
+        foreach ($requiredIterator as $subject) {
+
+            $requiredAction = $this->actionCollection->get($subject);
+
+            if ($this->taskCollection->isExists($requiredAction->id)) {
+                $result = $this->taskCollection->getResult($requiredAction->id);
+                if ($result->status === ResultStatus::Success) {
+                    continue;
+                }
+                break;
+            }
+
+            $this->pushTask($this->createTask($requiredAction));
+        }
+
+        $this->pushTask($this->createTask($action));
     }
 
-    public function doExistsAction(string $actionId): void
+    protected function createTask(Action $action): Task
     {
-        $this->actionService->doExistsAction($actionId);
+        return new Task($action);
     }
 
-    public function actionIsExists(string $actionId): bool
+    protected function pushTask(Task $task): void
     {
-        return $this->actionService->actionIsExists($actionId);
+        if ($this->isSatisfiedConditions($task)) {
+            $this->taskQueue->push($task);
+        } else {
+            $this->heldTasks[$task->action->id] = $task;
+        }
     }
 
-    public function getResult(string $actionId): ?Result
+    public function resolveHeldTasks(): void
     {
-        return $this->resultService->getResult($actionId);
+        /** @var Task $task */
+        foreach($this->heldTasks as $key => $task) {
+            if ($this->isSatisfiedConditions($task)) {
+                $this->taskQueue->push($task);
+                unset($this->heldTasks[$key]);
+            }
+        }
     }
 
-    public function addStateMainStartHandler(StateMainStartHandlerInterface $startHandler): void
+    protected function isSatisfiedConditions(Task $task): bool
     {
-        $this->stateHandlerStorage->addStateMainStartHandler($startHandler);
-    }
+        if (empty($task->action->required)) {
+            return true;
+        }
 
-    public function addStateMainBeforeHandler(StateMainBeforeHandlerInterface $beforeActionHandler): void
-    {
-        $this->stateHandlerStorage->addStateMainBeforeHandler($beforeActionHandler);
-    }
+        $completeTasks = $this->taskCollection->getAllByArray($task->action->required->getArrayCopy());
 
-    public function setStateMainSuspendHandler(StateMainSuspendHandlerInterface $suspendHandler): void
-    {
-        $this->stateHandlerStorage->setStateMainSuspendHandler($suspendHandler);
-    }
+        /** @var Task $completeTask */
+        foreach ($completeTasks as $completeTask) {
+            if ($completeTask->result->status === ResultStatus::Fail) {
+                return false;
+            }
+        }
 
-    public function addStateMainAfterHandler(StateMainAfterHandlerInterface $afterActionHandler): void
-    {
-        $this->stateHandlerStorage->addStateMainAfterHandler($afterActionHandler);
-    }
-
-    public function addStateMainFinalHandler(StateMainFinalHandlerInterface $finalHandler): void
-    {
-        $this->stateHandlerStorage->addStateMainFinalHandler($finalHandler);
-    }
-
-    public function addStateActionBeforeHandler(StateActionBeforeHandlerInterface $actionBeforeHandler): void
-    {
-        $this->stateHandlerStorage->addStateActionBeforeHandler($actionBeforeHandler);
-    }
-
-    public function addStateActionThrowingHandler(StateActionThrowingHandlerInterface $actionThrowingHandler): void
-    {
-        $this->stateHandlerStorage->addStateActionThrowingHandler($actionThrowingHandler);
-    }
-
-    public function addStateActionAfterHandler(StateActionAfterHandlerInterface $actionAfterHandler): void
-    {
-        $this->stateHandlerStorage->addStateActionAfterHandler($actionAfterHandler);
+        return count($completeTasks) === count($task->action->required);
     }
 }

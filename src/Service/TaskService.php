@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Service;
 
-use Duyler\EventBus\BusService;
+use Duyler\EventBus\Bus;
 use Duyler\EventBus\Collection\TaskCollection;
 use Duyler\EventBus\Exception\CircularCallActionException;
 use Duyler\EventBus\Exception\ConsecutiveRepeatedActionException;
@@ -14,15 +14,15 @@ use Duyler\EventBus\Task;
 readonly class TaskService
 {
     public function __construct(
-        private BusService $busService,
+        private Bus            $bus,
         private TaskCollection $taskCollection,
-        private Log $log,
+        private Log            $log,
     ) {
     }
 
     public function resolveHeldTasks(): void
     {
-        $this->busService->resolveHeldTasks();
+        $this->bus->resolveHeldTasks();
     }
 
     public function saveResultTask(Task $task): void

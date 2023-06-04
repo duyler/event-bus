@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service\Trait;
 
-use Duyler\EventBus\BusService;
+use Duyler\EventBus\Bus;
 
 /**
  * @property \Duyler\EventBus\Service\RollbackService $rollbackService
