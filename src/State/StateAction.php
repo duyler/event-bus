@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State;
 
-use Duyler\EventBus\Contract\State\StateActionAfterHandlerInterface;
-use Duyler\EventBus\Contract\State\StateActionBeforeHandlerInterface;
-use Duyler\EventBus\Contract\State\StateActionThrowingHandlerInterface;
 use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Enum\StateType;
 use Duyler\EventBus\State\Service\StateActionAfterService;
 use Duyler\EventBus\State\Service\StateActionBeforeService;
 use Duyler\EventBus\State\Service\StateActionThrowingService;
@@ -18,7 +14,7 @@ use Throwable;
 readonly class StateAction
 {
     public function __construct(
-        private StateHandlerProvider   $stateHandlerProvider,
+        private StateHandlerStorage    $stateHandlerStorage,
         private ActionContainerCollection $actionContainerCollection,
     ) {
     }
@@ -30,8 +26,7 @@ readonly class StateAction
             $action->id,
         );
 
-        /** @var StateActionBeforeHandlerInterface $handler */
-        foreach ($this->stateHandlerProvider->getHandlers(StateType::ActionBefore) as $handler) {
+        foreach ($this->stateHandlerStorage->getStateActionBefore() as $handler) {
             if (empty($handler->observed()) || in_array($action->id, $handler->observed())) {
                 $handler->handle($stateService);
             }
@@ -45,8 +40,7 @@ readonly class StateAction
             $action->id,
         );
 
-        /** @var StateActionAfterHandlerInterface $handler */
-        foreach ($this->stateHandlerProvider->getHandlers(StateType::ActionAfter) as $handler) {
+        foreach ($this->stateHandlerStorage->getStateActionAfter() as $handler) {
             if (empty($handler->observed()) || in_array($action->id, $handler->observed())) {
                 $handler->handle($stateService);
             }
@@ -61,8 +55,7 @@ readonly class StateAction
             $action->id,
         );
 
-        /** @var StateActionThrowingHandlerInterface $handler */
-        foreach ($this->stateHandlerProvider->getHandlers(StateType::ActionThrowing) as $handler) {
+        foreach ($this->stateHandlerStorage->getStateActionThrowing() as $handler) {
             if (empty($handler->observed()) || in_array($action->id, $handler->observed())) {
                 $handler->handle($stateService);
             }

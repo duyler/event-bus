@@ -8,7 +8,7 @@ readonly class Dispatcher
 {
     public function __construct(
         private Collections $collections,
-        private Control     $control,
+        private BusService  $busService,
     ) {
     }
 
@@ -16,9 +16,9 @@ readonly class Dispatcher
     {
         $this->collections->task()->save($resultTask);
 
-        $this->control->log($resultTask);
-        $this->control->validateResultTask($resultTask);
-        $this->control->resolveHeldTasks();
-        $this->control->resolveSubscriptions($resultTask->action->id, $resultTask->result->status);
+        $this->busService->log($resultTask);
+        $this->busService->validateResultTask($resultTask);
+        $this->busService->resolveHeldTasks();
+        $this->busService->resolveSubscriptions($resultTask->action->id, $resultTask->result->status);
     }
 }

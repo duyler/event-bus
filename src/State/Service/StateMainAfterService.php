@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service;
 
-use Duyler\EventBus\Control;
+use Duyler\EventBus\BusService;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\State\Service\Trait\LogService;
 use Duyler\EventBus\State\Service\Trait\ResultService;
@@ -20,7 +20,7 @@ class StateMainAfterService
         public readonly ResultStatus  $resultStatus,
         public readonly object | null $resultData,
         public readonly string        $actionId,
-        private readonly Control      $control,
+        private readonly BusService   $busService,
     ) {
     }
 }

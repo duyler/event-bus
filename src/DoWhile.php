@@ -6,7 +6,7 @@ namespace Duyler\EventBus;
 
 use Duyler\EventBus\Action\ActionHandler;
 use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Enum\StateType;
+use Duyler\EventBus\State\StateMain;
 
 readonly class DoWhile
 {
@@ -14,29 +14,29 @@ readonly class DoWhile
         private Dispatcher    $dispatcher,
         private ActionHandler $actionHandler,
         private TaskQueue     $taskQueue,
-        private State         $state,
+        private StateMain     $stateMain,
     ) {
     }
 
     public function run(): void
     {
-        $this->state->declare(StateType::MainBeforeStart);
+        $this->stateMain->start();
 
         do {
             /** @var Task $task */
             $task = $this->taskQueue->dequeue();
 
             if ($task->isRunning()) {
-                $this->state->declare(StateType::MainSuspendAction, $task);
+                $this->stateMain->suspend($task);
                 $this->dispatch($task);
                 continue;
             }
 
-            $this->state->declare(StateType::MainBeforeAction, $task);
+            $this->stateMain->before($task);
             $this->runTask($task);
         } while ($this->taskQueue->isNotEmpty());
 
-        $this->state->declare(StateType::MainFinal);
+        $this->stateMain->final();
     }
 
     public function runTask(Task $task): void
@@ -51,7 +51,7 @@ readonly class DoWhile
             $this->taskQueue->push($task);
         } else {
             $task->takeResult();
-            $this->state->declare(StateType::MainAfterAction, $task);
+            $this->stateMain->after($task);
             $this->dispatcher->dispatchResultTask($task);
         }
     }

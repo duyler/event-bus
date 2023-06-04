@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service\Trait;
 
-use Duyler\EventBus\Control;
+use Duyler\EventBus\BusService;
 
 /**
- * @property Control $control
+ * @property BusService $busService
  */
 trait LogService
 {
     public function getFirstAction(): string
     {
-        return $this->control->getFirstAction();
+        return $this->busService->getFirstAction();
     }
 
     public function getLastAction(): string
     {
-        return $this->control->getLastAction();
+        return $this->busService->getLastAction();
     }
 }

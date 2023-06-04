@@ -4,14 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State;
 
-use Duyler\EventBus\Config;
-use Duyler\EventBus\Contract\State\StateMainAfterHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainBeforeHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainFinalHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainStartHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainSuspendHandlerInterface;
-use Duyler\EventBus\Control;
-use Duyler\EventBus\Enum\StateType;
+use Duyler\EventBus\BusService;
 use Duyler\EventBus\State\Service\StateMainAfterService;
 use Duyler\EventBus\State\Service\StateMainBeforeService;
 use Duyler\EventBus\State\Service\StateMainFinalService;
@@ -23,21 +16,19 @@ use Duyler\EventBus\Task;
 readonly class StateMain
 {
     public function __construct(
-        private Control                $control,
-        private StateHandlerProvider   $stateHandlerProvider,
+        private BusService                $busService,
+        private StateHandlerStorage       $stateHandlerStorage,
         private ActionContainerCollection $actionContainerCollection,
-        private Config $config,
     ) {
     }
 
     public function start(): void
     {
         $stateService = new StateMainStartService(
-            $this->control,
+            $this->busService,
         );
 
-        /** @var StateMainStartHandlerInterface $handler */
-        foreach ($this->stateHandlerProvider->getHandlers(StateType::MainBeforeStart) as $handler) {
+        foreach ($this->stateHandlerStorage->getStateMainStart() as $handler) {
             $handler->handle($stateService);
         }
     }
@@ -46,11 +37,10 @@ readonly class StateMain
     {
         $stateService = new StateMainBeforeService(
             $task->action->id,
-            $this->control,
+            $this->busService,
         );
 
-        /** @var StateMainBeforeHandlerInterface $handler */
-        foreach ($this->stateHandlerProvider->getHandlers(StateType::MainBeforeAction) as $handler) {
+        foreach ($this->stateHandlerStorage->getStateMainBefore() as $handler) {
             if (empty($handler->observed()) || in_array($task->action->id, $handler->observed())) {
                 $handler->handle($stateService);
             }
@@ -59,9 +49,7 @@ readonly class StateMain
 
     public function suspend(Task $task): void
     {
-        /** @var StateMainSuspendHandlerInterface $handler */
-        $handler = $this->stateHandlerProvider->getHandlers(StateType::MainSuspendAction)
-            ->get($this->config->coroutineHandler);
+        $handler = $this->stateHandlerStorage->getStateMainSuspend();
 
         if (empty($handler)) {
             $value = $task->getValue();
@@ -71,7 +59,7 @@ readonly class StateMain
         }
 
         $stateService = new StateMainSuspendService(
-            $this->control,
+            $this->busService,
             $task,
             $this->actionContainerCollection->get($task->action->id),
         );
@@ -85,11 +73,10 @@ readonly class StateMain
             $task->result->status,
             $task->result->data,
             $task->action->id,
-            $this->control,
+            $this->busService,
         );
 
-        /** @var StateMainAfterHandlerInterface $handler */
-        foreach ($this->stateHandlerProvider->getHandlers(StateType::MainAfterAction) as $handler) {
+        foreach ($this->stateHandlerStorage->getStateMainAfter() as $handler) {
             if (empty($handler->observed()) || in_array($task->action->id, $handler->observed())) {
                 $handler->handle($stateService);
             }
@@ -99,11 +86,10 @@ readonly class StateMain
     public function final(): void
     {
         $stateService = new StateMainFinalService(
-            $this->control,
+            $this->busService,
         );
 
-        /** @var StateMainFinalHandlerInterface $handler */
-        foreach ($this->stateHandlerProvider->getHandlers(StateType::MainFinal) as $handler) {
+        foreach ($this->stateHandlerStorage->getStateMainFinal() as $handler) {
             $handler->handle($stateService);
         }
     }

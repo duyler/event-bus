@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus;
+namespace Duyler\EventBus\Collector;
 
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\SubscriptionCollection;
 use Duyler\EventBus\Dto\Subscription;
 use InvalidArgumentException;
 
-readonly class SubscriptionRegister
+readonly class SubscriptionCollector
 {
     public function __construct(
         private SubscriptionCollection $subscriptionCollection,
