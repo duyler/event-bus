@@ -37,7 +37,7 @@ $blogAction = new Action(
     ],
 );
 
-$bus->addAction($blogAction);
+$busBuilder->addAction($blogAction);
 
 $blogActionSubscription = new Subscription(
     subject: 'Request.GetRequest',
