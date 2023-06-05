@@ -78,7 +78,7 @@ readonly class ActionHandler
         $container->bind($action->classMap);
         $container->setProviders($action->providers);
 
-        $this->containerCollection->add($container);
+        $this->containerCollection->save($container);
 
         return $container;
     }
