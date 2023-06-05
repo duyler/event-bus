@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service\Trait;
 
-use Duyler\EventBus\BusService;
+use Duyler\EventBus\Bus;
 
 /**
- * @property BusService $busService
+ * @property \Duyler\EventBus\Service\RollbackService $rollbackService
  */
 trait RollbackService
 {
     public function rollbackWithoutException(int $step = 0): void
     {
-        $this->busService->rollbackWithoutException($step);
+        $this->rollbackService->rollbackWithoutException($step);
     }
 }

@@ -4,34 +4,34 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service\Trait;
 
-use Duyler\EventBus\BusService;
+use Duyler\EventBus\Bus;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Subscription;
 
 /**
- * @property BusService $busService
+ * @property \Duyler\EventBus\Service\ActionService $actionService
  */
 trait ActionService
 {
     public function addAction(Action $action): void
     {
-        if ($this->busService->actionIsExists($action->id) === false) {
-            $this->busService->addAction($action);
+        if ($this->actionService->actionIsExists($action->id) === false) {
+            $this->actionService->addAction($action);
         }
     }
 
     public function doAction(Action $action): void
     {
-        $this->busService->doAction($action);
+        $this->actionService->doAction($action);
     }
 
     public function doExistsAction(string $actionId): void
     {
-        $this->busService->doExistsAction($actionId);
+        $this->actionService->doExistsAction($actionId);
     }
 
     public function actionIsExists(string $actionId): bool
     {
-        return $this->busService->actionIsExists($actionId);
+        return $this->actionService->actionIsExists($actionId);
     }
 }

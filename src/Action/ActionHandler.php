@@ -4,21 +4,23 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
+use Duyler\EventBus\Collection\ActionContainerCollection;
+use Duyler\EventBus\Collection\TaskCollection;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\ActionReturnValueExistsException;
 use Duyler\EventBus\Exception\ActionReturnValueNotExistsException;
-use Duyler\EventBus\Collections;
 use Duyler\EventBus\State\StateAction;
 use Throwable;
 
 readonly class ActionHandler
 {
     public function __construct(
-        private Collections            $collections,
-        private ActionContainerBuilder $containerBuilder,
-        private StateAction            $stateAction,
+        private ActionContainerBuilder    $containerBuilder,
+        private StateAction               $stateAction,
+        private TaskCollection            $taskCollection,
+        private ActionContainerCollection $containerCollection
     ) {
     }
 
@@ -67,7 +69,7 @@ readonly class ActionHandler
     {
         $container = $this->containerBuilder->build($action->id);
 
-        $completeTasks = $this->collections->task()->getAllByArray($action->required->getArrayCopy());
+        $completeTasks = $this->taskCollection->getAllByArray($action->required->getArrayCopy());
 
         foreach ($completeTasks as $task) {
             $container->set($task->result->data);
@@ -76,7 +78,7 @@ readonly class ActionHandler
         $container->bind($action->classMap);
         $container->setProviders($action->providers);
 
-        $this->collections->container()->add($container);
+        $this->containerCollection->add($container);
 
         return $container;
     }

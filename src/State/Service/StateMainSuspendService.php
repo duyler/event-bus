@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace Duyler\EventBus\State\Service;
 
 use Duyler\EventBus\Action\ActionContainer;
-use Duyler\EventBus\BusService;
-use Duyler\EventBus\State\Service\Trait\ResultService;
-use Duyler\EventBus\State\Service\Trait\TaskSuspendService;
+use Duyler\EventBus\Service\ResultService;
+use Duyler\EventBus\State\Service\Trait\ResultService as ResultServiceTrait;
+use Duyler\EventBus\State\Service\Trait\TaskSuspendService as TaskSuspendServiceTrait;
 use Duyler\EventBus\Task;
 
 class StateMainSuspendService
 {
-    use ResultService;
-    use TaskSuspendService;
+    use ResultServiceTrait;
+    use TaskSuspendServiceTrait;
 
     public function __construct(
-        private readonly BusService     $busService,
+        private readonly ResultService  $resultService,
         private readonly Task           $task,
         public readonly ActionContainer $container,
     ) {

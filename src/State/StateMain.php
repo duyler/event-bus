@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State;
 
-use Duyler\EventBus\BusService;
+use Duyler\EventBus\Service\ActionService;
+use Duyler\EventBus\Service\LogService;
+use Duyler\EventBus\Service\ResultService;
+use Duyler\EventBus\Service\RollbackService;
+use Duyler\EventBus\Service\SubscriptionService;
 use Duyler\EventBus\State\Service\StateMainAfterService;
 use Duyler\EventBus\State\Service\StateMainBeforeService;
 use Duyler\EventBus\State\Service\StateMainFinalService;
@@ -16,16 +20,21 @@ use Duyler\EventBus\Task;
 readonly class StateMain
 {
     public function __construct(
-        private BusService                $busService,
         private StateHandlerStorage       $stateHandlerStorage,
         private ActionContainerCollection $actionContainerCollection,
+        private ActionService             $actionService,
+        private LogService                $logService,
+        private ResultService             $resultService,
+        private RollbackService           $rollbackService,
+        private SubscriptionService       $subscriptionService,
     ) {
     }
 
     public function start(): void
     {
         $stateService = new StateMainStartService(
-            $this->busService,
+            $this->actionService,
+            $this->subscriptionService,
         );
 
         foreach ($this->stateHandlerStorage->getStateMainStart() as $handler) {
@@ -37,7 +46,7 @@ readonly class StateMain
     {
         $stateService = new StateMainBeforeService(
             $task->action->id,
-            $this->busService,
+            $this->logService,
         );
 
         foreach ($this->stateHandlerStorage->getStateMainBefore() as $handler) {
@@ -59,7 +68,7 @@ readonly class StateMain
         }
 
         $stateService = new StateMainSuspendService(
-            $this->busService,
+            $this->resultService,
             $task,
             $this->actionContainerCollection->get($task->action->id),
         );
@@ -73,7 +82,9 @@ readonly class StateMain
             $task->result->status,
             $task->result->data,
             $task->action->id,
-            $this->busService,
+            $this->actionService,
+            $this->resultService,
+            $this->logService,
         );
 
         foreach ($this->stateHandlerStorage->getStateMainAfter() as $handler) {
@@ -86,7 +97,9 @@ readonly class StateMain
     public function final(): void
     {
         $stateService = new StateMainFinalService(
-            $this->busService,
+            $this->resultService,
+            $this->logService,
+            $this->rollbackService,
         );
 
         foreach ($this->stateHandlerStorage->getStateMainFinal() as $handler) {
