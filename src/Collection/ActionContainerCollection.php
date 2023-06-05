@@ -2,26 +2,17 @@
 
 namespace Duyler\EventBus\Collection;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Expr\Comparison;
 use Duyler\EventBus\Action\ActionContainer;
 
-class ActionContainerCollection extends ArrayCollection
+class ActionContainerCollection extends AbstractCollection
 {
-    public function get(string|int $key): ActionContainer
+    public function save(ActionContainer $container): void
     {
-        return $this->where('actionId', $key)->first();
+        $this->data[$container->actionId] = $container;
     }
 
-    public function where(string $key, mixed $value): ArrayCollection
+    public function get(string $actionId): ActionContainer
     {
-        $criteria = new Criteria();
-
-        $criteria->where(
-            new Comparison($key, Comparison::EQ, $value)
-        );
-
-        return $this->matching($criteria);
+        return $this->data[$actionId];
     }
 }

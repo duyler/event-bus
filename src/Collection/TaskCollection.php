@@ -16,6 +16,9 @@ class TaskCollection extends AbstractCollection
         $this->data[$task->action->id] = $task;
     }
 
+    /**
+     * @return Task[]
+     */
     public function getAllByArray(array $array): array
     {
         return array_intersect_key($this->data, array_flip($array));

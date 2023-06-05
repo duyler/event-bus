@@ -23,7 +23,6 @@ readonly class DoWhile
         $this->stateMain->start();
 
         do {
-            /** @var Task $task */
             $task = $this->taskQueue->dequeue();
 
             if ($task->isRunning()) {
