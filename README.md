@@ -12,7 +12,7 @@ use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 
-$bus = BusBuilder::build();
+$busBuilder = new BusBuilder();
 
 $requestAction = new Action(
     id: 'Request.GetRequest',
@@ -45,12 +45,14 @@ $blogActionSubscription = new Subscription(
     status: ResultStatus::Success,
 );
 
-$bus->addSubscription($blogActionSubscription);
+$busBuilder->addSubscription($blogActionSubscription);
 
-$bus->doAction($requestAction);
+$busBuilder->doAction($requestAction);
 
-$bus->run();
+$runner = $busBuilder->build();
 
-$blogPost = $bus->getResult('Blog.GetPostById');
+$runner->run();
+
+$blogPost = $runner->getResult('Blog.GetPostById');
 
 ```
