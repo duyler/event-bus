@@ -57,8 +57,12 @@ class BusBuilder
     /** @var StateActionAfterHandlerInterface[] $stateActionAfterHandlers */
     private array $stateActionAfterHandlers = [];
 
-    public function build(Config $config = null): ?Runner
+    private ?Config $config = null;
+
+    public function build(): ?Runner
     {
+        $config = $this->config;
+
         if ($config === null) {
             $config = new Config(
                 defaultCacheDir: dirname('__DIR__'). self::CACHE_DIR,
@@ -129,6 +133,12 @@ class BusBuilder
         $runner = $container->make(Runner::class);
 
         return $runner;
+    }
+
+    public function setConfig(Config $config): static
+    {
+        $this->config = $config;
+        return $this;
     }
 
     public function addAction(Action $action): static

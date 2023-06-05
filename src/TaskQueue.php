@@ -32,7 +32,7 @@ class TaskQueue
         return $this->queue->isEmpty();
     }
 
-    public function dequeue(): mixed
+    public function dequeue(): Task
     {
         if ($this->queue->isEmpty()) {
             throw new RuntimeException("TaskQueue is empty");

@@ -22,7 +22,6 @@ readonly class Rollback
     {
         $tasks = empty($slice) ? $this->taskCollection->getAll() : $this->taskCollection->getAllByArray($slice);
 
-        /** @var Task $task */
         foreach ($tasks as $task) {
             if (empty($task->action->rollback)) {
                 continue;
