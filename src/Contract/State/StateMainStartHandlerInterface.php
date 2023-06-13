@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Contract\State;
 
 use Duyler\EventBus\State\Service\StateMainStartService;
+use Duyler\EventBus\State\StateHandlerInterface;
 use Duyler\EventBus\State\StateHandlerPreparedInterface;
 
-interface StateMainStartHandlerInterface extends StateHandlerPreparedInterface
+interface StateMainStartHandlerInterface extends
+    StateHandlerPreparedInterface,
+    StateHandlerInterface
 {
     public function handle(StateMainStartService $stateService): void;
 }
