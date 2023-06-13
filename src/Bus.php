@@ -14,6 +14,7 @@ use function count;
 
 class Bus
 {
+    /** @var Task[] $heldTasks */
     protected array $heldTasks = [];
 
     public function __construct(
@@ -25,7 +26,7 @@ class Bus
 
     public function doAction(Action $action): void
     {
-        $requiredIterator = new ActionRequiredIterator($action->required, $this->actionCollection);
+        $requiredIterator = new ActionRequiredIterator($action->required, $this->actionCollection->getAll());
 
         foreach ($requiredIterator as $subject) {
 
@@ -61,7 +62,6 @@ class Bus
 
     public function resolveHeldTasks(): void
     {
-        /** @var Task $task */
         foreach($this->heldTasks as $key => $task) {
             if ($this->isSatisfiedConditions($task)) {
                 $this->taskQueue->push($task);
@@ -78,7 +78,6 @@ class Bus
 
         $completeTasks = $this->taskCollection->getAllByArray($task->action->required->getArrayCopy());
 
-        /** @var Task $completeTask */
         foreach ($completeTasks as $completeTask) {
             if ($completeTask->result->status === ResultStatus::Fail) {
                 return false;

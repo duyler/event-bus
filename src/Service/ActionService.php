@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Service;
 
+use Duyler\EventBus\Action\ActionRequiredIterator;
 use Duyler\EventBus\Bus;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Dto\Action;
@@ -22,9 +23,7 @@ readonly class ActionService
         if ($this->actionCollection->isExists($action->id) === false) {
             foreach ($action->required as $subject) {
                 if ($this->actionCollection->isExists($subject) === false) {
-                    throw new InvalidArgumentException(
-                        'Required action ' . $subject . ' not registered in the bus'
-                    );
+                    $this->throwNotRegistered($subject);
                 }
             }
 
@@ -34,9 +33,7 @@ readonly class ActionService
 
     public function doAction(Action $action): void
     {
-        if ($this->actionCollection->isExists($action->id) === false) {
-            $this->addAction($action);
-        }
+        $this->addAction($action);
 
         $this->bus->doAction($action);
     }
@@ -51,5 +48,31 @@ readonly class ActionService
     public function actionIsExists(string $actionId): bool
     {
         return $this->actionCollection->isExists($actionId);
+    }
+    
+    /** @param  Action[] $actions */
+    public function collect(iterable $actions): void
+    {
+        foreach ($actions as $action) {
+
+            $requiredIterator = new ActionRequiredIterator($action->required, $actions);
+
+            foreach ($requiredIterator as $subject) {
+                if (array_key_exists($subject, $actions) === false) {
+                    $this->throwNotRegistered($subject);
+                }
+            }
+
+            if ($this->actionCollection->isExists($action->id) === false) {
+                $this->actionCollection->save($action);
+            }
+        }
+    }
+
+    private function throwNotRegistered(string $subject): never
+    {
+        throw new InvalidArgumentException(
+            'Required action ' . $subject . ' not registered in the bus'
+        );
     }
 }

@@ -85,12 +85,11 @@ class BusBuilder
         /** @var StateService $stateService */
         $stateService = $container->make(StateService::class);
 
-        foreach ($this->actions as $action) {
-            $actionService->addAction($action);
-        }
+        $actionService->collect($this->actions);
+        $actionService->collect($this->doActions);
 
         foreach ($this->doActions as $action) {
-            $actionService->doAction($action);
+            $actionService->doExistsAction($action->id);
         }
 
         foreach ($this->subscriptions as $subscription) {
@@ -143,7 +142,7 @@ class BusBuilder
 
     public function addAction(Action $action): static
     {
-        $this->actions[] = $action;
+        $this->actions[$action->id] = $action;
         return $this;
     }
 
@@ -155,7 +154,7 @@ class BusBuilder
 
     public function doAction(Action $action): static
     {
-        $this->doActions[] = $action;
+        $this->doActions[$action->id] = $action;
         return $this;
     }
 
