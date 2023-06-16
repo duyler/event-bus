@@ -22,7 +22,7 @@ class ActionContainer extends Container
         );
         $reflectionStorage = new ReflectionStorage();
         $serviceStorage = new ServiceStorage();
-        $dependencyMapper = new DependencyMapper($reflectionStorage);
+        $dependencyMapper = new DependencyMapper($reflectionStorage, $serviceStorage);
         parent::__construct(new Compiler($serviceStorage), $dependencyMapper, $serviceStorage, $cacheHandler);
     }
 

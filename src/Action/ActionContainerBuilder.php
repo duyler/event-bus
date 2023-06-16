@@ -6,14 +6,27 @@ namespace Duyler\EventBus\Action;
 
 use Duyler\EventBus\Config;
 
-readonly class ActionContainerBuilder
+class ActionContainerBuilder
 {
-    public function __construct(private Config $config)
+    private array $sharedServices = [];
+
+    public function __construct(private readonly Config $config)
     {
     }
 
     public function build(string $actionId): ActionContainer
     {
-        return ActionContainer::build($actionId, $this->config->actionContainerCacheDir);
+        $container = ActionContainer::build($actionId, $this->config->actionContainerCacheDir);
+
+        foreach ($this->sharedServices as $service) {
+            $container->set($service);
+        }
+
+        return $container;
+    }
+
+    public function addSharedService(object $service): void
+    {
+        $this->sharedServices[] = $service;
     }
 }

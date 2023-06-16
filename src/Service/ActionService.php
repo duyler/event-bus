@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Service;
 
+use Duyler\EventBus\Action\ActionContainerBuilder;
 use Duyler\EventBus\Action\ActionRequiredIterator;
 use Duyler\EventBus\Bus;
 use Duyler\EventBus\Collection\ActionCollection;
@@ -13,8 +14,9 @@ use InvalidArgumentException;
 readonly class ActionService
 {
     public function __construct(
-        private ActionCollection $actionCollection,
-        private Bus              $bus,
+        private ActionCollection       $actionCollection,
+        private ActionContainerBuilder $containerBuilder,
+        private Bus                    $bus,
     ) {
     }
 
@@ -74,5 +76,10 @@ readonly class ActionService
         throw new InvalidArgumentException(
             'Required action ' . $subject . ' not registered in the bus'
         );
+    }
+
+    public function addSharedService(object $service): void
+    {
+        $this->containerBuilder->addSharedService($service);
     }
 }
