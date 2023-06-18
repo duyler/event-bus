@@ -27,6 +27,7 @@ readonly class StateMain
         private ResultService             $resultService,
         private RollbackService           $rollbackService,
         private SubscriptionService       $subscriptionService,
+        private StateContext              $context,
     ) {
     }
 
@@ -63,7 +64,7 @@ readonly class StateMain
         if (empty($handler)) {
             $value = $task->getValue();
             $result = is_callable($value) ? $value() : $value;
-            $task->resume($result);
+            $this->context->addResumeValue($task->action->id, $result);
             return;
         }
 
@@ -73,7 +74,13 @@ readonly class StateMain
             $this->actionContainerCollection->get($task->action->id),
         );
 
-        $task->resume($handler->getResume($stateService));
+        $this->context->addResumeValue($task->action->id, $handler->getResume($stateService));
+    }
+
+    public function resume(Task $task): void
+    {
+        $resumeValue = $this->context->getResumeValue($task->action->id);
+        $task->resume($resumeValue);
     }
 
     public function after(Task $task): void
