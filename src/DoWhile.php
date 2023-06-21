@@ -26,7 +26,7 @@ readonly class DoWhile
             $task = $this->taskQueue->dequeue();
 
             if ($task->isRunning()) {
-                $this->stateMain->suspend($task);
+                $this->stateMain->resume($task);
                 $this->dispatch($task);
                 continue;
             }
@@ -48,6 +48,7 @@ readonly class DoWhile
     {
         if ($task->isRunning()) {
             $this->taskQueue->push($task);
+            $this->stateMain->suspend($task);
         } else {
             $task->takeResult();
             $this->stateMain->after($task);
