@@ -11,6 +11,8 @@ use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\ActionReturnValueExistsException;
 use Duyler\EventBus\Exception\ActionReturnValueNotExistsException;
+use Duyler\EventBus\Exception\ArgumentsNotResolvedException;
+use Duyler\EventBus\Exception\InvalidArgumentFactoryException;
 use Duyler\EventBus\State\StateAction;
 use Throwable;
 
@@ -27,12 +29,13 @@ readonly class ActionHandler
     public function handle(Action $action): Result
     {
         $container = $this->prepareContainer($action);
-        $arguments = $this->prepareArguments($action, $container);
 
         $this->stateAction->before($action);
 
         try {
-            $resultData = $this->runAction($action, $container, $arguments);
+            $actionInstance = $this->prepareAction($action, $container);
+            $arguments = $this->prepareArguments($action);
+            $resultData = ($actionInstance)(...$arguments);
         } catch (Throwable $exception) {
             $this->stateAction->throwing($action, $exception);
             throw $exception;
@@ -59,21 +62,9 @@ readonly class ActionHandler
         return new Result(ResultStatus::Success);
     }
 
-    private function runAction(Action $action, ActionContainer $container, array $arguments): mixed
-    {
-        $actionInstance = $this->prepareAction($action, $container);
-        return ($actionInstance)(...$arguments);
-    }
-
     private function prepareContainer(Action $action): ActionContainer
     {
         $container = $this->containerBuilder->build($action->id);
-
-        $completeTasks = $this->taskCollection->getAllByArray($action->required->getArrayCopy());
-
-        foreach ($completeTasks as $task) {
-            $container->set($task->result->data);
-        }
 
         $container->bind($action->classMap);
         $container->setProviders($action->providers);
@@ -83,15 +74,47 @@ readonly class ActionHandler
         return $container;
     }
 
-    private function prepareArguments(Action $action, ActionContainer $container): array
+    /**
+     * @throws InvalidArgumentFactoryException
+     * @throws ArgumentsNotResolvedException
+     */
+    private function prepareArguments(Action $action): array
     {
+        $container = $this->containerBuilder->build($action->id);
+        $completeTasks = $this->taskCollection->getAll();
+
+        foreach ($completeTasks as $task) {
+            if ($container->has($task->result->data::class) === false) {
+                $container->set($task->result->data);
+            }
+        }
+
         $arguments = [];
 
-        foreach ($action->arguments as $name => $providerClass) {
-            $provider = $container->make($providerClass);
-            $argument = $provider();
-            $container->set($argument);
-            $arguments[$name] = $argument;
+        foreach ($action->arguments as $name => $class) {
+
+            $contract = null;
+            foreach ($completeTasks as $task) {
+                if ($task->result->data instanceof $class) {
+                    $contract = $task->result->data;
+                    break;
+                }
+            }
+
+            if ($contract === null) {
+                $provider = $container->make($class);
+
+                if (is_callable($provider) === false) {
+                    throw new InvalidArgumentFactoryException($class);
+                }
+                $arguments[$name] = $provider();
+            } else {
+                $arguments[$name] = $contract;
+            }
+        }
+
+        if (count($arguments) < count($action->arguments)) {
+            throw new ArgumentsNotResolvedException();
         }
 
         return $arguments;
