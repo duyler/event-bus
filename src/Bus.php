@@ -33,11 +33,7 @@ class Bus
             $requiredAction = $this->actionCollection->get($subject);
 
             if ($this->taskCollection->isExists($requiredAction->id)) {
-                $result = $this->taskCollection->getResult($requiredAction->id);
-                if ($result->status === ResultStatus::Success) {
-                    continue;
-                }
-                break;
+                continue;
             }
 
             $this->pushTask($this->createTask($requiredAction));

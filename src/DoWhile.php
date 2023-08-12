@@ -6,6 +6,8 @@ namespace Duyler\EventBus;
 
 use Duyler\EventBus\Action\ActionHandler;
 use Duyler\EventBus\Dto\Result;
+use Duyler\EventBus\Exception\CircularCallActionException;
+use Duyler\EventBus\Exception\ConsecutiveRepeatedActionException;
 use Duyler\EventBus\State\StateMain;
 
 readonly class DoWhile
@@ -18,6 +20,10 @@ readonly class DoWhile
     ) {
     }
 
+    /**
+     * @throws ConsecutiveRepeatedActionException
+     * @throws CircularCallActionException
+     */
     public function run(): void
     {
         $this->stateMain->start();
@@ -44,6 +50,10 @@ readonly class DoWhile
         $this->dispatch($task);
     }
 
+    /**
+     * @throws ConsecutiveRepeatedActionException
+     * @throws CircularCallActionException
+     */
     private function dispatch(Task $task): void
     {
         if ($task->isRunning()) {
