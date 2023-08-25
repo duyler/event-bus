@@ -10,6 +10,7 @@ use Duyler\EventBus\Bus;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Dto\Action;
 use InvalidArgumentException;
+use RuntimeException;
 
 readonly class ActionService
 {
@@ -35,6 +36,10 @@ readonly class ActionService
 
     public function doAction(Action $action): void
     {
+        if ($action->externalAccess === false) {
+            throw new RuntimeException('Action ' . $action->id . ' does not allow external access');
+        }
+
         $this->addAction($action);
 
         $this->bus->doAction($action);

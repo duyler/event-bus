@@ -44,6 +44,10 @@ readonly class DoWhile
         $this->stateMain->final();
     }
 
+    /**
+     * @throws ConsecutiveRepeatedActionException
+     * @throws CircularCallActionException
+     */
     public function runTask(Task $task): void
     {
         $task->run(fn(): Result => $this->actionHandler->handle($task->action));
@@ -61,8 +65,8 @@ readonly class DoWhile
             $this->stateMain->suspend($task);
         } else {
             $task->takeResult();
-            $this->stateMain->after($task);
             $this->dispatcher->dispatchResultTask($task);
+            $this->stateMain->after($task);
         }
     }
 }

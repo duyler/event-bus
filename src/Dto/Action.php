@@ -19,7 +19,8 @@ readonly class Action
         public array            $providers = [],
         public string | Closure $rollback = '',
         public array            $arguments = [],
-        public bool             $void = false
+        public bool             $externalAccess = false,
+        public ?string          $contract = null,
     ) {
         $this->required = new RecursiveArrayIterator($required);
     }

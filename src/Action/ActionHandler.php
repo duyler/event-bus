@@ -11,9 +11,11 @@ use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\ActionReturnValueExistsException;
 use Duyler\EventBus\Exception\ActionReturnValueNotExistsException;
+use Duyler\EventBus\Exception\ActionReturnValueWillBeCompatibleException;
 use Duyler\EventBus\Exception\ArgumentsNotResolvedException;
 use Duyler\EventBus\Exception\InvalidArgumentFactoryException;
 use Duyler\EventBus\State\StateAction;
+use Duyler\EventBus\Task;
 use Throwable;
 
 readonly class ActionHandler
@@ -26,6 +28,14 @@ readonly class ActionHandler
     ) {
     }
 
+    /**
+     * @throws InvalidArgumentFactoryException
+     * @throws Throwable
+     * @throws ArgumentsNotResolvedException
+     * @throws ActionReturnValueNotExistsException
+     * @throws ActionReturnValueExistsException
+     * @throws ActionReturnValueWillBeCompatibleException
+     */
     public function handle(Action $action): Result
     {
         $container = $this->prepareContainer($action);
@@ -36,30 +46,14 @@ readonly class ActionHandler
             $actionInstance = $this->prepareAction($action, $container);
             $arguments = $this->prepareArguments($action);
             $resultData = ($actionInstance)(...$arguments);
+            $result = $this->prepareResult($action, $resultData);
         } catch (Throwable $exception) {
             $this->stateAction->throwing($action, $exception);
             throw $exception;
         }
 
         $this->stateAction->after($action);
-
-        if ($resultData instanceof Result) {
-            return $resultData;
-        }
-
-        if (empty($resultData) === false) {
-            if ($action->void === true) {
-                throw new ActionReturnValueExistsException($action->id);
-            }
-
-            return new Result(ResultStatus::Success, $resultData);
-        }
-
-        if ($action->void === false) {
-            throw new ActionReturnValueNotExistsException($action->id);
-        }
-
-        return new Result(ResultStatus::Success);
+        return $result;
     }
 
     private function prepareContainer(Action $action): ActionContainer
@@ -81,11 +75,15 @@ readonly class ActionHandler
     private function prepareArguments(Action $action): array
     {
         $container = $this->containerBuilder->build($action->id);
+
+        /** @var Task[] $completeTasks */
         $completeTasks = $this->taskCollection->getAll();
 
         foreach ($completeTasks as $task) {
-            if ($container->has($task->result->data::class) === false) {
-                $container->set($task->result->data);
+            if ($task->result->status === ResultStatus::Success && $task->result->data !== null) {
+                if ($container->has($task->result->data::class)) {
+                    $container->set($task->result->data);
+                }
             }
         }
 
@@ -127,5 +125,35 @@ readonly class ActionHandler
         }
 
         return $container->make($action->handler);
+    }
+
+    /**
+     * @throws ActionReturnValueExistsException
+     * @throws ActionReturnValueNotExistsException
+     * @throws ActionReturnValueWillBeCompatibleException
+     */
+    private function prepareResult(Action $action, mixed $resultData): Result
+    {
+        if ($resultData instanceof Result) {
+            return $resultData;
+        }
+
+        if (empty($resultData) === false) {
+            if ($action->contract === null) {
+                throw new ActionReturnValueExistsException($action->id);
+            }
+
+            if ($resultData instanceof $action->contract) {
+                return new Result(ResultStatus::Success, $resultData);
+            }
+
+            throw new ActionReturnValueWillBeCompatibleException($action->id, $action->contract);
+        }
+
+        if ($action->contract !== null) {
+            throw new ActionReturnValueNotExistsException($action->id);
+        }
+
+        return new Result(ResultStatus::Success);
     }
 }

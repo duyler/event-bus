@@ -10,6 +10,7 @@ use Duyler\EventBus\Collection\TaskCollection;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Enum\ResultStatus;
 
+use RuntimeException;
 use function count;
 
 class Bus
@@ -32,7 +33,7 @@ class Bus
 
             $requiredAction = $this->actionCollection->get($subject);
 
-            if ($this->taskCollection->isExists($requiredAction->id)) {
+            if ($this->taskQueue->inQueue($requiredAction->id)) {
                 continue;
             }
 
@@ -74,12 +75,50 @@ class Bus
 
         $completeTasks = $this->taskCollection->getAllByArray($task->action->required->getArrayCopy());
 
+        if (count($completeTasks) < count($task->action->required)) {
+            return false;
+        }
+
         foreach ($completeTasks as $completeTask) {
             if ($completeTask->result->status === ResultStatus::Fail) {
+                if (empty($completeTask->action->contract)) {
+                    continue;
+                }
+
+                $actionsWithContract = $this->actionCollection->getByContract($completeTask->action->contract);
+
+                unset($actionsWithContract[$completeTask->action->id]);
+
+                if ($this->taskQueue->isEmpty()) {
+                    if ($this->isReplacedFailAction($actionsWithContract)) {
+                        return true;
+                    }
+                    throw new RuntimeException(
+                        'Replacement was not made for fail action ' . $task->action->id
+                    );
+                }
+
+                if ($this->isReplacedFailAction($actionsWithContract)) {
+                    return true;
+                }
+
                 return false;
             }
         }
 
-        return count($completeTasks) === count($task->action->required);
+        return true;
+    }
+
+    protected function isReplacedFailAction(array $actionsWithContract): bool
+    {
+        foreach ($actionsWithContract as $actionWithContract) {
+            if ($this->taskCollection->isExists($actionWithContract->id)) {
+                $task = $this->taskCollection->get($actionWithContract->id);
+                if ($task->result->status === ResultStatus::Success) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
