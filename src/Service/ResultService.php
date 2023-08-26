@@ -6,6 +6,7 @@ namespace Duyler\EventBus\Service;
 
 use Duyler\EventBus\Collection\TaskCollection;
 use Duyler\EventBus\Dto\Result;
+use RuntimeException;
 
 readonly class ResultService
 {
@@ -15,6 +16,12 @@ readonly class ResultService
 
     public function getResult(string $actionId): Result
     {
+        $task = $this->taskCollection->get($actionId);
+
+        if ($task->action->externalAccess === false) {
+            throw new RuntimeException('Action ' . $actionId . ' does not allow external access');
+        }
+
         return $this->taskCollection->getResult($actionId);
     }
 

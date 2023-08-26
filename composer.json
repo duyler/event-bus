@@ -18,6 +18,7 @@
     "require": {
         "php": "^8.2",
         "ext-pcntl": "^8.2",
+        "ext-posix": "*",
         "duyler/dependency-injection": "dev-main"
     },
     "require-dev": {

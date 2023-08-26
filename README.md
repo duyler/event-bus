@@ -35,6 +35,8 @@ $blogAction = new Action(
     arguments: [
         'postId' => PostIdFactory::class
     ],
+    externalAccess: true,
+    contract: Post::class,
 );
 
 $busBuilder->addAction($blogAction);

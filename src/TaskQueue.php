@@ -10,6 +10,7 @@ use SplQueue;
 class TaskQueue
 {
     private SplQueue $queue;
+    private array $queueLog = [];
 
     public function __construct(SplQueue $splQueue)
     {
@@ -20,6 +21,7 @@ class TaskQueue
     public function push(Task $task): void
     {
         $this->queue->push($task);
+        $this->queueLog[] = $task->action->id;
     }
 
     public function isNotEmpty(): bool
@@ -38,6 +40,16 @@ class TaskQueue
             throw new RuntimeException("TaskQueue is empty");
         }
 
-        return $this->queue->dequeue();
+        /** @var Task $task */
+        $task = $this->queue->dequeue();
+
+        unset($this->queueLog[$task->action->id]);
+
+        return $task;
+    }
+
+    public function inQueue(string $actionId): bool
+    {
+        return in_array($actionId, $this->queueLog);
     }
 }
