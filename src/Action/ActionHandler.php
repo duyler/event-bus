@@ -81,7 +81,7 @@ readonly class ActionHandler
 
         foreach ($completeTasks as $task) {
             if ($task->result->status === ResultStatus::Success && $task->result->data !== null) {
-                if ($container->has($task->result->data::class)) {
+                if ($container->has($task->result->data::class) === false) {
                     $container->set($task->result->data);
                 }
             }
