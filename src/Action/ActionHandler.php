@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
+use Duyler\DependencyInjection\Exception\DefinitionIsNotObjectTypeException;
 use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Collection\TaskCollection;
 use Duyler\EventBus\Dto\Action;
@@ -29,12 +30,13 @@ readonly class ActionHandler
     }
 
     /**
+     * @throws ActionReturnValueNotExistsException
+     * @throws ActionReturnValueWillBeCompatibleException
+     * @throws DefinitionIsNotObjectTypeException
      * @throws InvalidArgumentFactoryException
      * @throws Throwable
      * @throws ArgumentsNotResolvedException
-     * @throws ActionReturnValueNotExistsException
      * @throws ActionReturnValueExistsException
-     * @throws ActionReturnValueWillBeCompatibleException
      */
     public function handle(Action $action): Result
     {
@@ -44,7 +46,7 @@ readonly class ActionHandler
 
         try {
             $actionInstance = $this->prepareAction($action, $container);
-            $arguments = $this->prepareArguments($action);
+            $arguments = $this->prepareArguments($action, $container);
             $resultData = ($actionInstance)(...$arguments);
             $result = $this->prepareResult($action, $resultData);
         } catch (Throwable $exception) {
@@ -71,13 +73,11 @@ readonly class ActionHandler
     /**
      * @throws InvalidArgumentFactoryException
      * @throws ArgumentsNotResolvedException
+     * @throws DefinitionIsNotObjectTypeException
      */
-    private function prepareArguments(Action $action): array
+    private function prepareArguments(Action $action, ActionContainer $container): array
     {
-        $container = $this->containerBuilder->build($action->id);
-
-        /** @var Task[] $completeTasks */
-        $completeTasks = $this->taskCollection->getAll();
+        $completeTasks = $this->taskCollection->getAllByArray($action->required->getArrayCopy());
 
         foreach ($completeTasks as $task) {
             if ($task->result->status === ResultStatus::Success && $task->result->data !== null) {
@@ -100,12 +100,12 @@ readonly class ActionHandler
             }
 
             if ($contract === null) {
-                $provider = $container->make($class);
+                $factory = $container->make($class);
 
-                if (is_callable($provider) === false) {
+                if (is_callable($factory) === false) {
                     throw new InvalidArgumentFactoryException($class);
                 }
-                $arguments[$name] = $provider();
+                $arguments[$name] = $factory();
             } else {
                 $arguments[$name] = $contract;
             }
