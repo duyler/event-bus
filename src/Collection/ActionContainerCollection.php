@@ -15,4 +15,12 @@ class ActionContainerCollection extends AbstractCollection
     {
         return $this->data[$actionId];
     }
+
+    /**
+     * @return ActionContainer[]
+     */
+    public function getAllByArray(array $array): array
+    {
+        return array_intersect_key($this->data, array_flip($array));
+    }
 }
