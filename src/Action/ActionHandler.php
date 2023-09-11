@@ -79,6 +79,12 @@ readonly class ActionHandler
     {
         $completeTasks = $this->taskCollection->getAllByArray($action->required->getArrayCopy());
 
+        $containers = $this->containerCollection->getAllByArray($action->required->getArrayCopy());
+
+        foreach ($containers as $completeContainer) {
+            $container->bind($completeContainer->getClassMap());
+        }
+
         foreach ($completeTasks as $task) {
             if ($task->result->status === ResultStatus::Success && $task->result->data !== null) {
                 if ($container->has($task->result->data::class) === false) {
