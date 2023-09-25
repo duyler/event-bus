@@ -11,6 +11,7 @@ use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Enum\ResultStatus;
 
 use RuntimeException;
+
 use function count;
 
 class Bus

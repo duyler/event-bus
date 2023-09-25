@@ -6,6 +6,7 @@ namespace Duyler\EventBus\Collection;
 
 use Duyler\EventBus\Dto\Action;
 use RuntimeException;
+
 use function array_key_exists;
 
 class ActionCollection extends AbstractCollection

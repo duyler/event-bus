@@ -37,7 +37,7 @@ readonly class Rollback
             $this->rollback($actionContainer->make($task->action->rollback));
         }
     }
-    
+
     private function rollback(RollbackActionInterface $rollback): void
     {
         $rollback->run();
