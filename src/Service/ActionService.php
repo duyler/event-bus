@@ -56,7 +56,7 @@ readonly class ActionService
     {
         return $this->actionCollection->isExists($actionId);
     }
-    
+
     /** @param  Action[] $actions */
     public function collect(iterable $actions): void
     {

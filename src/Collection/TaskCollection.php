@@ -6,6 +6,7 @@ namespace Duyler\EventBus\Collection;
 
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Task;
+
 use function array_flip;
 use function array_intersect_key;
 

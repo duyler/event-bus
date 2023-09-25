@@ -7,6 +7,7 @@ namespace Duyler\EventBus\Collection;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 use RuntimeException;
+
 use function array_flip;
 use function array_intersect_key;
 use function array_key_exists;
@@ -22,7 +23,7 @@ class SubscriptionCollection extends AbstractCollection
 
         if (array_key_exists($id, $this->data)) {
             throw new RuntimeException(
-            'Subscription ' . $id . ' already registered for ' . $subscription->actionId
+                'Subscription ' . $id . ' already registered for ' . $subscription->actionId
             );
         }
 
@@ -43,7 +44,8 @@ class SubscriptionCollection extends AbstractCollection
         $pattern = '/' . preg_quote($this->makeActionIdWithStatus($actionId, $status) . '@') . '/';
 
         return array_intersect_key(
-            $this->data, array_flip(
+            $this->data,
+            array_flip(
                 preg_grep($pattern, array_keys($this->data))
             )
         );
