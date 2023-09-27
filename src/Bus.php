@@ -28,13 +28,17 @@ class Bus
 
     public function doAction(Action $action): void
     {
+        if ($this->isRepeat($action->id)) {
+            return;
+        }
+
         $requiredIterator = new ActionRequiredIterator($action->required, $this->actionCollection->getAll());
 
         foreach ($requiredIterator as $subject) {
 
             $requiredAction = $this->actionCollection->get($subject);
 
-            if ($this->taskQueue->inQueue($requiredAction->id)) {
+            if ($this->isRepeat($requiredAction->id)) {
                 continue;
             }
 
@@ -42,6 +46,11 @@ class Bus
         }
 
         $this->pushTask($this->createTask($action));
+    }
+
+    protected function isRepeat(string $actionId): bool
+    {
+        return $this->taskQueue->inQueue($actionId) || $this->taskCollection->isExists($actionId);
     }
 
     protected function createTask(Action $action): Task
