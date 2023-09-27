@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Action;
 
 use Duyler\DependencyInjection\Exception\DefinitionIsNotObjectTypeException;
+use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Collection\TaskCollection;
 use Duyler\EventBus\Dto\Action;
@@ -16,7 +17,6 @@ use Duyler\EventBus\Exception\ActionReturnValueWillBeCompatibleException;
 use Duyler\EventBus\Exception\ArgumentsNotResolvedException;
 use Duyler\EventBus\Exception\InvalidArgumentFactoryException;
 use Duyler\EventBus\State\StateAction;
-use Duyler\EventBus\Task;
 use Throwable;
 
 readonly class ActionHandler
@@ -25,7 +25,8 @@ readonly class ActionHandler
         private ActionContainerBuilder    $containerBuilder,
         private StateAction               $stateAction,
         private TaskCollection            $taskCollection,
-        private ActionContainerCollection $containerCollection
+        private ActionContainerCollection $containerCollection,
+        private ActionCollection          $actionCollection,
     ) {
     }
 
@@ -85,7 +86,24 @@ readonly class ActionHandler
             $container->bind($completeContainer->getClassMap());
         }
 
+        // @todo Do refactoring!
         foreach ($completeTasks as $task) {
+
+            if ($task->result->status === ResultStatus::Fail) {
+                $actionsWithContract = $this->actionCollection->getByContract($task->action->contract);
+
+                foreach ($actionsWithContract as $actionWithContract) {
+                    if ($this->taskCollection->isExists($actionWithContract->id)) {
+                        $task = $this->taskCollection->get($actionWithContract->id);
+                        if ($task->result->status === ResultStatus::Success) {
+                            $taskContainer = $this->containerCollection->get($actionWithContract->id);
+                            $container->bind($taskContainer->getClassMap());
+                            break;
+                        }
+                    }
+                }
+            }
+
             if ($task->result->status === ResultStatus::Success && $task->result->data !== null) {
                 if ($container->has($task->result->data::class) === false) {
                     $container->set($task->result->data);
@@ -118,7 +136,7 @@ readonly class ActionHandler
             }
         }
 
-        if (count($arguments) < count($action->arguments)) {
+        if (count($arguments) !== count($action->arguments)) {
             throw new ArgumentsNotResolvedException();
         }
 

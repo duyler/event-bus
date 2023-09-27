@@ -91,6 +91,13 @@ class Bus
 
         foreach ($completeTasks as $completeTask) {
             if ($completeTask->result->status === ResultStatus::Fail) {
+
+                if ($completeTask->action->continueIfFail === false) {
+                    throw new RuntimeException(
+                        'Cannot be continued because fail action ' . $completeTask->action->id
+                    );
+                }
+
                 if (empty($completeTask->action->contract)) {
                     continue;
                 }
@@ -98,15 +105,6 @@ class Bus
                 $actionsWithContract = $this->actionCollection->getByContract($completeTask->action->contract);
 
                 unset($actionsWithContract[$completeTask->action->id]);
-
-                if ($this->taskQueue->isEmpty()) {
-                    if ($this->isReplacedFailAction($actionsWithContract)) {
-                        return true;
-                    }
-                    throw new RuntimeException(
-                        'Replacement was not made for fail action ' . $task->action->id
-                    );
-                }
 
                 if ($this->isReplacedFailAction($actionsWithContract)) {
                     return true;
