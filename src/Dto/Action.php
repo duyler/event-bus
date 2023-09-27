@@ -20,6 +20,7 @@ readonly class Action
         public string | Closure $rollback = '',
         public array            $arguments = [],
         public bool             $externalAccess = false,
+        public bool             $repeatable = false,
         public ?string          $contract = null,
     ) {
         $this->required = new RecursiveArrayIterator($required);

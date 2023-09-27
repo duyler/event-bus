@@ -28,7 +28,7 @@ class Bus
 
     public function doAction(Action $action): void
     {
-        if ($this->isRepeat($action->id)) {
+        if ($this->isRepeat($action->id) && $action->repeatable === false) {
             return;
         }
 
@@ -38,7 +38,7 @@ class Bus
 
             $requiredAction = $this->actionCollection->get($subject);
 
-            if ($this->isRepeat($requiredAction->id)) {
+            if ($this->isRepeat($requiredAction->id) && $requiredAction->repeatable === false) {
                 continue;
             }
 
