@@ -43,11 +43,10 @@ readonly class ActionHandler
     {
         $container = $this->prepareContainer($action);
 
-        $this->stateAction->before($action);
-
         try {
             $actionInstance = $this->prepareAction($action, $container);
             $arguments = $this->prepareArguments($action, $container);
+            $this->stateAction->before($action);
             $resultData = ($actionInstance)(...$arguments);
             $result = $this->prepareResult($action, $resultData);
         } catch (Throwable $exception) {
