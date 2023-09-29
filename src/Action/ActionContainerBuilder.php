@@ -16,7 +16,10 @@ class ActionContainerBuilder
 
     public function build(string $actionId): ActionContainer
     {
-        $container = ActionContainer::build($actionId, $this->config->actionContainerCacheDir);
+        $container = ActionContainer::build(
+            $actionId,
+            $this->config->actionContainerCacheDir,
+        );
 
         foreach ($this->sharedServices as $service) {
             $container->set($service);

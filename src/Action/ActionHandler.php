@@ -14,9 +14,9 @@ use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\ActionReturnValueExistsException;
 use Duyler\EventBus\Exception\ActionReturnValueNotExistsException;
 use Duyler\EventBus\Exception\ActionReturnValueWillBeCompatibleException;
-use Duyler\EventBus\Exception\ArgumentsNotResolvedException;
 use Duyler\EventBus\Exception\InvalidArgumentFactoryException;
 use Duyler\EventBus\State\StateAction;
+use Duyler\EventBus\Task;
 use Throwable;
 
 readonly class ActionHandler
@@ -27,6 +27,7 @@ readonly class ActionHandler
         private TaskCollection            $taskCollection,
         private ActionContainerCollection $containerCollection,
         private ActionCollection          $actionCollection,
+        private ActionSubstitution        $actionSubstitution,
     ) {
     }
 
@@ -36,7 +37,6 @@ readonly class ActionHandler
      * @throws DefinitionIsNotObjectTypeException
      * @throws InvalidArgumentFactoryException
      * @throws Throwable
-     * @throws ArgumentsNotResolvedException
      * @throws ActionReturnValueExistsException
      */
     public function handle(Action $action): Result
@@ -45,9 +45,9 @@ readonly class ActionHandler
 
         try {
             $actionInstance = $this->prepareAction($action, $container);
-            $arguments = $this->prepareArguments($action, $container);
+            $argument = $this->prepareArgument($action, $container);
             $this->stateAction->before($action);
-            $resultData = ($actionInstance)(...$arguments);
+            $resultData = ($actionInstance)($argument);
             $result = $this->prepareResult($action, $resultData);
         } catch (Throwable $exception) {
             $this->stateAction->throwing($action, $exception);
@@ -72,78 +72,76 @@ readonly class ActionHandler
 
     /**
      * @throws InvalidArgumentFactoryException
-     * @throws ArgumentsNotResolvedException
      * @throws DefinitionIsNotObjectTypeException
      */
-    private function prepareArguments(Action $action, ActionContainer $container): array
+    private function prepareArgument(Action $action, ActionContainer $container): mixed
     {
-        $completeTasks = $this->taskCollection->getAllByArray($action->required->getArrayCopy());
-
-        $containers = $this->containerCollection->getAllByArray($action->required->getArrayCopy());
-
-        foreach ($containers as $completeContainer) {
-            $container->bind($completeContainer->getClassMap());
+        if (empty($action->argument)) {
+            return null;
         }
 
-        // @todo Do refactoring!
+        $completeTasks = $this->taskCollection->getAllByArray($action->required->getArrayCopy());
+
+        $results = [];
+
         foreach ($completeTasks as $task) {
+            $results = $results + $this->prepareRequiredResults($task);
+        }
 
-            if ($task->result->status === ResultStatus::Fail) {
-                $actionsWithContract = $this->actionCollection->getByContract($task->action->contract);
+        if ($this->actionSubstitution->isSubstituteResult($action->id)) {
+            $results = $results + $this->actionSubstitution->getSubstituteResult($action->id);
+        }
 
-                foreach ($actionsWithContract as $actionWithContract) {
-                    if ($this->taskCollection->isExists($actionWithContract->id)) {
-                        $task = $this->taskCollection->get($actionWithContract->id);
-                        if ($task->result->status === ResultStatus::Success) {
-                            $taskContainer = $this->containerCollection->get($actionWithContract->id);
-                            $container->bind($taskContainer->getClassMap());
-                            break;
-                        }
+        foreach ($results as $interface => $definition) {
+            if ($definition instanceof $action->argument) {
+                return $definition;
+            }
+            $container->bind([$interface => $definition::class]);
+            $container->set($definition);
+        }
+
+        $factory = $container->make($action->argument);
+
+        if (is_callable($factory) === false) {
+            throw new InvalidArgumentFactoryException($action->argument);
+        }
+
+        return $factory();
+    }
+
+    private function prepareRequiredResults(Task $requiredTask): array
+    {
+        $results = [];
+
+        if ($requiredTask->result->status === ResultStatus::Fail) {
+            $actionsWithContract = $this->actionCollection->getByContract($requiredTask->action->contract);
+
+            foreach ($actionsWithContract as $actionWithContract) {
+                if ($this->taskCollection->isExists($actionWithContract->id)) {
+                    $replaceTask = $this->taskCollection->get($actionWithContract->id);
+                    if ($replaceTask->result->status === ResultStatus::Success) {
+                        $interface = array_search($replaceTask->result->data::class, $actionWithContract->classMap)
+                            ?: $replaceTask->result->data::class;
+                        $results[$interface] = $replaceTask->result->data;
+                        return $results;
                     }
                 }
             }
-
-            if ($task->result->status === ResultStatus::Success && $task->result->data !== null) {
-                if ($container->has($task->result->data::class) === false) {
-                    $container->set($task->result->data);
-                }
-            }
         }
 
-        $arguments = [];
+        $interface = array_search($requiredTask->result->data::class, $requiredTask->action->classMap)
+            ?: $requiredTask->result->data::class;
+        $results[$interface] = $requiredTask->result->data;
 
-        // @todo resolve with Reflection API
-        foreach ($action->arguments as $name => $class) {
-
-            $contract = null;
-            foreach ($completeTasks as $task) {
-                if ($task->result->data instanceof $class) {
-                    $contract = $task->result->data;
-                    break;
-                }
-            }
-
-            if ($contract === null) {
-                $factory = $container->make($class);
-
-                if (is_callable($factory) === false) {
-                    throw new InvalidArgumentFactoryException($class);
-                }
-                $arguments[$name] = $factory();
-            } else {
-                $arguments[$name] = $contract;
-            }
-        }
-
-        if (count($arguments) !== count($action->arguments)) {
-            throw new ArgumentsNotResolvedException();
-        }
-
-        return $arguments;
+        return $results;
     }
 
     private function prepareAction(Action $action, ActionContainer $container): callable
     {
+        if ($this->actionSubstitution->isSubstituteHandler($action->id)) {
+            return $container->make($this->actionSubstitution->getSubstituteHandler($action->id));
+        }
+
         if (is_callable($action->handler)) {
             return $action->handler;
         }

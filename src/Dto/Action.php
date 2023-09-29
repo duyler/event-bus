@@ -17,7 +17,7 @@ readonly class Action
         array                   $required = [],
         public array            $classMap = [],
         public array            $providers = [],
-        public array            $arguments = [],
+        public string           $argument = '',
         public ?string          $contract = null,
         public string | Closure $rollback = '',
         public bool             $externalAccess = false,

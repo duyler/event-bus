@@ -15,19 +15,22 @@ class ActionContainer extends Container
 {
     public function __construct(
         public readonly string $actionId,
-        public readonly ?string $containerCacheDir = null,
+        public readonly string $containerCacheDir,
     ) {
-        $cacheHandler = new FileCacheHandler(
-            $containerCacheDir ?? dirname('__DIR__'). '/../var/cache/event-bus/container/'
-        );
+        $cacheHandler = new FileCacheHandler($containerCacheDir);
         $reflectionStorage = new ReflectionStorage();
         $serviceStorage = new ServiceStorage();
         $dependencyMapper = new DependencyMapper($reflectionStorage, $serviceStorage);
         parent::__construct(new Compiler($serviceStorage), $dependencyMapper, $serviceStorage, $cacheHandler);
     }
 
-    public static function build(string $actionId, ?string $containerCacheDir): self
-    {
-        return new self($actionId, $containerCacheDir);
+    public static function build(
+        string $actionId,
+        string $containerCacheDir,
+    ): self {
+        return new self(
+            $actionId,
+            $containerCacheDir,
+        );
     }
 }
