@@ -48,6 +48,7 @@ readonly class StateMain
         $stateService = new StateMainBeforeService(
             $task->action->id,
             $this->logService,
+            $this->actionService,
         );
 
         foreach ($this->stateHandlerStorage->getStateMainBefore() as $handler) {

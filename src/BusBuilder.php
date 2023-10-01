@@ -41,20 +41,18 @@ class BusBuilder
 
     private array $sharedServices = [];
 
-    private ?Config $config = null;
+    public function __construct(private ?Config $config = null)
+    {
+    }
 
     public function build(): ?Runner
     {
-        $config = $this->config;
-
-        if ($config === null) {
-            $config = new Config(
-                defaultCacheDir: dirname('__DIR__'). self::CACHE_DIR,
-            );
-        }
+        $config = new \Duyler\EventBus\Config(
+            $this->config,
+        );
 
         $DIConfig = new DIConfig(
-            cacheDirPath: $config->defaultCacheDir,
+            cacheDirPath: $this->config->defaultCacheDir,
         );
 
         $container = ContainerBuilder::build($DIConfig);
