@@ -85,11 +85,11 @@ readonly class ActionHandler
         $results = [];
 
         foreach ($completeTasks as $task) {
-            $results = $results + $this->prepareRequiredResults($task);
+            $results = $this->prepareRequiredResults($task) + $results;
         }
 
         if ($this->actionSubstitution->isSubstituteResult($action->id)) {
-            $results = $results + $this->actionSubstitution->getSubstituteResult($action->id);
+            $results = $this->actionSubstitution->getSubstituteResult($action->id) + $results;
         }
 
         foreach ($results as $interface => $definition) {
