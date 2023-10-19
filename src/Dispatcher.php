@@ -21,7 +21,7 @@ readonly class Dispatcher
      * @throws ConsecutiveRepeatedActionException
      * @throws CircularCallActionException
      */
-    public function dispatchResultTask(Task $resultTask): void
+    public function dispatch(Task $resultTask): void
     {
         $this->taskService->saveResultTask($resultTask);
         $this->taskService->validateResultTask($resultTask);
