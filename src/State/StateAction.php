@@ -26,7 +26,7 @@ readonly class StateAction
             $action->id,
         );
 
-        foreach ($this->stateHandlerStorage->getStateActionBefore() as $handler) {
+        foreach ($this->stateHandlerStorage->getActionBefore() as $handler) {
             if (empty($handler->observed()) || in_array($action->id, $handler->observed())) {
                 $handler->handle($stateService);
             }
@@ -40,7 +40,7 @@ readonly class StateAction
             $action->id,
         );
 
-        foreach ($this->stateHandlerStorage->getStateActionAfter() as $handler) {
+        foreach ($this->stateHandlerStorage->getActionAfter() as $handler) {
             if (empty($handler->observed()) || in_array($action->id, $handler->observed())) {
                 $handler->handle($stateService);
             }
@@ -55,7 +55,7 @@ readonly class StateAction
             $action->id,
         );
 
-        foreach ($this->stateHandlerStorage->getStateActionThrowing() as $handler) {
+        foreach ($this->stateHandlerStorage->getActionThrowing() as $handler) {
             if (empty($handler->observed()) || in_array($action->id, $handler->observed())) {
                 $handler->handle($stateService);
             }

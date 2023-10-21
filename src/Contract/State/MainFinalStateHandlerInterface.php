@@ -6,10 +6,8 @@ namespace Duyler\EventBus\Contract\State;
 
 use Duyler\EventBus\State\Service\StateMainFinalService;
 use Duyler\EventBus\State\StateHandlerInterface;
-use Duyler\EventBus\State\StateHandlerPreparedInterface;
 
-interface StateMainFinalHandlerInterface extends
-    StateHandlerPreparedInterface,
+interface MainFinalStateHandlerInterface extends
     StateHandlerInterface
 {
     public function handle(StateMainFinalService $stateService): void;

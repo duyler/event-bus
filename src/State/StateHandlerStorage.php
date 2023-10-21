@@ -4,117 +4,117 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State;
 
-use Duyler\EventBus\Contract\State\StateActionAfterHandlerInterface;
-use Duyler\EventBus\Contract\State\StateActionBeforeHandlerInterface;
-use Duyler\EventBus\Contract\State\StateActionThrowingHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainAfterHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainBeforeHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainFinalHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainStartHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainSuspendHandlerInterface;
+use Duyler\EventBus\Contract\State\ActionAfterStateHandlerInterface;
+use Duyler\EventBus\Contract\State\ActionBeforeStateHandlerInterface;
+use Duyler\EventBus\Contract\State\ActionThrowingStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainBeforeStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainFinalStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainStartStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainSuspendStateHandlerInterface;
 
 class StateHandlerStorage
 {
-    /** @var StateMainStartHandlerInterface[] $stateMainStart */
-    private array $stateMainStart = [];
+    /** @var MainStartStateHandlerInterface[] $mainStart */
+    private array $mainStart = [];
 
-    /** @var StateMainBeforeHandlerInterface[] $stateMainBefore */
-    private array $stateMainBefore = [];
+    /** @var MainBeforeStateHandlerInterface[] $mainBefore */
+    private array $mainBefore = [];
 
-    private ?StateMainSuspendHandlerInterface $stateMainSuspend = null;
+    private ?MainSuspendStateHandlerInterface $stateMainSuspend = null;
 
-    /** @var StateMainAfterHandlerInterface[] $stateMainAfter */
-    private array $stateMainAfter = [];
+    /** @var MainAfterStateHandlerInterface[] $mainAfter */
+    private array $mainAfter = [];
 
-    /** @var StateMainFinalHandlerInterface[] $stateMainFinal */
-    private array $stateMainFinal = [];
+    /** @var MainFinalStateHandlerInterface[] $mainFinal */
+    private array $mainFinal = [];
 
-    /** @var StateActionBeforeHandlerInterface[] $stateActionBefore */
-    private array $stateActionBefore = [];
+    /** @var ActionBeforeStateHandlerInterface[] $actionBefore */
+    private array $actionBefore = [];
 
-    /** @var StateActionThrowingHandlerInterface[] $stateActionThrowing */
-    private array $stateActionThrowing = [];
+    /** @var ActionThrowingStateHandlerInterface[] $actionThrowing */
+    private array $actionThrowing = [];
 
-    /** @var StateActionAfterHandlerInterface[] $stateActionAfter */
-    private array $stateActionAfter = [];
+    /** @var ActionAfterStateHandlerInterface[] $actionAfter */
+    private array $actionAfter = [];
 
-    public function addStateMainStartHandler(StateMainStartHandlerInterface $startHandler): void
+    public function addMainStartStateHandler(MainStartStateHandlerInterface $startHandler): void
     {
-        $this->stateMainStart[get_class($startHandler)] = $startHandler;
+        $this->mainStart[get_class($startHandler)] = $startHandler;
     }
 
-    public function addStateMainBeforeHandler(StateMainBeforeHandlerInterface $beforeHandler): void
+    public function addMainBeforeStateHandler(MainBeforeStateHandlerInterface $beforeHandler): void
     {
-        $this->stateMainBefore[get_class($beforeHandler)] = $beforeHandler;
+        $this->mainBefore[get_class($beforeHandler)] = $beforeHandler;
     }
 
-    public function setStateMainSuspendHandler(StateMainSuspendHandlerInterface $suspendHandler): void
+    public function setMainSuspendStateHandler(MainSuspendStateHandlerInterface $suspendHandler): void
     {
         $this->stateMainSuspend = $suspendHandler;
     }
 
-    public function addStateMainAfterHandler(StateMainAfterHandlerInterface $afterHandler): void
+    public function addMainAfterStateHandler(MainAfterStateHandlerInterface $afterHandler): void
     {
-        $this->stateMainAfter[get_class($afterHandler)] = $afterHandler;
+        $this->mainAfter[get_class($afterHandler)] = $afterHandler;
     }
 
-    public function addStateMainFinalHandler(StateMainFinalHandlerInterface $finalHandler): void
+    public function addMainFinalStateHandler(MainFinalStateHandlerInterface $finalHandler): void
     {
-        $this->stateMainFinal[get_class($finalHandler)] = $finalHandler;
+        $this->mainFinal[get_class($finalHandler)] = $finalHandler;
     }
 
-    public function addStateActionBeforeHandler(StateActionBeforeHandlerInterface $actionBeforeHandler): void
+    public function addActionBeforeStateHandler(ActionBeforeStateHandlerInterface $actionBeforeHandler): void
     {
-        $this->stateActionBefore[get_class($actionBeforeHandler)] = $actionBeforeHandler;
+        $this->actionBefore[get_class($actionBeforeHandler)] = $actionBeforeHandler;
     }
 
-    public function addStateActionThrowingHandler(StateActionThrowingHandlerInterface $actionThrowingHandler): void
+    public function addActionThrowingStateHandler(ActionThrowingStateHandlerInterface $actionThrowingHandler): void
     {
-        $this->stateActionThrowing[get_class($actionThrowingHandler)] = $actionThrowingHandler;
+        $this->actionThrowing[get_class($actionThrowingHandler)] = $actionThrowingHandler;
     }
 
-    public function addStateActionAfterHandler(StateActionAfterHandlerInterface $actionAfterHandler): void
+    public function addActionAfterStateHandler(ActionAfterStateHandlerInterface $actionAfterHandler): void
     {
-        $this->stateActionAfter[get_class($actionAfterHandler)] = $actionAfterHandler;
+        $this->actionAfter[get_class($actionAfterHandler)] = $actionAfterHandler;
     }
 
-    public function getStateMainStart(): array
+    public function getMainStart(): array
     {
-        return $this->stateMainStart;
+        return $this->mainStart;
     }
 
-    public function getStateMainBefore(): array
+    public function getMainBefore(): array
     {
-        return $this->stateMainBefore;
+        return $this->mainBefore;
     }
 
-    public function getStateMainSuspend(): ?StateMainSuspendHandlerInterface
+    public function getMainSuspend(): ?MainSuspendStateHandlerInterface
     {
         return $this->stateMainSuspend;
     }
 
-    public function getStateMainAfter(): array
+    public function getMainAfter(): array
     {
-        return $this->stateMainAfter;
+        return $this->mainAfter;
     }
 
-    public function getStateMainFinal(): array
+    public function getMainFinal(): array
     {
-        return $this->stateMainFinal;
+        return $this->mainFinal;
     }
 
-    public function getStateActionBefore(): array
+    public function getActionBefore(): array
     {
-        return $this->stateActionBefore;
+        return $this->actionBefore;
     }
 
-    public function getStateActionThrowing(): array
+    public function getActionThrowing(): array
     {
-        return $this->stateActionThrowing;
+        return $this->actionThrowing;
     }
 
-    public function getStateActionAfter(): array
+    public function getActionAfter(): array
     {
-        return $this->stateActionAfter;
+        return $this->actionAfter;
     }
 }
