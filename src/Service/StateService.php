@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Service;
 
-use Duyler\EventBus\Contract\State\StateActionAfterHandlerInterface;
-use Duyler\EventBus\Contract\State\StateActionBeforeHandlerInterface;
-use Duyler\EventBus\Contract\State\StateActionThrowingHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainAfterHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainBeforeHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainFinalHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainStartHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainSuspendHandlerInterface;
+use Duyler\EventBus\Contract\State\ActionAfterStateHandlerInterface;
+use Duyler\EventBus\Contract\State\ActionBeforeStateHandlerInterface;
+use Duyler\EventBus\Contract\State\ActionThrowingStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainBeforeStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainFinalStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainStartStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainSuspendStateHandlerInterface;
 use Duyler\EventBus\State\StateHandlerStorage;
 
 readonly class StateService
@@ -20,43 +20,43 @@ readonly class StateService
     {
     }
 
-    public function addStateMainStartHandler(StateMainStartHandlerInterface $startHandler): void
+    public function addMainStartStateHandler(MainStartStateHandlerInterface $startHandler): void
     {
-        $this->stateHandlerStorage->addStateMainStartHandler($startHandler);
+        $this->stateHandlerStorage->addMainStartStateHandler($startHandler);
     }
 
-    public function addStateMainBeforeHandler(StateMainBeforeHandlerInterface $beforeActionHandler): void
+    public function addMainBeforeStateHandler(MainBeforeStateHandlerInterface $beforeActionHandler): void
     {
-        $this->stateHandlerStorage->addStateMainBeforeHandler($beforeActionHandler);
+        $this->stateHandlerStorage->addMainBeforeStateHandler($beforeActionHandler);
     }
 
-    public function setStateMainSuspendHandler(StateMainSuspendHandlerInterface $suspendHandler): void
+    public function setMainSuspendStateHandler(MainSuspendStateHandlerInterface $suspendHandler): void
     {
-        $this->stateHandlerStorage->setStateMainSuspendHandler($suspendHandler);
+        $this->stateHandlerStorage->setMainSuspendStateHandler($suspendHandler);
     }
 
-    public function addStateMainAfterHandler(StateMainAfterHandlerInterface $afterActionHandler): void
+    public function addMainAfterStateHandler(MainAfterStateHandlerInterface $afterActionHandler): void
     {
-        $this->stateHandlerStorage->addStateMainAfterHandler($afterActionHandler);
+        $this->stateHandlerStorage->addMainAfterStateHandler($afterActionHandler);
     }
 
-    public function addStateMainFinalHandler(StateMainFinalHandlerInterface $finalHandler): void
+    public function addMainFinalStateHandler(MainFinalStateHandlerInterface $finalHandler): void
     {
-        $this->stateHandlerStorage->addStateMainFinalHandler($finalHandler);
+        $this->stateHandlerStorage->addMainFinalStateHandler($finalHandler);
     }
 
-    public function addStateActionBeforeHandler(StateActionBeforeHandlerInterface $actionBeforeHandler): void
+    public function addActionBeforeStateHandler(ActionBeforeStateHandlerInterface $actionBeforeHandler): void
     {
-        $this->stateHandlerStorage->addStateActionBeforeHandler($actionBeforeHandler);
+        $this->stateHandlerStorage->addActionBeforeStateHandler($actionBeforeHandler);
     }
 
-    public function addStateActionThrowingHandler(StateActionThrowingHandlerInterface $actionThrowingHandler): void
+    public function addActionThrowingStateHandler(ActionThrowingStateHandlerInterface $actionThrowingHandler): void
     {
-        $this->stateHandlerStorage->addStateActionThrowingHandler($actionThrowingHandler);
+        $this->stateHandlerStorage->addActionThrowingStateHandler($actionThrowingHandler);
     }
 
-    public function addStateActionAfterHandler(StateActionAfterHandlerInterface $actionAfterHandler): void
+    public function addActionAfterStateHandler(ActionAfterStateHandlerInterface $actionAfterHandler): void
     {
-        $this->stateHandlerStorage->addStateActionAfterHandler($actionAfterHandler);
+        $this->stateHandlerStorage->addActionAfterStateHandler($actionAfterHandler);
     }
 }

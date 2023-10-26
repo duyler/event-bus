@@ -65,7 +65,7 @@ readonly class DoWhile
             $this->stateMain->suspend($task);
         } else {
             $task->takeResult();
-            $this->dispatcher->dispatchResultTask($task);
+            $this->dispatcher->dispatch($task);
             $this->stateMain->after($task);
         }
     }

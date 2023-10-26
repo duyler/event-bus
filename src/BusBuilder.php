@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Duyler\EventBus;
 
 use Duyler\DependencyInjection\ContainerBuilder;
-use Duyler\EventBus\Contract\State\StateActionAfterHandlerInterface;
-use Duyler\EventBus\Contract\State\StateActionBeforeHandlerInterface;
-use Duyler\EventBus\Contract\State\StateActionThrowingHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainAfterHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainBeforeHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainFinalHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainStartHandlerInterface;
-use Duyler\EventBus\Contract\State\StateMainSuspendHandlerInterface;
+use Duyler\EventBus\Contract\State\ActionAfterStateHandlerInterface;
+use Duyler\EventBus\Contract\State\ActionBeforeStateHandlerInterface;
+use Duyler\EventBus\Contract\State\ActionThrowingStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainBeforeStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainFinalStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainStartStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainSuspendStateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Config;
 use Duyler\DependencyInjection\Config as DIConfig;
@@ -83,22 +83,22 @@ class BusBuilder
 
         foreach ($this->stateHandlers as $stateHandler) {
             match (true) {
-                $stateHandler instanceof StateMainStartHandlerInterface =>
-                $stateService->addStateMainStartHandler($stateHandler),
-                $stateHandler instanceof StateMainBeforeHandlerInterface =>
-                $stateService->addStateMainBeforeHandler($stateHandler),
-                $stateHandler instanceof StateMainSuspendHandlerInterface =>
-                $stateService->setStateMainSuspendHandler($stateHandler),
-                $stateHandler instanceof StateMainAfterHandlerInterface =>
-                $stateService->addStateMainAfterHandler($stateHandler),
-                $stateHandler instanceof StateMainFinalHandlerInterface =>
-                $stateService->addStateMainFinalHandler($stateHandler),
-                $stateHandler instanceof StateActionBeforeHandlerInterface =>
-                $stateService->addStateActionBeforeHandler($stateHandler),
-                $stateHandler instanceof StateActionThrowingHandlerInterface =>
-                $stateService->addStateActionThrowingHandler($stateHandler),
-                $stateHandler instanceof StateActionAfterHandlerInterface =>
-                $stateService->addStateActionAfterHandler($stateHandler),
+                $stateHandler instanceof MainStartStateHandlerInterface =>
+                $stateService->addMainStartStateHandler($stateHandler),
+                $stateHandler instanceof MainBeforeStateHandlerInterface =>
+                $stateService->addMainBeforeStateHandler($stateHandler),
+                $stateHandler instanceof MainSuspendStateHandlerInterface =>
+                $stateService->setMainSuspendStateHandler($stateHandler),
+                $stateHandler instanceof MainAfterStateHandlerInterface =>
+                $stateService->addMainAfterStateHandler($stateHandler),
+                $stateHandler instanceof MainFinalStateHandlerInterface =>
+                $stateService->addMainFinalStateHandler($stateHandler),
+                $stateHandler instanceof ActionBeforeStateHandlerInterface =>
+                $stateService->addActionBeforeStateHandler($stateHandler),
+                $stateHandler instanceof ActionThrowingStateHandlerInterface =>
+                $stateService->addActionThrowingStateHandler($stateHandler),
+                $stateHandler instanceof ActionAfterStateHandlerInterface =>
+                $stateService->addActionAfterStateHandler($stateHandler),
 
                 default => throw new InvalidArgumentException(sprintf(
                     'State handler %s must be compatibility with %s',

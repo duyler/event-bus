@@ -38,7 +38,7 @@ readonly class StateMain
             $this->subscriptionService,
         );
 
-        foreach ($this->stateHandlerStorage->getStateMainStart() as $handler) {
+        foreach ($this->stateHandlerStorage->getMainStart() as $handler) {
             $handler->handle($stateService);
         }
     }
@@ -51,7 +51,7 @@ readonly class StateMain
             $this->actionService,
         );
 
-        foreach ($this->stateHandlerStorage->getStateMainBefore() as $handler) {
+        foreach ($this->stateHandlerStorage->getMainBefore() as $handler) {
             if (empty($handler->observed()) || in_array($task->action->id, $handler->observed())) {
                 $handler->handle($stateService);
             }
@@ -60,7 +60,7 @@ readonly class StateMain
 
     public function suspend(Task $task): void
     {
-        $handler = $this->stateHandlerStorage->getStateMainSuspend();
+        $handler = $this->stateHandlerStorage->getMainSuspend();
 
         if (empty($handler)) {
             $value = $task->getValue();
@@ -95,7 +95,7 @@ readonly class StateMain
             $this->logService,
         );
 
-        foreach ($this->stateHandlerStorage->getStateMainAfter() as $handler) {
+        foreach ($this->stateHandlerStorage->getMainAfter() as $handler) {
             if (empty($handler->observed()) || in_array($task->action->id, $handler->observed())) {
                 $handler->handle($stateService);
             }
@@ -110,7 +110,7 @@ readonly class StateMain
             $this->rollbackService,
         );
 
-        foreach ($this->stateHandlerStorage->getStateMainFinal() as $handler) {
+        foreach ($this->stateHandlerStorage->getMainFinal() as $handler) {
             $handler->handle($stateService);
         }
     }

@@ -8,6 +8,7 @@ use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Collection\TaskCollection;
 use Duyler\EventBus\Contract\RollbackActionInterface;
 
+use Duyler\EventBus\Dto\Result;
 use function is_callable;
 
 readonly class Rollback
@@ -34,12 +35,12 @@ readonly class Rollback
 
             $actionContainer = $this->containerCollection->get($task->action->id);
 
-            $this->rollback($actionContainer->make($task->action->rollback));
+            $this->rollback($actionContainer->make($task->action->rollback), $task->result);
         }
     }
 
-    private function rollback(RollbackActionInterface $rollback): void
+    private function rollback(RollbackActionInterface $rollback, Result $result): void
     {
-        $rollback->run();
+        $rollback->run($result);
     }
 }
