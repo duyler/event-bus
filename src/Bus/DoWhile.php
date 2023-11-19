@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use Duyler\EventBus\Action\ActionHandler;
+use Duyler\EventBus\Contract\ActionHandlerInterface;
+use Duyler\EventBus\Contract\StateMainInterface;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Exception\CircularCallActionException;
 use Duyler\EventBus\Exception\ConsecutiveRepeatedActionException;
-use Duyler\EventBus\State\StateMain;
 
 readonly class DoWhile
 {
     public function __construct(
         private Publisher $publisher,
-        private ActionHandler $actionHandler,
+        private ActionHandlerInterface $actionHandler,
         private TaskQueue $taskQueue,
-        private StateMain $stateMain,
+        private StateMainInterface $stateMain,
     ) {
     }
 

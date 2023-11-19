@@ -8,6 +8,7 @@ readonly class Config
 {
     public function __construct(
         public string $defaultCacheDir = '',
+        public array $classMap = [],
     ) {
     }
 }

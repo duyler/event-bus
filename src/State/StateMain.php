@@ -6,6 +6,7 @@ namespace Duyler\EventBus\State;
 
 use Duyler\EventBus\Bus\Task;
 use Duyler\EventBus\Collection\ActionContainerCollection;
+use Duyler\EventBus\Contract\StateMainInterface;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\ResultService;
@@ -17,7 +18,7 @@ use Duyler\EventBus\State\Service\StateMainFinalService;
 use Duyler\EventBus\State\Service\StateMainStartService;
 use Duyler\EventBus\State\Service\StateMainSuspendService;
 
-readonly class StateMain
+readonly class StateMain implements StateMainInterface
 {
     public function __construct(
         private StateHandlerStorage       $stateHandlerStorage,

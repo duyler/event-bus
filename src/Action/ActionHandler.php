@@ -9,6 +9,8 @@ use Duyler\EventBus\Bus\Event;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Collection\EventCollection;
+use Duyler\EventBus\Contract\ActionHandlerInterface;
+use Duyler\EventBus\Contract\StateActionInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
@@ -16,14 +18,13 @@ use Duyler\EventBus\Exception\ActionReturnValueExistsException;
 use Duyler\EventBus\Exception\ActionReturnValueNotExistsException;
 use Duyler\EventBus\Exception\ActionReturnValueWillBeCompatibleException;
 use Duyler\EventBus\Exception\InvalidArgumentFactoryException;
-use Duyler\EventBus\State\StateAction;
 use Throwable;
 
-readonly class ActionHandler
+readonly class ActionHandler implements ActionHandlerInterface
 {
     public function __construct(
         private ActionContainerBuilder $containerBuilder,
-        private StateAction $stateAction,
+        private StateActionInterface $stateAction,
         private ActionContainerCollection $containerCollection,
         private ActionCollection $actionCollection,
         private ActionSubstitution $actionSubstitution,

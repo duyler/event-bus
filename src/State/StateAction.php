@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State;
 
+use Duyler\EventBus\Collection\ActionContainerCollection;
+use Duyler\EventBus\Contract\StateActionInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\State\Service\StateActionAfterService;
 use Duyler\EventBus\State\Service\StateActionBeforeService;
 use Duyler\EventBus\State\Service\StateActionThrowingService;
-use Duyler\EventBus\Collection\ActionContainerCollection;
 use Throwable;
 
-readonly class StateAction
+readonly class StateAction implements StateActionInterface
 {
     public function __construct(
         private StateHandlerStorage    $stateHandlerStorage,
