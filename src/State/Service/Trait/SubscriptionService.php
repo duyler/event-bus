@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service\Trait;
 
-use Duyler\EventBus\Bus;
 use Duyler\EventBus\Dto\Subscription;
 
 /**

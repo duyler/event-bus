@@ -4,21 +4,18 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Collection;
 
+use Duyler\EventBus\Bus\Event;
 use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Task;
 
-use function array_flip;
-use function array_intersect_key;
-
-class TaskCollection extends AbstractCollection
+class EventCollection extends AbstractCollection
 {
-    public function save(Task $task): void
+    public function save(Event $event): void
     {
-        $this->data[$task->action->id] = $task;
+        $this->data[$event->action->id] = $event;
     }
 
     /**
-     * @return Task[]
+     * @return Event[]
      */
     public function getAllByArray(array $array): array
     {
@@ -30,7 +27,7 @@ class TaskCollection extends AbstractCollection
         return $this->data[$actionId]->result ?? null;
     }
 
-    public function get(string $actionId): Task
+    public function get(string $actionId): Event
     {
         return $this->data[$actionId];
     }

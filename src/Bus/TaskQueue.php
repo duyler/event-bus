@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus;
+namespace Duyler\EventBus\Bus;
 
 use RuntimeException;
 use SplQueue;

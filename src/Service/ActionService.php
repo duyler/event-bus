@@ -7,7 +7,7 @@ namespace Duyler\EventBus\Service;
 use Duyler\EventBus\Action\ActionContainerBuilder;
 use Duyler\EventBus\Action\ActionRequiredIterator;
 use Duyler\EventBus\Action\ActionSubstitution;
-use Duyler\EventBus\Bus;
+use Duyler\EventBus\Bus\Bus;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Dto\Action;
 use InvalidArgumentException;

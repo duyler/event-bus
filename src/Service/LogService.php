@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Service;
 
-use Duyler\EventBus\Log;
+use Duyler\EventBus\Bus\Log;
 
 readonly class LogService
 {

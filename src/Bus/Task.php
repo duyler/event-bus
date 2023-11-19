@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus;
+namespace Duyler\EventBus\Bus;
 
 use Closure;
 use Duyler\EventBus\Dto\Action;
@@ -12,7 +12,6 @@ use Fiber;
 class Task
 {
     public readonly Action $action;
-    public readonly ?Result $result;
     private mixed $value = null;
     private ?Fiber $fiber = null;
 
@@ -37,9 +36,9 @@ class Task
         $this->value = $this->fiber->resume($data);
     }
 
-    public function takeResult(): void
+    public function getResult(): Result
     {
-        $this->result = $this->fiber->getReturn();
+        return $this->fiber->getReturn();
     }
 
     public function getValue(): mixed

@@ -2,16 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus;
+namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\Action\ActionRequiredIterator;
 use Duyler\EventBus\Collection\ActionCollection;
-use Duyler\EventBus\Collection\TaskCollection;
+use Duyler\EventBus\Collection\EventCollection;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Enum\ResultStatus;
-
 use RuntimeException;
-
 use function count;
 
 class Bus
@@ -20,9 +18,9 @@ class Bus
     protected array $heldTasks = [];
 
     public function __construct(
-        private readonly TaskQueue            $taskQueue,
-        private readonly TaskCollection       $taskCollection,
-        private readonly ActionCollection     $actionCollection,
+        private readonly TaskQueue $taskQueue,
+        private readonly ActionCollection $actionCollection,
+        private readonly EventCollection $eventCollection,
     ) {
     }
 
@@ -50,7 +48,7 @@ class Bus
 
     protected function isRepeat(string $actionId): bool
     {
-        return $this->taskQueue->inQueue($actionId) || $this->taskCollection->isExists($actionId);
+        return $this->taskQueue->inQueue($actionId) || $this->eventCollection->isExists($actionId);
     }
 
     protected function createTask(Action $action): Task
@@ -83,13 +81,13 @@ class Bus
             return true;
         }
 
-        $completeTasks = $this->taskCollection->getAllByArray($task->action->required->getArrayCopy());
+        $completeTaskEvents = $this->eventCollection->getAllByArray($task->action->required->getArrayCopy());
 
-        if (count($completeTasks) < count($task->action->required)) {
+        if (count($completeTaskEvents) < count($task->action->required)) {
             return false;
         }
 
-        foreach ($completeTasks as $completeTask) {
+        foreach ($completeTaskEvents as $completeTask) {
             if ($completeTask->result->status === ResultStatus::Fail) {
 
                 if ($completeTask->action->continueIfFail === false) {
@@ -120,9 +118,9 @@ class Bus
     protected function isReplacedFailAction(array $actionsWithContract): bool
     {
         foreach ($actionsWithContract as $actionWithContract) {
-            if ($this->taskCollection->isExists($actionWithContract->id)) {
-                $task = $this->taskCollection->get($actionWithContract->id);
-                if ($task->result->status === ResultStatus::Success) {
+            if ($this->eventCollection->isExists($actionWithContract->id)) {
+                $event = $this->eventCollection->get($actionWithContract->id);
+                if ($event->result->status === ResultStatus::Success) {
                     return true;
                 }
             }

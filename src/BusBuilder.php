@@ -25,8 +25,6 @@ use InvalidArgumentException;
 
 class BusBuilder
 {
-    private const CACHE_DIR = '/../var/cache/event-bus/';
-
     /** @var Action[] $actions */
     private array $actions = [];
 
@@ -45,7 +43,7 @@ class BusBuilder
     {
     }
 
-    public function build(): ?Runner
+    public function build(): Runner
     {
         $config = new \Duyler\EventBus\Config(
             $this->config,
@@ -112,12 +110,6 @@ class BusBuilder
         $runner = $container->make(Runner::class);
 
         return $runner;
-    }
-
-    public function setConfig(Config $config): static
-    {
-        $this->config = $config;
-        return $this;
     }
 
     public function addAction(Action $action): static

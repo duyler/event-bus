@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus;
+namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\Action\ActionHandler;
 use Duyler\EventBus\Dto\Result;
@@ -13,10 +13,10 @@ use Duyler\EventBus\State\StateMain;
 readonly class DoWhile
 {
     public function __construct(
-        private Dispatcher    $dispatcher,
+        private Publisher $publisher,
         private ActionHandler $actionHandler,
-        private TaskQueue     $taskQueue,
-        private StateMain     $stateMain,
+        private TaskQueue $taskQueue,
+        private StateMain $stateMain,
     ) {
     }
 
@@ -64,8 +64,7 @@ readonly class DoWhile
             $this->taskQueue->push($task);
             $this->stateMain->suspend($task);
         } else {
-            $task->takeResult();
-            $this->dispatcher->dispatch($task);
+            $this->publisher->publish($task);
             $this->stateMain->after($task);
         }
     }
