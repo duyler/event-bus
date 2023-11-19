@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
+use Duyler\EventBus\Bus\DoWhile;
+use Duyler\EventBus\Bus\Rollback;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Service\ResultService;
 use Throwable;

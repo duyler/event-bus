@@ -25,5 +25,4 @@ abstract class AbstractCollection
     {
         return $subscription->subjectId . '.' . $subscription->status->value . '@' . $subscription->actionId;
     }
-
 }

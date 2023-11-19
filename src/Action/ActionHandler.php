@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Action;
 
 use Duyler\DependencyInjection\Exception\DefinitionIsNotObjectTypeException;
+use Duyler\EventBus\Bus\Event;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\ActionContainerCollection;
-use Duyler\EventBus\Collection\TaskCollection;
+use Duyler\EventBus\Collection\EventCollection;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
@@ -16,18 +17,17 @@ use Duyler\EventBus\Exception\ActionReturnValueNotExistsException;
 use Duyler\EventBus\Exception\ActionReturnValueWillBeCompatibleException;
 use Duyler\EventBus\Exception\InvalidArgumentFactoryException;
 use Duyler\EventBus\State\StateAction;
-use Duyler\EventBus\Task;
 use Throwable;
 
 readonly class ActionHandler
 {
     public function __construct(
-        private ActionContainerBuilder    $containerBuilder,
-        private StateAction               $stateAction,
-        private TaskCollection            $taskCollection,
+        private ActionContainerBuilder $containerBuilder,
+        private StateAction $stateAction,
         private ActionContainerCollection $containerCollection,
-        private ActionCollection          $actionCollection,
-        private ActionSubstitution        $actionSubstitution,
+        private ActionCollection $actionCollection,
+        private ActionSubstitution $actionSubstitution,
+        private EventCollection $eventCollection,
     ) {
     }
 
@@ -80,7 +80,7 @@ readonly class ActionHandler
             return null;
         }
 
-        $completeTasks = $this->taskCollection->getAllByArray($action->required->getArrayCopy());
+        $completeTasks = $this->eventCollection->getAllByArray($action->required->getArrayCopy());
 
         $results = [];
 
@@ -109,29 +109,29 @@ readonly class ActionHandler
         return $factory();
     }
 
-    private function prepareRequiredResults(Task $requiredTask): array
+    private function prepareRequiredResults(Event $requiredTaskEvent): array
     {
         $results = [];
 
-        if ($requiredTask->result->status === ResultStatus::Fail) {
-            $actionsWithContract = $this->actionCollection->getByContract($requiredTask->action->contract);
+        if ($requiredTaskEvent->result->status === ResultStatus::Fail) {
+            $actionsWithContract = $this->actionCollection->getByContract($requiredTaskEvent->action->contract);
 
             foreach ($actionsWithContract as $actionWithContract) {
-                if ($this->taskCollection->isExists($actionWithContract->id)) {
-                    $replaceTask = $this->taskCollection->get($actionWithContract->id);
-                    if ($replaceTask->result->status === ResultStatus::Success) {
-                        $interface = array_search($replaceTask->result->data::class, $actionWithContract->classMap)
-                            ?: $replaceTask->result->data::class;
-                        $results[$interface] = $replaceTask->result->data;
+                if ($this->eventCollection->isExists($actionWithContract->id)) {
+                    $replaceTaskEvent = $this->eventCollection->get($actionWithContract->id);
+                    if ($replaceTaskEvent->result->status === ResultStatus::Success) {
+                        $interface = array_search($replaceTaskEvent->result->data::class, $actionWithContract->classMap)
+                            ?: $replaceTaskEvent->result->data::class;
+                        $results[$interface] = $replaceTaskEvent->result->data;
                         return $results;
                     }
                 }
             }
         }
 
-        $interface = array_search($requiredTask->result->data::class, $requiredTask->action->classMap)
-            ?: $requiredTask->result->data::class;
-        $results[$interface] = $requiredTask->result->data;
+        $interface = array_search($requiredTaskEvent->result->data::class, $requiredTaskEvent->action->classMap)
+            ?: $requiredTaskEvent->result->data::class;
+        $results[$interface] = $requiredTaskEvent->result->data;
 
         return $results;
     }

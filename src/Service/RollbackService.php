@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Service;
 
-use Duyler\EventBus\Log;
-use Duyler\EventBus\Rollback;
+use Duyler\EventBus\Bus\Log;
+use Duyler\EventBus\Bus\Rollback;
 
 readonly class RollbackService
 {

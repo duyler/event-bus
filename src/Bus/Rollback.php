@@ -2,26 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus;
+namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\Collection\ActionContainerCollection;
-use Duyler\EventBus\Collection\TaskCollection;
+use Duyler\EventBus\Collection\EventCollection;
 use Duyler\EventBus\Contract\RollbackActionInterface;
-
 use Duyler\EventBus\Dto\Result;
 use function is_callable;
 
 readonly class Rollback
 {
     public function __construct(
-        private TaskCollection            $taskCollection,
+        private EventCollection $eventCollection,
         private ActionContainerCollection $containerCollection,
     ) {
     }
 
     public function run(array $slice = []): void
     {
-        $tasks = empty($slice) ? $this->taskCollection->getAll() : $this->taskCollection->getAllByArray($slice);
+        $tasks = empty($slice) ? $this->eventCollection->getAll() : $this->eventCollection->getAllByArray($slice);
 
         foreach ($tasks as $task) {
             if (empty($task->action->rollback)) {

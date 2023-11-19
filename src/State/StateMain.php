@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State;
 
+use Duyler\EventBus\Bus\Task;
+use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\ResultService;
@@ -14,8 +16,6 @@ use Duyler\EventBus\State\Service\StateMainBeforeService;
 use Duyler\EventBus\State\Service\StateMainFinalService;
 use Duyler\EventBus\State\Service\StateMainStartService;
 use Duyler\EventBus\State\Service\StateMainSuspendService;
-use Duyler\EventBus\Collection\ActionContainerCollection;
-use Duyler\EventBus\Task;
 
 readonly class StateMain
 {
@@ -87,8 +87,8 @@ readonly class StateMain
     public function after(Task $task): void
     {
         $stateService = new StateMainAfterService(
-            $task->result->status,
-            $task->result->data,
+            $task->getResult()->status,
+            $task->getResult()->data,
             $task->action->id,
             $this->actionService,
             $this->resultService,
