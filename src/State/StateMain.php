@@ -15,6 +15,7 @@ use Duyler\EventBus\Service\SubscriptionService;
 use Duyler\EventBus\State\Service\StateMainAfterService;
 use Duyler\EventBus\State\Service\StateMainBeforeService;
 use Duyler\EventBus\State\Service\StateMainFinalService;
+use Duyler\EventBus\State\Service\StateMainResumeService;
 use Duyler\EventBus\State\Service\StateMainStartService;
 use Duyler\EventBus\State\Service\StateMainSuspendService;
 
@@ -61,9 +62,9 @@ readonly class StateMain implements StateMainInterface
 
     public function suspend(Task $task): void
     {
-        $handler = $this->stateHandlerStorage->getMainSuspend();
+        $handlers = $this->stateHandlerStorage->getMainSuspend();
 
-        if (empty($handler)) {
+        if (empty($handlers)) {
             $value = $task->getValue();
             $result = is_callable($value) ? $value() : $value;
             $this->context->addResumeValue($task->action->id, $result);
@@ -76,12 +77,30 @@ readonly class StateMain implements StateMainInterface
             $this->actionContainerCollection->get($task->action->id),
         );
 
-        $this->context->addResumeValue($task->action->id, $handler->getResume($stateService));
+        foreach ($handlers as $handler) {
+            if ($handler->isResumable($stateService->getValue())) {
+                $this->context->addResumeValue($task->action->id, $handler->handle($stateService));
+            } else {
+                $handler->handle($stateService);
+            }
+        }
     }
 
     public function resume(Task $task): void
     {
+        $handlers = $this->stateHandlerStorage->getMainResume();
+
         $resumeValue = $this->context->getResumeValue($task->action->id);
+
+        $stateService = new StateMainResumeService(
+            $task,
+            $resumeValue,
+        );
+
+        foreach ($handlers as $handler) {
+            $handler->handle($stateService);
+        }
+
         $task->resume($resumeValue);
     }
 

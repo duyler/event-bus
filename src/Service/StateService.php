@@ -10,6 +10,7 @@ use Duyler\EventBus\Contract\State\ActionThrowingStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainBeforeStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainFinalStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainResumeStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainStartStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainSuspendStateHandlerInterface;
 use Duyler\EventBus\State\StateHandlerStorage;
@@ -30,9 +31,14 @@ readonly class StateService
         $this->stateHandlerStorage->addMainBeforeStateHandler($beforeActionHandler);
     }
 
-    public function setMainSuspendStateHandler(MainSuspendStateHandlerInterface $suspendHandler): void
+    public function addMainSuspendStateHandler(MainSuspendStateHandlerInterface $suspendHandler): void
     {
-        $this->stateHandlerStorage->setMainSuspendStateHandler($suspendHandler);
+        $this->stateHandlerStorage->addMainSuspendStateHandler($suspendHandler);
+    }
+
+    public function addMainResumeStateHandler(MainResumeStateHandlerInterface $resumeHandler): void
+    {
+        $this->stateHandlerStorage->addMainResumeStateHandler($resumeHandler);
     }
 
     public function addMainAfterStateHandler(MainAfterStateHandlerInterface $afterActionHandler): void

@@ -12,6 +12,7 @@ use Duyler\EventBus\Contract\State\ActionThrowingStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainBeforeStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainFinalStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainResumeStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainStartStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainSuspendStateHandlerInterface;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
@@ -88,7 +89,9 @@ class BusBuilder
                 $stateHandler instanceof MainBeforeStateHandlerInterface =>
                 $stateService->addMainBeforeStateHandler($stateHandler),
                 $stateHandler instanceof MainSuspendStateHandlerInterface =>
-                $stateService->setMainSuspendStateHandler($stateHandler),
+                $stateService->addMainSuspendStateHandler($stateHandler),
+                $stateHandler instanceof MainResumeStateHandlerInterface =>
+                $stateService->addMainResumeStateHandler($stateHandler),
                 $stateHandler instanceof MainAfterStateHandlerInterface =>
                 $stateService->addMainAfterStateHandler($stateHandler),
                 $stateHandler instanceof MainFinalStateHandlerInterface =>

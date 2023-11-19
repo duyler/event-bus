@@ -12,10 +12,10 @@ use Duyler\EventBus\State\Service\StateActionBeforeService;
 use Duyler\EventBus\State\Service\StateActionThrowingService;
 use Throwable;
 
-readonly class StateAction implements StateActionInterface
+class StateAction implements StateActionInterface
 {
     public function __construct(
-        private StateHandlerStorage    $stateHandlerStorage,
+        private StateHandlerStorage $stateHandlerStorage,
         private ActionContainerCollection $actionContainerCollection,
     ) {
     }
