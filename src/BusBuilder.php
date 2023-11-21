@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
+use Duyler\DependencyInjection\Config as DIConfig;
 use Duyler\DependencyInjection\ContainerBuilder;
 use Duyler\EventBus\Contract\State\ActionAfterStateHandlerInterface;
 use Duyler\EventBus\Contract\State\ActionBeforeStateHandlerInterface;
@@ -11,16 +12,16 @@ use Duyler\EventBus\Contract\State\ActionThrowingStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainBeforeStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainFinalStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainResumeStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainStartStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainSuspendStateHandlerInterface;
+use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Config;
-use Duyler\DependencyInjection\Config as DIConfig;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\StateService;
 use Duyler\EventBus\Service\SubscriptionService;
-use Duyler\EventBus\State\StateHandlerInterface;
 use InvalidArgumentException;
 
 class BusBuilder
@@ -43,7 +44,7 @@ class BusBuilder
     {
     }
 
-    public function build(): Runner
+    public function build(): BusInterface
     {
         $config = new \Duyler\EventBus\Config(
             $this->config,
@@ -55,6 +56,8 @@ class BusBuilder
 
         $container = ContainerBuilder::build($DIConfig);
         $container->set($config);
+        $container->bind($config->classMap);
+
 
         /** @var ActionService $actionService */
         $actionService = $container->make(ActionService::class);
@@ -86,7 +89,9 @@ class BusBuilder
                 $stateHandler instanceof MainBeforeStateHandlerInterface =>
                 $stateService->addMainBeforeStateHandler($stateHandler),
                 $stateHandler instanceof MainSuspendStateHandlerInterface =>
-                $stateService->setMainSuspendStateHandler($stateHandler),
+                $stateService->addMainSuspendStateHandler($stateHandler),
+                $stateHandler instanceof MainResumeStateHandlerInterface =>
+                $stateService->addMainResumeStateHandler($stateHandler),
                 $stateHandler instanceof MainAfterStateHandlerInterface =>
                 $stateService->addMainAfterStateHandler($stateHandler),
                 $stateHandler instanceof MainFinalStateHandlerInterface =>

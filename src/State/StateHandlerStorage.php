@@ -10,6 +10,7 @@ use Duyler\EventBus\Contract\State\ActionThrowingStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainBeforeStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainFinalStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainResumeStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainStartStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainSuspendStateHandlerInterface;
 
@@ -21,7 +22,11 @@ class StateHandlerStorage
     /** @var MainBeforeStateHandlerInterface[] $mainBefore */
     private array $mainBefore = [];
 
-    private ?MainSuspendStateHandlerInterface $stateMainSuspend = null;
+    /** @var MainSuspendStateHandlerInterface[]  */
+    private array $stateMainSuspend = [];
+
+    /** @var MainResumeStateHandlerInterface[]  */
+    private array $stateMainResume = [];
 
     /** @var MainAfterStateHandlerInterface[] $mainAfter */
     private array $mainAfter = [];
@@ -48,9 +53,14 @@ class StateHandlerStorage
         $this->mainBefore[get_class($beforeHandler)] = $beforeHandler;
     }
 
-    public function setMainSuspendStateHandler(MainSuspendStateHandlerInterface $suspendHandler): void
+    public function addMainSuspendStateHandler(MainSuspendStateHandlerInterface $suspendHandler): void
     {
-        $this->stateMainSuspend = $suspendHandler;
+        $this->stateMainSuspend[get_class($suspendHandler)] = $suspendHandler;
+    }
+
+    public function addMainResumeStateHandler(MainResumeStateHandlerInterface $resumeHandler): void
+    {
+        $this->stateMainResume[get_class($resumeHandler)] = $resumeHandler;
     }
 
     public function addMainAfterStateHandler(MainAfterStateHandlerInterface $afterHandler): void
@@ -88,9 +98,14 @@ class StateHandlerStorage
         return $this->mainBefore;
     }
 
-    public function getMainSuspend(): ?MainSuspendStateHandlerInterface
+    public function getMainSuspend(): array
     {
         return $this->stateMainSuspend;
+    }
+
+    public function getMainResume(): array
+    {
+        return $this->stateMainResume;
     }
 
     public function getMainAfter(): array

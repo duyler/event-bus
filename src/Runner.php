@@ -10,11 +10,11 @@ use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Service\ResultService;
 use Throwable;
 
-readonly class Runner
+readonly class Runner implements BusInterface
 {
     public function __construct(
-        private DoWhile       $doWhile,
-        private Rollback      $rollback,
+        private DoWhile $doWhile,
+        private Rollback $rollback,
         private ResultService $resultService,
     ) {
     }
@@ -22,7 +22,7 @@ readonly class Runner
     /**
      * @throws Throwable
      */
-    public function run(): void
+    public function run(): BusInterface
     {
         try {
             $this->doWhile->run();
@@ -30,6 +30,8 @@ readonly class Runner
             $this->rollback->run();
             throw $exception;
         }
+
+        return $this;
     }
 
     public function getResult(string $actionId): ?Result

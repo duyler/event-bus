@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-class ActionSubstitution
+use Duyler\EventBus\Contract\ActionSubstitutionInterface;
+
+class ActionSubstitution implements ActionSubstitutionInterface
 {
     private array $requiredResultSubstitutions = [];
     private array $handlerSubstitutions = [];
