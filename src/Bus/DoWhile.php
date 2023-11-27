@@ -10,7 +10,7 @@ use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Exception\CircularCallActionException;
 use Duyler\EventBus\Exception\ConsecutiveRepeatedActionException;
 
-readonly class DoWhile
+class DoWhile
 {
     public function __construct(
         private Publisher $publisher,

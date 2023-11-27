@@ -10,7 +10,7 @@ use Duyler\EventBus\Contract\RollbackActionInterface;
 use Duyler\EventBus\Dto\Result;
 use function is_callable;
 
-readonly class Rollback
+class Rollback
 {
     public function __construct(
         private EventCollection $eventCollection,
@@ -20,21 +20,21 @@ readonly class Rollback
 
     public function run(array $slice = []): void
     {
-        $tasks = empty($slice) ? $this->eventCollection->getAll() : $this->eventCollection->getAllByArray($slice);
+        $events = empty($slice) ? $this->eventCollection->getAll() : $this->eventCollection->getAllByArray($slice);
 
-        foreach ($tasks as $task) {
-            if (empty($task->action->rollback)) {
+        foreach ($events as $event) {
+            if (empty($event->action->rollback)) {
                 continue;
             }
 
-            if (is_callable($task->action->rollback)) {
-                ($task->action->rollback)();
+            if (is_callable($event->action->rollback)) {
+                ($event->action->rollback)();
                 continue;
             }
 
-            $actionContainer = $this->containerCollection->get($task->action->id);
+            $actionContainer = $this->containerCollection->get($event->action->id);
 
-            $this->rollback($actionContainer->make($task->action->rollback), $task->result);
+            $this->rollback($actionContainer->make($event->action->rollback), $event->result);
         }
     }
 

@@ -8,7 +8,7 @@ use Duyler\EventBus\Collection\EventCollection;
 use Duyler\EventBus\Dto\Result;
 use RuntimeException;
 
-readonly class ResultService
+class ResultService
 {
     public function __construct(private EventCollection $eventCollection)
     {
