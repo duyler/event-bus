@@ -12,6 +12,5 @@ readonly class Subscription
         public string $subjectId,
         public string $actionId,
         public ResultStatus $status = ResultStatus::Success,
-    ) {
-    }
+    ) {}
 }

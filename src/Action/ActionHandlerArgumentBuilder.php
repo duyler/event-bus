@@ -18,8 +18,7 @@ class ActionHandlerArgumentBuilder
         private EventCollection $eventCollection,
         private ActionSubstitution $actionSubstitution,
         private ActionCollection $actionCollection,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws InvalidArgumentFactoryException

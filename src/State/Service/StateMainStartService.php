@@ -17,6 +17,5 @@ class StateMainStartService
     public function __construct(
         private readonly ActionService $actionService,
         private readonly SubscriptionService $subscriptionService,
-    ) {
-    }
+    ) {}
 }

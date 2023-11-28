@@ -30,9 +30,7 @@ class BusBuilder
 
     private array $sharedServices = [];
 
-    public function __construct(private ?Config $config = null)
-    {
-    }
+    public function __construct(private ?Config $config = null) {}
 
     public function build(): BusInterface
     {

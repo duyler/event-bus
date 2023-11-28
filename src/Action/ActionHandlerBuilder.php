@@ -10,8 +10,7 @@ class ActionHandlerBuilder
 {
     public function __construct(
         private ActionSubstitution $actionSubstitution,
-    ) {
-    }
+    ) {}
 
     public function build(Action $action, ActionContainer $container): callable
     {

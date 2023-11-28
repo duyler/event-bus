@@ -6,7 +6,7 @@ $finder = (new PhpCsFixer\Finder())
 
 return (new PhpCsFixer\Config())
     ->setRules([
-        '@PSR12' => true,
+        '@PER' => true,
         'no_unused_imports' => true,
         'array_syntax' => ['syntax' => 'short'],
         'global_namespace_import' => [

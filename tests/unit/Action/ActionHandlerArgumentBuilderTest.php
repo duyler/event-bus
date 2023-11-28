@@ -25,7 +25,7 @@ class ActionHandlerArgumentBuilderTest extends TestCase
     #[Test]
     public function build_with_empty_action_required(): void
     {
-        $action = new Action(id: 'Empty.Required.Action', handler: fn () => '', required: []);
+        $action = new Action(id: 'Empty.Required.Action', handler: fn() => '', required: []);
         $this->assertEquals(null, $this->argumentBuilder->build($action, $this->actionContainer));
     }
 

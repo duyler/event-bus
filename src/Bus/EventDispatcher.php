@@ -14,8 +14,7 @@ readonly class EventDispatcher
         private Log $log,
         private SubscriptionService $subscriptionService,
         private Bus $bus,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws ConsecutiveRepeatedActionException

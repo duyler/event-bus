@@ -13,8 +13,7 @@ readonly class Publisher
     public function __construct(
         private EventDispatcher $eventDispatcher,
         private EventCollection $eventCollection,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws ConsecutiveRepeatedActionException

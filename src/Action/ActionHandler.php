@@ -23,8 +23,7 @@ class ActionHandler implements ActionHandlerInterface
         private StateActionInterface $stateAction,
         private ActionHandlerArgumentBuilder $argumentBuilder,
         private ActionHandlerBuilder $handlerBuilder,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws ActionReturnValueNotExistsException

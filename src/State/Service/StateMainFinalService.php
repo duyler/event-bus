@@ -21,6 +21,5 @@ class StateMainFinalService
         private readonly ResultService $resultService,
         private readonly LogService $logService,
         private readonly RollbackService $rollbackService,
-    ) {
-    }
+    ) {}
 }

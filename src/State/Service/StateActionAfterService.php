@@ -11,6 +11,5 @@ readonly class StateActionAfterService
     public function __construct(
         public ActionContainer $container,
         public string $actionId,
-    ) {
-    }
+    ) {}
 }

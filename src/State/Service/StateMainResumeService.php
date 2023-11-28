@@ -11,8 +11,7 @@ readonly class StateMainResumeService
     public function __construct(
         private Task $task,
         private mixed $value,
-    ) {
-    }
+    ) {}
 
     public function getActionId(): string
     {

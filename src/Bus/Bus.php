@@ -22,8 +22,7 @@ class Bus
         private readonly TaskQueue $taskQueue,
         private readonly ActionCollection $actionCollection,
         private readonly EventCollection $eventCollection,
-    ) {
-    }
+    ) {}
 
     public function doAction(Action $action): void
     {

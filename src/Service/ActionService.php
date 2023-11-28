@@ -20,8 +20,7 @@ readonly class ActionService
         private ActionContainerBuilder $containerBuilder,
         private ActionSubstitutionInterface $actionSubstitution,
         private Bus $bus,
-    ) {
-    }
+    ) {}
 
     public function addAction(Action $action): void
     {
