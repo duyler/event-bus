@@ -16,8 +16,7 @@ class ActionContainerBuilder
     public function __construct(
         private readonly Config $config,
         private readonly ActionContainerCollection $containerCollection,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws DefinitionIsNotObjectTypeException

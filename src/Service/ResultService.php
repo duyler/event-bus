@@ -10,9 +10,7 @@ use RuntimeException;
 
 class ResultService
 {
-    public function __construct(private EventCollection $eventCollection)
-    {
-    }
+    public function __construct(private EventCollection $eventCollection) {}
 
     public function getResult(string $actionId): Result
     {

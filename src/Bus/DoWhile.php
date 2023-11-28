@@ -17,8 +17,7 @@ class DoWhile
         private ActionHandlerInterface $actionHandler,
         private TaskQueue $taskQueue,
         private StateMainInterface $stateMain,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws ConsecutiveRepeatedActionException
@@ -50,7 +49,7 @@ class DoWhile
      */
     public function runTask(Task $task): void
     {
-        $task->run(fn (): Result => $this->actionHandler->handle($task->action));
+        $task->run(fn(): Result => $this->actionHandler->handle($task->action));
         $this->dispatch($task);
     }
 

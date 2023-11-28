@@ -25,7 +25,7 @@ class ActionHandlerTest extends TestCase
     #[Test()]
     public function handle_with_exception(): void
     {
-        $this->handlerBuilder->method('build')->willReturn(fn () => throw new \Exception());
+        $this->handlerBuilder->method('build')->willReturn(fn() => throw new \Exception());
         $actionHandler = $this->createInstance();
 
         $this->expectException(Throwable::class);
@@ -33,7 +33,7 @@ class ActionHandlerTest extends TestCase
         $actionHandler->handle(
             new Action(
                 id: 'Test',
-                handler: fn () => '',
+                handler: fn() => '',
             )
         );
     }

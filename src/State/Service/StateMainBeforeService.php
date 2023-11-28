@@ -16,8 +16,7 @@ class StateMainBeforeService
         public readonly string $actionId,
         private readonly LogService $logService,
         private readonly ActionService $actionService,
-    ) {
-    }
+    ) {}
 
     public function substituteResult(string $actionId, array $substitutions): void
     {

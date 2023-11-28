@@ -16,8 +16,7 @@ class Rollback
     public function __construct(
         private EventCollection $eventCollection,
         private ActionContainerCollection $containerCollection,
-    ) {
-    }
+    ) {}
 
     public function run(array $slice = []): void
     {

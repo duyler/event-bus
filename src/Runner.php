@@ -16,8 +16,7 @@ readonly class Runner implements BusInterface
         private DoWhile $doWhile,
         private Rollback $rollback,
         private ResultService $resultService,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws Throwable

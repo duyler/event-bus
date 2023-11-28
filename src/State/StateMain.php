@@ -30,8 +30,7 @@ readonly class StateMain implements StateMainInterface
         private RollbackService $rollbackService,
         private SubscriptionService $subscriptionService,
         private StateContext $context,
-    ) {
-    }
+    ) {}
 
     public function start(): void
     {

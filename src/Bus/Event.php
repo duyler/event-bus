@@ -12,6 +12,5 @@ readonly class Event
     public function __construct(
         public Action $action,
         public Result $result,
-    ) {
-    }
+    ) {}
 }

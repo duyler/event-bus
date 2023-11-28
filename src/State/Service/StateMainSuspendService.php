@@ -19,8 +19,7 @@ class StateMainSuspendService
         private readonly ResultService $resultService,
         private readonly Task $task,
         public readonly ActionContainer $container,
-    ) {
-    }
+    ) {}
 
     public function getActionId(): string
     {

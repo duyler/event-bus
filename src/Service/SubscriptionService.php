@@ -17,8 +17,7 @@ readonly class SubscriptionService
         private SubscriptionCollection $subscriptionCollection,
         private ActionCollection $actionCollection,
         private Bus $bus,
-    ) {
-    }
+    ) {}
 
     public function addSubscription(Subscription $subscription): void
     {

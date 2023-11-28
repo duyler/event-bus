@@ -25,6 +25,5 @@ class StateMainAfterService
         private readonly ActionService $actionService,
         private readonly ResultService $resultService,
         private readonly LogService $logService,
-    ) {
-    }
+    ) {}
 }

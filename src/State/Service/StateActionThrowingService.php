@@ -13,6 +13,5 @@ readonly class StateActionThrowingService
         public ActionContainer $container,
         public Throwable $exception,
         public string $actionId,
-    ) {
-    }
+    ) {}
 }

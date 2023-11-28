@@ -17,8 +17,7 @@ class StateAction implements StateActionInterface
     public function __construct(
         private StateHandlerStorage $stateHandlerStorage,
         private ActionContainerCollection $actionContainerCollection,
-    ) {
-    }
+    ) {}
 
     public function before(Action $action): void
     {

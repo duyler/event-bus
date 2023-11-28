@@ -8,9 +8,7 @@ use Duyler\EventBus\Bus\Log;
 
 readonly class LogService
 {
-    public function __construct(private Log $log)
-    {
-    }
+    public function __construct(private Log $log) {}
 
     public function getFirstAction(): string
     {

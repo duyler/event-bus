@@ -20,7 +20,4 @@
         <exclude-pattern>/tests</exclude-pattern>
     </rule>
 
-    <!-- Our base rule: set to PSR12-->
-    <rule ref="PSR12"/>
-
 </ruleset>

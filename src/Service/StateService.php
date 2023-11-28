@@ -9,9 +9,7 @@ use Duyler\EventBus\State\StateHandlerStorage;
 
 readonly class StateService
 {
-    public function __construct(private StateHandlerStorage $stateHandlerStorage)
-    {
-    }
+    public function __construct(private StateHandlerStorage $stateHandlerStorage) {}
 
     public function addStateHandler(StateHandlerInterface $stateHandler): void
     {

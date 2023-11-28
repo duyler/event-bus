@@ -9,9 +9,7 @@ use Duyler\EventBus\Bus\Rollback;
 
 readonly class RollbackService
 {
-    public function __construct(private Rollback $rollback, private Log $log)
-    {
-    }
+    public function __construct(private Rollback $rollback, private Log $log) {}
 
     public function rollbackWithoutException(int $step = 0): void
     {
