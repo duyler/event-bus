@@ -19,12 +19,12 @@ class StateMainAfterService
     use LogServiceTrait;
 
     public function __construct(
-        public readonly ResultStatus   $resultStatus,
-        public readonly object | null  $resultData,
-        public readonly string         $actionId,
+        public readonly ResultStatus $resultStatus,
+        public readonly object | null $resultData,
+        public readonly string $actionId,
         private readonly ActionService $actionService,
         private readonly ResultService $resultService,
-        private readonly LogService    $logService,
+        private readonly LogService $logService,
     ) {
     }
 }

@@ -10,7 +10,7 @@ readonly class StateActionBeforeService
 {
     public function __construct(
         public ActionContainer $container,
-        public string          $actionId,
+        public string $actionId,
     ) {
     }
 }

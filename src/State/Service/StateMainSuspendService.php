@@ -16,8 +16,8 @@ class StateMainSuspendService
     use TaskSuspendServiceTrait;
 
     public function __construct(
-        private readonly ResultService  $resultService,
-        private readonly Task           $task,
+        private readonly ResultService $resultService,
+        private readonly Task $task,
         public readonly ActionContainer $container,
     ) {
     }

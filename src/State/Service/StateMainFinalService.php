@@ -18,8 +18,8 @@ class StateMainFinalService
     use RollbackServiceTrait;
 
     public function __construct(
-        private readonly ResultService   $resultService,
-        private readonly LogService      $logService,
+        private readonly ResultService $resultService,
+        private readonly LogService $logService,
         private readonly RollbackService $rollbackService,
     ) {
     }

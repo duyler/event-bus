@@ -22,14 +22,14 @@ use Duyler\EventBus\State\Service\StateMainSuspendService;
 readonly class StateMain implements StateMainInterface
 {
     public function __construct(
-        private StateHandlerStorage       $stateHandlerStorage,
+        private StateHandlerStorage $stateHandlerStorage,
         private ActionContainerCollection $actionContainerCollection,
-        private ActionService             $actionService,
-        private LogService                $logService,
-        private ResultService             $resultService,
-        private RollbackService           $rollbackService,
-        private SubscriptionService       $subscriptionService,
-        private StateContext              $context,
+        private ActionService $actionService,
+        private LogService $logService,
+        private ResultService $resultService,
+        private RollbackService $rollbackService,
+        private SubscriptionService $subscriptionService,
+        private StateContext $context,
     ) {
     }
 

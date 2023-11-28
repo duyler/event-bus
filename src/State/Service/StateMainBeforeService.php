@@ -13,7 +13,7 @@ class StateMainBeforeService
     use LogServiceTrait;
 
     public function __construct(
-        public readonly string      $actionId,
+        public readonly string $actionId,
         private readonly LogService $logService,
         private readonly ActionService $actionService,
     ) {
