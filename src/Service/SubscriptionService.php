@@ -15,8 +15,8 @@ readonly class SubscriptionService
 {
     public function __construct(
         private SubscriptionCollection $subscriptionCollection,
-        private ActionCollection       $actionCollection,
-        private Bus                    $bus,
+        private ActionCollection $actionCollection,
+        private Bus $bus,
     ) {
     }
 
@@ -47,7 +47,6 @@ readonly class SubscriptionService
         $subscriptions = $this->subscriptionCollection->getSubscriptions($actionId, $status);
 
         foreach ($subscriptions as $subscription) {
-
             $action = $this->actionCollection->get($subscription->actionId);
 
             $this->bus->doAction($action);

@@ -63,7 +63,6 @@ readonly class ActionService
     public function collect(iterable $actions): void
     {
         foreach ($actions as $action) {
-
             $requiredIterator = new ActionRequiredIterator($action->required, $actions);
 
             foreach ($requiredIterator as $subject) {

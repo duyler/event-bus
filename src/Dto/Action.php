@@ -12,17 +12,17 @@ readonly class Action
     public RecursiveArrayIterator $required;
 
     public function __construct(
-        public string           $id,
+        public string $id,
         public string | Closure $handler,
-        array                   $required = [],
-        public array            $classMap = [],
-        public array            $providers = [],
-        public string           $argument = '',
-        public ?string          $contract = null,
+        array $required = [],
+        public array $classMap = [],
+        public array $providers = [],
+        public string $argument = '',
+        public ?string $contract = null,
         public string | Closure $rollback = '',
-        public bool             $externalAccess = false,
-        public bool             $repeatable = false,
-        public bool             $continueIfFail = true,
+        public bool $externalAccess = false,
+        public bool $repeatable = false,
+        public bool $continueIfFail = true,
     ) {
         $this->required = new RecursiveArrayIterator($required);
     }

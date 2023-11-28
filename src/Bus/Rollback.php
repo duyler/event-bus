@@ -8,6 +8,7 @@ use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Collection\EventCollection;
 use Duyler\EventBus\Contract\RollbackActionInterface;
 use Duyler\EventBus\Dto\Result;
+
 use function is_callable;
 
 class Rollback

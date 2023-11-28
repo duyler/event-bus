@@ -11,8 +11,8 @@ readonly class StateActionThrowingService
 {
     public function __construct(
         public ActionContainer $container,
-        public Throwable       $exception,
-        public string          $actionId,
+        public Throwable $exception,
+        public string $actionId,
     ) {
     }
 }

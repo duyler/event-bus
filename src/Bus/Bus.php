@@ -10,6 +10,7 @@ use Duyler\EventBus\Collection\EventCollection;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Enum\ResultStatus;
 use RuntimeException;
+
 use function count;
 
 class Bus
@@ -33,7 +34,6 @@ class Bus
         $requiredIterator = new ActionRequiredIterator($action->required, $this->actionCollection->getAll());
 
         foreach ($requiredIterator as $subject) {
-
             $requiredAction = $this->actionCollection->get($subject);
 
             if ($this->isRepeat($requiredAction->id) && $requiredAction->repeatable === false) {
@@ -67,7 +67,7 @@ class Bus
 
     public function resolveHeldTasks(): void
     {
-        foreach($this->heldTasks as $key => $task) {
+        foreach ($this->heldTasks as $key => $task) {
             if ($this->isSatisfiedConditions($task)) {
                 $this->taskQueue->push($task);
                 unset($this->heldTasks[$key]);
@@ -89,7 +89,6 @@ class Bus
 
         foreach ($completeTaskEvents as $completeTask) {
             if ($completeTask->result->status === ResultStatus::Fail) {
-
                 if ($completeTask->action->continueIfFail === false) {
                     throw new RuntimeException(
                         'Cannot be continued because fail action ' . $completeTask->action->id
