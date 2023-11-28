@@ -12,9 +12,9 @@ class TaskQueue
     private SplQueue $queue;
     private array $queueLog = [];
 
-    public function __construct(SplQueue $splQueue)
+    public function __construct()
     {
-        $this->queue = $splQueue;
+        $this->queue = new SplQueue();
         $this->queue->setIteratorMode(SplQueue::IT_MODE_DELETE);
     }
 
@@ -37,7 +37,7 @@ class TaskQueue
     public function dequeue(): Task
     {
         if ($this->queue->isEmpty()) {
-            throw new RuntimeException("TaskQueue is empty");
+            throw new RuntimeException('TaskQueue is empty');
         }
 
         /** @var Task $task */

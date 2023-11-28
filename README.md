@@ -51,10 +51,10 @@ $busBuilder->addSubscription($blogActionSubscription);
 
 $busBuilder->doAction($requestAction);
 
-$runner = $busBuilder->build();
+$bus = $busBuilder->build();
 
-$runner->run();
+$bus->run();
 
-$blogPost = $runner->getResult('Blog.GetPostById');
+$blogPost = $bus->getResult('Blog.GetPostById');
 
 ```
