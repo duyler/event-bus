@@ -16,9 +16,7 @@
         "docs": "https://duyler.org/docs/event-bus/"
     },
     "require": {
-        "php": "^8.2",
-        "ext-pcntl": "^8.2",
-        "ext-posix": "*",
+        "php": "^8.3",
         "duyler/dependency-injection": "dev-main"
     },
     "require-dev": {
