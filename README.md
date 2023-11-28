@@ -12,8 +12,6 @@ use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 
-$busBuilder = new BusBuilder();
-
 $requestAction = new Action(
     id: 'Request.GetRequest',
     handler: GetRequestAction::class,
@@ -21,25 +19,14 @@ $requestAction = new Action(
 
 $blogAction = new Action(
     id: 'Blog.GetPostById',
-    handler: GetPostByIdActionInterface::class,
+    handler: GetPostByIdAction::class,
     required: [
         'Request.GetRequest',
     ],
-    classMap: [
-        GetPostByIdActionInterface::class => GetPostByIdAction::class,
-    ],
-    providers: [
-        PostRepository::class => BlogRepositoryProvider::class,
-        GetPostByIdAction::class => GetPostByIdActionProvider::class,
-    ],
-    arguments: [
-        'postId' => PostIdFactory::class
-    ],
+    argument: PostIdFactory::class,
     externalAccess: true,
     contract: Post::class,
 );
-
-$busBuilder->addAction($blogAction);
 
 $blogActionSubscription = new Subscription(
     subject: 'Request.GetRequest',
@@ -47,13 +34,14 @@ $blogActionSubscription = new Subscription(
     status: ResultStatus::Success,
 );
 
-$busBuilder->addSubscription($blogActionSubscription);
+$busBuilder = new BusBuilder();
 
-$busBuilder->doAction($requestAction);
-
-$bus = $busBuilder->build();
-
-$bus->run();
+$bus = $busBuilder
+    ->addAction($blogAction)
+    ->addSubscription($blogActionSubscription)
+    ->doAction($requestAction)
+    ->build()
+    ->run();
 
 $blogPost = $bus->getResult('Blog.GetPostById');
 
