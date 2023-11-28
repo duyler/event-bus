@@ -13,79 +13,66 @@ use Duyler\EventBus\Contract\State\MainFinalStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainResumeStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainStartStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainSuspendStateHandlerInterface;
+use Duyler\EventBus\Contract\State\StateHandlerInterface;
+use InvalidArgumentException;
 
 class StateHandlerStorage
 {
-    /** @var MainStartStateHandlerInterface[] $mainStart */
+    /** @var MainStartStateHandlerInterface[] */
     private array $mainStart = [];
 
-    /** @var MainBeforeStateHandlerInterface[] $mainBefore */
+    /** @var MainBeforeStateHandlerInterface[] */
     private array $mainBefore = [];
 
-    /** @var MainSuspendStateHandlerInterface[]  */
+    /** @var MainSuspendStateHandlerInterface[] */
     private array $stateMainSuspend = [];
 
-    /** @var MainResumeStateHandlerInterface[]  */
+    /** @var MainResumeStateHandlerInterface[] */
     private array $stateMainResume = [];
 
-    /** @var MainAfterStateHandlerInterface[] $mainAfter */
+    /** @var MainAfterStateHandlerInterface[] */
     private array $mainAfter = [];
 
-    /** @var MainFinalStateHandlerInterface[] $mainFinal */
+    /** @var MainFinalStateHandlerInterface[] */
     private array $mainFinal = [];
 
-    /** @var ActionBeforeStateHandlerInterface[] $actionBefore */
+    /** @var ActionBeforeStateHandlerInterface[] */
     private array $actionBefore = [];
 
-    /** @var ActionThrowingStateHandlerInterface[] $actionThrowing */
+    /** @var ActionThrowingStateHandlerInterface[] */
     private array $actionThrowing = [];
 
-    /** @var ActionAfterStateHandlerInterface[] $actionAfter */
+    /** @var ActionAfterStateHandlerInterface[] */
     private array $actionAfter = [];
 
-    public function addMainStartStateHandler(MainStartStateHandlerInterface $startHandler): void
+    public function addStateHandler(StateHandlerInterface $stateHandler): void
     {
-        $this->mainStart[get_class($startHandler)] = $startHandler;
-    }
+        match (true) {
+            $stateHandler instanceof MainStartStateHandlerInterface =>
+                $this->mainStart[get_class($stateHandler)] = $stateHandler,
+            $stateHandler instanceof MainBeforeStateHandlerInterface =>
+                $this->mainBefore[get_class($stateHandler)] = $stateHandler,
+            $stateHandler instanceof MainSuspendStateHandlerInterface =>
+                $this->stateMainSuspend[get_class($stateHandler)] = $stateHandler,
+            $stateHandler instanceof MainResumeStateHandlerInterface =>
+                $this->stateMainResume[get_class($stateHandler)] = $stateHandler,
+            $stateHandler instanceof MainAfterStateHandlerInterface =>
+                $this->mainAfter[get_class($stateHandler)] = $stateHandler,
+            $stateHandler instanceof MainFinalStateHandlerInterface =>
+                $this->mainFinal[get_class($stateHandler)] = $stateHandler,
+            $stateHandler instanceof ActionBeforeStateHandlerInterface =>
+                $this->actionBefore[get_class($stateHandler)] = $stateHandler,
+            $stateHandler instanceof ActionThrowingStateHandlerInterface =>
+                $this->actionThrowing[get_class($stateHandler)] = $stateHandler,
+            $stateHandler instanceof ActionAfterStateHandlerInterface =>
+                $this->actionAfter[get_class($stateHandler)] = $stateHandler,
 
-    public function addMainBeforeStateHandler(MainBeforeStateHandlerInterface $beforeHandler): void
-    {
-        $this->mainBefore[get_class($beforeHandler)] = $beforeHandler;
-    }
-
-    public function addMainSuspendStateHandler(MainSuspendStateHandlerInterface $suspendHandler): void
-    {
-        $this->stateMainSuspend[get_class($suspendHandler)] = $suspendHandler;
-    }
-
-    public function addMainResumeStateHandler(MainResumeStateHandlerInterface $resumeHandler): void
-    {
-        $this->stateMainResume[get_class($resumeHandler)] = $resumeHandler;
-    }
-
-    public function addMainAfterStateHandler(MainAfterStateHandlerInterface $afterHandler): void
-    {
-        $this->mainAfter[get_class($afterHandler)] = $afterHandler;
-    }
-
-    public function addMainFinalStateHandler(MainFinalStateHandlerInterface $finalHandler): void
-    {
-        $this->mainFinal[get_class($finalHandler)] = $finalHandler;
-    }
-
-    public function addActionBeforeStateHandler(ActionBeforeStateHandlerInterface $actionBeforeHandler): void
-    {
-        $this->actionBefore[get_class($actionBeforeHandler)] = $actionBeforeHandler;
-    }
-
-    public function addActionThrowingStateHandler(ActionThrowingStateHandlerInterface $actionThrowingHandler): void
-    {
-        $this->actionThrowing[get_class($actionThrowingHandler)] = $actionThrowingHandler;
-    }
-
-    public function addActionAfterStateHandler(ActionAfterStateHandlerInterface $actionAfterHandler): void
-    {
-        $this->actionAfter[get_class($actionAfterHandler)] = $actionAfterHandler;
+            default => throw new InvalidArgumentException(sprintf(
+                'State handler %s must be compatibility with %s',
+                get_class($stateHandler),
+                StateHandlerInterface::class
+            ))
+        };
     }
 
     public function getMainStart(): array

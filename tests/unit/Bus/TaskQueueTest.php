@@ -8,7 +8,6 @@ use Duyler\EventBus\Bus\TaskQueue;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use SplQueue;
 
 class TaskQueueTest extends TestCase
 {

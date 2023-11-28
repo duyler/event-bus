@@ -10,6 +10,8 @@ use Throwable;
 interface StateActionInterface
 {
     public function before(Action $action): void;
+
     public function after(Action $action): void;
+
     public function throwing(Action $action, Throwable $exception): void;
 }

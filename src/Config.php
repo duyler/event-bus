@@ -16,7 +16,7 @@ use Duyler\EventBus\State\StateMain;
 
 class Config
 {
-    private const ACTION_CONTAINER_CACHE_DIR = 'action_container';
+    private const string ACTION_CONTAINER_CACHE_DIR = 'action_container';
 
     public readonly string $actionContainerCacheDir;
     public readonly array $classMap;

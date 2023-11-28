@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use RuntimeException;
 use SplQueue;
+use RuntimeException;
 
 class TaskQueue
 {
@@ -26,7 +26,7 @@ class TaskQueue
 
     public function isNotEmpty(): bool
     {
-        return $this->queue->isEmpty() === false;
+        return false === $this->queue->isEmpty();
     }
 
     public function isEmpty(): bool

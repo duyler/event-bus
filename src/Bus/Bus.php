@@ -15,7 +15,7 @@ use function count;
 
 class Bus
 {
-    /** @var Task[] $heldTasks */
+    /** @var Task[] */
     protected array $heldTasks = [];
 
     public function __construct(
@@ -27,7 +27,7 @@ class Bus
 
     public function doAction(Action $action): void
     {
-        if ($this->isRepeat($action->id) && $action->repeatable === false) {
+        if ($this->isRepeat($action->id) && false === $action->repeatable) {
             return;
         }
 
@@ -36,7 +36,7 @@ class Bus
         foreach ($requiredIterator as $subject) {
             $requiredAction = $this->actionCollection->get($subject);
 
-            if ($this->isRepeat($requiredAction->id) && $requiredAction->repeatable === false) {
+            if ($this->isRepeat($requiredAction->id) && false === $requiredAction->repeatable) {
                 continue;
             }
 
@@ -88,11 +88,9 @@ class Bus
         }
 
         foreach ($completeTaskEvents as $completeTask) {
-            if ($completeTask->result->status === ResultStatus::Fail) {
-                if ($completeTask->action->continueIfFail === false) {
-                    throw new RuntimeException(
-                        'Cannot be continued because fail action ' . $completeTask->action->id
-                    );
+            if (ResultStatus::Fail === $completeTask->result->status) {
+                if (false === $completeTask->action->continueIfFail) {
+                    throw new RuntimeException('Cannot be continued because fail action ' . $completeTask->action->id);
                 }
 
                 if (empty($completeTask->action->contract)) {
@@ -119,11 +117,12 @@ class Bus
         foreach ($actionsWithContract as $actionWithContract) {
             if ($this->eventCollection->isExists($actionWithContract->id)) {
                 $event = $this->eventCollection->get($actionWithContract->id);
-                if ($event->result->status === ResultStatus::Success) {
+                if (ResultStatus::Success === $event->result->status) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 }

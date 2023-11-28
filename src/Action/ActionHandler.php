@@ -50,6 +50,7 @@ class ActionHandler implements ActionHandlerInterface
         }
 
         $this->stateAction->after($action);
+
         return $result;
     }
 
@@ -64,8 +65,8 @@ class ActionHandler implements ActionHandlerInterface
             return $resultData;
         }
 
-        if (empty($resultData) === false) {
-            if ($action->contract === null) {
+        if (false === empty($resultData)) {
+            if (null === $action->contract) {
                 throw new ActionReturnValueExistsException($action->id);
             }
 
@@ -76,7 +77,7 @@ class ActionHandler implements ActionHandlerInterface
             throw new ActionReturnValueWillBeCompatibleException($action->id, $action->contract);
         }
 
-        if ($action->contract !== null) {
+        if (null !== $action->contract) {
             throw new ActionReturnValueNotExistsException($action->id);
         }
 

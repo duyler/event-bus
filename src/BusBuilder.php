@@ -6,15 +6,6 @@ namespace Duyler\EventBus;
 
 use Duyler\DependencyInjection\Config as DIConfig;
 use Duyler\DependencyInjection\ContainerBuilder;
-use Duyler\EventBus\Contract\State\ActionAfterStateHandlerInterface;
-use Duyler\EventBus\Contract\State\ActionBeforeStateHandlerInterface;
-use Duyler\EventBus\Contract\State\ActionThrowingStateHandlerInterface;
-use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
-use Duyler\EventBus\Contract\State\MainBeforeStateHandlerInterface;
-use Duyler\EventBus\Contract\State\MainFinalStateHandlerInterface;
-use Duyler\EventBus\Contract\State\MainResumeStateHandlerInterface;
-use Duyler\EventBus\Contract\State\MainStartStateHandlerInterface;
-use Duyler\EventBus\Contract\State\MainSuspendStateHandlerInterface;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Config;
@@ -22,20 +13,19 @@ use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\StateService;
 use Duyler\EventBus\Service\SubscriptionService;
-use InvalidArgumentException;
 
 class BusBuilder
 {
-    /** @var Action[] $actions */
+    /** @var Action[] */
     private array $actions = [];
 
-    /** @var Subscription[] $subscriptions */
+    /** @var Subscription[] */
     private array $subscriptions = [];
 
-    /** @var Action[] $doActions */
+    /** @var Action[] */
     private array $doActions = [];
 
-    /** @var StateHandlerInterface[] $stateHandlers */
+    /** @var StateHandlerInterface[] */
     private array $stateHandlers = [];
 
     private array $sharedServices = [];
@@ -57,7 +47,6 @@ class BusBuilder
         $container = ContainerBuilder::build($DIConfig);
         $container->set($config);
         $container->bind($config->classMap);
-
 
         /** @var ActionService $actionService */
         $actionService = $container->make(ActionService::class);
@@ -83,32 +72,7 @@ class BusBuilder
         }
 
         foreach ($this->stateHandlers as $stateHandler) {
-            match (true) {
-                $stateHandler instanceof MainStartStateHandlerInterface =>
-                $stateService->addMainStartStateHandler($stateHandler),
-                $stateHandler instanceof MainBeforeStateHandlerInterface =>
-                $stateService->addMainBeforeStateHandler($stateHandler),
-                $stateHandler instanceof MainSuspendStateHandlerInterface =>
-                $stateService->addMainSuspendStateHandler($stateHandler),
-                $stateHandler instanceof MainResumeStateHandlerInterface =>
-                $stateService->addMainResumeStateHandler($stateHandler),
-                $stateHandler instanceof MainAfterStateHandlerInterface =>
-                $stateService->addMainAfterStateHandler($stateHandler),
-                $stateHandler instanceof MainFinalStateHandlerInterface =>
-                $stateService->addMainFinalStateHandler($stateHandler),
-                $stateHandler instanceof ActionBeforeStateHandlerInterface =>
-                $stateService->addActionBeforeStateHandler($stateHandler),
-                $stateHandler instanceof ActionThrowingStateHandlerInterface =>
-                $stateService->addActionThrowingStateHandler($stateHandler),
-                $stateHandler instanceof ActionAfterStateHandlerInterface =>
-                $stateService->addActionAfterStateHandler($stateHandler),
-
-                default => throw new InvalidArgumentException(sprintf(
-                    'State handler %s must be compatibility with %s',
-                    get_class($stateHandler),
-                    StateHandlerInterface::class,
-                ))
-            };
+            $stateService->addStateHandler($stateHandler);
         }
 
         /** @var Runner $runner */
@@ -120,12 +84,14 @@ class BusBuilder
     public function addAction(Action $action): static
     {
         $this->actions[$action->id] = $action;
+
         return $this;
     }
 
     public function addSubscription(Subscription $subscription): static
     {
         $this->subscriptions[] = $subscription;
+
         return $this;
     }
 
@@ -133,18 +99,21 @@ class BusBuilder
     {
         $this->actions[$action->id] = $action;
         $this->doActions[$action->id] = $action;
+
         return $this;
     }
 
     public function addStateHandler(StateHandlerInterface $stateHandler): static
     {
         $this->stateHandlers[] = $stateHandler;
+
         return $this;
     }
 
     public function addSharedService(object $service): static
     {
         $this->sharedServices[] = $service;
+
         return $this;
     }
 }

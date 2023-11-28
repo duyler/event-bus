@@ -22,13 +22,11 @@ readonly class SubscriptionService
 
     public function addSubscription(Subscription $subscription): void
     {
-        if ($this->actionCollection->isExists($subscription->actionId) === false) {
-            throw new InvalidArgumentException(
-                'Action ' . $subscription->actionId . ' not registered in the bus'
-            );
+        if (false === $this->actionCollection->isExists($subscription->actionId)) {
+            throw new InvalidArgumentException('Action ' . $subscription->actionId . ' not registered in the bus');
         }
 
-        if ($this->actionCollection->isExists($subscription->subjectId) === false) {
+        if (false === $this->actionCollection->isExists($subscription->subjectId)) {
             throw new InvalidArgumentException(
                 'Subscribed action ' . $subscription->subjectId . ' not registered in the bus'
             );

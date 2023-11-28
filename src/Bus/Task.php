@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use Closure;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
+use Closure;
 use Fiber;
 
 class Task
