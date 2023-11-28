@@ -16,6 +16,11 @@ abstract class AbstractCollection
         return $this->data;
     }
 
+    public function cleanUp(): void
+    {
+        $this->data = [];
+    }
+
     protected function makeActionIdWithStatus(string $actionId, ResultStatus $status): string
     {
         return $actionId . '.' . $status->value;

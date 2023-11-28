@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
-use Duyler\DependencyInjection\Config as DIConfig;
+use Duyler\DependencyInjection\ContainerConfig;
 use Duyler\DependencyInjection\ContainerBuilder;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
@@ -38,11 +38,12 @@ class BusBuilder
             $this->config,
         );
 
-        $DIConfig = new DIConfig(
-            cacheDirPath: $this->config->defaultCacheDir,
+        $containerConfig = new ContainerConfig(
+            enableCache: $this->config->enableCache,
+            fileCacheDirPath: $this->config->fileCacheDirPath,
         );
 
-        $container = ContainerBuilder::build($DIConfig);
+        $container = ContainerBuilder::build($containerConfig);
         $container->set($config);
         $container->bind($config->classMap);
 
@@ -73,10 +74,7 @@ class BusBuilder
             $stateService->addStateHandler($stateHandler);
         }
 
-        /** @var Runner $runner */
-        $runner = $container->make(Runner::class);
-
-        return $runner;
+        return $container->make(BusFacade::class);
     }
 
     public function addAction(Action $action): static
@@ -103,7 +101,7 @@ class BusBuilder
 
     public function addStateHandler(StateHandlerInterface $stateHandler): static
     {
-        $this->stateHandlers[] = $stateHandler;
+        $this->stateHandlers[get_class($stateHandler)] = $stateHandler;
 
         return $this;
     }

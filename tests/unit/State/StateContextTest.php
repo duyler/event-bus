@@ -13,7 +13,7 @@ class StateContextTest extends TestCase
     private StateContext $stateContext;
 
     #[Test]
-    public function add_resume_value(): void
+    public function addResumeValue_with_string(): void
     {
         $this->stateContext->addResumeValue('actionId', 'value');
         $this->assertSame('value', $this->stateContext->getResumeValue('actionId'));

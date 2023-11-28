@@ -6,6 +6,7 @@ namespace Duyler\EventBus\Test\unit\Collection;
 
 use Duyler\EventBus\Action\ActionContainer;
 use Duyler\EventBus\Collection\ActionContainerCollection;
+use Duyler\EventBus\Config;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -14,11 +15,11 @@ class ActionContainerCollectionTest extends TestCase
     private ActionContainerCollection $actionContainerCollection;
 
     #[Test]
-    public function should_save_container(): void
+    public function save_container(): void
     {
         $container = new ActionContainer(
             actionId: 'test',
-            containerCacheDir: '',
+            config: new Config(new \Duyler\EventBus\Dto\Config()),
         );
 
         $this->actionContainerCollection->save($container);

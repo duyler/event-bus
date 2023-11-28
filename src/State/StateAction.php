@@ -11,6 +11,7 @@ use Duyler\EventBus\State\Service\StateActionAfterService;
 use Duyler\EventBus\State\Service\StateActionBeforeService;
 use Duyler\EventBus\State\Service\StateActionThrowingService;
 use Throwable;
+use Override;
 
 class StateAction implements StateActionInterface
 {
@@ -19,6 +20,7 @@ class StateAction implements StateActionInterface
         private ActionContainerCollection $actionContainerCollection,
     ) {}
 
+    #[Override]
     public function before(Action $action): void
     {
         $stateService = new StateActionBeforeService(
@@ -33,6 +35,7 @@ class StateAction implements StateActionInterface
         }
     }
 
+    #[Override]
     public function after(Action $action): void
     {
         $stateService = new StateActionAfterService(
@@ -47,6 +50,7 @@ class StateAction implements StateActionInterface
         }
     }
 
+    #[Override]
     public function throwing(Action $action, Throwable $exception): void
     {
         $stateService = new StateActionThrowingService(

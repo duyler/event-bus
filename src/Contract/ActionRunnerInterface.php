@@ -7,7 +7,7 @@ namespace Duyler\EventBus\Contract;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 
-interface ActionHandlerInterface
+interface ActionRunnerInterface
 {
-    public function handle(Action $action): Result;
+    public function runAction(Action $action): Result;
 }

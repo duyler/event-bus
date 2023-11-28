@@ -7,7 +7,8 @@ namespace Duyler\EventBus\Dto;
 readonly class Config
 {
     public function __construct(
-        public string $defaultCacheDir = '',
+        public bool $enableCache = false,
+        public string $fileCacheDirPath = '',
         public array $classMap = [],
     ) {}
 }

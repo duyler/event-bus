@@ -9,17 +9,18 @@ use Duyler\EventBus\Action\Exception\ActionReturnValueExistsException;
 use Duyler\EventBus\Action\Exception\ActionReturnValueNotExistsException;
 use Duyler\EventBus\Action\Exception\ActionReturnValueWillBeCompatibleException;
 use Duyler\EventBus\Action\Exception\InvalidArgumentFactoryException;
-use Duyler\EventBus\Contract\ActionHandlerInterface;
+use Duyler\EventBus\Contract\ActionRunnerInterface;
 use Duyler\EventBus\Contract\StateActionInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
+use Override;
 use Throwable;
 
-class ActionHandler implements ActionHandlerInterface
+class ActionRunner implements ActionRunnerInterface
 {
     public function __construct(
-        private ActionContainerBuilder $containerBuilder,
+        private ActionContainerProvider $actionContainerProvider,
         private StateActionInterface $stateAction,
         private ActionHandlerArgumentBuilder $argumentBuilder,
         private ActionHandlerBuilder $handlerBuilder,
@@ -33,9 +34,10 @@ class ActionHandler implements ActionHandlerInterface
      * @throws Throwable
      * @throws ActionReturnValueExistsException
      */
-    public function handle(Action $action): Result
+    #[Override]
+    public function runAction(Action $action): Result
     {
-        $container = $this->containerBuilder->build($action);
+        $container = $this->actionContainerProvider->get($action);
 
         try {
             $actionInstance = $this->handlerBuilder->build($action, $container);

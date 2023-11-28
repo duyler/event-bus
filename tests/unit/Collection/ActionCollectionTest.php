@@ -14,7 +14,7 @@ class ActionCollectionTest extends TestCase
     private ActionCollection $actionCollection;
 
     #[Test]
-    public function should_save_action(): void
+    public function save_action(): void
     {
         $action = new Action(
             id: 'test',

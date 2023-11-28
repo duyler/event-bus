@@ -9,7 +9,7 @@ use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Config;
 use Duyler\EventBus\Dto\Action;
 
-class ActionContainerBuilder
+class ActionContainerProvider
 {
     private array $sharedServices = [];
 
@@ -21,12 +21,12 @@ class ActionContainerBuilder
     /**
      * @throws DefinitionIsNotObjectTypeException
      */
-    public function build(Action $action): ActionContainer
+    public function get(Action $action): ActionContainer
     {
         $container = $this->prepareContainer($action->id);
 
         $container->bind($action->classMap);
-        $container->setProviders($action->providers);
+        $container->addProviders($action->providers);
 
         $this->containerCollection->save($container);
 
@@ -40,7 +40,7 @@ class ActionContainerBuilder
     {
         $container = ActionContainer::build(
             $actionId,
-            $this->config->actionContainerCacheDir,
+            $this->config,
         );
 
         foreach ($this->sharedServices as $service) {

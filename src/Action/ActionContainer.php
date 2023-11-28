@@ -4,33 +4,77 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-use Duyler\DependencyInjection\Cache\FileCacheHandler;
-use Duyler\DependencyInjection\Compiler;
-use Duyler\DependencyInjection\Container;
-use Duyler\DependencyInjection\DependencyMapper;
-use Duyler\DependencyInjection\ReflectionStorage;
-use Duyler\DependencyInjection\ServiceStorage;
+use Duyler\DependencyInjection\ContainerBuilder;
+use Duyler\DependencyInjection\ContainerConfig;
+use Duyler\DependencyInjection\ContainerInterface;
+use Duyler\EventBus\Config;
+use Override;
 
-class ActionContainer extends Container
+class ActionContainer implements ContainerInterface
 {
+    private readonly ContainerInterface $container;
+
     public function __construct(
         public readonly string $actionId,
-        public readonly string $containerCacheDir,
+        public readonly Config $config,
     ) {
-        $cacheHandler = new FileCacheHandler($containerCacheDir);
-        $reflectionStorage = new ReflectionStorage();
-        $serviceStorage = new ServiceStorage();
-        $dependencyMapper = new DependencyMapper($reflectionStorage, $serviceStorage);
-        parent::__construct(new Compiler($serviceStorage), $dependencyMapper, $serviceStorage, $cacheHandler);
+        $this->container = ContainerBuilder::build(
+            new ContainerConfig(
+                enableCache: $config->enableCache,
+                fileCacheDirPath: $config->fileCacheDirPath,
+            )
+        );
     }
 
     public static function build(
         string $actionId,
-        string $containerCacheDir,
+        Config $config,
     ): self {
         return new self(
             $actionId,
-            $containerCacheDir,
+            $config,
         );
+    }
+
+    #[Override]
+    public function bind(array $classMap): void
+    {
+        $this->container->bind($classMap);
+    }
+
+    #[Override]
+    public function getClassMap(): array
+    {
+        return $this->container->getClassMap();
+    }
+
+    #[Override]
+    public function get(string $id): mixed
+    {
+        return $this->container->get($id);
+    }
+
+    #[Override]
+    public function has(string $id): bool
+    {
+        return $this->container->has($id);
+    }
+
+    #[Override]
+    public function make(string $className, string $provider = '', bool $singleton = true): mixed
+    {
+        return $this->container->make($className, $provider, $singleton);
+    }
+
+    #[Override]
+    public function addProviders(array $providers): void
+    {
+        $this->container->addProviders($providers);
+    }
+
+    #[Override]
+    public function set(object $definition): void
+    {
+        $this->container->set($definition);
     }
 }

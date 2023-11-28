@@ -14,5 +14,7 @@ interface BusInterface
      */
     public function run(): BusInterface;
 
-    public function getResult(string $actionId): ?Result;
+    public function getResult(string $actionId): Result;
+
+    public function resultIsExists(string $actionId): bool;
 }

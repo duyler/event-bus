@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use Duyler\EventBus\Contract\ActionHandlerInterface;
+use Duyler\EventBus\Contract\ActionRunnerInterface;
 use Duyler\EventBus\Contract\StateMainInterface;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Exception\CircularCallActionException;
@@ -14,7 +14,7 @@ class DoWhile
 {
     public function __construct(
         private Publisher $publisher,
-        private ActionHandlerInterface $actionHandler,
+        private ActionRunnerInterface $actionRunner,
         private TaskQueue $taskQueue,
         private StateMainInterface $stateMain,
     ) {}
@@ -49,7 +49,7 @@ class DoWhile
      */
     public function runTask(Task $task): void
     {
-        $task->run(fn(): Result => $this->actionHandler->handle($task->action));
+        $task->run(fn(): Result => $this->actionRunner->runAction($task->action));
         $this->dispatch($task);
     }
 
