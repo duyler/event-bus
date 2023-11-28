@@ -8,12 +8,12 @@ use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 use RuntimeException;
 
-use function array_flip;
-use function array_intersect_key;
 use function array_key_exists;
-use function array_keys;
-use function preg_grep;
 use function preg_quote;
+use function array_intersect_key;
+use function array_flip;
+use function preg_grep;
+use function array_keys;
 
 class SubscriptionCollection extends AbstractCollection
 {
@@ -22,9 +22,7 @@ class SubscriptionCollection extends AbstractCollection
         $id = $this->makeSubscriptionId($subscription);
 
         if (array_key_exists($id, $this->data)) {
-            throw new RuntimeException(
-                'Subscription ' . $id . ' already registered for ' . $subscription->actionId
-            );
+            throw new RuntimeException('Subscription ' . $id . ' already registered for ' . $subscription->actionId);
         }
 
         $this->data[$id] = $subscription;
@@ -33,6 +31,7 @@ class SubscriptionCollection extends AbstractCollection
     public function isExists(Subscription $subscription): bool
     {
         $id = $this->makeSubscriptionId($subscription);
+
         return array_key_exists($id, $this->data);
     }
 

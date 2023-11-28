@@ -13,7 +13,7 @@ trait ActionService
 {
     public function addAction(Action $action): void
     {
-        if ($this->actionService->actionIsExists($action->id) === false) {
+        if (false === $this->actionService->actionIsExists($action->id)) {
             $this->actionService->addAction($action);
         }
     }

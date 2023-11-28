@@ -8,9 +8,9 @@ use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\ResultService;
+use Duyler\EventBus\State\Service\Trait\ActionService as ActionServiceTrait;
 use Duyler\EventBus\State\Service\Trait\LogService as LogServiceTrait;
 use Duyler\EventBus\State\Service\Trait\ResultService as ResultServiceTrait;
-use Duyler\EventBus\State\Service\Trait\ActionService as ActionServiceTrait;
 
 class StateMainAfterService
 {
@@ -20,7 +20,7 @@ class StateMainAfterService
 
     public function __construct(
         public readonly ResultStatus $resultStatus,
-        public readonly object | null $resultData,
+        public readonly object|null $resultData,
         public readonly string $actionId,
         private readonly ActionService $actionService,
         private readonly ResultService $resultService,

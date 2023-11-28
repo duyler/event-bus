@@ -53,7 +53,7 @@ class ActionHandlerArgumentBuilder
 
         $factory = $container->make($action->argument);
 
-        if (is_callable($factory) === false) {
+        if (false === is_callable($factory)) {
             throw new InvalidArgumentFactoryException($action->argument);
         }
 
@@ -64,16 +64,17 @@ class ActionHandlerArgumentBuilder
     {
         $results = [];
 
-        if ($requiredTaskEvent->result->status === ResultStatus::Fail) {
+        if (ResultStatus::Fail === $requiredTaskEvent->result->status) {
             $actionsWithContract = $this->actionCollection->getByContract($requiredTaskEvent->action->contract);
 
             foreach ($actionsWithContract as $actionWithContract) {
                 if ($this->eventCollection->isExists($actionWithContract->id)) {
                     $replaceTaskEvent = $this->eventCollection->get($actionWithContract->id);
-                    if ($replaceTaskEvent->result->status === ResultStatus::Success) {
+                    if (ResultStatus::Success === $replaceTaskEvent->result->status) {
                         $interface = array_search($replaceTaskEvent->result->data::class, $actionWithContract->classMap)
                             ?: $replaceTaskEvent->result->data::class;
                         $results[$interface] = $replaceTaskEvent->result->data;
+
                         return $results;
                     }
                 }

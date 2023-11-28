@@ -18,7 +18,7 @@ class ResultService
     {
         $event = $this->eventCollection->get($actionId);
 
-        if ($event->action->externalAccess === false) {
+        if (false === $event->action->externalAccess) {
             throw new RuntimeException('Action ' . $actionId . ' does not allow external access');
         }
 

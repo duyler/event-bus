@@ -17,6 +17,7 @@ class StateContext
     {
         $value = $this->resumeValues[$actionId];
         unset($this->resumeValues[$actionId]);
+
         return $value;
     }
 }

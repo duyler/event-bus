@@ -15,12 +15,14 @@ readonly class LogService
     public function getFirstAction(): string
     {
         $actionLog = $this->log->getActionLog();
+
         return $actionLog[array_key_first($actionLog)];
     }
 
     public function getLastAction(): string
     {
         $actionLog = $this->log->getActionLog();
+
         return $actionLog[array_key_last($actionLog)];
     }
 }

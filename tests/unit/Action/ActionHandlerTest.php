@@ -13,6 +13,7 @@ use Duyler\EventBus\State\StateAction;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
+use Throwable;
 
 class ActionHandlerTest extends TestCase
 {
@@ -27,7 +28,7 @@ class ActionHandlerTest extends TestCase
         $this->handlerBuilder->method('build')->willReturn(fn () => throw new \Exception());
         $actionHandler = $this->createInstance();
 
-        $this->expectException(\Throwable::class);
+        $this->expectException(Throwable::class);
 
         $actionHandler->handle(
             new Action(

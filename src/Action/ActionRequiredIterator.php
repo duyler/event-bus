@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-use InvalidArgumentException;
-use RecursiveIterator;
 use RecursiveIteratorIterator;
 use Traversable;
+use RecursiveIterator;
+use InvalidArgumentException;
 
 class ActionRequiredIterator extends RecursiveIteratorIterator
 {
@@ -23,7 +23,7 @@ class ActionRequiredIterator extends RecursiveIteratorIterator
     {
         $current = $this->current();
 
-        if (array_key_exists($current, $this->actions) === false) {
+        if (false === array_key_exists($current, $this->actions)) {
             $this->throwNotFoundAction($current);
         }
 
@@ -34,7 +34,7 @@ class ActionRequiredIterator extends RecursiveIteratorIterator
     {
         $current = $this->current();
 
-        if (array_key_exists($current, $this->actions) === false) {
+        if (false === array_key_exists($current, $this->actions)) {
             $this->throwNotFoundAction($current);
         }
 
@@ -43,8 +43,6 @@ class ActionRequiredIterator extends RecursiveIteratorIterator
 
     private function throwNotFoundAction(string $actionId): never
     {
-        throw new InvalidArgumentException(
-            'Required action ' . $actionId . ' not found'
-        );
+        throw new InvalidArgumentException('Required action ' . $actionId . ' not found');
     }
 }

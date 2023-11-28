@@ -20,16 +20,17 @@ class ActionCollection extends AbstractCollection
         }
         $this->data[$action->id] = $action;
 
-        if (empty($action->contract) === false) {
+        if (false === empty($action->contract)) {
             $this->byContract[$action->contract][$action->id] = $action;
         }
     }
 
     public function get(string $actionId): Action
     {
-        if ($this->isExists($actionId) === false) {
+        if (false === $this->isExists($actionId)) {
             throw new RuntimeException('Action ' . $actionId . ' not found in the collection');
         }
+
         return $this->data[$actionId];
     }
 

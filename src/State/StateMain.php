@@ -68,6 +68,7 @@ readonly class StateMain implements StateMainInterface
             $value = $task->getValue();
             $result = is_callable($value) ? $value() : $value;
             $this->context->addResumeValue($task->action->id, $result);
+
             return;
         }
 

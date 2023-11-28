@@ -37,7 +37,7 @@ readonly class EventDispatcher
     {
         $actionId = $event->action->id . '.' . $event->result->status->value;
 
-        if (in_array($actionId, $this->log->getMainEventLog()) && $event->action->repeatable === false) {
+        if (in_array($actionId, $this->log->getMainEventLog()) && false === $event->action->repeatable) {
             $this->log->pushRepeatedEventLog($actionId);
         } else {
             $this->log->pushMainEventLog($actionId);
@@ -46,18 +46,12 @@ readonly class EventDispatcher
         $mainEventLog = $this->log->getMainEventLog();
         $repeatedEventLog = $this->log->getRepeatedEventLog();
 
-        if (end($repeatedEventLog) === $actionId && $event->action->repeatable === false) {
-            throw new ConsecutiveRepeatedActionException(
-                $event->action->id,
-                $event->result->status->value
-            );
+        if (end($repeatedEventLog) === $actionId && false === $event->action->repeatable) {
+            throw new ConsecutiveRepeatedActionException($event->action->id, $event->result->status->value);
         }
 
         if (count($mainEventLog) === count($repeatedEventLog)) {
-            throw new CircularCallActionException(
-                $event->action->id,
-                end($mainEventLog)
-            );
+            throw new CircularCallActionException($event->action->id, end($mainEventLog));
         }
     }
 }

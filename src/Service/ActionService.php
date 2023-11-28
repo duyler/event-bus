@@ -10,8 +10,8 @@ use Duyler\EventBus\Bus\Bus;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Contract\ActionSubstitutionInterface;
 use Duyler\EventBus\Dto\Action;
-use InvalidArgumentException;
 use RuntimeException;
+use InvalidArgumentException;
 
 readonly class ActionService
 {
@@ -25,9 +25,9 @@ readonly class ActionService
 
     public function addAction(Action $action): void
     {
-        if ($this->actionCollection->isExists($action->id) === false) {
+        if (false === $this->actionCollection->isExists($action->id)) {
             foreach ($action->required as $subject) {
-                if ($this->actionCollection->isExists($subject) === false) {
+                if (false === $this->actionCollection->isExists($subject)) {
                     $this->throwNotRegistered($subject);
                 }
             }
@@ -38,7 +38,7 @@ readonly class ActionService
 
     public function doAction(Action $action): void
     {
-        if ($action->externalAccess === false) {
+        if (false === $action->externalAccess) {
             throw new RuntimeException('Action ' . $action->id . ' does not allow external access');
         }
 
@@ -66,12 +66,12 @@ readonly class ActionService
             $requiredIterator = new ActionRequiredIterator($action->required, $actions);
 
             foreach ($requiredIterator as $subject) {
-                if (array_key_exists($subject, $actions) === false) {
+                if (false === array_key_exists($subject, $actions)) {
                     $this->throwNotRegistered($subject);
                 }
             }
 
-            if ($this->actionCollection->isExists($action->id) === false) {
+            if (false === $this->actionCollection->isExists($action->id)) {
                 $this->actionCollection->save($action);
             }
         }
@@ -79,9 +79,7 @@ readonly class ActionService
 
     private function throwNotRegistered(string $subject): never
     {
-        throw new InvalidArgumentException(
-            'Required action ' . $subject . ' not registered in the bus'
-        );
+        throw new InvalidArgumentException('Required action ' . $subject . ' not registered in the bus');
     }
 
     public function addSharedService(object $service): void
