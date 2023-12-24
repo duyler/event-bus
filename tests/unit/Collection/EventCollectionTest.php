@@ -17,7 +17,7 @@ class EventCollectionTest extends TestCase
     private EventCollection $eventCollection;
 
     #[Test]
-    public function should_save_event(): void
+    public function save_event(): void
     {
         $action = new Action(id: 'test', handler: 'test');
         $event = new Event(

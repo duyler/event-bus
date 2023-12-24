@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-use Duyler\DependencyInjection\Exception\DefinitionIsNotObjectTypeException;
 use Duyler\EventBus\Action\Exception\InvalidArgumentFactoryException;
 use Duyler\EventBus\Bus\Event;
 use Duyler\EventBus\Collection\ActionCollection;
@@ -22,7 +21,6 @@ class ActionHandlerArgumentBuilder
 
     /**
      * @throws InvalidArgumentFactoryException
-     * @throws DefinitionIsNotObjectTypeException
      */
     public function build(Action $action, ActionContainer $container): mixed
     {
@@ -50,7 +48,7 @@ class ActionHandlerArgumentBuilder
             $container->set($definition);
         }
 
-        $factory = $container->make($action->argument);
+        $factory = $container->get($action->argument);
 
         if (false === is_callable($factory)) {
             throw new InvalidArgumentFactoryException($action->argument);

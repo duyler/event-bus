@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
-use Duyler\DependencyInjection\Config as DIConfig;
-use Duyler\DependencyInjection\ContainerBuilder;
+use Duyler\DependencyInjection\Container;
+use Duyler\DependencyInjection\ContainerConfig;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Config;
@@ -38,22 +38,26 @@ class BusBuilder
             $this->config,
         );
 
-        $DIConfig = new DIConfig(
-            cacheDirPath: $this->config->defaultCacheDir,
-        );
+        $containerConfig = new ContainerConfig();
+        $containerConfig->withBind($config->classMap);
+        $containerConfig->withProvider($config->providers);
 
-        $container = ContainerBuilder::build($DIConfig);
+        foreach ($config->definitions as $definition) {
+            $containerConfig->withDefinition($definition);
+        }
+
+        $container = new Container($containerConfig);
         $container->set($config);
         $container->bind($config->classMap);
 
         /** @var ActionService $actionService */
-        $actionService = $container->make(ActionService::class);
+        $actionService = $container->get(ActionService::class);
 
         /** @var SubscriptionService $subscriptionService */
-        $subscriptionService = $container->make(SubscriptionService::class);
+        $subscriptionService = $container->get(SubscriptionService::class);
 
         /** @var StateService $stateService */
-        $stateService = $container->make(StateService::class);
+        $stateService = $container->get(StateService::class);
 
         $actionService->collect($this->actions);
 
@@ -73,10 +77,7 @@ class BusBuilder
             $stateService->addStateHandler($stateHandler);
         }
 
-        /** @var Runner $runner */
-        $runner = $container->make(Runner::class);
-
-        return $runner;
+        return $container->get(BusFacade::class);
     }
 
     public function addAction(Action $action): static
@@ -103,7 +104,7 @@ class BusBuilder
 
     public function addStateHandler(StateHandlerInterface $stateHandler): static
     {
-        $this->stateHandlers[] = $stateHandler;
+        $this->stateHandlers[get_class($stateHandler)] = $stateHandler;
 
         return $this;
     }

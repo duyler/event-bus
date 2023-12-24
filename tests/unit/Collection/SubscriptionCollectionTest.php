@@ -15,7 +15,7 @@ class SubscriptionCollectionTest extends TestCase
     private SubscriptionCollection $subscriptionCollection;
 
     #[Test]
-    public function should_save_subscription(): void
+    public function save_subscription(): void
     {
         $subscription = new Subscription(
             subjectId: 'test',

@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-use Duyler\DependencyInjection\Exception\DefinitionIsNotObjectTypeException;
 use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Config;
 use Duyler\EventBus\Dto\Action;
 
-class ActionContainerBuilder
+class ActionContainerProvider
 {
     private array $sharedServices = [];
 
@@ -18,29 +17,23 @@ class ActionContainerBuilder
         private readonly ActionContainerCollection $containerCollection,
     ) {}
 
-    /**
-     * @throws DefinitionIsNotObjectTypeException
-     */
-    public function build(Action $action): ActionContainer
+    public function get(Action $action): ActionContainer
     {
         $container = $this->prepareContainer($action->id);
 
         $container->bind($action->classMap);
-        $container->setProviders($action->providers);
+        $container->addProviders($action->providers);
 
         $this->containerCollection->save($container);
 
         return $container;
     }
 
-    /**
-     * @throws DefinitionIsNotObjectTypeException
-     */
     private function prepareContainer(string $actionId): ActionContainer
     {
-        $container = ActionContainer::build(
+        $container = new ActionContainer(
             $actionId,
-            $this->config->actionContainerCacheDir,
+            $this->config,
         );
 
         foreach ($this->sharedServices as $service) {

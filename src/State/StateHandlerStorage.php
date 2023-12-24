@@ -49,23 +49,23 @@ class StateHandlerStorage
     {
         match (true) {
             $stateHandler instanceof MainStartStateHandlerInterface =>
-                $this->mainStart[get_class($stateHandler)] = $stateHandler,
+                $this->mainStart[] = $stateHandler,
             $stateHandler instanceof MainBeforeStateHandlerInterface =>
-                $this->mainBefore[get_class($stateHandler)] = $stateHandler,
+                $this->mainBefore[] = $stateHandler,
             $stateHandler instanceof MainSuspendStateHandlerInterface =>
-                $this->stateMainSuspend[get_class($stateHandler)] = $stateHandler,
+                $this->stateMainSuspend[] = $stateHandler,
             $stateHandler instanceof MainResumeStateHandlerInterface =>
-                $this->stateMainResume[get_class($stateHandler)] = $stateHandler,
+                $this->stateMainResume[] = $stateHandler,
             $stateHandler instanceof MainAfterStateHandlerInterface =>
-                $this->mainAfter[get_class($stateHandler)] = $stateHandler,
+                $this->mainAfter[] = $stateHandler,
             $stateHandler instanceof MainFinalStateHandlerInterface =>
-                $this->mainFinal[get_class($stateHandler)] = $stateHandler,
+                $this->mainFinal[] = $stateHandler,
             $stateHandler instanceof ActionBeforeStateHandlerInterface =>
-                $this->actionBefore[get_class($stateHandler)] = $stateHandler,
+                $this->actionBefore[] = $stateHandler,
             $stateHandler instanceof ActionThrowingStateHandlerInterface =>
-                $this->actionThrowing[get_class($stateHandler)] = $stateHandler,
+                $this->actionThrowing[] = $stateHandler,
             $stateHandler instanceof ActionAfterStateHandlerInterface =>
-                $this->actionAfter[get_class($stateHandler)] = $stateHandler,
+                $this->actionAfter[] = $stateHandler,
 
             default => throw new InvalidArgumentException(sprintf(
                 'State handler %s must be compatibility with %s',

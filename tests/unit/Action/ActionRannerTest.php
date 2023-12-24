@@ -4,33 +4,33 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\unit\Action;
 
-use Duyler\EventBus\Action\ActionContainerBuilder;
-use Duyler\EventBus\Action\ActionHandler;
+use Duyler\EventBus\Action\ActionContainerProvider;
+use Duyler\EventBus\Action\ActionRunner;
 use Duyler\EventBus\Action\ActionHandlerArgumentBuilder;
 use Duyler\EventBus\Action\ActionHandlerBuilder;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\State\StateAction;
+use Exception;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
-class ActionHandlerTest extends TestCase
+class ActionRannerTest extends TestCase
 {
-    private ActionContainerBuilder $containerBuilder;
+    private ActionContainerProvider $containerBuilder;
     private StateAction $stateAction;
     private ActionHandlerArgumentBuilder $argumentBuilder;
     private ActionHandlerBuilder $handlerBuilder;
 
-    #[Test()]
-    public function handle_with_exception(): void
+    #[Test]
+    public function runAction_with_exception(): void
     {
-        $this->handlerBuilder->method('build')->willReturn(fn() => throw new \Exception());
-        $actionHandler = $this->createInstance();
+        $this->handlerBuilder->method('build')->willReturn(fn() => throw new Exception());
+        $actionRunner = $this->createInstance();
 
         $this->expectException(Throwable::class);
 
-        $actionHandler->handle(
+        $actionRunner->runAction(
             new Action(
                 id: 'Test',
                 handler: fn() => '',
@@ -43,7 +43,7 @@ class ActionHandlerTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->containerBuilder = $this->createMock(ActionContainerBuilder::class);
+        $this->containerBuilder = $this->createMock(ActionContainerProvider::class);
         $this->stateAction = $this->createMock(StateAction::class);
         $this->argumentBuilder = $this->createMock(ActionHandlerArgumentBuilder::class);
         $this->handlerBuilder = $this->createMock(ActionHandlerBuilder::class);
@@ -51,10 +51,10 @@ class ActionHandlerTest extends TestCase
         parent::setUp();
     }
 
-    private function createInstance(): ActionHandler
+    private function createInstance(): ActionRunner
     {
-        return new ActionHandler(
-            containerBuilder: $this->containerBuilder,
+        return new ActionRunner(
+            actionContainerProvider: $this->containerBuilder,
             stateAction: $this->stateAction,
             argumentBuilder: $this->argumentBuilder,
             handlerBuilder: $this->handlerBuilder,

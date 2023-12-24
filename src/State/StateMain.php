@@ -18,6 +18,7 @@ use Duyler\EventBus\State\Service\StateMainFinalService;
 use Duyler\EventBus\State\Service\StateMainResumeService;
 use Duyler\EventBus\State\Service\StateMainStartService;
 use Duyler\EventBus\State\Service\StateMainSuspendService;
+use Override;
 
 readonly class StateMain implements StateMainInterface
 {
@@ -32,6 +33,7 @@ readonly class StateMain implements StateMainInterface
         private StateContext $context,
     ) {}
 
+    #[Override]
     public function start(): void
     {
         $stateService = new StateMainStartService(
@@ -44,6 +46,7 @@ readonly class StateMain implements StateMainInterface
         }
     }
 
+    #[Override]
     public function before(Task $task): void
     {
         $stateService = new StateMainBeforeService(
@@ -59,6 +62,7 @@ readonly class StateMain implements StateMainInterface
         }
     }
 
+    #[Override]
     public function suspend(Task $task): void
     {
         $handlers = $this->stateHandlerStorage->getMainSuspend();
@@ -77,8 +81,11 @@ readonly class StateMain implements StateMainInterface
             $this->actionContainerCollection->get($task->action->id),
         );
 
+        // @todo: refactor
+        $resumeValue = null;
         foreach ($handlers as $handler) {
-            if ($handler->isResumable($stateService->getValue())) {
+            if ($handler->isResumable($stateService->getValue()) && $resumeValue === null) {
+                $resumeValue = $handler->handle($stateService);
                 $this->context->addResumeValue($task->action->id, $handler->handle($stateService));
             } else {
                 $handler->handle($stateService);
@@ -86,6 +93,7 @@ readonly class StateMain implements StateMainInterface
         }
     }
 
+    #[Override]
     public function resume(Task $task): void
     {
         $handlers = $this->stateHandlerStorage->getMainResume();
@@ -104,6 +112,7 @@ readonly class StateMain implements StateMainInterface
         $task->resume($resumeValue);
     }
 
+    #[Override]
     public function after(Task $task): void
     {
         $stateService = new StateMainAfterService(
@@ -122,6 +131,7 @@ readonly class StateMain implements StateMainInterface
         }
     }
 
+    #[Override]
     public function final(): void
     {
         $stateService = new StateMainFinalService(

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Service;
 
-use Duyler\EventBus\Action\ActionContainerBuilder;
+use Duyler\EventBus\Action\ActionContainerProvider;
 use Duyler\EventBus\Action\ActionRequiredIterator;
 use Duyler\EventBus\Bus\Bus;
 use Duyler\EventBus\Collection\ActionCollection;
@@ -17,7 +17,7 @@ readonly class ActionService
 {
     public function __construct(
         private ActionCollection $actionCollection,
-        private ActionContainerBuilder $containerBuilder,
+        private ActionContainerProvider $actionContainerProvider,
         private ActionSubstitutionInterface $actionSubstitution,
         private Bus $bus,
     ) {}
@@ -83,7 +83,7 @@ readonly class ActionService
 
     public function addSharedService(object $service): void
     {
-        $this->containerBuilder->addSharedService($service);
+        $this->actionContainerProvider->addSharedService($service);
     }
 
     public function addResultSubstitutions(string $actionId, array $substitutions): void
