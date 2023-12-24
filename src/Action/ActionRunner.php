@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-use Duyler\DependencyInjection\Exception\DefinitionIsNotObjectTypeException;
 use Duyler\EventBus\Action\Exception\ActionReturnValueExistsException;
 use Duyler\EventBus\Action\Exception\ActionReturnValueNotExistsException;
 use Duyler\EventBus\Action\Exception\ActionReturnValueWillBeCompatibleException;
@@ -29,7 +28,6 @@ class ActionRunner implements ActionRunnerInterface
     /**
      * @throws ActionReturnValueNotExistsException
      * @throws ActionReturnValueWillBeCompatibleException
-     * @throws DefinitionIsNotObjectTypeException
      * @throws InvalidArgumentFactoryException
      * @throws Throwable
      * @throws ActionReturnValueExistsException

@@ -81,8 +81,11 @@ readonly class StateMain implements StateMainInterface
             $this->actionContainerCollection->get($task->action->id),
         );
 
+        // @todo: refactor
+        $resumeValue = null;
         foreach ($handlers as $handler) {
-            if ($handler->isResumable($stateService->getValue())) {
+            if ($handler->isResumable($stateService->getValue()) && $resumeValue === null) {
+                $resumeValue = $handler->handle($stateService);
                 $this->context->addResumeValue($task->action->id, $handler->handle($stateService));
             } else {
                 $handler->handle($stateService);

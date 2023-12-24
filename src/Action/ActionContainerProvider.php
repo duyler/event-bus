@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-use Duyler\DependencyInjection\Exception\DefinitionIsNotObjectTypeException;
 use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Config;
 use Duyler\EventBus\Dto\Action;
@@ -18,9 +17,6 @@ class ActionContainerProvider
         private readonly ActionContainerCollection $containerCollection,
     ) {}
 
-    /**
-     * @throws DefinitionIsNotObjectTypeException
-     */
     public function get(Action $action): ActionContainer
     {
         $container = $this->prepareContainer($action->id);
@@ -33,12 +29,9 @@ class ActionContainerProvider
         return $container;
     }
 
-    /**
-     * @throws DefinitionIsNotObjectTypeException
-     */
     private function prepareContainer(string $actionId): ActionContainer
     {
-        $container = ActionContainer::build(
+        $container = new ActionContainer(
             $actionId,
             $this->config,
         );

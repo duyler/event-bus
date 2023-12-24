@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-use Duyler\DependencyInjection\ContainerBuilder;
+use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerConfig;
 use Duyler\DependencyInjection\ContainerInterface;
+use Duyler\DependencyInjection\Definition;
 use Duyler\EventBus\Config;
 use Override;
 
@@ -18,21 +19,16 @@ class ActionContainer implements ContainerInterface
         public readonly string $actionId,
         public readonly Config $config,
     ) {
-        $this->container = ContainerBuilder::build(
-            new ContainerConfig(
-                enableCache: $config->enableCache,
-                fileCacheDirPath: $config->fileCacheDirPath,
-            )
-        );
-    }
+        $containerConfig = new ContainerConfig();
+        $containerConfig->withBind($config->classMap);
+        $containerConfig->withProvider($config->providers);
 
-    public static function build(
-        string $actionId,
-        Config $config,
-    ): self {
-        return new self(
-            $actionId,
-            $config,
+        foreach ($config->definitions as $definition) {
+            $containerConfig->withDefinition($definition);
+        }
+
+        $this->container = new Container(
+            $containerConfig
         );
     }
 
@@ -61,12 +57,6 @@ class ActionContainer implements ContainerInterface
     }
 
     #[Override]
-    public function make(string $className, string $provider = '', bool $singleton = true): mixed
-    {
-        return $this->container->make($className, $provider, $singleton);
-    }
-
-    #[Override]
     public function addProviders(array $providers): void
     {
         $this->container->addProviders($providers);
@@ -76,5 +66,11 @@ class ActionContainer implements ContainerInterface
     public function set(object $definition): void
     {
         $this->container->set($definition);
+    }
+
+    #[Override]
+    public function addDefinition(Definition $definition): void
+    {
+        $this->container->addDefinition($definition);
     }
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
+use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerConfig;
-use Duyler\DependencyInjection\ContainerBuilder;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Config;
@@ -38,23 +38,26 @@ class BusBuilder
             $this->config,
         );
 
-        $containerConfig = new ContainerConfig(
-            enableCache: $this->config->enableCache,
-            fileCacheDirPath: $this->config->fileCacheDirPath,
-        );
+        $containerConfig = new ContainerConfig();
+        $containerConfig->withBind($config->classMap);
+        $containerConfig->withProvider($config->providers);
 
-        $container = ContainerBuilder::build($containerConfig);
+        foreach ($config->definitions as $definition) {
+            $containerConfig->withDefinition($definition);
+        }
+
+        $container = new Container($containerConfig);
         $container->set($config);
         $container->bind($config->classMap);
 
         /** @var ActionService $actionService */
-        $actionService = $container->make(ActionService::class);
+        $actionService = $container->get(ActionService::class);
 
         /** @var SubscriptionService $subscriptionService */
-        $subscriptionService = $container->make(SubscriptionService::class);
+        $subscriptionService = $container->get(SubscriptionService::class);
 
         /** @var StateService $stateService */
-        $stateService = $container->make(StateService::class);
+        $stateService = $container->get(StateService::class);
 
         $actionService->collect($this->actions);
 
@@ -74,7 +77,7 @@ class BusBuilder
             $stateService->addStateHandler($stateHandler);
         }
 
-        return $container->make(BusFacade::class);
+        return $container->get(BusFacade::class);
     }
 
     public function addAction(Action $action): static

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\integration\Action;
 
-use Duyler\DependencyInjection\ContainerBuilder;
+use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerInterface;
 use Duyler\EventBus\Action\ActionRunner;
 use Duyler\EventBus\Contract\StateActionInterface;
@@ -41,8 +41,8 @@ class RunActionTest extends TestCase
 
     private function createActionRunner(): ActionRunner
     {
-        $this->container = ContainerBuilder::build();
+        $this->container = new Container();
         $this->container->bind([StateActionInterface::class => StateAction::class]);
-        return $this->container->make(ActionRunner::class);
+        return $this->container->get(ActionRunner::class);
     }
 }

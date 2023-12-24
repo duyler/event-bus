@@ -16,17 +16,15 @@ use Duyler\EventBus\State\StateMain;
 
 class Config
 {
-    private const string ACTION_CONTAINER_CACHE_DIR = 'action_container';
-
-    public readonly bool $enableCache;
-    public readonly string $fileCacheDirPath;
     public readonly array $classMap;
+    public readonly array $providers;
+    public readonly array $definitions;
 
     public function __construct(ConfigDTO $config)
     {
-        $this->enableCache = $config->enableCache;
-        $this->fileCacheDirPath = $config->fileCacheDirPath . self::ACTION_CONTAINER_CACHE_DIR;
-        $this->classMap = $this->getBind() + $config->classMap;
+        $this->classMap = $this->getBind() + $config->bind;
+        $this->providers = $config->providers;
+        $this->definitions = $config->definitions;
     }
 
     private function getBind(): array
