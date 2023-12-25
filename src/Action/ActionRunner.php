@@ -57,26 +57,39 @@ class ActionRunner implements ActionRunnerInterface
      * @throws ActionReturnValueExistsException
      * @throws ActionReturnValueNotExistsException
      * @throws ActionReturnValueWillBeCompatibleException
+     * @todo To be refactoring
      */
     private function prepareResult(Action $action, mixed $resultData): Result
     {
         if ($resultData instanceof Result) {
-            return $resultData;
-        }
-
-        if (false === empty($resultData)) {
-            if (null === $action->contract) {
+            if ($action->contract === null && $resultData->data !== null) {
                 throw new ActionReturnValueExistsException($action->id);
             }
 
-            if ($resultData instanceof $action->contract) {
-                return new Result(ResultStatus::Success, $resultData);
+            if ($resultData->data !== null && $resultData->data instanceof $action->contract === false) {
+                throw new ActionReturnValueWillBeCompatibleException($action->id, $action->contract);
             }
 
-            throw new ActionReturnValueWillBeCompatibleException($action->id, $action->contract);
+            if ($action->contract !== null && $resultData->data === null) {
+                throw new ActionReturnValueNotExistsException($action->id);
+            }
+
+            return $resultData;
         }
 
-        if (null !== $action->contract) {
+        if ($resultData !== null) {
+            if ($action->contract === null) {
+                throw new ActionReturnValueExistsException($action->id);
+            }
+
+            if ($resultData instanceof $action->contract === false) {
+                throw new ActionReturnValueWillBeCompatibleException($action->id, $action->contract);
+            }
+
+            return new Result(ResultStatus::Success, $resultData);
+        }
+
+        if ($action->contract !== null) {
             throw new ActionReturnValueNotExistsException($action->id);
         }
 
