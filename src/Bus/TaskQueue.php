@@ -43,7 +43,8 @@ class TaskQueue
         /** @var Task $task */
         $task = $this->queue->dequeue();
 
-        unset($this->queueLog[$task->action->id]);
+        $key = array_search($task->action->id, $this->queueLog);
+        unset($this->queueLog[$key]);
 
         return $task;
     }
@@ -51,10 +52,5 @@ class TaskQueue
     public function inQueue(string $actionId): bool
     {
         return in_array($actionId, $this->queueLog);
-    }
-
-    public function cleanUp(): void
-    {
-        $this->queueLog = [];
     }
 }
