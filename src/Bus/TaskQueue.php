@@ -52,4 +52,9 @@ class TaskQueue
     {
         return in_array($actionId, $this->queueLog);
     }
+
+    public function cleanUp(): void
+    {
+        $this->queueLog = [];
+    }
 }

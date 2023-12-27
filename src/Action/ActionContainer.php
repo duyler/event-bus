@@ -73,4 +73,10 @@ class ActionContainer implements ContainerInterface
     {
         $this->container->addDefinition($definition);
     }
+
+    #[Override]
+    public function reset(string $id): void
+    {
+        $this->container->reset($id);
+    }
 }

@@ -23,4 +23,12 @@ class ActionContainerCollection extends AbstractCollection
     {
         return array_intersect_key($this->data, array_flip($array));
     }
+
+    public function cleanUp(): void
+    {
+        /** @var ActionContainer $container */
+        foreach ($this->data as $container) {
+            $container->reset($container->actionId);
+        }
+    }
 }
