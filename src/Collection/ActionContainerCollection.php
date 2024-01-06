@@ -28,7 +28,7 @@ class ActionContainerCollection extends AbstractCollection
     {
         /** @var ActionContainer $container */
         foreach ($this->data as $container) {
-            $container->reset($container->actionId);
+            $container->softCleanUp();
         }
     }
 }

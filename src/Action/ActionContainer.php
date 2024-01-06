@@ -20,7 +20,7 @@ class ActionContainer implements ContainerInterface
         public readonly Config $config,
     ) {
         $containerConfig = new ContainerConfig();
-        $containerConfig->withBind($config->classMap);
+        $containerConfig->withBind($config->bind);
         $containerConfig->withProvider($config->providers);
 
         foreach ($config->definitions as $definition) {
@@ -75,8 +75,8 @@ class ActionContainer implements ContainerInterface
     }
 
     #[Override]
-    public function reset(string $id): void
+    public function softCleanUp(): void
     {
-        $this->container->reset($id);
+        $this->container->softCleanUp();
     }
 }

@@ -32,4 +32,9 @@ trait ActionService
     {
         return $this->actionService->actionIsExists($actionId);
     }
+
+    public function addSharedObject(object $object): void
+    {
+        $this->actionService->addSharedService($object);
+    }
 }

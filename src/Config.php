@@ -16,13 +16,13 @@ use Duyler\EventBus\State\StateMain;
 
 class Config
 {
-    public readonly array $classMap;
+    public readonly array $bind;
     public readonly array $providers;
     public readonly array $definitions;
 
     public function __construct(ConfigDTO $config)
     {
-        $this->classMap = $this->getBind() + $config->bind;
+        $this->bind = $this->getBind() + $config->bind;
         $this->providers = $config->providers;
         $this->definitions = $config->definitions;
     }
