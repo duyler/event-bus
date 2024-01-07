@@ -24,7 +24,9 @@ readonly class EventDispatcher
     {
         $this->log->pushActionLog($event->action->id);
         $this->validateEvent($event);
-        $this->subscriptionService->resolveSubscriptions($event->action->id, $event->result->status);
+        if ($event->action->silent === false) {
+            $this->subscriptionService->resolveSubscriptions($event->action->id, $event->result->status);
+        }
         $this->bus->resolveHeldTasks();
     }
 

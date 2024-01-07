@@ -23,6 +23,7 @@ class ActionRunner implements ActionRunnerInterface
         private StateActionInterface $stateAction,
         private ActionHandlerArgumentBuilder $argumentBuilder,
         private ActionHandlerBuilder $handlerBuilder,
+        private ActionContainerBind $actionContainerBind,
     ) {}
 
     /**
@@ -42,7 +43,9 @@ class ActionRunner implements ActionRunnerInterface
             $argument = $this->argumentBuilder->build($action, $container);
             $this->stateAction->before($action);
             $resultData = ($actionInstance)($argument);
-            $result = $this->prepareResult($action, $resultData);
+            $result = $this->prepareResult($action, $resultData, $container);
+
+            $this->actionContainerBind->add($action, $result);
         } catch (Throwable $exception) {
             $this->stateAction->throwing($action, $exception);
             throw $exception;

@@ -43,7 +43,8 @@ class TaskQueue
         /** @var Task $task */
         $task = $this->queue->dequeue();
 
-        unset($this->queueLog[$task->action->id]);
+        $key = array_search($task->action->id, $this->queueLog);
+        unset($this->queueLog[$key]);
 
         return $task;
     }

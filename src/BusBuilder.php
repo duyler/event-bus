@@ -39,7 +39,7 @@ class BusBuilder
         );
 
         $containerConfig = new ContainerConfig();
-        $containerConfig->withBind($config->classMap);
+        $containerConfig->withBind($config->bind);
         $containerConfig->withProvider($config->providers);
 
         foreach ($config->definitions as $definition) {
@@ -48,7 +48,7 @@ class BusBuilder
 
         $container = new Container($containerConfig);
         $container->set($config);
-        $container->bind($config->classMap);
+        $container->bind($config->bind);
 
         /** @var ActionService $actionService */
         $actionService = $container->get(ActionService::class);

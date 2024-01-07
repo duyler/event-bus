@@ -23,6 +23,9 @@ readonly class Action
         public bool $externalAccess = false,
         public bool $repeatable = false,
         public bool $continueIfFail = true,
+        public bool $private = false,
+        public array $sealed = [],
+        public bool $silent = false,
     ) {
         $this->required = new RecursiveArrayIterator($required);
     }
