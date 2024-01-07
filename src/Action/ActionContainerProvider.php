@@ -17,7 +17,7 @@ class ActionContainerProvider
         private readonly Config $config,
         private readonly ActionContainerCollection $containerCollection,
         private readonly EventCollection $eventCollection,
-        private readonly ActionContainerBind $containerDefinition,
+        private readonly ActionContainerBind $actionContainerBind,
     ) {}
 
     public function get(Action $action): ActionContainer
@@ -30,7 +30,7 @@ class ActionContainerProvider
         $completeTasks = $this->eventCollection->getAllByArray($action->required->getArrayCopy());
 
         foreach ($completeTasks as $task) {
-            $bind = $this->containerDefinition->get($task->action->id);
+            $bind = $this->actionContainerBind->get($task->action->id);
             $container->bind($bind);
         }
 

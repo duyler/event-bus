@@ -62,7 +62,7 @@ class ActionRunner implements ActionRunnerInterface
      * @throws ActionReturnValueWillBeCompatibleException
      * @todo To be refactoring
      */
-    private function prepareResult(Action $action, mixed $resultData, ActionContainer $container): Result
+    private function prepareResult(Action $action, mixed $resultData): Result
     {
         if ($resultData instanceof Result) {
             if ($action->contract === null && $resultData->data !== null) {
