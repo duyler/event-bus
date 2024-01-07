@@ -15,7 +15,7 @@ readonly class Action
         public string $id,
         public string | Closure $handler,
         array $required = [],
-        public array $classMap = [],
+        public array $bind = [],
         public array $providers = [],
         public string $argument = '',
         public ?string $contract = null,
