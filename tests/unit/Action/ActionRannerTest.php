@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\unit\Action;
 
+use Duyler\EventBus\Action\ActionContainerBind;
 use Duyler\EventBus\Action\ActionContainerProvider;
 use Duyler\EventBus\Action\ActionRunner;
 use Duyler\EventBus\Action\ActionHandlerArgumentBuilder;
@@ -21,6 +22,7 @@ class ActionRannerTest extends TestCase
     private StateAction $stateAction;
     private ActionHandlerArgumentBuilder $argumentBuilder;
     private ActionHandlerBuilder $handlerBuilder;
+    private ActionContainerBind $actionContainerBind;
 
     #[Test]
     public function runAction_with_exception(): void
@@ -47,6 +49,7 @@ class ActionRannerTest extends TestCase
         $this->stateAction = $this->createMock(StateAction::class);
         $this->argumentBuilder = $this->createMock(ActionHandlerArgumentBuilder::class);
         $this->handlerBuilder = $this->createMock(ActionHandlerBuilder::class);
+        $this->actionContainerBind = $this->createMock(ActionContainerBind::class);
 
         parent::setUp();
     }
@@ -58,6 +61,7 @@ class ActionRannerTest extends TestCase
             stateAction: $this->stateAction,
             argumentBuilder: $this->argumentBuilder,
             handlerBuilder: $this->handlerBuilder,
+            actionContainerBind: $this->actionContainerBind,
         );
     }
 }

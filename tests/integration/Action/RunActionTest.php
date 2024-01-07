@@ -14,6 +14,7 @@ use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\State\StateAction;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class RunActionTest extends TestCase
 {
@@ -24,12 +25,13 @@ class RunActionTest extends TestCase
     {
         $action = new Action(
             id: 'action.id',
-            handler: fn(): Result => new Result(status: ResultStatus::Success, data: new class () {
+            handler: fn(): Result => new Result(status: ResultStatus::Success, data: new class () extends stdClass {
                 public function sayHello(): string
                 {
                     return 'hello';
                 }
             }),
+            contract: stdClass::class,
         );
 
         $actionRunner = $this->createActionRunner();
