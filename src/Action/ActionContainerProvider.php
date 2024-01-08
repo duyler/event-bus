@@ -24,7 +24,7 @@ class ActionContainerProvider
     {
         $container = $this->prepareContainer($action->id);
 
-        $container->bind($action->classMap);
+        $container->bind($action->bind);
         $container->addProviders($action->providers);
 
         $completeTasks = $this->eventCollection->getAllByArray($action->required->getArrayCopy());

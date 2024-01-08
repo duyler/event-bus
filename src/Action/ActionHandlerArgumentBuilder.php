@@ -68,7 +68,7 @@ class ActionHandlerArgumentBuilder
                 if ($this->eventCollection->isExists($actionWithContract->id)) {
                     $replaceTaskEvent = $this->eventCollection->get($actionWithContract->id);
                     if (ResultStatus::Success === $replaceTaskEvent->result->status) {
-                        $interface = array_search($replaceTaskEvent->result->data::class, $actionWithContract->classMap)
+                        $interface = array_search($replaceTaskEvent->result->data::class, $actionWithContract->bind)
                             ?: $replaceTaskEvent->result->data::class;
                         $results[$interface] = $replaceTaskEvent->result->data;
 
@@ -78,7 +78,7 @@ class ActionHandlerArgumentBuilder
             }
         }
 
-        $interface = array_search($requiredTaskEvent->result->data::class, $requiredTaskEvent->action->classMap)
+        $interface = array_search($requiredTaskEvent->result->data::class, $requiredTaskEvent->action->bind)
             ?: $requiredTaskEvent->result->data::class;
         $results[$interface] = $requiredTaskEvent->result->data;
 
