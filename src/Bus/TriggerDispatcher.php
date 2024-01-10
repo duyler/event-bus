@@ -37,7 +37,8 @@ class TriggerDispatcher
         }
 
         $subscriptions = $this->subscriptionService->getSubscriptions(
-            $trigger->id, $trigger->status
+            $trigger->id,
+            $trigger->status
         );
 
         foreach ($subscriptions as $subscription) {

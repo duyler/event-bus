@@ -14,10 +14,10 @@ class ActionContainerProvider
     private array $sharedServices = [];
 
     public function __construct(
-        private readonly BusConfig                 $config,
+        private readonly BusConfig $config,
         private readonly ActionContainerCollection $containerCollection,
-        private readonly EventCollection           $eventCollection,
-        private readonly ActionContainerBind       $actionContainerBind,
+        private readonly EventCollection $eventCollection,
+        private readonly ActionContainerBind $actionContainerBind,
     ) {}
 
     public function get(Action $action): ActionContainer

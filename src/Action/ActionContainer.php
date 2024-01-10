@@ -11,7 +11,7 @@ use Duyler\EventBus\BusConfig;
 class ActionContainer extends Container
 {
     public function __construct(
-        public readonly string    $actionId,
+        public readonly string $actionId,
         public readonly BusConfig $config,
     ) {
         $containerConfig = new ContainerConfig();

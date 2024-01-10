@@ -16,9 +16,9 @@ readonly class SubscriptionService
 {
     public function __construct(
         private SubscriptionCollection $subscriptionCollection,
-        private ActionCollection       $actionCollection,
-        private Bus                    $bus,
-        private BusConfig              $config,
+        private ActionCollection $actionCollection,
+        private Bus $bus,
+        private BusConfig $config,
     ) {}
 
     public function addSubscription(Subscription $subscription): void
