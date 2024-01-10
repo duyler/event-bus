@@ -6,7 +6,7 @@ namespace Duyler\EventBus\Action;
 
 use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Collection\EventCollection;
-use Duyler\EventBus\Config;
+use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Action;
 
 class ActionContainerProvider
@@ -14,7 +14,7 @@ class ActionContainerProvider
     private array $sharedServices = [];
 
     public function __construct(
-        private readonly Config $config,
+        private readonly BusConfig $config,
         private readonly ActionContainerCollection $containerCollection,
         private readonly EventCollection $eventCollection,
         private readonly ActionContainerBind $actionContainerBind,

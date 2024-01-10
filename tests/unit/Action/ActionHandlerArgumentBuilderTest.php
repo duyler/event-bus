@@ -9,6 +9,7 @@ use Duyler\EventBus\Action\ActionHandlerArgumentBuilder;
 use Duyler\EventBus\Action\ActionSubstitution;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\EventCollection;
+use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Action;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Exception;
@@ -21,6 +22,7 @@ class ActionHandlerArgumentBuilderTest extends TestCase
     private ActionCollection $actionCollection;
     private ActionHandlerArgumentBuilder $argumentBuilder;
     private ActionContainer $actionContainer;
+    private TriggerRelationCollection $triggerRelationCollection;
 
     #[Test]
     public function build_with_empty_action_required(): void
@@ -38,10 +40,12 @@ class ActionHandlerArgumentBuilderTest extends TestCase
         $this->actionSubstitution = $this->createMock(ActionSubstitution::class);
         $this->actionCollection = $this->createMock(ActionCollection::class);
         $this->actionContainer = $this->createMock(ActionContainer::class);
+        $this->triggerRelationCollection = $this->createMock(TriggerRelationCollection::class);
         $this->argumentBuilder = new ActionHandlerArgumentBuilder(
             eventCollection: $this->eventCollection,
             actionSubstitution: $this->actionSubstitution,
             actionCollection: $this->actionCollection,
+            triggerRelationCollection: $this->triggerRelationCollection,
         );
     }
 }

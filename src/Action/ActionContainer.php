@@ -6,13 +6,13 @@ namespace Duyler\EventBus\Action;
 
 use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerConfig;
-use Duyler\EventBus\Config;
+use Duyler\EventBus\BusConfig;
 
 class ActionContainer extends Container
 {
     public function __construct(
         public readonly string $actionId,
-        public readonly Config $config,
+        public readonly BusConfig $config,
     ) {
         $containerConfig = new ContainerConfig();
         $containerConfig->withBind($config->bind);

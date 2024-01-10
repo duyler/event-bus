@@ -9,6 +9,7 @@ use Duyler\EventBus\Bus\Log;
 use Duyler\EventBus\Bus\Rollback;
 use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Collection\EventCollection;
+use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Throwable;
 
 class Runner
@@ -19,6 +20,7 @@ class Runner
         private Rollback $rollback,
         private EventCollection $eventCollection,
         private ActionContainerCollection $actionContainerCollection,
+        private TriggerRelationCollection $triggerRelationCollection,
     ) {}
 
     /**
@@ -40,5 +42,6 @@ class Runner
         $this->eventCollection->cleanUp();
         $this->actionContainerCollection->cleanUp();
         $this->log->cleanUp();
+        $this->triggerRelationCollection->cleanUp();
     }
 }

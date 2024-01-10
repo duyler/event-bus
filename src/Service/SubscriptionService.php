@@ -7,6 +7,7 @@ namespace Duyler\EventBus\Service;
 use Duyler\EventBus\Bus\Bus;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\SubscriptionCollection;
+use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 use InvalidArgumentException;
@@ -17,18 +18,21 @@ readonly class SubscriptionService
         private SubscriptionCollection $subscriptionCollection,
         private ActionCollection $actionCollection,
         private Bus $bus,
+        private BusConfig $config,
     ) {}
 
     public function addSubscription(Subscription $subscription): void
     {
-        if (false === $this->actionCollection->isExists($subscription->actionId)) {
+        if ($this->actionCollection->isExists($subscription->actionId) === false) {
             throw new InvalidArgumentException('Action ' . $subscription->actionId . ' not registered in the bus');
         }
 
-        if (false === $this->actionCollection->isExists($subscription->subjectId)) {
-            throw new InvalidArgumentException(
-                'Subscribed action ' . $subscription->subjectId . ' not registered in the bus'
-            );
+        if ($this->actionCollection->isExists($subscription->subjectId) === false) {
+            if ($this->config->enableTriggers === false) {
+                throw new InvalidArgumentException(
+                    'Subscribed action ' . $subscription->subjectId . ' not registered in the bus'
+                );
+            }
         }
 
         $this->subscriptionCollection->save($subscription);
@@ -48,5 +52,10 @@ readonly class SubscriptionService
 
             $this->bus->doAction($action);
         }
+    }
+
+    public function getSubscriptions(string $actionId, ResultStatus $status): array
+    {
+        return $this->subscriptionCollection->getSubscriptions($actionId, $status);
     }
 }

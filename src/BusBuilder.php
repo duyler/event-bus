@@ -8,7 +8,6 @@ use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerConfig;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Config;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\StateService;
@@ -30,25 +29,21 @@ class BusBuilder
 
     private array $sharedServices = [];
 
-    public function __construct(private ?Config $config = null) {}
+    public function __construct(private BusConfig $config) {}
 
     public function build(): BusInterface
     {
-        $config = new \Duyler\EventBus\Config(
-            $this->config,
-        );
-
         $containerConfig = new ContainerConfig();
-        $containerConfig->withBind($config->bind);
-        $containerConfig->withProvider($config->providers);
+        $containerConfig->withBind($this->config->bind);
+        $containerConfig->withProvider($this->config->providers);
 
-        foreach ($config->definitions as $definition) {
+        foreach ($this->config->definitions as $definition) {
             $containerConfig->withDefinition($definition);
         }
 
         $container = new Container($containerConfig);
-        $container->set($config);
-        $container->bind($config->bind);
+        $container->set($this->config);
+        $container->bind($this->config->bind);
 
         /** @var ActionService $actionService */
         $actionService = $container->get(ActionService::class);

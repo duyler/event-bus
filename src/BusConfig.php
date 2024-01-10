@@ -10,21 +10,20 @@ use Duyler\EventBus\Contract\ActionRunnerInterface;
 use Duyler\EventBus\Contract\ActionSubstitutionInterface;
 use Duyler\EventBus\Contract\StateActionInterface;
 use Duyler\EventBus\Contract\StateMainInterface;
-use Duyler\EventBus\Dto\Config as ConfigDTO;
 use Duyler\EventBus\State\StateAction;
 use Duyler\EventBus\State\StateMain;
 
-class Config
+class BusConfig
 {
     public readonly array $bind;
-    public readonly array $providers;
-    public readonly array $definitions;
 
-    public function __construct(ConfigDTO $config)
-    {
-        $this->bind = $this->getBind() + $config->bind;
-        $this->providers = $config->providers;
-        $this->definitions = $config->definitions;
+    public function __construct(
+        array $bind = [],
+        public readonly array $providers = [],
+        public readonly array $definitions = [],
+        public readonly bool $enableTriggers = true,
+    ) {
+        $this->bind = $this->getBind() + $bind;
     }
 
     private function getBind(): array
