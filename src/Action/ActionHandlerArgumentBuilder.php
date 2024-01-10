@@ -8,6 +8,7 @@ use Duyler\EventBus\Action\Exception\InvalidArgumentFactoryException;
 use Duyler\EventBus\Bus\Event;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\EventCollection;
+use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Enum\ResultStatus;
 
@@ -17,10 +18,11 @@ class ActionHandlerArgumentBuilder
         private EventCollection $eventCollection,
         private ActionSubstitution $actionSubstitution,
         private ActionCollection $actionCollection,
+        private TriggerRelationCollection $triggerRelationCollection,
     ) {}
 
     /**
-     * @throws InvalidArgumentFactoryException
+     * @todo be refactored
      */
     public function build(Action $action, ActionContainer $container): mixed
     {
@@ -28,9 +30,16 @@ class ActionHandlerArgumentBuilder
             return null;
         }
 
-        $completeTasks = $this->eventCollection->getAllByArray($action->required->getArrayCopy());
-
         $results = [];
+
+        if ($this->triggerRelationCollection->has($action->id)) {
+            $trigger = $this->triggerRelationCollection->get($action->id)->trigger;
+            if ($trigger->data !== null) {
+                $results[$trigger->contract] = $trigger->data;
+            }
+        }
+
+        $completeTasks = $this->eventCollection->getAllByArray($action->required->getArrayCopy());
 
         foreach ($completeTasks as $task) {
             $results = $this->prepareRequiredResults($task) + $results;

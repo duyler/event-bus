@@ -19,12 +19,14 @@ class Config
     public readonly array $bind;
     public readonly array $providers;
     public readonly array $definitions;
+    public readonly bool $enableTriggers;
 
     public function __construct(ConfigDTO $config)
     {
         $this->bind = $this->getBind() + $config->bind;
         $this->providers = $config->providers;
         $this->definitions = $config->definitions;
+        $this->enableTriggers = $config->enableTriggers;
     }
 
     private function getBind(): array

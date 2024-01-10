@@ -12,6 +12,7 @@ use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\ResultService;
 use Duyler\EventBus\Service\RollbackService;
 use Duyler\EventBus\Service\SubscriptionService;
+use Duyler\EventBus\Service\TriggerService;
 use Duyler\EventBus\State\Service\StateMainAfterService;
 use Duyler\EventBus\State\Service\StateMainBeforeService;
 use Duyler\EventBus\State\Service\StateMainFinalService;
@@ -31,6 +32,7 @@ readonly class StateMain implements StateMainInterface
         private RollbackService $rollbackService,
         private SubscriptionService $subscriptionService,
         private StateContext $context,
+        private TriggerService $triggerService,
     ) {}
 
     #[Override]
@@ -39,6 +41,7 @@ readonly class StateMain implements StateMainInterface
         $stateService = new StateMainStartService(
             $this->actionService,
             $this->subscriptionService,
+            $this->triggerService,
         );
 
         foreach ($this->stateHandlerStorage->getMainStart() as $handler) {
@@ -122,6 +125,7 @@ readonly class StateMain implements StateMainInterface
             $this->actionService,
             $this->resultService,
             $this->logService,
+            $this->triggerService,
         );
 
         foreach ($this->stateHandlerStorage->getMainAfter() as $handler) {

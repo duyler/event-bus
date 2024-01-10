@@ -15,5 +15,6 @@ readonly class Config
         public array $providers = [],
         /** @var Definition[] */
         public array $definitions = [],
+        public bool $enableTriggers = true,
     ) {}
 }
