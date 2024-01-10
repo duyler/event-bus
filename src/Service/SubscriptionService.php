@@ -7,7 +7,7 @@ namespace Duyler\EventBus\Service;
 use Duyler\EventBus\Bus\Bus;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\SubscriptionCollection;
-use Duyler\EventBus\Config;
+use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 use InvalidArgumentException;
@@ -16,9 +16,9 @@ readonly class SubscriptionService
 {
     public function __construct(
         private SubscriptionCollection $subscriptionCollection,
-        private ActionCollection $actionCollection,
-        private Bus $bus,
-        private Config $config,
+        private ActionCollection       $actionCollection,
+        private Bus                    $bus,
+        private BusConfig              $config,
     ) {}
 
     public function addSubscription(Subscription $subscription): void

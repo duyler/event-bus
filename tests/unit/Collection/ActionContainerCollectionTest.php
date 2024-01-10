@@ -6,7 +6,7 @@ namespace Duyler\EventBus\Test\unit\Collection;
 
 use Duyler\EventBus\Action\ActionContainer;
 use Duyler\EventBus\Collection\ActionContainerCollection;
-use Duyler\EventBus\Config;
+use Duyler\EventBus\BusConfig;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -19,7 +19,7 @@ class ActionContainerCollectionTest extends TestCase
     {
         $container = new ActionContainer(
             actionId: 'test',
-            config: new Config(new \Duyler\EventBus\Dto\Config()),
+            config: new BusConfig(new \Duyler\EventBus\Dto\Config()),
         );
 
         $this->actionContainerCollection->save($container);
