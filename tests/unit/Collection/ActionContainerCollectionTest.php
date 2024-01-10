@@ -19,7 +19,7 @@ class ActionContainerCollectionTest extends TestCase
     {
         $container = new ActionContainer(
             actionId: 'test',
-            config: new BusConfig(new \Duyler\EventBus\Dto\Config()),
+            config: new BusConfig(),
         );
 
         $this->actionContainerCollection->save($container);
