@@ -17,15 +17,18 @@ use function array_keys;
 
 class SubscriptionCollection extends AbstractCollection
 {
+    private array $byActionId = [];
+
     public function save(Subscription $subscription): void
     {
         $id = $this->makeSubscriptionId($subscription);
 
         if (array_key_exists($id, $this->data)) {
-            throw new RuntimeException('Subscription ' . $id . ' already registered for ' . $subscription->actionId);
+            throw new RuntimeException('Subscription ' . $id . ' already registered in the bus');
         }
 
         $this->data[$id] = $subscription;
+        $this->byActionId[$subscription->actionId][] = $subscription;
     }
 
     public function isExists(Subscription $subscription): bool
@@ -48,5 +51,16 @@ class SubscriptionCollection extends AbstractCollection
                 preg_grep($pattern, array_keys($this->data))
             )
         );
+    }
+
+    public function remove(string $actionId): void
+    {
+        $subscriptions = $this->byActionId[$actionId] ?? [];
+
+        foreach ($subscriptions as $subscription) {
+            unset($this->data[$this->makeSubscriptionId($subscription)]);
+        }
+
+        unset($this->byActionId[$actionId]);
     }
 }

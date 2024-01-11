@@ -32,4 +32,9 @@ trait ActionService
     {
         return $this->actionService->actionIsExists($actionId);
     }
+
+    public function removeAction(string $actionId): void
+    {
+        $this->actionService->removeAction($actionId);
+    }
 }
