@@ -29,6 +29,8 @@ class BusBuilder
 
     private array $sharedServices = [];
 
+    private array $bind = [];
+
     public function __construct(private BusConfig $config) {}
 
     public function build(): BusInterface
@@ -57,7 +59,7 @@ class BusBuilder
         $actionService->collect($this->actions);
 
         foreach ($this->sharedServices as $sharedService) {
-            $actionService->addSharedService($sharedService);
+            $actionService->addSharedService($sharedService, $this->bind);
         }
 
         foreach ($this->doActions as $action) {
@@ -104,9 +106,10 @@ class BusBuilder
         return $this;
     }
 
-    public function addSharedService(object $service): static
+    public function addSharedService(object $service, array $bind = []): static
     {
         $this->sharedServices[] = $service;
+        $this->bind = $bind + $this->bind;
 
         return $this;
     }
