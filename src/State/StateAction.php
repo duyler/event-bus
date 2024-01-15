@@ -18,6 +18,7 @@ class StateAction implements StateActionInterface
     public function __construct(
         private StateHandlerStorage $stateHandlerStorage,
         private ActionContainerCollection $actionContainerCollection,
+        private StateContextScope $contextScope,
     ) {}
 
     #[Override]
@@ -30,7 +31,7 @@ class StateAction implements StateActionInterface
 
         foreach ($this->stateHandlerStorage->getActionBefore() as $handler) {
             if (empty($handler->observed()) || in_array($action->id, $handler->observed())) {
-                $handler->handle($stateService);
+                $handler->handle($stateService, $this->contextScope->getContext($handler::class));
             }
         }
     }
@@ -45,7 +46,7 @@ class StateAction implements StateActionInterface
 
         foreach ($this->stateHandlerStorage->getActionAfter() as $handler) {
             if (empty($handler->observed()) || in_array($action->id, $handler->observed())) {
-                $handler->handle($stateService);
+                $handler->handle($stateService, $this->contextScope->getContext($handler::class));
             }
         }
     }
@@ -61,7 +62,7 @@ class StateAction implements StateActionInterface
 
         foreach ($this->stateHandlerStorage->getActionThrowing() as $handler) {
             if (empty($handler->observed()) || in_array($action->id, $handler->observed())) {
-                $handler->handle($stateService);
+                $handler->handle($stateService, $this->contextScope->getContext($handler::class));
             }
         }
     }

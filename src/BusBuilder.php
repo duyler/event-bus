@@ -8,6 +8,7 @@ use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerConfig;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Dto\Context;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\StateService;
@@ -30,6 +31,9 @@ class BusBuilder
     private array $sharedServices = [];
 
     private array $bind = [];
+
+    /** @var Context[]  */
+    private array $contexts = [];
 
     public function __construct(private BusConfig $config) {}
 
@@ -74,6 +78,10 @@ class BusBuilder
             $stateService->addStateHandler($stateHandler);
         }
 
+        foreach ($this->contexts as $context) {
+            $stateService->addStateContext($context);
+        }
+
         return $container->get(BusFacade::class);
     }
 
@@ -102,6 +110,13 @@ class BusBuilder
     public function addStateHandler(StateHandlerInterface $stateHandler): static
     {
         $this->stateHandlers[get_class($stateHandler)] = $stateHandler;
+
+        return $this;
+    }
+
+    public function addStateContext(Context $context): static
+    {
+        $this->contexts[] = $context;
 
         return $this;
     }

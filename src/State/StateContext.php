@@ -6,18 +6,16 @@ namespace Duyler\EventBus\State;
 
 class StateContext
 {
-    private array $resumeValues = [];
+    /** @var array<string, mixed> */
+    private array $data = [];
 
-    public function addResumeValue(string $actionId, mixed $value): void
+    public function write(string $key, mixed $value): void
     {
-        $this->resumeValues[$actionId] = $value;
+        $this->data[$key] = $value;
     }
 
-    public function getResumeValue(string $actionId): mixed
+    public function read(string $key): mixed
     {
-        $value = $this->resumeValues[$actionId];
-        unset($this->resumeValues[$actionId]);
-
-        return $value;
+        return $this->data[$key] ?? null;
     }
 }

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\unit\State;
 
-use Duyler\EventBus\State\StateContext;
+use Duyler\EventBus\State\StateSuspendContext;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class StateContextTest extends TestCase
 {
-    private StateContext $stateContext;
+    private StateSuspendContext $stateContext;
 
     #[Test]
     public function addResumeValue_with_string(): void
@@ -21,6 +21,6 @@ class StateContextTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->stateContext = new StateContext();
+        $this->stateContext = new StateSuspendContext();
     }
 }
