@@ -11,7 +11,7 @@ use Duyler\EventBus\Dto\Action;
 
 class ActionContainerProvider
 {
-    /** @var object[]  */
+    /** @var array<string, object>  */
     private array $sharedServices = [];
     /** @var array<string, string>  */
     private array $bind = [];
@@ -60,7 +60,7 @@ class ActionContainerProvider
 
     public function addSharedService(object $service, array $bind = []): void
     {
-        $this->sharedServices[] = $service;
+        $this->sharedServices[$service::class] = $service;
         $this->bind = $bind + $this->bind;
     }
 }
