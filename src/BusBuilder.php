@@ -8,6 +8,7 @@ use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerConfig;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Dto\Context;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\StateService;
@@ -28,6 +29,11 @@ class BusBuilder
     private array $stateHandlers = [];
 
     private array $sharedServices = [];
+
+    private array $bind = [];
+
+    /** @var Context[]  */
+    private array $contexts = [];
 
     public function __construct(private BusConfig $config) {}
 
@@ -57,7 +63,7 @@ class BusBuilder
         $actionService->collect($this->actions);
 
         foreach ($this->sharedServices as $sharedService) {
-            $actionService->addSharedService($sharedService);
+            $actionService->addSharedService($sharedService, $this->bind);
         }
 
         foreach ($this->doActions as $action) {
@@ -70,6 +76,10 @@ class BusBuilder
 
         foreach ($this->stateHandlers as $stateHandler) {
             $stateService->addStateHandler($stateHandler);
+        }
+
+        foreach ($this->contexts as $context) {
+            $stateService->addStateContext($context);
         }
 
         return $container->get(BusFacade::class);
@@ -104,9 +114,17 @@ class BusBuilder
         return $this;
     }
 
-    public function addSharedService(object $service): static
+    public function addStateContext(Context $context): static
+    {
+        $this->contexts[] = $context;
+
+        return $this;
+    }
+
+    public function addSharedService(object $service, array $bind = []): static
     {
         $this->sharedServices[] = $service;
+        $this->bind = $bind + $this->bind;
 
         return $this;
     }

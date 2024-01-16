@@ -34,7 +34,7 @@ class Rollback
 
             $actionContainer = $this->containerCollection->get($event->action->id);
 
-            $this->rollback($actionContainer->make($event->action->rollback), $event->result);
+            $this->rollback($actionContainer->get($event->action->rollback), $event->result);
         }
     }
 

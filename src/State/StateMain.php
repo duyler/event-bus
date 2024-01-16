@@ -31,8 +31,9 @@ readonly class StateMain implements StateMainInterface
         private ResultService $resultService,
         private RollbackService $rollbackService,
         private SubscriptionService $subscriptionService,
-        private StateContext $context,
+        private StateSuspendContext $context,
         private TriggerService $triggerService,
+        private StateContextScope $contextScope,
     ) {}
 
     #[Override]
@@ -45,7 +46,7 @@ readonly class StateMain implements StateMainInterface
         );
 
         foreach ($this->stateHandlerStorage->getMainStart() as $handler) {
-            $handler->handle($stateService);
+            $handler->handle($stateService, $this->contextScope->getContext($handler::class));
         }
     }
 
@@ -60,7 +61,7 @@ readonly class StateMain implements StateMainInterface
 
         foreach ($this->stateHandlerStorage->getMainBefore() as $handler) {
             if (empty($handler->observed()) || in_array($task->action->id, $handler->observed())) {
-                $handler->handle($stateService);
+                $handler->handle($stateService, $this->contextScope->getContext($handler::class));
             }
         }
     }
@@ -91,7 +92,7 @@ readonly class StateMain implements StateMainInterface
                 $resumeValue = $handler->handle($stateService);
                 $this->context->addResumeValue($task->action->id, $handler->handle($stateService));
             } else {
-                $handler->handle($stateService);
+                $handler->handle($stateService, $this->contextScope->getContext($handler::class));
             }
         }
     }
@@ -109,7 +110,7 @@ readonly class StateMain implements StateMainInterface
         );
 
         foreach ($handlers as $handler) {
-            $handler->handle($stateService);
+            $handler->handle($stateService, $this->contextScope->getContext($handler::class));
         }
 
         $task->resume($resumeValue);
@@ -130,7 +131,7 @@ readonly class StateMain implements StateMainInterface
 
         foreach ($this->stateHandlerStorage->getMainAfter() as $handler) {
             if (empty($handler->observed()) || in_array($task->action->id, $handler->observed())) {
-                $handler->handle($stateService);
+                $handler->handle($stateService, $this->contextScope->getContext($handler::class));
             }
         }
     }
@@ -145,7 +146,9 @@ readonly class StateMain implements StateMainInterface
         );
 
         foreach ($this->stateHandlerStorage->getMainFinal() as $handler) {
-            $handler->handle($stateService);
+            $handler->handle($stateService, $this->contextScope->getContext($handler::class));
         }
+
+        $this->contextScope->cleanUp();
     }
 }

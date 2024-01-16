@@ -8,6 +8,7 @@ use Duyler\EventBus\Action\ActionContainerProvider;
 use Duyler\EventBus\Action\ActionRequiredIterator;
 use Duyler\EventBus\Bus\Bus;
 use Duyler\EventBus\Collection\ActionCollection;
+use Duyler\EventBus\Collection\SubscriptionCollection;
 use Duyler\EventBus\Contract\ActionSubstitutionInterface;
 use Duyler\EventBus\Dto\Action;
 use RuntimeException;
@@ -19,6 +20,7 @@ readonly class ActionService
         private ActionCollection $actionCollection,
         private ActionContainerProvider $actionContainerProvider,
         private ActionSubstitutionInterface $actionSubstitution,
+        private SubscriptionCollection $subscriptionCollection,
         private Bus $bus,
     ) {}
 
@@ -53,6 +55,16 @@ readonly class ActionService
         $this->doAction($action);
     }
 
+    public function getById(string $actionId): Action
+    {
+        return $this->actionCollection->get($actionId);
+    }
+
+    public function getByContract(string $contract): array
+    {
+        return $this->actionCollection->getByContract($contract);
+    }
+
     public function actionIsExists(string $actionId): bool
     {
         return $this->actionCollection->isExists($actionId);
@@ -81,9 +93,9 @@ readonly class ActionService
         throw new InvalidArgumentException('Required action ' . $subject . ' not registered in the bus');
     }
 
-    public function addSharedService(object $service): void
+    public function addSharedService(object $service, array $bind = []): void
     {
-        $this->actionContainerProvider->addSharedService($service);
+        $this->actionContainerProvider->addSharedService($service, $bind);
     }
 
     public function addResultSubstitutions(string $actionId, array $substitutions): void
@@ -94,5 +106,11 @@ readonly class ActionService
     public function addHandlerSubstitution(string $actionId, string $handlerSubstitution): void
     {
         $this->actionSubstitution->addHandlerSubstitution($actionId, $handlerSubstitution);
+    }
+
+    public function removeAction(string $actionId): void
+    {
+        $this->actionCollection->remove($actionId);
+        $this->subscriptionCollection->remove($actionId);
     }
 }

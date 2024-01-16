@@ -44,7 +44,7 @@ class ActionCollection extends AbstractCollection
         unset($actionId, $this->data);
     }
 
-    /** @return Action[] */
+    /** @return array<string, Action> */
     public function getByContract(string $contract): array
     {
         return $this->byContract[$contract] ?? [];

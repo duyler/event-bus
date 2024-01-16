@@ -11,7 +11,10 @@ use Duyler\EventBus\Dto\Action;
 
 class ActionContainerProvider
 {
+    /** @var array<string, object>  */
     private array $sharedServices = [];
+    /** @var array<string, string>  */
+    private array $bind = [];
 
     public function __construct(
         private readonly BusConfig $config,
@@ -50,11 +53,14 @@ class ActionContainerProvider
             $container->set($service);
         }
 
+        $container->bind($this->bind);
+
         return $container;
     }
 
-    public function addSharedService(object $service): void
+    public function addSharedService(object $service, array $bind = []): void
     {
-        $this->sharedServices[] = $service;
+        $this->sharedServices[$service::class] = $service;
+        $this->bind = $bind + $this->bind;
     }
 }
