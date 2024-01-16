@@ -35,5 +35,6 @@ class StateContextScope
     public function cleanUp(): void
     {
         $this->contexts = [];
+        $this->commonContext = new StateContext();
     }
 }
