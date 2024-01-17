@@ -8,9 +8,9 @@ use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\SubscriptionService;
 use Duyler\EventBus\Service\TriggerService;
-use Duyler\EventBus\State\Service\Trait\ActionService as ActionServiceTrait;
-use Duyler\EventBus\State\Service\Trait\SubscriptionService as SubscriptionServiceTrait;
-use Duyler\EventBus\State\Service\Trait\TriggerService as TriggerServiceTrait;
+use Duyler\EventBus\State\Service\Trait\ActionServiceTrait;
+use Duyler\EventBus\State\Service\Trait\SubscriptionServiceTrait;
+use Duyler\EventBus\State\Service\Trait\TriggerServiceTrait;
 
 class StateMainBeginService
 {

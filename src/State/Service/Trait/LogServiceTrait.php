@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service\Trait;
 
+use Duyler\EventBus\Service\LogService;
+
 /**
- * @property \Duyler\EventBus\Service\LogService $logService
+ * @property LogService $logService
  */
-trait LogService
+trait LogServiceTrait
 {
     public function getFirstAction(): string
     {

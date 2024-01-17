@@ -7,9 +7,9 @@ namespace Duyler\EventBus\State\Service;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\ResultService;
 use Duyler\EventBus\Service\RollbackService;
-use Duyler\EventBus\State\Service\Trait\LogService as LogServiceTrait;
-use Duyler\EventBus\State\Service\Trait\ResultService as ResultServiceTrait;
-use Duyler\EventBus\State\Service\Trait\RollbackService as RollbackServiceTrait;
+use Duyler\EventBus\State\Service\Trait\LogServiceTrait;
+use Duyler\EventBus\State\Service\Trait\ResultServiceTrait;
+use Duyler\EventBus\State\Service\Trait\RollbackServiceTrait;
 
 class StateMainEndService
 {

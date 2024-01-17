@@ -6,10 +6,20 @@ namespace Duyler\EventBus\State\Service;
 
 use Duyler\EventBus\Action\ActionContainer;
 
-readonly class StateActionAfterService
+class StateActionAfterService
 {
     public function __construct(
-        public ActionContainer $container,
-        public string $actionId,
+        private readonly ActionContainer $container,
+        private readonly string $actionId,
     ) {}
+
+    public function getContainer(): ActionContainer
+    {
+        return $this->container;
+    }
+
+    public function getActionId(): string
+    {
+        return $this->actionId;
+    }
 }

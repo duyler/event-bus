@@ -9,7 +9,7 @@ use Duyler\EventBus\Bus\Task;
 /**
  * @property Task $task
  */
-trait TaskSuspendService
+trait TaskSuspendServiceTrait
 {
     public function getValue(): mixed
     {

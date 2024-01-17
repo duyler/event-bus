@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Duyler\EventBus\State\Service\Trait;
 
 use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Service\ActionService;
 
 /**
- * @property \Duyler\EventBus\Service\ActionService $actionService
+ * @property ActionService $actionService
  */
-trait ActionService
+trait ActionServiceTrait
 {
     public function addAction(Action $action): void
     {

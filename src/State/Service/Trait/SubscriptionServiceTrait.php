@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Duyler\EventBus\State\Service\Trait;
 
 use Duyler\EventBus\Dto\Subscription;
+use Duyler\EventBus\Service\SubscriptionService;
 
 /**
- * @property \Duyler\EventBus\Service\SubscriptionService $subscriptionService
+ * @property SubscriptionService $subscriptionService
  */
-trait SubscriptionService
+trait SubscriptionServiceTrait
 {
     public function addSubscription(Subscription $subscription): void
     {
