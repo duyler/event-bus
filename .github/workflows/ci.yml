@@ -1,8 +1,8 @@
+name: CI
+
 on:
   - pull_request
   - push
-
-name: build
 
 jobs:
   tests:
@@ -51,3 +51,6 @@ jobs:
 
       - name: Run tests with phpunit
         run: vendor/bin/phpunit --colors=always
+
+      - name: Run PHP CS Fixer
+        run: vendor/bin/php-cs-fixer check --diff -v
