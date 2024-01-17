@@ -25,7 +25,7 @@ class DoWhile
      */
     public function run(): void
     {
-        $this->stateMain->start();
+        $this->stateMain->begin();
 
         do {
             $task = $this->taskQueue->dequeue();

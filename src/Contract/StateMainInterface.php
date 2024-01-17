@@ -8,7 +8,7 @@ use Duyler\EventBus\Bus\Task;
 
 interface StateMainInterface
 {
-    public function start(): void;
+    public function begin(): void;
 
     public function before(Task $task): void;
 
