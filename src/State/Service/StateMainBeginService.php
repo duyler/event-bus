@@ -12,7 +12,7 @@ use Duyler\EventBus\State\Service\Trait\ActionService as ActionServiceTrait;
 use Duyler\EventBus\State\Service\Trait\SubscriptionService as SubscriptionServiceTrait;
 use Duyler\EventBus\State\Service\Trait\TriggerService as TriggerServiceTrait;
 
-class StateMainStartService
+class StateMainBeginService
 {
     use ActionServiceTrait;
     use SubscriptionServiceTrait;

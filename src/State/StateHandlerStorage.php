@@ -9,17 +9,17 @@ use Duyler\EventBus\Contract\State\ActionBeforeStateHandlerInterface;
 use Duyler\EventBus\Contract\State\ActionThrowingStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainBeforeStateHandlerInterface;
-use Duyler\EventBus\Contract\State\MainFinalStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainEndStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainResumeStateHandlerInterface;
-use Duyler\EventBus\Contract\State\MainStartStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainBeginStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainSuspendStateHandlerInterface;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use InvalidArgumentException;
 
 class StateHandlerStorage
 {
-    /** @var MainStartStateHandlerInterface[] */
-    private array $mainStart = [];
+    /** @var MainBeginStateHandlerInterface[] */
+    private array $mainBegin = [];
 
     /** @var MainBeforeStateHandlerInterface[] */
     private array $mainBefore = [];
@@ -33,8 +33,8 @@ class StateHandlerStorage
     /** @var MainAfterStateHandlerInterface[] */
     private array $mainAfter = [];
 
-    /** @var MainFinalStateHandlerInterface[] */
-    private array $mainFinal = [];
+    /** @var MainEndStateHandlerInterface[] */
+    private array $mainEnd = [];
 
     /** @var ActionBeforeStateHandlerInterface[] */
     private array $actionBefore = [];
@@ -48,8 +48,8 @@ class StateHandlerStorage
     public function addStateHandler(StateHandlerInterface $stateHandler): void
     {
         match (true) {
-            $stateHandler instanceof MainStartStateHandlerInterface =>
-                $this->mainStart[] = $stateHandler,
+            $stateHandler instanceof MainBeginStateHandlerInterface =>
+                $this->mainBegin[] = $stateHandler,
             $stateHandler instanceof MainBeforeStateHandlerInterface =>
                 $this->mainBefore[] = $stateHandler,
             $stateHandler instanceof MainSuspendStateHandlerInterface =>
@@ -58,8 +58,8 @@ class StateHandlerStorage
                 $this->stateMainResume[] = $stateHandler,
             $stateHandler instanceof MainAfterStateHandlerInterface =>
                 $this->mainAfter[] = $stateHandler,
-            $stateHandler instanceof MainFinalStateHandlerInterface =>
-                $this->mainFinal[] = $stateHandler,
+            $stateHandler instanceof MainEndStateHandlerInterface =>
+                $this->mainEnd[] = $stateHandler,
             $stateHandler instanceof ActionBeforeStateHandlerInterface =>
                 $this->actionBefore[] = $stateHandler,
             $stateHandler instanceof ActionThrowingStateHandlerInterface =>
@@ -75,9 +75,9 @@ class StateHandlerStorage
         };
     }
 
-    public function getMainStart(): array
+    public function getMainBegin(): array
     {
-        return $this->mainStart;
+        return $this->mainBegin;
     }
 
     public function getMainBefore(): array
@@ -100,9 +100,9 @@ class StateHandlerStorage
         return $this->mainAfter;
     }
 
-    public function getMainFinal(): array
+    public function getMainEnd(): array
     {
-        return $this->mainFinal;
+        return $this->mainEnd;
     }
 
     public function getActionBefore(): array
