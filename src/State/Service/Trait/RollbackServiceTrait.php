@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service\Trait;
 
+use Duyler\EventBus\Service\RollbackService;
+
 /**
- * @property \Duyler\EventBus\Service\RollbackService $rollbackService
+ * @property RollbackService $rollbackService
  */
-trait RollbackService
+trait RollbackServiceTrait
 {
     public function rollbackWithoutException(int $step = 0): void
     {

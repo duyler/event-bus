@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Duyler\EventBus\State\Service\Trait;
 
 use Duyler\EventBus\Dto\Trigger;
+use Duyler\EventBus\Service\TriggerService;
 
 /**
- * @property \Duyler\EventBus\Service\TriggerService $triggerService
+ * @property TriggerService $triggerService
  */
-trait TriggerService
+trait TriggerServiceTrait
 {
     public function doTrigger(Trigger $trigger): void
     {

@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Duyler\EventBus\State\Service\Trait;
 
 use Duyler\EventBus\Dto\Result;
+use Duyler\EventBus\Service\ResultService;
 
 /**
- * @property \Duyler\EventBus\Service\ResultService $resultService
+ * @property ResultService $resultService
  */
-trait ResultService
+trait ResultServiceTrait
 {
     public function getResult(string $actionId): Result
     {

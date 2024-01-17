@@ -7,8 +7,8 @@ namespace Duyler\EventBus\State\Service;
 use Duyler\EventBus\Action\ActionContainer;
 use Duyler\EventBus\Bus\Task;
 use Duyler\EventBus\Service\ResultService;
-use Duyler\EventBus\State\Service\Trait\ResultService as ResultServiceTrait;
-use Duyler\EventBus\State\Service\Trait\TaskSuspendService as TaskSuspendServiceTrait;
+use Duyler\EventBus\State\Service\Trait\ResultServiceTrait;
+use Duyler\EventBus\State\Service\Trait\TaskSuspendServiceTrait;
 
 class StateMainSuspendService
 {

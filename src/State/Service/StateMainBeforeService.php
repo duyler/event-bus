@@ -6,7 +6,7 @@ namespace Duyler\EventBus\State\Service;
 
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\LogService;
-use Duyler\EventBus\State\Service\Trait\LogService as LogServiceTrait;
+use Duyler\EventBus\State\Service\Trait\LogServiceTrait;
 
 class StateMainBeforeService
 {
