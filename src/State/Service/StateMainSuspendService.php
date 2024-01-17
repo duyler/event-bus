@@ -18,11 +18,16 @@ class StateMainSuspendService
     public function __construct(
         private readonly ResultService $resultService,
         private readonly Task $task,
-        public readonly ActionContainer $container,
+        private readonly ActionContainer $container,
     ) {}
 
     public function getActionId(): string
     {
         return $this->task->action->id;
+    }
+
+    public function getContainer(): ActionContainer
+    {
+        return $this->container;
     }
 }

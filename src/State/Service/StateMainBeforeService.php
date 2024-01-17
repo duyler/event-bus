@@ -13,7 +13,7 @@ class StateMainBeforeService
     use LogServiceTrait;
 
     public function __construct(
-        public readonly string $actionId,
+        private readonly string $actionId,
         private readonly LogService $logService,
         private readonly ActionService $actionService,
     ) {}
@@ -26,5 +26,10 @@ class StateMainBeforeService
     public function substituteHandler(string $actionId, string $handlerSubstitution): void
     {
         $this->actionService->addHandlerSubstitution($actionId, $handlerSubstitution);
+    }
+
+    public function getActionId(): string
+    {
+        return $this->actionId;
     }
 }

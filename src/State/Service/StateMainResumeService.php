@@ -6,11 +6,11 @@ namespace Duyler\EventBus\State\Service;
 
 use Duyler\EventBus\Bus\Task;
 
-readonly class StateMainResumeService
+class StateMainResumeService
 {
     public function __construct(
-        private Task $task,
-        private mixed $value,
+        private readonly Task $task,
+        private readonly mixed $value,
     ) {}
 
     public function getActionId(): string
