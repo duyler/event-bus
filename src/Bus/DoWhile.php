@@ -40,7 +40,7 @@ class DoWhile
             $this->runTask($task);
         } while ($this->taskQueue->isNotEmpty());
 
-        $this->stateMain->final();
+        $this->stateMain->end();
     }
 
     /**

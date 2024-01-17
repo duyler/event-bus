@@ -11,7 +11,7 @@ use Duyler\EventBus\State\Service\Trait\LogService as LogServiceTrait;
 use Duyler\EventBus\State\Service\Trait\ResultService as ResultServiceTrait;
 use Duyler\EventBus\State\Service\Trait\RollbackService as RollbackServiceTrait;
 
-class StateMainFinalService
+class StateMainEndService
 {
     use ResultServiceTrait;
     use LogServiceTrait;

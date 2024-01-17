@@ -15,7 +15,7 @@ use Duyler\EventBus\Service\SubscriptionService;
 use Duyler\EventBus\Service\TriggerService;
 use Duyler\EventBus\State\Service\StateMainAfterService;
 use Duyler\EventBus\State\Service\StateMainBeforeService;
-use Duyler\EventBus\State\Service\StateMainFinalService;
+use Duyler\EventBus\State\Service\StateMainEndService;
 use Duyler\EventBus\State\Service\StateMainResumeService;
 use Duyler\EventBus\State\Service\StateMainBeginService;
 use Duyler\EventBus\State\Service\StateMainSuspendService;
@@ -137,15 +137,15 @@ readonly class StateMain implements StateMainInterface
     }
 
     #[Override]
-    public function final(): void
+    public function end(): void
     {
-        $stateService = new StateMainFinalService(
+        $stateService = new StateMainEndService(
             $this->resultService,
             $this->logService,
             $this->rollbackService,
         );
 
-        foreach ($this->stateHandlerStorage->getMainFinal() as $handler) {
+        foreach ($this->stateHandlerStorage->getMainEnd() as $handler) {
             $handler->handle($stateService, $this->contextScope->getContext($handler::class));
         }
 
