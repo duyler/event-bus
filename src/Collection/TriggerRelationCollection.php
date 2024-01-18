@@ -10,16 +10,21 @@ class TriggerRelationCollection extends AbstractCollection
 {
     public function save(TriggerRelation $triggerRelation): void
     {
-        $this->data[$triggerRelation->subscription->actionId] = $triggerRelation;
-    }
-
-    public function get(string $actionId): TriggerRelation
-    {
-        return $this->data[$actionId];
+        $this->data[$triggerRelation->subscription->actionId][] = $triggerRelation;
     }
 
     public function has(string $actionId): bool
     {
         return isset($this->data[$actionId]);
+    }
+
+    public function shift(string $actionId): TriggerRelation
+    {
+        return array_shift($this->data[$actionId]);
+    }
+
+    public function cleanUp(): void
+    {
+        $this->data = [];
     }
 }

@@ -33,7 +33,7 @@ class ActionHandlerArgumentBuilder
         $results = [];
 
         if ($this->triggerRelationCollection->has($action->id)) {
-            $trigger = $this->triggerRelationCollection->get($action->id)->trigger;
+            $trigger = $this->triggerRelationCollection->shift($action->id)->trigger;
             if ($trigger->data !== null) {
                 $results[$trigger->contract] = $trigger->data;
             }
