@@ -85,6 +85,7 @@ readonly class StateMain implements StateMainInterface
             $this->actionContainerCollection->get($task->action->id),
             $this->actionService,
             $this->triggerService,
+            $this->subscriptionService,
         );
 
         // @todo: refactor

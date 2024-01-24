@@ -8,9 +8,11 @@ use Duyler\EventBus\Action\ActionContainer;
 use Duyler\EventBus\Bus\Task;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\ResultService;
+use Duyler\EventBus\Service\SubscriptionService;
 use Duyler\EventBus\Service\TriggerService;
 use Duyler\EventBus\State\Service\Trait\ActionServiceTrait;
 use Duyler\EventBus\State\Service\Trait\ResultServiceTrait;
+use Duyler\EventBus\State\Service\Trait\SubscriptionServiceTrait;
 use Duyler\EventBus\State\Service\Trait\TaskSuspendServiceTrait;
 use Duyler\EventBus\State\Service\Trait\TriggerServiceTrait;
 
@@ -20,6 +22,7 @@ class StateMainSuspendService
     use TaskSuspendServiceTrait;
     use ActionServiceTrait;
     use TriggerServiceTrait;
+    use SubscriptionServiceTrait;
 
     public function __construct(
         private readonly ResultService $resultService,
@@ -27,6 +30,7 @@ class StateMainSuspendService
         private readonly ActionContainer $container,
         private readonly ActionService $actionService,
         private readonly TriggerService $triggerService,
+        private readonly SubscriptionService $subscriptionService,
     ) {}
 
     public function getActionId(): string
