@@ -60,8 +60,9 @@ readonly class StateMain implements StateMainInterface
         );
 
         foreach ($this->stateHandlerStorage->getMainBefore() as $handler) {
-            if (empty($handler->observed()) || in_array($task->action->id, $handler->observed())) {
-                $handler->handle($stateService, $this->contextScope->getContext($handler::class));
+            $context = $this->contextScope->getContext($handler::class);
+            if (empty($handler->observed($context)) || in_array($task->action->id, $handler->observed($context))) {
+                $handler->handle($stateService, $context);
             }
         }
     }
@@ -135,8 +136,9 @@ readonly class StateMain implements StateMainInterface
         );
 
         foreach ($this->stateHandlerStorage->getMainAfter() as $handler) {
-            if (empty($handler->observed()) || in_array($task->action->id, $handler->observed())) {
-                $handler->handle($stateService, $this->contextScope->getContext($handler::class));
+            $context = $this->contextScope->getContext($handler::class);
+            if (empty($handler->observed($context)) || in_array($task->action->id, $handler->observed($context))) {
+                $handler->handle($stateService, $context);
             }
         }
     }
