@@ -11,6 +11,7 @@ use Duyler\EventBus\Collection\EventCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Enum\ResultStatus;
+use LogicException;
 
 class ActionHandlerArgumentBuilder
 {
@@ -57,7 +58,11 @@ class ActionHandlerArgumentBuilder
             $container->set($definition);
         }
 
-        $factory = $container->get($action->argument);
+        if (null === $action->argumentFactory) {
+            throw new LogicException('Argument factory is not set for unresolved argument: ' . $action->argument);
+        }
+
+        $factory = $container->get($action->argumentFactory);
 
         if (false === is_callable($factory)) {
             throw new InvalidArgumentFactoryException($action->argument);

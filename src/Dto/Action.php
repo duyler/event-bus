@@ -18,6 +18,7 @@ readonly class Action
         public array $bind = [],
         public array $providers = [],
         public string $argument = '',
+        public ?string $argumentFactory = null,
         public ?string $contract = null,
         public string | Closure $rollback = '',
         public bool $externalAccess = false,
