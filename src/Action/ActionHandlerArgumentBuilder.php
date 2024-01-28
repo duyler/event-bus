@@ -59,7 +59,9 @@ class ActionHandlerArgumentBuilder
         }
 
         if (null === $action->argumentFactory) {
-            throw new LogicException('Argument factory is not set for unresolved argument: ' . $action->argument);
+            throw new LogicException(
+                'Argument factory is not set to unresolved argument: ' . $action->argument . ' for ' . $action->id
+            );
         }
 
         $factory = $container->get($action->argumentFactory);

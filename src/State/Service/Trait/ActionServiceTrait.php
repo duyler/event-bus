@@ -38,4 +38,15 @@ trait ActionServiceTrait
     {
         $this->actionService->removeAction($actionId);
     }
+
+    /** @return array<string, Action> */
+    public function getByContract(string $contract): array
+    {
+        return $this->actionService->getByContract($contract);
+    }
+
+    public function addSharedService(object $service, array $bind = []): void
+    {
+        $this->actionService->addSharedService($service, $bind);
+    }
 }
