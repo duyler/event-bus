@@ -51,14 +51,16 @@ class ActionHandlerArgumentBuilder
         }
 
         foreach ($results as $interface => $definition) {
-            if ($definition instanceof $action->argument) {
-                return $definition;
-            }
             $container->bind([$interface => $definition::class]);
             $container->set($definition);
         }
 
-        if (null === $action->argumentFactory) {
+        if ($action->argumentFactory === null) {
+            foreach ($results as $interface => $definition) {
+                if ($definition instanceof $action->argument) {
+                    return $definition;
+                }
+            }
             throw new LogicException(
                 'Argument factory is not set to unresolved argument: ' . $action->argument . ' for ' . $action->id
             );

@@ -20,4 +20,6 @@ interface BusInterface
     public function resultIsExists(string $actionId): bool;
 
     public function dispatchTrigger(Trigger $trigger): BusInterface;
+
+    public function reset(): BusInterface;
 }
