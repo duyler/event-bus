@@ -6,7 +6,7 @@ namespace Duyler\EventBus;
 
 use Duyler\EventBus\Bus\Log;
 use Duyler\EventBus\Collection\ActionContainerCollection;
-use Duyler\EventBus\Collection\EventCollection;
+use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Trigger;
@@ -20,7 +20,7 @@ class BusFacade implements BusInterface
         private Runner $runner,
         private ResultService $resultService,
         private TriggerService $triggerService,
-        private EventCollection $eventCollection,
+        private CompleteActionCollection $completeActionCollection,
         private ActionContainerCollection $actionContainerCollection,
         private TriggerRelationCollection $triggerRelationCollection,
         private Log $log,
@@ -55,7 +55,7 @@ class BusFacade implements BusInterface
     #[Override]
     public function reset(): BusInterface
     {
-        $this->eventCollection->cleanUp();
+        $this->completeActionCollection->cleanUp();
         $this->actionContainerCollection->cleanUp();
         $this->log->cleanUp();
         $this->triggerRelationCollection->cleanUp();

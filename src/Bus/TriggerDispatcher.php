@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\Collection\ActionCollection;
+use Duyler\EventBus\Collection\SubscriptionCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Trigger;
-use Duyler\EventBus\Service\SubscriptionService;
 use LogicException;
 use RuntimeException;
 
@@ -15,7 +15,7 @@ class TriggerDispatcher
 {
     public function __construct(
         private TriggerRelationCollection $triggerRelationCollection,
-        private SubscriptionService $subscriptionService,
+        private SubscriptionCollection $subscriptionCollection,
         private ActionCollection $actionCollection,
         private Bus $bus,
     ) {}
@@ -40,7 +40,7 @@ class TriggerDispatcher
             }
         }
 
-        $subscriptions = $this->subscriptionService->getSubscriptions(
+        $subscriptions = $this->subscriptionCollection->getSubscriptions(
             $trigger->id,
             $trigger->status
         );

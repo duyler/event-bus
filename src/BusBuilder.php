@@ -13,6 +13,7 @@ use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\StateService;
 use Duyler\EventBus\Service\SubscriptionService;
+use Psr\EventDispatcher\ListenerProviderInterface;
 
 class BusBuilder
 {
@@ -80,6 +81,14 @@ class BusBuilder
 
         foreach ($this->contexts as $context) {
             $stateService->addStateContext($context);
+        }
+
+        $listenerProvider = $container->get(ListenerProviderInterface::class);
+
+        foreach ($this->config->getListeners() as $event => $listeners) {
+            foreach ($listeners as $listener) {
+                $listenerProvider->addListener($event, $container->get($listener));
+            }
         }
 
         return $container->get(BusFacade::class);

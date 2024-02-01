@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\unit\Collection;
 
-use Duyler\EventBus\Bus\Event;
-use Duyler\EventBus\Collection\EventCollection;
+use Duyler\EventBus\Bus\CompleteAction;
+use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
@@ -14,13 +14,13 @@ use PHPUnit\Framework\TestCase;
 
 class EventCollectionTest extends TestCase
 {
-    private EventCollection $eventCollection;
+    private CompleteActionCollection $eventCollection;
 
     #[Test]
     public function save_event(): void
     {
         $action = new Action(id: 'test', handler: 'test');
-        $event = new Event(
+        $event = new CompleteAction(
             action: $action,
             result: new Result(status: ResultStatus::Success)
         );
@@ -34,6 +34,6 @@ class EventCollectionTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->eventCollection = new EventCollection();
+        $this->eventCollection = new CompleteActionCollection();
     }
 }

@@ -6,7 +6,7 @@ namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\Action\ActionRequiredIterator;
 use Duyler\EventBus\Collection\ActionCollection;
-use Duyler\EventBus\Collection\EventCollection;
+use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Enum\ResultStatus;
 use RuntimeException;
@@ -21,7 +21,7 @@ class Bus
     public function __construct(
         private readonly TaskQueue $taskQueue,
         private readonly ActionCollection $actionCollection,
-        private readonly EventCollection $eventCollection,
+        private readonly CompleteActionCollection $completeActionCollection,
     ) {}
 
     public function doAction(Action $action): void
@@ -55,7 +55,7 @@ class Bus
 
     protected function isRepeat(string $actionId): bool
     {
-        return $this->taskQueue->inQueue($actionId) || $this->eventCollection->isExists($actionId);
+        return $this->taskQueue->inQueue($actionId) || $this->completeActionCollection->isExists($actionId);
     }
 
     protected function createTask(Action $action): Task
@@ -88,25 +88,25 @@ class Bus
             return true;
         }
 
-        $completeTaskEvents = $this->eventCollection->getAllByArray($task->action->required->getArrayCopy());
+        $completeActions = $this->completeActionCollection->getAllByArray($task->action->required->getArrayCopy());
 
-        if (count($completeTaskEvents) < count($task->action->required)) {
+        if (count($completeActions) < count($task->action->required)) {
             return false;
         }
 
-        foreach ($completeTaskEvents as $completeTask) {
-            if (ResultStatus::Fail === $completeTask->result->status) {
-                if (false === $completeTask->action->continueIfFail) {
-                    throw new RuntimeException('Cannot be continued because fail action ' . $completeTask->action->id);
+        foreach ($completeActions as $completeAction) {
+            if (ResultStatus::Fail === $completeAction->result->status) {
+                if (false === $completeAction->action->continueIfFail) {
+                    throw new RuntimeException('Cannot be continued because fail action ' . $completeAction->action->id);
                 }
 
-                if (empty($completeTask->action->contract)) {
+                if (empty($completeAction->action->contract)) {
                     continue;
                 }
 
-                $actionsWithContract = $this->actionCollection->getByContract($completeTask->action->contract);
+                $actionsWithContract = $this->actionCollection->getByContract($completeAction->action->contract);
 
-                unset($actionsWithContract[$completeTask->action->id]);
+                unset($actionsWithContract[$completeAction->action->id]);
 
                 if ($this->isReplacedFailAction($actionsWithContract)) {
                     return true;
@@ -122,9 +122,9 @@ class Bus
     protected function isReplacedFailAction(array $actionsWithContract): bool
     {
         foreach ($actionsWithContract as $actionWithContract) {
-            if ($this->eventCollection->isExists($actionWithContract->id)) {
-                $event = $this->eventCollection->get($actionWithContract->id);
-                if (ResultStatus::Success === $event->result->status) {
+            if ($this->completeActionCollection->isExists($actionWithContract->id)) {
+                $completeAction = $this->completeActionCollection->get($actionWithContract->id);
+                if (ResultStatus::Success === $completeAction->result->status) {
                     return true;
                 }
             }

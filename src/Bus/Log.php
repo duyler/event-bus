@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
+use Duyler\EventBus\Dto\Action;
+
 class Log
 {
     private array $actionLog = [];
     private array $mainEventLog = [];
     private array $repeatedEventLog = [];
 
-    public function pushActionLog(string $actionId): void
+    public function pushActionLog(Action $action): void
     {
-        $this->actionLog[] = $actionId;
+        $this->actionLog[] = $action->id;
     }
 
     public function getActionLog(): array

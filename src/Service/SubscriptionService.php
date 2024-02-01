@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Service;
 
 use Duyler\EventBus\Bus\Bus;
+use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\SubscriptionCollection;
 use Duyler\EventBus\BusConfig;
@@ -43,9 +44,16 @@ readonly class SubscriptionService
         return $this->subscriptionCollection->isExists($subscription);
     }
 
-    public function resolveSubscriptions(string $actionId, ResultStatus $status): void
+    public function resolveSubscriptions(CompleteAction $completeAction): void
     {
-        $subscriptions = $this->subscriptionCollection->getSubscriptions($actionId, $status);
+        if ($completeAction->action->silent) {
+            return;
+        }
+
+        $subscriptions = $this->subscriptionCollection->getSubscriptions(
+            $completeAction->action->id,
+            $completeAction->result->status
+        );
 
         foreach ($subscriptions as $subscription) {
             $action = $this->actionCollection->get($subscription->actionId);

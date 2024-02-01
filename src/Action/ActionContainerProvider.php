@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Action;
 
 use Duyler\EventBus\Collection\ActionContainerCollection;
-use Duyler\EventBus\Collection\EventCollection;
+use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Action;
 
@@ -19,7 +19,7 @@ class ActionContainerProvider
     public function __construct(
         private readonly BusConfig $config,
         private readonly ActionContainerCollection $containerCollection,
-        private readonly EventCollection $eventCollection,
+        private readonly CompleteActionCollection $completeActionCollection,
         private readonly ActionContainerBind $actionContainerBind,
     ) {}
 
@@ -30,10 +30,10 @@ class ActionContainerProvider
         $container->bind($action->bind);
         $container->addProviders($action->providers);
 
-        $completeTasks = $this->eventCollection->getAllByArray($action->required->getArrayCopy());
+        $completeActions = $this->completeActionCollection->getAllByArray($action->required->getArrayCopy());
 
-        foreach ($completeTasks as $task) {
-            $bind = $this->actionContainerBind->get($task->action->id);
+        foreach ($completeActions as $completeAction) {
+            $bind = $this->actionContainerBind->get($completeAction->action->id);
             $container->bind($bind);
         }
 

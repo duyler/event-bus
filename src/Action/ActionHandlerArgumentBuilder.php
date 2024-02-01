@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Action;
 
 use Duyler\EventBus\Action\Exception\InvalidArgumentFactoryException;
-use Duyler\EventBus\Bus\Event;
+use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Collection\ActionCollection;
-use Duyler\EventBus\Collection\EventCollection;
+use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Enum\ResultStatus;
@@ -16,7 +16,7 @@ use LogicException;
 class ActionHandlerArgumentBuilder
 {
     public function __construct(
-        private EventCollection $eventCollection,
+        private CompleteActionCollection $completeActionCollection,
         private ActionSubstitution $actionSubstitution,
         private ActionCollection $actionCollection,
         private TriggerRelationCollection $triggerRelationCollection,
@@ -40,10 +40,10 @@ class ActionHandlerArgumentBuilder
             }
         }
 
-        $completeTasks = $this->eventCollection->getAllByArray($action->required->getArrayCopy());
+        $completeActions = $this->completeActionCollection->getAllByArray($action->required->getArrayCopy());
 
-        foreach ($completeTasks as $task) {
-            $results = $this->prepareRequiredResults($task) + $results;
+        foreach ($completeActions as $completeAction) {
+            $results = $this->prepareRequiredResults($completeAction) + $results;
         }
 
         if ($this->actionSubstitution->isSubstituteResult($action->id)) {
@@ -75,16 +75,16 @@ class ActionHandlerArgumentBuilder
         return $factory();
     }
 
-    private function prepareRequiredResults(Event $requiredTaskEvent): array
+    private function prepareRequiredResults(CompleteAction $completeAction): array
     {
         $results = [];
 
-        if (ResultStatus::Fail === $requiredTaskEvent->result->status) {
-            $actionsWithContract = $this->actionCollection->getByContract($requiredTaskEvent->action->contract);
+        if (ResultStatus::Fail === $completeAction->result->status) {
+            $actionsWithContract = $this->actionCollection->getByContract($completeAction->action->contract);
 
             foreach ($actionsWithContract as $actionWithContract) {
-                if ($this->eventCollection->isExists($actionWithContract->id)) {
-                    $replaceTaskEvent = $this->eventCollection->get($actionWithContract->id);
+                if ($this->completeActionCollection->isExists($actionWithContract->id)) {
+                    $replaceTaskEvent = $this->completeActionCollection->get($actionWithContract->id);
                     if (ResultStatus::Success === $replaceTaskEvent->result->status) {
                         $interface = array_search($replaceTaskEvent->result->data::class, $actionWithContract->bind)
                             ?: $replaceTaskEvent->result->data::class;
@@ -96,9 +96,9 @@ class ActionHandlerArgumentBuilder
             }
         }
 
-        $interface = array_search($requiredTaskEvent->result->data::class, $requiredTaskEvent->action->bind)
-            ?: $requiredTaskEvent->result->data::class;
-        $results[$interface] = $requiredTaskEvent->result->data;
+        $interface = array_search($completeAction->result->data::class, $completeAction->action->bind)
+            ?: $completeAction->result->data::class;
+        $results[$interface] = $completeAction->result->data;
 
         return $results;
     }
