@@ -8,6 +8,7 @@ use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Trigger;
 use Duyler\EventBus\Service\SubscriptionService;
+use LogicException;
 use RuntimeException;
 
 class TriggerDispatcher
@@ -19,9 +20,12 @@ class TriggerDispatcher
         private Bus $bus,
     ) {}
 
-    // @todo be refactored
     public function dispatch(Trigger $trigger): void
     {
+        if ($this->actionCollection->isExists($trigger->id)) {
+            throw new LogicException('Trigger id must not match with any action id');
+        }
+
         if ($trigger->data !== null) {
             if ($trigger->contract === null) {
                 throw new RuntimeException('Trigger contract will be received');
