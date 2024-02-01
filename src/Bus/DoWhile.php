@@ -32,7 +32,7 @@ class DoWhile
 
             if ($task->isRunning()) {
                 $this->stateMain->resume($task);
-                $this->dispatch($task);
+                $this->process($task);
                 continue;
             }
 
@@ -50,14 +50,14 @@ class DoWhile
     public function runTask(Task $task): void
     {
         $task->run(fn(): Result => $this->actionRunner->runAction($task->action));
-        $this->dispatch($task);
+        $this->process($task);
     }
 
     /**
      * @throws ConsecutiveRepeatedActionException
      * @throws CircularCallActionException
      */
-    private function dispatch(Task $task): void
+    private function process(Task $task): void
     {
         if ($task->isRunning()) {
             $this->taskQueue->push($task);
