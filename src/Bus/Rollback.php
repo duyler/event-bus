@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\Collection\ActionContainerCollection;
-use Duyler\EventBus\Collection\EventCollection;
+use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Contract\RollbackActionInterface;
 use Duyler\EventBus\Dto\Result;
 
@@ -14,27 +14,29 @@ use function is_callable;
 class Rollback
 {
     public function __construct(
-        private EventCollection $eventCollection,
+        private CompleteActionCollection $completeActionCollection,
         private ActionContainerCollection $containerCollection,
     ) {}
 
     public function run(array $slice = []): void
     {
-        $events = empty($slice) ? $this->eventCollection->getAll() : $this->eventCollection->getAllByArray($slice);
+        $completeActions = empty($slice)
+            ? $this->completeActionCollection->getAll()
+            : $this->completeActionCollection->getAllByArray($slice);
 
-        foreach ($events as $event) {
-            if (empty($event->action->rollback)) {
+        foreach ($completeActions as $completeAction) {
+            if (empty($completeAction->action->rollback)) {
                 continue;
             }
 
-            if (is_callable($event->action->rollback)) {
-                ($event->action->rollback)();
+            if (is_callable($completeAction->action->rollback)) {
+                ($completeAction->action->rollback)();
                 continue;
             }
 
-            $actionContainer = $this->containerCollection->get($event->action->id);
+            $actionContainer = $this->containerCollection->get($completeAction->action->id);
 
-            $this->rollback($actionContainer->get($event->action->rollback), $event->result);
+            $this->rollback($actionContainer->get($completeAction->action->rollback), $completeAction->result);
         }
     }
 

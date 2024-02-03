@@ -8,7 +8,7 @@ use Duyler\EventBus\Action\ActionContainer;
 use Duyler\EventBus\Action\ActionHandlerArgumentBuilder;
 use Duyler\EventBus\Action\ActionSubstitution;
 use Duyler\EventBus\Collection\ActionCollection;
-use Duyler\EventBus\Collection\EventCollection;
+use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Action;
 use PHPUnit\Framework\Attributes\Test;
@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 
 class ActionHandlerArgumentBuilderTest extends TestCase
 {
-    private EventCollection $eventCollection;
+    private CompleteActionCollection $eventCollection;
     private ActionSubstitution $actionSubstitution;
     private ActionCollection $actionCollection;
     private ActionHandlerArgumentBuilder $argumentBuilder;
@@ -36,13 +36,13 @@ class ActionHandlerArgumentBuilderTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->eventCollection = $this->createMock(EventCollection::class);
+        $this->eventCollection = $this->createMock(CompleteActionCollection::class);
         $this->actionSubstitution = $this->createMock(ActionSubstitution::class);
         $this->actionCollection = $this->createMock(ActionCollection::class);
         $this->actionContainer = $this->createMock(ActionContainer::class);
         $this->triggerRelationCollection = $this->createMock(TriggerRelationCollection::class);
         $this->argumentBuilder = new ActionHandlerArgumentBuilder(
-            eventCollection: $this->eventCollection,
+            completeActionCollection: $this->eventCollection,
             actionSubstitution: $this->actionSubstitution,
             actionCollection: $this->actionCollection,
             triggerRelationCollection: $this->triggerRelationCollection,

@@ -4,29 +4,25 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use Duyler\EventBus\Collection\EventCollection;
-use Duyler\EventBus\Exception\CircularCallActionException;
-use Duyler\EventBus\Exception\ConsecutiveRepeatedActionException;
+use Duyler\EventBus\Collection\CompleteActionCollection;
+use Duyler\EventBus\Internal\Event\ActionIsCompleteEvent;
+use Duyler\EventBus\Internal\EventDispatcher;
 
-readonly class Publisher
+class Publisher
 {
     public function __construct(
         private EventDispatcher $eventDispatcher,
-        private EventCollection $eventCollection,
+        private CompleteActionCollection $completeActionCollection,
     ) {}
 
-    /**
-     * @throws ConsecutiveRepeatedActionException
-     * @throws CircularCallActionException
-     */
     public function publish(Task $task): void
     {
-        $event = new Event(
+        $completeAction = new CompleteAction(
             action: $task->action,
             result: $task->getResult(),
         );
 
-        $this->eventCollection->save($event);
-        $this->eventDispatcher->dispatch($event);
+        $this->completeActionCollection->save($completeAction);
+        $this->eventDispatcher->dispatch(new ActionIsCompleteEvent($completeAction));
     }
 }

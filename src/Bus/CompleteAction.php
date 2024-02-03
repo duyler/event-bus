@@ -7,7 +7,7 @@ namespace Duyler\EventBus\Bus;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 
-readonly class Event
+readonly class CompleteAction
 {
     public function __construct(
         public Action $action,

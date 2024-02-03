@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Collection;
 
-use Duyler\EventBus\Bus\Event;
+use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Dto\Result;
 
-class EventCollection extends AbstractCollection
+class CompleteActionCollection extends AbstractCollection
 {
-    public function save(Event $event): void
+    public function save(CompleteAction $event): void
     {
         $this->data[$event->action->id] = $event;
     }
 
     /**
-     * @return Event[]
+     * @return CompleteAction[]
      */
     public function getAllByArray(array $array): array
     {
@@ -27,7 +27,7 @@ class EventCollection extends AbstractCollection
         return $this->data[$actionId]->result ?? null;
     }
 
-    public function get(string $actionId): Event
+    public function get(string $actionId): CompleteAction
     {
         return $this->data[$actionId];
     }

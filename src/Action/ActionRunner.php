@@ -7,60 +7,44 @@ namespace Duyler\EventBus\Action;
 use Duyler\EventBus\Action\Exception\ActionReturnValueExistsException;
 use Duyler\EventBus\Action\Exception\ActionReturnValueNotExistsException;
 use Duyler\EventBus\Action\Exception\ActionReturnValueWillBeCompatibleException;
-use Duyler\EventBus\Action\Exception\InvalidArgumentFactoryException;
 use Duyler\EventBus\Contract\ActionRunnerInterface;
-use Duyler\EventBus\Contract\StateActionInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Internal\Event\ActionAfterRunEvent;
+use Duyler\EventBus\Internal\Event\ActionBeforeRunEvent;
+use Duyler\EventBus\Internal\Event\ActionThrownExceptionEvent;
 use Override;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
 class ActionRunner implements ActionRunnerInterface
 {
     public function __construct(
-        private ActionContainerProvider $actionContainerProvider,
-        private StateActionInterface $stateAction,
-        private ActionHandlerArgumentBuilder $argumentBuilder,
-        private ActionHandlerBuilder $handlerBuilder,
-        private ActionContainerBind $actionContainerBind,
+        private object $actionHandler,
+        private object|null $argument,
+        private EventDispatcherInterface $eventDispatcher,
     ) {}
 
-    /**
-     * @throws ActionReturnValueNotExistsException
-     * @throws ActionReturnValueWillBeCompatibleException
-     * @throws InvalidArgumentFactoryException
-     * @throws Throwable
-     * @throws ActionReturnValueExistsException
-     */
     #[Override]
-    public function runAction(Action $action): Result
+    public function run(Action $action): Result
     {
-        $container = $this->actionContainerProvider->get($action);
-
         try {
-            $actionInstance = $this->handlerBuilder->build($action, $container);
-            $argument = $this->argumentBuilder->build($action, $container);
-            $this->stateAction->before($action);
-            $resultData = ($actionInstance)($argument);
-            $result = $this->prepareResult($action, $resultData, $container);
-
-            $this->actionContainerBind->add($action, $result);
+            $this->eventDispatcher->dispatch(new ActionBeforeRunEvent($action));
+            $resultData = ($this->actionHandler)($this->argument);
+            $result = $this->prepareResult($action, $resultData);
+            $this->eventDispatcher->dispatch(new ActionAfterRunEvent($action));
+            return $result;
         } catch (Throwable $exception) {
-            $this->stateAction->throwing($action, $exception);
+            $this->eventDispatcher->dispatch(new ActionThrownExceptionEvent($action, $exception));
             throw $exception;
         }
-
-        $this->stateAction->after($action);
-
-        return $result;
     }
 
     /**
      * @throws ActionReturnValueExistsException
      * @throws ActionReturnValueNotExistsException
      * @throws ActionReturnValueWillBeCompatibleException
-     * @todo To be refactoring
      */
     private function prepareResult(Action $action, mixed $resultData): Result
     {

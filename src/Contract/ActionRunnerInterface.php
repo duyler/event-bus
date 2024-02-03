@@ -9,5 +9,5 @@ use Duyler\EventBus\Dto\Result;
 
 interface ActionRunnerInterface
 {
-    public function runAction(Action $action): Result;
+    public function run(Action $action): Result;
 }

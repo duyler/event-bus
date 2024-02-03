@@ -4,67 +4,55 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use Duyler\EventBus\Contract\ActionRunnerInterface;
-use Duyler\EventBus\Contract\StateMainInterface;
+use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
 use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Exception\CircularCallActionException;
-use Duyler\EventBus\Exception\ConsecutiveRepeatedActionException;
+use Duyler\EventBus\Internal\Event\DoWhileBeginEvent;
+use Duyler\EventBus\Internal\Event\DoWhileEndEvent;
+use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
+use Duyler\EventBus\Internal\Event\TaskBeforeRunEvent;
+use Duyler\EventBus\Internal\Event\TaskResumeEvent;
+use Duyler\EventBus\Internal\Event\TaskSuspendedEvent;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 class DoWhile
 {
     public function __construct(
         private Publisher $publisher,
-        private ActionRunnerInterface $actionRunner,
+        private ActionRunnerProviderInterface $actionRunnerProvider,
         private TaskQueue $taskQueue,
-        private StateMainInterface $stateMain,
+        private EventDispatcherInterface $eventDispatcher,
     ) {}
 
-    /**
-     * @throws ConsecutiveRepeatedActionException
-     * @throws CircularCallActionException
-     */
     public function run(): void
     {
-        $this->stateMain->begin();
+        $this->eventDispatcher->dispatch(new DoWhileBeginEvent());
 
         do {
             $task = $this->taskQueue->dequeue();
 
             if ($task->isRunning()) {
-                $this->stateMain->resume($task);
-                $this->dispatch($task);
+                $this->eventDispatcher->dispatch(new TaskResumeEvent($task));
+                $this->process($task);
                 continue;
             }
 
-            $this->stateMain->before($task);
-            $this->runTask($task);
+            $this->eventDispatcher->dispatch(new TaskBeforeRunEvent($task));
+            $actionRunner = $this->actionRunnerProvider->getRunner($task->action);
+            $task->run(fn(): Result => $actionRunner->run($task->action));
+            $this->process($task);
         } while ($this->taskQueue->isNotEmpty());
 
-        $this->stateMain->end();
+        $this->eventDispatcher->dispatch(new DoWhileEndEvent());
     }
 
-    /**
-     * @throws ConsecutiveRepeatedActionException
-     * @throws CircularCallActionException
-     */
-    public function runTask(Task $task): void
-    {
-        $task->run(fn(): Result => $this->actionRunner->runAction($task->action));
-        $this->dispatch($task);
-    }
-
-    /**
-     * @throws ConsecutiveRepeatedActionException
-     * @throws CircularCallActionException
-     */
-    private function dispatch(Task $task): void
+    private function process(Task $task): void
     {
         if ($task->isRunning()) {
             $this->taskQueue->push($task);
-            $this->stateMain->suspend($task);
+            $this->eventDispatcher->dispatch(new TaskSuspendedEvent($task));
         } else {
             $this->publisher->publish($task);
-            $this->stateMain->after($task);
+            $this->eventDispatcher->dispatch(new TaskAfterRunEvent($task));
         }
     }
 }

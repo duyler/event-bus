@@ -4,25 +4,23 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\unit\Action;
 
-use Duyler\EventBus\Action\ActionContainerBind;
 use Duyler\EventBus\Action\ActionContainerProvider;
-use Duyler\EventBus\Action\ActionRunner;
+use Duyler\EventBus\Action\ActionRunnerProvider;
 use Duyler\EventBus\Action\ActionHandlerArgumentBuilder;
 use Duyler\EventBus\Action\ActionHandlerBuilder;
 use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\State\StateAction;
 use Exception;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
 class ActionRannerTest extends TestCase
 {
     private ActionContainerProvider $containerBuilder;
-    private StateAction $stateAction;
     private ActionHandlerArgumentBuilder $argumentBuilder;
     private ActionHandlerBuilder $handlerBuilder;
-    private ActionContainerBind $actionContainerBind;
+    private EventDispatcherInterface $eventDispatcher;
 
     #[Test]
     public function runAction_with_exception(): void
@@ -32,12 +30,14 @@ class ActionRannerTest extends TestCase
 
         $this->expectException(Throwable::class);
 
-        $actionRunner->runAction(
-            new Action(
-                id: 'Test',
-                handler: fn() => '',
-            )
+        $action = new Action(
+            id: 'Test',
+            handler: fn() => '',
         );
+
+        $runner = $actionRunner->getRunner($action);
+
+        $runner->run($action);
     }
 
     /**
@@ -46,22 +46,21 @@ class ActionRannerTest extends TestCase
     protected function setUp(): void
     {
         $this->containerBuilder = $this->createMock(ActionContainerProvider::class);
-        $this->stateAction = $this->createMock(StateAction::class);
         $this->argumentBuilder = $this->createMock(ActionHandlerArgumentBuilder::class);
         $this->handlerBuilder = $this->createMock(ActionHandlerBuilder::class);
-        $this->actionContainerBind = $this->createMock(ActionContainerBind::class);
+        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+
 
         parent::setUp();
     }
 
-    private function createInstance(): ActionRunner
+    private function createInstance(): ActionRunnerProvider
     {
-        return new ActionRunner(
+        return new ActionRunnerProvider(
             actionContainerProvider: $this->containerBuilder,
-            stateAction: $this->stateAction,
             argumentBuilder: $this->argumentBuilder,
             handlerBuilder: $this->handlerBuilder,
-            actionContainerBind: $this->actionContainerBind,
+            eventDispatcher: $this->eventDispatcher
         );
     }
 }
