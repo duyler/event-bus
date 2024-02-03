@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use Duyler\EventBus\Contract\ActionRunnerInterface;
+use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Internal\Event\DoWhileBeginEvent;
 use Duyler\EventBus\Internal\Event\DoWhileEndEvent;
@@ -18,7 +18,7 @@ class DoWhile
 {
     public function __construct(
         private Publisher $publisher,
-        private ActionRunnerInterface $actionRunner,
+        private ActionRunnerProviderInterface $actionRunnerProvider,
         private TaskQueue $taskQueue,
         private EventDispatcherInterface $eventDispatcher,
     ) {}
@@ -37,16 +37,12 @@ class DoWhile
             }
 
             $this->eventDispatcher->dispatch(new TaskBeforeRunEvent($task));
-            $this->runTask($task);
+            $actionRunner = $this->actionRunnerProvider->getRunner($task->action);
+            $task->run(fn(): Result => $actionRunner->run($task->action));
+            $this->process($task);
         } while ($this->taskQueue->isNotEmpty());
 
         $this->eventDispatcher->dispatch(new DoWhileEndEvent());
-    }
-
-    public function runTask(Task $task): void
-    {
-        $task->run(fn(): Result => $this->actionRunner->runAction($task->action));
-        $this->process($task);
     }
 
     private function process(Task $task): void

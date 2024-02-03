@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
-use Duyler\EventBus\Action\ActionRunner;
+use Duyler\EventBus\Action\ActionRunnerProvider;
 use Duyler\EventBus\Action\ActionSubstitution;
-use Duyler\EventBus\Contract\ActionRunnerInterface;
+use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
 use Duyler\EventBus\Contract\ActionSubstitutionInterface;
 use Duyler\EventBus\Contract\StateActionInterface;
 use Duyler\EventBus\Contract\StateMainInterface;
@@ -57,7 +57,7 @@ class BusConfig
     private function getBind(): array
     {
         return [
-            ActionRunnerInterface::class => ActionRunner::class,
+            ActionRunnerProviderInterface::class => ActionRunnerProvider::class,
             StateMainInterface::class => StateMain::class,
             StateActionInterface::class => StateAction::class,
             ActionSubstitutionInterface::class => ActionSubstitution::class,

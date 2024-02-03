@@ -12,7 +12,7 @@ class ActionHandlerBuilder
         private ActionSubstitution $actionSubstitution,
     ) {}
 
-    public function build(Action $action, ActionContainer $container): callable
+    public function build(Action $action, ActionContainer $container): object
     {
         if ($this->actionSubstitution->isSubstituteHandler($action->id)) {
             return $container->get($this->actionSubstitution->getSubstituteHandler($action->id));

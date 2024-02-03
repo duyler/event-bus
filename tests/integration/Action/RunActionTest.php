@@ -6,7 +6,7 @@ namespace Duyler\EventBus\Test\integration\Action;
 
 use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerInterface;
-use Duyler\EventBus\Action\ActionRunner;
+use Duyler\EventBus\Action\ActionRunnerProvider;
 use Duyler\EventBus\Contract\StateActionInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
@@ -36,15 +36,15 @@ class RunActionTest extends TestCase
 
         $actionRunner = $this->createActionRunner();
 
-        $result = $actionRunner->runAction($action);
+        $result = $actionRunner->getRunner($action);
 
         $this->assertEquals('hello', $result->data->sayHello());
     }
 
-    private function createActionRunner(): ActionRunner
+    private function createActionRunner(): ActionRunnerProvider
     {
         $this->container = new Container();
         $this->container->bind([StateActionInterface::class => StateAction::class]);
-        return $this->container->get(ActionRunner::class);
+        return $this->container->get(ActionRunnerProvider::class);
     }
 }

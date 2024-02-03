@@ -8,7 +8,7 @@ use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Internal\Event\ActionIsCompleteEvent;
 use Duyler\EventBus\Internal\EventDispatcher;
 
-readonly class Publisher
+class Publisher
 {
     public function __construct(
         private EventDispatcher $eventDispatcher,

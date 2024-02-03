@@ -28,15 +28,15 @@ class ResultService
             return $this->completeActionCollection->getResult($actionId);
         }
 
-        if ($this->triggerRelationCollection->isExists($actionId)) {
-            $triggerRelation = $this->triggerRelationCollection->getLast($actionId);
-            return new Result(
-                $triggerRelation->trigger->status,
-                $triggerRelation->trigger->data,
-            );
+        if ($this->triggerRelationCollection->isExists($actionId) === false) {
+            throw new RuntimeException('Action or trigger result for' . $actionId . ' does not exist');
         }
 
-        return null;
+        $triggerRelation = $this->triggerRelationCollection->getLast($actionId);
+        return new Result(
+            $triggerRelation->trigger->status,
+            $triggerRelation->trigger->data,
+        );
     }
 
     public function resultIsExists(string $actionId): bool
