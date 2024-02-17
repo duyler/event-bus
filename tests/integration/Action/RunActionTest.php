@@ -11,9 +11,13 @@ use Duyler\EventBus\Contract\StateActionInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Internal\EventDispatcher;
+use Duyler\EventBus\Internal\ListenerProvider;
 use Duyler\EventBus\State\StateAction;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\ListenerProviderInterface;
 use stdClass;
 
 class RunActionTest extends TestCase
@@ -36,7 +40,7 @@ class RunActionTest extends TestCase
 
         $actionRunner = $this->createActionRunner();
 
-        $result = $actionRunner->getRunner($action);
+        $result = $actionRunner->getRunner($action)->run($action);
 
         $this->assertEquals('hello', $result->data->sayHello());
     }
@@ -44,7 +48,11 @@ class RunActionTest extends TestCase
     private function createActionRunner(): ActionRunnerProvider
     {
         $this->container = new Container();
-        $this->container->bind([StateActionInterface::class => StateAction::class]);
+        $this->container->bind([
+            StateActionInterface::class => StateAction::class,
+            EventDispatcherInterface::class => EventDispatcher::class,
+            ListenerProviderInterface::class => ListenerProvider::class,
+        ]);
         return $this->container->get(ActionRunnerProvider::class);
     }
 }
