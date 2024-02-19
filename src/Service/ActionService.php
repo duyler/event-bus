@@ -11,8 +11,8 @@ use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\SubscriptionCollection;
 use Duyler\EventBus\Contract\ActionSubstitutionInterface;
 use Duyler\EventBus\Dto\Action;
-use RuntimeException;
-use InvalidArgumentException;
+use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
+use Duyler\EventBus\Exception\ActionNotDefinedException;
 
 readonly class ActionService
 {
@@ -26,23 +26,21 @@ readonly class ActionService
 
     public function addAction(Action $action): void
     {
-        if (false === $this->actionCollection->isExists($action->id)) {
-            foreach ($action->required as $subject) {
-                if (false === $this->actionCollection->isExists($subject)) {
-                    $this->throwNotRegistered($subject);
-                }
-            }
-
-            $this->actionCollection->save($action);
+        if ($this->actionCollection->isExists($action->id)) {
+            throw new ActionAlreadyDefinedException($action->id);
         }
+
+        foreach ($action->required as $subject) {
+            if (false === $this->actionCollection->isExists($subject)) {
+                $this->throwActionNotDefined($subject);
+            }
+        }
+
+        $this->actionCollection->save($action);
     }
 
     public function doAction(Action $action): void
     {
-        if (false === $action->externalAccess) {
-            throw new RuntimeException('Action ' . $action->id . ' does not allow external access');
-        }
-
         $this->addAction($action);
 
         $this->bus->doAction($action);
@@ -50,13 +48,21 @@ readonly class ActionService
 
     public function doExistsAction(string $actionId): void
     {
+        if (false === $this->actionCollection->isExists($actionId)) {
+            $this->throwActionNotDefined($actionId);
+        }
+
         $action = $this->actionCollection->get($actionId);
 
-        $this->doAction($action);
+        $this->bus->doAction($action);
     }
 
     public function getById(string $actionId): Action
     {
+        if (false === $this->actionCollection->isExists($actionId)) {
+            $this->throwActionNotDefined($actionId);
+        }
+
         return $this->actionCollection->get($actionId);
     }
 
@@ -78,19 +84,17 @@ readonly class ActionService
 
             foreach ($requiredIterator as $subject) {
                 if (false === array_key_exists($subject, $actions)) {
-                    $this->throwNotRegistered($subject);
+                    $this->throwActionNotDefined($subject);
                 }
             }
 
-            if (false === $this->actionCollection->isExists($action->id)) {
-                $this->actionCollection->save($action);
-            }
+            $this->actionCollection->save($action);
         }
     }
 
-    private function throwNotRegistered(string $subject): never
+    private function throwActionNotDefined(string $subject): never
     {
-        throw new InvalidArgumentException('Required action ' . $subject . ' not registered in the bus');
+        throw new ActionNotDefinedException($subject);
     }
 
     public function addSharedService(object $service, array $bind = []): void

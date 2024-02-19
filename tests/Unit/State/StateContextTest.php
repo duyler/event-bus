@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Test\unit\State;
+namespace Duyler\EventBus\Test\Unit\State;
 
 use Duyler\EventBus\State\StateSuspendContext;
 use PHPUnit\Framework\Attributes\Test;

@@ -7,7 +7,8 @@ namespace Duyler\EventBus\Service;
 use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Result;
-use RuntimeException;
+use Duyler\EventBus\Exception\ActionNotAllowExternalAccessException;
+use Duyler\EventBus\Exception\ResultNotExistsException;
 
 class ResultService
 {
@@ -16,20 +17,20 @@ class ResultService
         private TriggerRelationCollection $triggerRelationCollection,
     ) {}
 
-    public function getResult(string $actionId): ?Result
+    public function getResult(string $actionId): Result
     {
         if ($this->completeActionCollection->isExists($actionId)) {
             $completeAction = $this->completeActionCollection->get($actionId);
 
             if (false === $completeAction->action->externalAccess) {
-                throw new RuntimeException('Action ' . $actionId . ' does not allow external access');
+                throw new ActionNotAllowExternalAccessException($actionId);
             }
 
             return $this->completeActionCollection->getResult($actionId);
         }
 
         if ($this->triggerRelationCollection->isExists($actionId) === false) {
-            throw new RuntimeException('Action or trigger result for' . $actionId . ' does not exist');
+            throw new ResultNotExistsException($actionId);
         }
 
         $triggerRelation = $this->triggerRelationCollection->getLast($actionId);

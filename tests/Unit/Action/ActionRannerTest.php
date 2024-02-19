@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Test\unit\Action;
+namespace Duyler\EventBus\Test\Unit\Action;
 
 use Duyler\EventBus\Action\ActionContainerProvider;
 use Duyler\EventBus\Action\ActionRunnerProvider;

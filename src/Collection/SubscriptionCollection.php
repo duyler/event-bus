@@ -6,7 +6,6 @@ namespace Duyler\EventBus\Collection;
 
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
-use RuntimeException;
 
 use function array_key_exists;
 use function preg_quote;
@@ -22,10 +21,6 @@ class SubscriptionCollection extends AbstractCollection
     public function save(Subscription $subscription): void
     {
         $id = $this->makeSubscriptionId($subscription);
-
-        if (array_key_exists($id, $this->data)) {
-            throw new RuntimeException('Subscription ' . $id . ' already registered in the bus');
-        }
 
         $this->data[$id] = $subscription;
         $this->byActionId[$subscription->actionId][] = $subscription;

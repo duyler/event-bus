@@ -11,6 +11,7 @@ use Duyler\EventBus\Collection\SubscriptionCollection;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
 use InvalidArgumentException;
 
 readonly class SubscriptionService
@@ -24,6 +25,10 @@ readonly class SubscriptionService
 
     public function addSubscription(Subscription $subscription): void
     {
+        if ($this->subscriptionCollection->isExists($subscription)) {
+            throw new SubscriptionAlreadyDefinedException($subscription);
+        }
+
         if ($this->actionCollection->isExists($subscription->actionId) === false) {
             throw new InvalidArgumentException('Action ' . $subscription->actionId . ' not registered in the bus');
         }

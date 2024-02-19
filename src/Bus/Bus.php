@@ -35,7 +35,7 @@ class Bus
         foreach ($requiredIterator as $subject) {
             $requiredAction = $this->actionCollection->get($subject);
 
-            if (!empty($requiredAction->sealed && in_array($action->id, $requiredAction->sealed))) {
+            if (!empty($requiredAction->sealed && !in_array($action->id, $requiredAction->sealed))) {
                 return;
             }
 
