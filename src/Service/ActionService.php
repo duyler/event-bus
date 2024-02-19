@@ -12,7 +12,7 @@ use Duyler\EventBus\Collection\SubscriptionCollection;
 use Duyler\EventBus\Contract\ActionSubstitutionInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
-use InvalidArgumentException;
+use Duyler\EventBus\Exception\ActionNotDefinedException;
 
 readonly class ActionService
 {
@@ -32,7 +32,7 @@ readonly class ActionService
 
         foreach ($action->required as $subject) {
             if (false === $this->actionCollection->isExists($subject)) {
-                $this->throwNotRegistered($subject);
+                $this->throwActionNotDefined($subject);
             }
         }
 
@@ -48,7 +48,10 @@ readonly class ActionService
 
     public function doExistsAction(string $actionId): void
     {
-        // TODO Add check if action exists
+        if (false === $this->actionCollection->isExists($actionId)) {
+            $this->throwActionNotDefined($actionId);
+        }
+
         $action = $this->actionCollection->get($actionId);
 
         $this->bus->doAction($action);
@@ -56,6 +59,10 @@ readonly class ActionService
 
     public function getById(string $actionId): Action
     {
+        if (false === $this->actionCollection->isExists($actionId)) {
+            $this->throwActionNotDefined($actionId);
+        }
+
         return $this->actionCollection->get($actionId);
     }
 
@@ -77,7 +84,7 @@ readonly class ActionService
 
             foreach ($requiredIterator as $subject) {
                 if (false === array_key_exists($subject, $actions)) {
-                    $this->throwNotRegistered($subject);
+                    $this->throwActionNotDefined($subject);
                 }
             }
 
@@ -85,9 +92,9 @@ readonly class ActionService
         }
     }
 
-    private function throwNotRegistered(string $subject): never
+    private function throwActionNotDefined(string $subject): never
     {
-        throw new InvalidArgumentException('Required action ' . $subject . ' not registered in the bus');
+        throw new ActionNotDefinedException($subject);
     }
 
     public function addSharedService(object $service, array $bind = []): void

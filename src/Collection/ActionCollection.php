@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Collection;
 
 use Duyler\EventBus\Dto\Action;
-use RuntimeException;
 
 use function array_key_exists;
 
@@ -24,10 +23,6 @@ class ActionCollection extends AbstractCollection
 
     public function get(string $actionId): Action
     {
-        if (false === $this->isExists($actionId)) {
-            throw new RuntimeException('Action ' . $actionId . ' not found in the collection');
-        }
-
         return $this->data[$actionId];
     }
 
