@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Test\unit\Collection;
+namespace Duyler\EventBus\Test\Unit\Collection;
 
 use Duyler\EventBus\Action\ActionContainer;
 use Duyler\EventBus\Collection\ActionContainerCollection;

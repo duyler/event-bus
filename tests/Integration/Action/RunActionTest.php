@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Test\integration\Action;
+namespace Duyler\EventBus\Test\Integration\Action;
 
 use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerInterface;

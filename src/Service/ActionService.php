@@ -11,7 +11,7 @@ use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\SubscriptionCollection;
 use Duyler\EventBus\Contract\ActionSubstitutionInterface;
 use Duyler\EventBus\Dto\Action;
-use RuntimeException;
+use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
 use InvalidArgumentException;
 
 readonly class ActionService
@@ -26,23 +26,21 @@ readonly class ActionService
 
     public function addAction(Action $action): void
     {
-        if (false === $this->actionCollection->isExists($action->id)) {
-            foreach ($action->required as $subject) {
-                if (false === $this->actionCollection->isExists($subject)) {
-                    $this->throwNotRegistered($subject);
-                }
-            }
-
-            $this->actionCollection->save($action);
+        if ($this->actionCollection->isExists($action->id)) {
+            throw new ActionAlreadyDefinedException($action->id);
         }
+
+        foreach ($action->required as $subject) {
+            if (false === $this->actionCollection->isExists($subject)) {
+                $this->throwNotRegistered($subject);
+            }
+        }
+
+        $this->actionCollection->save($action);
     }
 
     public function doAction(Action $action): void
     {
-        if (false === $action->externalAccess) {
-            throw new RuntimeException('Action ' . $action->id . ' does not allow external access');
-        }
-
         $this->addAction($action);
 
         $this->bus->doAction($action);
@@ -50,9 +48,10 @@ readonly class ActionService
 
     public function doExistsAction(string $actionId): void
     {
+        // TODO Add check if action exists
         $action = $this->actionCollection->get($actionId);
 
-        $this->doAction($action);
+        $this->bus->doAction($action);
     }
 
     public function getById(string $actionId): Action
@@ -82,9 +81,7 @@ readonly class ActionService
                 }
             }
 
-            if (false === $this->actionCollection->isExists($action->id)) {
-                $this->actionCollection->save($action);
-            }
+            $this->actionCollection->save($action);
         }
     }
 

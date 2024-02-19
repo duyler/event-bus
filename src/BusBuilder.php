@@ -10,6 +10,8 @@ use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Context;
 use Duyler\EventBus\Dto\Subscription;
+use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
+use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\StateService;
 use Duyler\EventBus\Service\SubscriptionService;
@@ -96,6 +98,10 @@ class BusBuilder
 
     public function addAction(Action $action): static
     {
+        if (array_key_exists($action->id, $this->actions)) {
+            throw new ActionAlreadyDefinedException($action->id);
+        }
+
         $this->actions[$action->id] = $action;
 
         return $this;
@@ -103,13 +109,23 @@ class BusBuilder
 
     public function addSubscription(Subscription $subscription): static
     {
-        $this->subscriptions[] = $subscription;
+        $id = $subscription->subjectId . '@' . $subscription->status->value . '@' . $subscription->actionId;
+
+        if (array_key_exists($id, $this->subscriptions)) {
+            throw new SubscriptionAlreadyDefinedException($subscription);
+        }
+
+        $this->subscriptions[$id] = $subscription;
 
         return $this;
     }
 
     public function doAction(Action $action): static
     {
+        if (array_key_exists($action->id, $this->actions)) {
+            throw new ActionAlreadyDefinedException($action->id);
+        }
+
         $this->actions[$action->id] = $action;
         $this->doActions[$action->id] = $action;
 

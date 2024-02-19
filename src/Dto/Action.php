@@ -21,7 +21,7 @@ readonly class Action
         public ?string $argumentFactory = null,
         public ?string $contract = null,
         public string | Closure $rollback = '',
-        public bool $externalAccess = false,
+        public bool $externalAccess = true,
         public bool $repeatable = false,
         public bool $continueIfFail = true,
         public bool $private = false,

@@ -15,9 +15,6 @@ class ActionCollection extends AbstractCollection
 
     public function save(Action $action): void
     {
-        if (array_key_exists($action->id, $this->data)) {
-            throw new RuntimeException('Action ' . $action->id . ' already registered');
-        }
         $this->data[$action->id] = $action;
 
         if (false === empty($action->contract)) {

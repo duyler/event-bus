@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Test\unit\Bus;
+namespace Duyler\EventBus\Test\Unit\Bus;
 
 use Duyler\EventBus\Bus\TaskQueue;
 use PHPUnit\Framework\Attributes\Test;
