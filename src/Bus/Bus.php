@@ -9,7 +9,7 @@ use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Enum\ResultStatus;
-use RuntimeException;
+use Duyler\EventBus\Exception\UnableToContinueWithFailActionException;
 
 use function count;
 
@@ -35,7 +35,7 @@ class Bus
         foreach ($requiredIterator as $subject) {
             $requiredAction = $this->actionCollection->get($subject);
 
-            if (!empty($requiredAction->sealed && !in_array($action->id, $requiredAction->sealed))) {
+            if (!empty($requiredAction->sealed) && !in_array($action->id, $requiredAction->sealed)) {
                 return;
             }
 
@@ -84,23 +84,23 @@ class Bus
 
     protected function isSatisfiedConditions(Task $task): bool
     {
-        if (empty($task->action->required)) {
+        if ($task->action->required->count() === 0) {
             return true;
         }
 
         $completeActions = $this->completeActionCollection->getAllByArray($task->action->required->getArrayCopy());
 
-        if (count($completeActions) < count($task->action->required)) {
+        if (count($completeActions) < $task->action->required->count()) {
             return false;
         }
 
         foreach ($completeActions as $completeAction) {
             if (ResultStatus::Fail === $completeAction->result->status) {
                 if (false === $completeAction->action->continueIfFail) {
-                    throw new RuntimeException('Cannot be continued because fail action ' . $completeAction->action->id);
+                    throw new UnableToContinueWithFailActionException($completeAction->action->id);
                 }
 
-                if (empty($completeAction->action->contract)) {
+                if ($completeAction->action->contract === '') {
                     continue;
                 }
 
@@ -119,6 +119,7 @@ class Bus
         return true;
     }
 
+    /** @param Action[] $actionsWithContract  */
     protected function isReplacedFailAction(array $actionsWithContract): bool
     {
         foreach ($actionsWithContract as $actionWithContract) {

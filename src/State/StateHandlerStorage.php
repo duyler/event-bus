@@ -75,46 +75,55 @@ class StateHandlerStorage
         };
     }
 
+    /** @return MainBeginStateHandlerInterface[] */
     public function getMainBegin(): array
     {
         return $this->mainBegin;
     }
 
+    /** @return MainBeforeStateHandlerInterface[] */
     public function getMainBefore(): array
     {
         return $this->mainBefore;
     }
 
+    /** @return MainSuspendStateHandlerInterface[] */
     public function getMainSuspend(): array
     {
         return $this->stateMainSuspend;
     }
 
+    /** @return MainResumeStateHandlerInterface[] */
     public function getMainResume(): array
     {
         return $this->stateMainResume;
     }
 
+    /** @return MainAfterStateHandlerInterface[] */
     public function getMainAfter(): array
     {
         return $this->mainAfter;
     }
 
+    /** @return MainEndStateHandlerInterface[] */
     public function getMainEnd(): array
     {
         return $this->mainEnd;
     }
 
+    /** @return ActionBeforeStateHandlerInterface[] */
     public function getActionBefore(): array
     {
         return $this->actionBefore;
     }
 
+    /** @return ActionThrowingStateHandlerInterface[] */
     public function getActionThrowing(): array
     {
         return $this->actionThrowing;
     }
 
+    /** @return ActionAfterStateHandlerInterface[] */
     public function getActionAfter(): array
     {
         return $this->actionAfter;

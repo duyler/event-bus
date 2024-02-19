@@ -25,6 +25,7 @@ readonly class Action
         public bool $repeatable = false,
         public bool $continueIfFail = true,
         public bool $private = false,
+        /** @var string[] */
         public array $sealed = [],
         public bool $silent = false,
     ) {
