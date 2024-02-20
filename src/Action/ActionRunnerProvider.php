@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Action;
 
 use Closure;
-use Duyler\EventBus\Action\Exception\ActionHandlerMustBeCallableException;
 use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Internal\Event\ActionAfterRunEvent;
@@ -30,10 +29,6 @@ class ActionRunnerProvider implements ActionRunnerProviderInterface
         $container = $this->actionContainerProvider->get($action);
         $handler = $this->handlerBuilder->build($action, $container);
         $argument = $this->argumentBuilder->build($action, $container);
-
-        if (!is_callable($handler)) {
-            throw new ActionHandlerMustBeCallableException();
-        }
 
         return function () use ($action, $handler, $argument): mixed {
             $this->eventDispatcher->dispatch(new ActionBeforeRunEvent($action));

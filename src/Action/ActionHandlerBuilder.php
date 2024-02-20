@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Action;
 
 use Closure;
+use Duyler\EventBus\Action\Exception\ActionHandlerMustBeCallableException;
 use Duyler\EventBus\Dto\Action;
 
 class ActionHandlerBuilder
@@ -13,7 +14,7 @@ class ActionHandlerBuilder
         private ActionSubstitution $actionSubstitution,
     ) {}
 
-    public function build(Action $action, ActionContainer $container): object
+    public function build(Action $action, ActionContainer $container): callable
     {
         if ($this->actionSubstitution->isSubstituteHandler($action->id)) {
             return $container->get($this->actionSubstitution->getSubstituteHandler($action->id));
@@ -23,6 +24,12 @@ class ActionHandlerBuilder
             return $action->handler;
         }
 
-        return $container->get($action->handler);
+        $handler = $container->get($action->handler);
+
+        if (!is_callable($handler)) {
+            throw new ActionHandlerMustBeCallableException();
+        }
+
+        return $handler;
     }
 }
