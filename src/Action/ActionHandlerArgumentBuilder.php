@@ -22,24 +22,24 @@ class ActionHandlerArgumentBuilder
         private TriggerRelationCollection $triggerRelationCollection,
     ) {}
 
-    /**
-     * @todo be refactored
-     */
-    public function build(Action $action, ActionContainer $container): mixed
+    /** @psalm-suppress MixedReturnStatement */
+    public function build(Action $action, ActionContainer $container): null|object
     {
         if (empty($action->argument)) {
             return null;
         }
 
+        /** @var array<string, object> $results */
         $results = [];
 
         if ($this->triggerRelationCollection->has($action->id)) {
             $trigger = $this->triggerRelationCollection->shift($action->id)->trigger;
-            if ($trigger->data !== null) {
+            if ($trigger->data !== null && $trigger->contract !== null) {
                 $results[$trigger->contract] = $trigger->data;
             }
         }
 
+        /** @psalm-suppress MixedArgumentTypeCoercion $completeActions */
         $completeActions = $this->completeActionCollection->getAllByArray($action->required->getArrayCopy());
 
         foreach ($completeActions as $completeAction) {
@@ -56,7 +56,7 @@ class ActionHandlerArgumentBuilder
         }
 
         if ($action->argumentFactory === null) {
-            foreach ($results as $interface => $definition) {
+            foreach ($results as $definition) {
                 if ($definition instanceof $action->argument) {
                     return $definition;
                 }
@@ -75,19 +75,28 @@ class ActionHandlerArgumentBuilder
         return $factory();
     }
 
+    /** @return array<string, object>  */
     private function prepareRequiredResults(CompleteAction $completeAction): array
     {
         $results = [];
 
-        if (ResultStatus::Fail === $completeAction->result->status) {
+        if (ResultStatus::Fail === $completeAction->result->status && $completeAction->action->contract !== null) {
             $actionsWithContract = $this->actionCollection->getByContract($completeAction->action->contract);
 
             foreach ($actionsWithContract as $actionWithContract) {
                 if ($this->completeActionCollection->isExists($actionWithContract->id)) {
                     $replaceTaskEvent = $this->completeActionCollection->get($actionWithContract->id);
+
                     if (ResultStatus::Success === $replaceTaskEvent->result->status) {
-                        $interface = array_search($replaceTaskEvent->result->data::class, $actionWithContract->bind)
-                            ?: $replaceTaskEvent->result->data::class;
+                        if ($replaceTaskEvent->result->data === null) {
+                            continue;
+                        }
+
+                        $interface = array_search($replaceTaskEvent->result->data::class, $actionWithContract->bind);
+                        if (!is_string($interface)) {
+                            $interface = $replaceTaskEvent->result->data::class;
+                        }
+
                         $results[$interface] = $replaceTaskEvent->result->data;
 
                         return $results;
@@ -96,9 +105,13 @@ class ActionHandlerArgumentBuilder
             }
         }
 
-        $interface = array_search($completeAction->result->data::class, $completeAction->action->bind)
-            ?: $completeAction->result->data::class;
-        $results[$interface] = $completeAction->result->data;
+        if ($completeAction->result->data !== null) {
+            $interface = array_search($completeAction->result->data::class, $completeAction->action->bind);
+            if (!is_string($interface)) {
+                $interface = $completeAction->result->data::class;
+            }
+            $results[$interface] = $completeAction->result->data;
+        }
 
         return $results;
     }

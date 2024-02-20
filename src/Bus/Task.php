@@ -8,6 +8,7 @@ use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Closure;
 use Fiber;
+use LogicException;
 
 class Task
 {
@@ -33,12 +34,13 @@ class Task
 
     public function resume(mixed $data = null): void
     {
-        $this->value = $this->fiber->resume($data);
+        $this->value = $this->fiber?->resume($data) ?? throw new LogicException('Fiber is not running');
     }
 
+    /** @psalm-suppress MixedReturnStatement */
     public function getResult(): Result
     {
-        return $this->fiber->getReturn();
+        return $this->fiber?->getReturn() ?? throw new LogicException('Fiber is not running');
     }
 
     public function getValue(): mixed

@@ -10,17 +10,25 @@ readonly class LogService
 {
     public function __construct(private Log $log) {}
 
-    public function getFirstAction(): string
+    public function getFirstAction(): ?string
     {
         $actionLog = $this->log->getActionLog();
 
-        return $actionLog[array_key_first($actionLog)];
+        if (empty($actionLog)) {
+            return null;
+        }
+
+        return (string) current($actionLog);
     }
 
-    public function getLastAction(): string
+    public function getLastAction(): null|string
     {
         $actionLog = $this->log->getActionLog();
 
-        return $actionLog[array_key_last($actionLog)];
+        if (empty($actionLog)) {
+            return null;
+        }
+
+        return (string) end($actionLog);
     }
 }

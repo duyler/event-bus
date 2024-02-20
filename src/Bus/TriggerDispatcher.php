@@ -30,7 +30,7 @@ class TriggerDispatcher
                 throw new InvalidArgumentException('Trigger contract will be received');
             }
 
-            if (is_a($trigger->data, $trigger->contract) === false) {
+            if ($trigger->data instanceof $trigger->contract === false) {
                 throw new InvalidArgumentException('Trigger data will be compatible with ' . $trigger->contract);
             }
         } else {

@@ -11,12 +11,12 @@ use Duyler\EventBus\Service\LogService;
  */
 trait LogServiceTrait
 {
-    public function getFirstAction(): string
+    public function getFirstAction(): ?string
     {
         return $this->logService->getFirstAction();
     }
 
-    public function getLastAction(): string
+    public function getLastAction(): ?string
     {
         return $this->logService->getLastAction();
     }

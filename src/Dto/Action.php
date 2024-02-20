@@ -20,7 +20,7 @@ readonly class Action
         public string $argument = '',
         public ?string $argumentFactory = null,
         public ?string $contract = null,
-        public string | Closure $rollback = '',
+        public null | string | Closure $rollback = null,
         public bool $externalAccess = true,
         public bool $repeatable = false,
         public bool $continueIfFail = true,

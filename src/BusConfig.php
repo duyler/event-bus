@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
+use Duyler\DependencyInjection\Definition;
 use Duyler\EventBus\Action\ActionRunnerProvider;
 use Duyler\EventBus\Action\ActionSubstitution;
 use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
@@ -43,17 +44,24 @@ use Psr\EventDispatcher\ListenerProviderInterface;
 
 class BusConfig
 {
+    /** @var array<string, string> */
     public readonly array $bind;
 
+    /** @param array<string, string> $bind */
     public function __construct(
         array $bind = [],
+
+        /** @var array<string, string> */
         public readonly array $providers = [],
+
+        /** @var Definition[] */
         public readonly array $definitions = [],
         public readonly bool $enableTriggers = true,
     ) {
         $this->bind = $this->getBind() + $bind;
     }
 
+    /** @return array<string, string> */
     private function getBind(): array
     {
         return [
@@ -66,6 +74,7 @@ class BusConfig
         ];
     }
 
+    /** @return array<string, string[]> */
     public function getListeners(): array
     {
         return [

@@ -14,8 +14,14 @@ use function array_flip;
 use function preg_grep;
 use function array_keys;
 
-class SubscriptionCollection extends AbstractCollection
+class SubscriptionCollection
 {
+    /**
+     * @var array<string, Subscription>
+     */
+    private array $data = [];
+
+    /** @var array<string, array<array-key, Subscription>>  */
     private array $byActionId = [];
 
     public function save(Subscription $subscription): void
@@ -57,5 +63,26 @@ class SubscriptionCollection extends AbstractCollection
         }
 
         unset($this->byActionId[$actionId]);
+    }
+
+    private function makeActionIdWithStatus(string $actionId, ResultStatus $status): string
+    {
+        return $actionId . '.' . $status->value;
+    }
+
+    private function makeSubscriptionId(Subscription $subscription): string
+    {
+        return $subscription->subjectId . '.' . $subscription->status->value . '@' . $subscription->actionId;
+    }
+
+    public function getAll(): array
+    {
+        return $this->data;
+    }
+
+    public function cleanUp(): void
+    {
+        $this->data = [];
+        $this->byActionId = [];
     }
 }

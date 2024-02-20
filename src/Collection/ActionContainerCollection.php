@@ -4,8 +4,12 @@ namespace Duyler\EventBus\Collection;
 
 use Duyler\EventBus\Action\ActionContainer;
 
-class ActionContainerCollection extends AbstractCollection
+class ActionContainerCollection
 {
+    /**
+     * @var array<string, ActionContainer>
+     */
+    private array $data = [];
     public function save(ActionContainer $container): void
     {
         $this->data[$container->actionId] = $container;
@@ -26,9 +30,13 @@ class ActionContainerCollection extends AbstractCollection
 
     public function cleanUp(): void
     {
-        /** @var ActionContainer $container */
         foreach ($this->data as $container) {
             $container->softCleanUp();
         }
+    }
+
+    public function getAll(): array
+    {
+        return $this->data;
     }
 }

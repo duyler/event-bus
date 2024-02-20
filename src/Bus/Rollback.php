@@ -25,7 +25,7 @@ class Rollback
             : $this->completeActionCollection->getAllByArray($slice);
 
         foreach ($completeActions as $completeAction) {
-            if (empty($completeAction->action->rollback)) {
+            if ($completeAction->action->rollback === null) {
                 continue;
             }
 
@@ -36,7 +36,9 @@ class Rollback
 
             $actionContainer = $this->containerCollection->get($completeAction->action->id);
 
-            $this->rollback($actionContainer->get($completeAction->action->rollback), $completeAction->result);
+            /** @var RollbackActionInterface $rollback */
+            $rollback = $actionContainer->get($completeAction->action->rollback);
+            $this->rollback($rollback, $completeAction->result);
         }
     }
 

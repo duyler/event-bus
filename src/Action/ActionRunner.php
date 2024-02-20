@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
+use Duyler\EventBus\Action\Exception\ActionHandlerMustBeCallableException;
 use Duyler\EventBus\Action\Exception\ActionReturnValueExistsException;
 use Duyler\EventBus\Action\Exception\ActionReturnValueNotExistsException;
-use Duyler\EventBus\Action\Exception\ActionReturnValueWillBeCompatibleException;
+use Duyler\EventBus\Action\Exception\ActionReturnValueMustBeCompatibleException;
+use Duyler\EventBus\Action\Exception\ActionReturnValueMustBeTypeObjectException;
 use Duyler\EventBus\Contract\ActionRunnerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
@@ -31,6 +33,9 @@ class ActionRunner implements ActionRunnerInterface
     {
         try {
             $this->eventDispatcher->dispatch(new ActionBeforeRunEvent($action));
+            if (!is_callable($this->actionHandler)) {
+                throw new ActionHandlerMustBeCallableException();
+            }
             $resultData = ($this->actionHandler)($this->argument);
             $result = $this->prepareResult($action, $resultData);
             $this->eventDispatcher->dispatch(new ActionAfterRunEvent($action));
@@ -44,7 +49,7 @@ class ActionRunner implements ActionRunnerInterface
     /**
      * @throws ActionReturnValueExistsException
      * @throws ActionReturnValueNotExistsException
-     * @throws ActionReturnValueWillBeCompatibleException
+     * @throws ActionReturnValueMustBeCompatibleException
      */
     private function prepareResult(Action $action, mixed $resultData): Result
     {
@@ -54,7 +59,7 @@ class ActionRunner implements ActionRunnerInterface
             }
 
             if ($resultData->data !== null && $resultData->data instanceof $action->contract === false) {
-                throw new ActionReturnValueWillBeCompatibleException($action->id, $action->contract);
+                throw new ActionReturnValueMustBeCompatibleException($action->id, $action->contract);
             }
 
             if ($action->contract !== null && $resultData->data === null) {
@@ -65,12 +70,16 @@ class ActionRunner implements ActionRunnerInterface
         }
 
         if ($resultData !== null) {
+            if (is_object($resultData) === false) {
+                throw new ActionReturnValueMustBeTypeObjectException($action->id, $resultData);
+            }
+
             if ($action->contract === null) {
                 throw new ActionReturnValueExistsException($action->id);
             }
 
             if ($resultData instanceof $action->contract === false) {
-                throw new ActionReturnValueWillBeCompatibleException($action->id, $action->contract);
+                throw new ActionReturnValueMustBeCompatibleException($action->id, $action->contract);
             }
 
             return new Result(ResultStatus::Success, $resultData);

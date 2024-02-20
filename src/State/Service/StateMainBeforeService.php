@@ -18,6 +18,7 @@ class StateMainBeforeService
         private readonly ActionService $actionService,
     ) {}
 
+    /** @param array<string, object> $substitutions */
     public function substituteResult(string $actionId, array $substitutions): void
     {
         $this->actionService->addResultSubstitutions($actionId, $substitutions);

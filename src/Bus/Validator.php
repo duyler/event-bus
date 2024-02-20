@@ -38,7 +38,7 @@ class Validator
         }
 
         if (count($mainEventLog) === count($repeatedEventLog)) {
-            throw new CircularCallActionException($completeAction->action->id, end($mainEventLog));
+            throw new CircularCallActionException($completeAction->action->id, (string) end($mainEventLog));
         }
     }
 }

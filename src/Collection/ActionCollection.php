@@ -8,15 +8,21 @@ use Duyler\EventBus\Dto\Action;
 
 use function array_key_exists;
 
-class ActionCollection extends AbstractCollection
+class ActionCollection
 {
+    /**
+     * @var array<string, Action>
+     */
+    private array $data = [];
+
+    /** @var array<string, array<string, Action>>  */
     private array $byContract = [];
 
     public function save(Action $action): void
     {
         $this->data[$action->id] = $action;
 
-        if (false === empty($action->contract)) {
+        if ($action->contract !== null) {
             $this->byContract[$action->contract][$action->id] = $action;
         }
     }
@@ -40,5 +46,17 @@ class ActionCollection extends AbstractCollection
     public function getByContract(string $contract): array
     {
         return $this->byContract[$contract] ?? [];
+    }
+
+    /** @return array<string, Action> */
+    public function getAll(): array
+    {
+        return $this->data;
+    }
+
+    public function cleanUp(): void
+    {
+        $this->data = [];
+        $this->byContract = [];
     }
 }

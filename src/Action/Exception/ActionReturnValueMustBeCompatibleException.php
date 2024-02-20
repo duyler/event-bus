@@ -6,11 +6,11 @@ namespace Duyler\EventBus\Action\Exception;
 
 use Exception;
 
-class ActionReturnValueWillBeCompatibleException extends Exception
+class ActionReturnValueMustBeCompatibleException extends Exception
 {
     public function __construct(string $actionId, string $contract)
     {
-        $message = 'Action ' . $actionId . ' return value, will be compatible with ' . $contract;
+        $message = 'Action ' . $actionId . ' return value, must be compatible with ' . $contract;
         parent::__construct($message);
     }
 }
