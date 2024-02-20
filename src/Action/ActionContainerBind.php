@@ -9,11 +9,12 @@ use Duyler\EventBus\Dto\Result;
 
 class ActionContainerBind
 {
+    /** @var array<string, array<string, string>>  */
     private array $bind = [];
 
     public function add(Action $action, Result $result): void
     {
-        if ($result->data !== null) {
+        if ($result->data !== null && $action->contract !== null) {
             $this->bind[$action->id] = [
                 $action->contract => $result->data::class,
             ];

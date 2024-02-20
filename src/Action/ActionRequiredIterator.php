@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
+use Duyler\EventBus\Dto\Action;
 use RecursiveIteratorIterator;
-use Traversable;
 use RecursiveIterator;
 use InvalidArgumentException;
 
+/** @psalm-suppress MissingTemplateParam */
 class ActionRequiredIterator extends RecursiveIteratorIterator
 {
+    /** @var array<string, Action>  */
     private iterable $actions;
 
-    public function __construct(Traversable $iterator, array $actions)
+    /** @param array<string, Action> $actions */
+    public function __construct(RecursiveIterator $iterator, array $actions)
     {
         $this->actions = $actions;
         parent::__construct($iterator, self::CHILD_FIRST);
@@ -21,6 +24,7 @@ class ActionRequiredIterator extends RecursiveIteratorIterator
 
     public function callHasChildren(): bool
     {
+        /** @var string $current */
         $current = $this->current();
 
         if (false === array_key_exists($current, $this->actions)) {
@@ -32,6 +36,7 @@ class ActionRequiredIterator extends RecursiveIteratorIterator
 
     public function callGetChildren(): ?RecursiveIterator
     {
+        /** @var string $current */
         $current = $this->current();
 
         if (false === array_key_exists($current, $this->actions)) {

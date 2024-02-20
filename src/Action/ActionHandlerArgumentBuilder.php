@@ -22,7 +22,8 @@ class ActionHandlerArgumentBuilder
         private TriggerRelationCollection $triggerRelationCollection,
     ) {}
 
-    public function build(Action $action, ActionContainer $container): mixed
+    /** @psalm-suppress MixedReturnStatement */
+    public function build(Action $action, ActionContainer $container): null|object
     {
         if (empty($action->argument)) {
             return null;
@@ -93,7 +94,7 @@ class ActionHandlerArgumentBuilder
 
                         $interface = array_search($replaceTaskEvent->result->data::class, $actionWithContract->bind);
                         if (!is_string($interface)) {
-                            $interface =$replaceTaskEvent->result->data::class;
+                            $interface = $replaceTaskEvent->result->data::class;
                         }
 
                         $results[$interface] = $replaceTaskEvent->result->data;

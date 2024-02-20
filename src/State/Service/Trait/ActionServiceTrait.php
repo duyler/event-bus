@@ -45,6 +45,7 @@ trait ActionServiceTrait
         return $this->actionService->getByContract($contract);
     }
 
+    /** @param array<string, string> $bind */
     public function addSharedService(object $service, array $bind = []): void
     {
         $this->actionService->addSharedService($service, $bind);

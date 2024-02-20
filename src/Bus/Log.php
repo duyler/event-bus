@@ -8,8 +8,13 @@ use Duyler\EventBus\Dto\Action;
 
 class Log
 {
+    /** @var string[] */
     private array $actionLog = [];
+
+    /** @var string[] */
     private array $mainEventLog = [];
+
+    /** @var string[] */
     private array $repeatedEventLog = [];
 
     public function pushActionLog(Action $action): void

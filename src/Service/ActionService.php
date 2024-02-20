@@ -30,6 +30,7 @@ readonly class ActionService
             throw new ActionAlreadyDefinedException($action->id);
         }
 
+        /** @var string $subject */
         foreach ($action->required as $subject) {
             if (false === $this->actionCollection->isExists($subject)) {
                 $this->throwActionNotDefined($subject);
@@ -77,12 +78,13 @@ readonly class ActionService
         return $this->actionCollection->isExists($actionId);
     }
 
-    /** @param  Action[] $actions */
-    public function collect(iterable $actions): void
+    /** @param array<string, Action> $actions */
+    public function collect(array $actions): void
     {
         foreach ($actions as $action) {
             $requiredIterator = new ActionRequiredIterator($action->required, $actions);
 
+            /** @var string $subject */
             foreach ($requiredIterator as $subject) {
                 if (false === array_key_exists($subject, $actions)) {
                     $this->throwActionNotDefined($subject);
@@ -98,11 +100,13 @@ readonly class ActionService
         throw new ActionNotDefinedException($subject);
     }
 
+    /** @param array<string, string> $bind  */
     public function addSharedService(object $service, array $bind = []): void
     {
         $this->actionContainerProvider->addSharedService($service, $bind);
     }
 
+    /** @param array<string, object> $substitutions */
     public function addResultSubstitutions(string $actionId, array $substitutions): void
     {
         $this->actionSubstitution->addResultSubstitutions($actionId, $substitutions);

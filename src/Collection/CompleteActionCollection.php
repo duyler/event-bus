@@ -14,9 +14,9 @@ class CompleteActionCollection
      */
     private array $data = [];
 
-    public function save(CompleteAction $event): void
+    public function save(CompleteAction $completeAction): void
     {
-        $this->data[$event->action->id] = $event;
+        $this->data[$completeAction->action->id] = $completeAction;
     }
 
     /**
@@ -42,6 +42,9 @@ class CompleteActionCollection
         return array_key_exists($actionId, $this->data);
     }
 
+    /**
+     * @return array<string, CompleteAction>
+     */
     public function getAll(): array
     {
         return $this->data;

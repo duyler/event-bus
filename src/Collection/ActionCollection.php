@@ -48,6 +48,7 @@ class ActionCollection
         return $this->byContract[$contract] ?? [];
     }
 
+    /** @return array<string, Action> */
     public function getAll(): array
     {
         return $this->data;

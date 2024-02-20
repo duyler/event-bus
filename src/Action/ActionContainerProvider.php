@@ -30,6 +30,7 @@ class ActionContainerProvider
         $container->bind($action->bind);
         $container->addProviders($action->providers);
 
+        /** @psalm-suppress MixedArgumentTypeCoercion */
         $completeActions = $this->completeActionCollection->getAllByArray($action->required->getArrayCopy());
 
         foreach ($completeActions as $completeAction) {
@@ -58,6 +59,7 @@ class ActionContainerProvider
         return $container;
     }
 
+    /** @param array<string, string> $bind  */
     public function addSharedService(object $service, array $bind = []): void
     {
         $this->sharedServices[$service::class] = $service;

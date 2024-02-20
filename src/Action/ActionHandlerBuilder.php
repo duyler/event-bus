@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
+use Closure;
 use Duyler\EventBus\Dto\Action;
 
 class ActionHandlerBuilder
@@ -18,7 +19,7 @@ class ActionHandlerBuilder
             return $container->get($this->actionSubstitution->getSubstituteHandler($action->id));
         }
 
-        if (is_callable($action->handler)) {
+        if ($action->handler instanceof Closure) {
             return $action->handler;
         }
 

@@ -12,6 +12,7 @@ use Duyler\EventBus\Dto\Context;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
 use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
+use Duyler\EventBus\Internal\ListenerProvider;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\StateService;
 use Duyler\EventBus\Service\SubscriptionService;
@@ -19,20 +20,22 @@ use Psr\EventDispatcher\ListenerProviderInterface;
 
 class BusBuilder
 {
-    /** @var Action[] */
+    /** @var array<string, Action> */
     private array $actions = [];
 
     /** @var Subscription[] */
     private array $subscriptions = [];
 
-    /** @var Action[] */
+    /** @var array<string, Action> */
     private array $doActions = [];
 
     /** @var StateHandlerInterface[] */
     private array $stateHandlers = [];
 
+    /** @var object[] */
     private array $sharedServices = [];
 
+    /** @var array<string, string>  */
     private array $bind = [];
 
     /** @var Context[]  */
@@ -40,6 +43,9 @@ class BusBuilder
 
     public function __construct(private BusConfig $config) {}
 
+    /**
+     * @psalm-suppress MoreSpecificReturnType, LessSpecificReturnStatement
+     */
     public function build(): BusInterface
     {
         $containerConfig = new ContainerConfig();
@@ -85,6 +91,7 @@ class BusBuilder
             $stateService->addStateContext($context);
         }
 
+        /** @var ListenerProvider $listenerProvider */
         $listenerProvider = $container->get(ListenerProviderInterface::class);
 
         foreach ($this->config->getListeners() as $event => $listeners) {
@@ -146,6 +153,7 @@ class BusBuilder
         return $this;
     }
 
+    /** @param array<string, string> $bind */
     public function addSharedService(object $service, array $bind = []): static
     {
         $this->sharedServices[] = $service;

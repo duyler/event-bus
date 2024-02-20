@@ -32,6 +32,7 @@ class Bus
 
         $requiredIterator = new ActionRequiredIterator($action->required, $this->actionCollection->getAll());
 
+        /** @var string $subject */
         foreach ($requiredIterator as $subject) {
             $requiredAction = $this->actionCollection->get($subject);
 
@@ -88,6 +89,7 @@ class Bus
             return true;
         }
 
+        /** @psalm-suppress MixedArgumentTypeCoercion */
         $completeActions = $this->completeActionCollection->getAllByArray($task->action->required->getArrayCopy());
 
         if (count($completeActions) < $task->action->required->count()) {
@@ -100,7 +102,7 @@ class Bus
                     throw new UnableToContinueWithFailActionException($completeAction->action->id);
                 }
 
-                if ($completeAction->action->contract === '') {
+                if ($completeAction->action->contract === null) {
                     continue;
                 }
 
