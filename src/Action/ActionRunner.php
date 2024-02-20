@@ -31,19 +31,21 @@ class ActionRunner implements ActionRunnerInterface
     #[Override]
     public function run(Action $action): Result
     {
+        if (!is_callable($this->actionHandler)) {
+            throw new ActionHandlerMustBeCallableException();
+        }
+
+        $this->eventDispatcher->dispatch(new ActionBeforeRunEvent($action));
+
         try {
-            $this->eventDispatcher->dispatch(new ActionBeforeRunEvent($action));
-            if (!is_callable($this->actionHandler)) {
-                throw new ActionHandlerMustBeCallableException();
-            }
             $resultData = ($this->actionHandler)($this->argument);
-            $result = $this->prepareResult($action, $resultData);
-            $this->eventDispatcher->dispatch(new ActionAfterRunEvent($action));
-            return $result;
         } catch (Throwable $exception) {
             $this->eventDispatcher->dispatch(new ActionThrownExceptionEvent($action, $exception));
             throw $exception;
         }
+
+        $this->eventDispatcher->dispatch(new ActionAfterRunEvent($action));
+        return $this->prepareResult($action, $resultData);
     }
 
     /**
