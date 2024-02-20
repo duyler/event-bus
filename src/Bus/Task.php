@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
+use Duyler\EventBus\Action\Exception\ActionReturnValueExistsException;
+use Duyler\EventBus\Action\Exception\ActionReturnValueMustBeCompatibleException;
+use Duyler\EventBus\Action\Exception\ActionReturnValueMustBeTypeObjectException;
+use Duyler\EventBus\Action\Exception\ActionReturnValueNotExistsException;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Closure;
+use Duyler\EventBus\Enum\ResultStatus;
 use Fiber;
-use LogicException;
 
 class Task
 {
@@ -34,13 +38,51 @@ class Task
 
     public function resume(mixed $data = null): void
     {
-        $this->value = $this->fiber?->resume($data) ?? throw new LogicException('Fiber is not running');
+        $this->value = $this->fiber?->resume($data);
     }
 
-    /** @psalm-suppress MixedReturnStatement */
+    // TODO Refactor
     public function getResult(): Result
     {
-        return $this->fiber?->getReturn() ?? throw new LogicException('Fiber is not running');
+        $resultData = $this->fiber?->getReturn();
+
+        if ($resultData instanceof Result) {
+            if ($this->action->contract === null && $resultData->data !== null) {
+                throw new ActionReturnValueExistsException($this->action->id);
+            }
+
+            if ($resultData->data !== null && $resultData->data instanceof $this->action->contract === false) {
+                throw new ActionReturnValueMustBeCompatibleException($this->action->id, $this->action->contract);
+            }
+
+            if ($this->action->contract !== null && $resultData->data === null) {
+                throw new ActionReturnValueNotExistsException($this->action->id);
+            }
+
+            return $resultData;
+        }
+
+        if ($resultData !== null) {
+            if (is_object($resultData) === false) {
+                throw new ActionReturnValueMustBeTypeObjectException($this->action->id, $resultData);
+            }
+
+            if ($this->action->contract === null) {
+                throw new ActionReturnValueExistsException($this->action->id);
+            }
+
+            if ($resultData instanceof $this->action->contract === false) {
+                throw new ActionReturnValueMustBeCompatibleException($this->action->id, $this->action->contract);
+            }
+
+            return new Result(ResultStatus::Success, $resultData);
+        }
+
+        if ($this->action->contract !== null) {
+            throw new ActionReturnValueNotExistsException($this->action->id);
+        }
+
+        return new Result(ResultStatus::Success);
     }
 
     public function getValue(): mixed

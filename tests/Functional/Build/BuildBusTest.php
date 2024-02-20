@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Test\Integration\Bus;
+namespace Duyler\EventBus\Test\Functional\Build;
 
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
