@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
-use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Internal\Event\DoWhileBeginEvent;
 use Duyler\EventBus\Internal\Event\DoWhileEndEvent;
 use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
@@ -37,8 +36,7 @@ class DoWhile
             }
 
             $this->eventDispatcher->dispatch(new TaskBeforeRunEvent($task));
-            $actionRunner = $this->actionRunnerProvider->getRunner($task->action);
-            $task->run(fn(): Result => $actionRunner->run($task->action));
+            $task->run($this->actionRunnerProvider->getRunner($task->action));
             $this->process($task);
         } while ($this->taskQueue->isNotEmpty());
 

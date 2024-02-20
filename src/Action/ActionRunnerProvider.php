@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-use Duyler\EventBus\Contract\ActionRunnerInterface;
+use Closure;
+use Duyler\EventBus\Action\Exception\ActionHandlerMustBeCallableException;
 use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
 use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Internal\Event\ActionAfterRunEvent;
+use Duyler\EventBus\Internal\Event\ActionBeforeRunEvent;
+use Duyler\EventBus\Internal\Event\ActionThrownExceptionEvent;
 use Override;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Throwable;
 
 class ActionRunnerProvider implements ActionRunnerProviderInterface
 {
@@ -20,14 +25,28 @@ class ActionRunnerProvider implements ActionRunnerProviderInterface
     ) {}
 
     #[Override]
-    public function getRunner(Action $action): ActionRunnerInterface
+    public function getRunner(Action $action): Closure
     {
         $container = $this->actionContainerProvider->get($action);
+        $handler = $this->handlerBuilder->build($action, $container);
+        $argument = $this->argumentBuilder->build($action, $container);
 
-        return new ActionRunner(
-            actionHandler: $this->handlerBuilder->build($action, $container),
-            argument: $this->argumentBuilder->build($action, $container),
-            eventDispatcher: $this->eventDispatcher,
-        );
+        if (!is_callable($handler)) {
+            throw new ActionHandlerMustBeCallableException();
+        }
+
+        return function () use ($action, $handler, $argument): mixed {
+            $this->eventDispatcher->dispatch(new ActionBeforeRunEvent($action));
+
+            try {
+                $resultData = $handler($argument);
+            } catch (Throwable $exception) {
+                $this->eventDispatcher->dispatch(new ActionThrownExceptionEvent($action, $exception));
+                throw $exception;
+            }
+
+            $this->eventDispatcher->dispatch(new ActionAfterRunEvent($action));
+            return $resultData;
+        };
     }
 }
