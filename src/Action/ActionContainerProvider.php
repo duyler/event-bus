@@ -30,7 +30,6 @@ class ActionContainerProvider
         $container->bind($action->bind);
         $container->addProviders($action->providers);
 
-        /** @psalm-suppress MixedArgumentTypeCoercion */
         $completeActions = $this->completeActionCollection->getAllByArray($action->required->getArrayCopy());
 
         foreach ($completeActions as $completeAction) {

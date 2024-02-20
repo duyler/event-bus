@@ -9,15 +9,19 @@ use RecursiveArrayIterator;
 
 readonly class Action
 {
+    /** @var RecursiveArrayIterator<array-key, string> */
     public RecursiveArrayIterator $required;
 
+    /** @param array<array-key, string> $required  */
     public function __construct(
         public string $id,
         public string | Closure $handler,
         array $required = [],
+        /** @var array<string, string> */
         public array $bind = [],
+        /** @var array<string, string> */
         public array $providers = [],
-        public string $argument = '',
+        public ?string $argument = null,
         public ?string $argumentFactory = null,
         public ?string $contract = null,
         public null | string | Closure $rollback = null,

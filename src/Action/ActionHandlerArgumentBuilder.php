@@ -25,7 +25,7 @@ class ActionHandlerArgumentBuilder
     /** @psalm-suppress MixedReturnStatement */
     public function build(Action $action, ActionContainer $container): null|object
     {
-        if (empty($action->argument)) {
+        if ($action->argument === null) {
             return null;
         }
 
@@ -39,7 +39,6 @@ class ActionHandlerArgumentBuilder
             }
         }
 
-        /** @psalm-suppress MixedArgumentTypeCoercion $completeActions */
         $completeActions = $this->completeActionCollection->getAllByArray($action->required->getArrayCopy());
 
         foreach ($completeActions as $completeAction) {
