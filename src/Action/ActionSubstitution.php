@@ -9,7 +9,10 @@ use Override;
 
 class ActionSubstitution implements ActionSubstitutionInterface
 {
+    /** @var array<string, array<string, object>> */
     private array $requiredResultSubstitutions = [];
+
+    /** @var array<string, string> */
     private array $handlerSubstitutions = [];
 
     #[Override]

@@ -6,6 +6,7 @@ namespace Duyler\EventBus\Contract;
 
 interface ActionSubstitutionInterface
 {
+    /** @param array<string, object> $substitutions  */
     public function addResultSubstitutions(string $actionId, array $substitutions): void;
 
     public function addHandlerSubstitution(string $actionId, string $handlerSubstitution): void;
@@ -16,5 +17,6 @@ interface ActionSubstitutionInterface
 
     public function isSubstituteResult(string $actionId): bool;
 
+    /** @return array<string, object> */
     public function getSubstituteResult(string $actionId): array;
 }

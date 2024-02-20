@@ -5,9 +5,15 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Collection;
 
 use Duyler\EventBus\Bus\TriggerRelation;
+use RuntimeException;
 
-class TriggerRelationCollection extends AbstractCollection
+class TriggerRelationCollection
 {
+    /**
+     * @var array<string, array<array-key, TriggerRelation>>
+     */
+    private array $data = [];
+
     /** @var array<string, TriggerRelation>  */
     private array $lastById = [];
 
@@ -24,6 +30,9 @@ class TriggerRelationCollection extends AbstractCollection
 
     public function shift(string $actionId): TriggerRelation
     {
+        if (empty($this->data[$actionId])) {
+            throw new RuntimeException('Trigger relation for action ' . $actionId . ' not found');
+        }
         return array_shift($this->data[$actionId]);
     }
 
@@ -37,8 +46,14 @@ class TriggerRelationCollection extends AbstractCollection
         return isset($this->lastById[$triggerId]);
     }
 
+    public function getAll(): array
+    {
+        return $this->data;
+    }
+
     public function cleanUp(): void
     {
         $this->data = [];
+        $this->lastById = [];
     }
 }

@@ -66,6 +66,7 @@ readonly class ActionService
         return $this->actionCollection->get($actionId);
     }
 
+    /** @return array<string, Action> */
     public function getByContract(string $contract): array
     {
         return $this->actionCollection->getByContract($contract);

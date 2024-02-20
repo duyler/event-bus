@@ -7,24 +7,29 @@ namespace Duyler\EventBus\Collection;
 use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Dto\Result;
 
-class CompleteActionCollection extends AbstractCollection
+class CompleteActionCollection
 {
+    /**
+     * @var array<string, CompleteAction>
+     */
+    private array $data = [];
+
     public function save(CompleteAction $event): void
     {
         $this->data[$event->action->id] = $event;
     }
 
     /**
-     * @return CompleteAction[]
+     * @return array<string, CompleteAction>
      */
     public function getAllByArray(array $array): array
     {
         return array_intersect_key($this->data, array_flip($array));
     }
 
-    public function getResult(string $actionId): ?Result
+    public function getResult(string $actionId): Result
     {
-        return $this->data[$actionId]->result ?? null;
+        return $this->data[$actionId]->result;
     }
 
     public function get(string $actionId): CompleteAction
@@ -35,5 +40,15 @@ class CompleteActionCollection extends AbstractCollection
     public function isExists(string $actionId): bool
     {
         return array_key_exists($actionId, $this->data);
+    }
+
+    public function getAll(): array
+    {
+        return $this->data;
+    }
+
+    public function cleanUp(): void
+    {
+        $this->data = [];
     }
 }

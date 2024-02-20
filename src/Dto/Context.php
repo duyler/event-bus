@@ -6,5 +6,8 @@ namespace Duyler\EventBus\Dto;
 
 readonly class Context
 {
-    public function __construct(public array $scope) {}
+    public function __construct(
+        /** @var array<array-key, string> */
+        public array $scope
+    ) {}
 }
