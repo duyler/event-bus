@@ -52,14 +52,14 @@ jobs:
       - name: Run tests with phpunit
         run: vendor/bin/phpunit --colors=always
 
-      - name: Run PHP CS Fixer
-        run: vendor/bin/php-cs-fixer check --diff -v
-
-      - name: Run Psalm
-        run: vendor/bin/psalm --shepherd
-
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
         env:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: duyler/event-bus
+
+      - name: Run PHP CS Fixer
+        run: vendor/bin/php-cs-fixer check --diff -v
+
+      - name: Run Psalm
+        run: vendor/bin/psalm --shepherd
