@@ -89,7 +89,6 @@ class Bus
             return true;
         }
 
-        /** @psalm-suppress MixedArgumentTypeCoercion */
         $completeActions = $this->completeActionCollection->getAllByArray($task->action->required->getArrayCopy());
 
         if (count($completeActions) < $task->action->required->count()) {

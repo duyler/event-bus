@@ -39,7 +39,6 @@ class ActionHandlerArgumentBuilder
             }
         }
 
-        /** @psalm-suppress MixedArgumentTypeCoercion $completeActions */
         $completeActions = $this->completeActionCollection->getAllByArray($action->required->getArrayCopy());
 
         foreach ($completeActions as $completeAction) {
