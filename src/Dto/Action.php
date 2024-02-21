@@ -22,7 +22,7 @@ readonly class Action
         /** @var array<string, string> */
         public array $providers = [],
         public ?string $argument = null,
-        public ?string $argumentFactory = null,
+        public null | string | Closure $argumentFactory = null,
         public ?string $contract = null,
         public null | string | Closure $rollback = null,
         public bool $externalAccess = true,
