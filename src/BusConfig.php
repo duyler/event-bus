@@ -57,6 +57,7 @@ class BusConfig
         /** @var Definition[] */
         public readonly array $definitions = [],
         public readonly bool $enableTriggers = true,
+        public readonly bool $saveStateActionContainer = false,
     ) {
         $this->bind = $this->getBind() + $bind;
     }

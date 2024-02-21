@@ -39,4 +39,9 @@ class ActionContainerCollection
     {
         return $this->data;
     }
+
+    public function isExists(string $actionId): bool
+    {
+        return isset($this->data[$actionId]);
+    }
 }
