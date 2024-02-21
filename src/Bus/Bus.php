@@ -18,6 +18,9 @@ class Bus
     /** @var Task[] */
     protected array $heldTasks = [];
 
+    /** @var array<string, string[]>  */
+    private array $alternates = [];
+
     public function __construct(
         private readonly TaskQueue $taskQueue,
         private readonly ActionCollection $actionCollection,
@@ -95,32 +98,43 @@ class Bus
             return false;
         }
 
+        /** @var CompleteAction[] $failActions */
+        $failActions = [];
+        /** @var CompleteAction[] $replacedActions */
+        $replacedActions = [];
+
         foreach ($completeActions as $completeAction) {
             if (ResultStatus::Fail === $completeAction->result->status) {
                 if (false === $completeAction->action->continueIfFail) {
                     throw new UnableToContinueWithFailActionException($completeAction->action->id);
                 }
 
-                if ($completeAction->action->contract === null) {
-                    continue;
-                }
-
-                $actionsWithContract = $this->actionCollection->getByContract($completeAction->action->contract);
-
-                unset($actionsWithContract[$completeAction->action->id]);
-
-                if ($this->isReplacedFailAction($actionsWithContract)) {
-                    return true;
-                }
-
-                return false;
+                $failActions[] = $completeAction;
             }
+        }
+
+        foreach ($failActions as $failAction) {
+            if ($failAction->action->contract === null) {
+                continue;
+            }
+
+            $actionsWithContract = $this->actionCollection->getByContract($failAction->action->contract);
+
+            unset($actionsWithContract[$failAction->action->id]);
+
+            if ($this->isReplacedFailAction($actionsWithContract)) {
+                $replacedActions[] = $actionsWithContract;
+            }
+        }
+
+        if (count($failActions) > count($replacedActions)) {
+            return false;
         }
 
         return true;
     }
 
-    /** @param Action[] $actionsWithContract  */
+    /** @param array<string, Action> $actionsWithContract  */
     protected function isReplacedFailAction(array $actionsWithContract): bool
     {
         foreach ($actionsWithContract as $actionWithContract) {
