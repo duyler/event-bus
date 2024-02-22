@@ -6,23 +6,34 @@ namespace Duyler\EventBus\Service;
 
 use Duyler\EventBus\Bus\Bus;
 use Duyler\EventBus\Bus\TriggerRelation;
-use Duyler\EventBus\Bus\Validator;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Trigger;
+use InvalidArgumentException;
 
 class TriggerService
 {
     public function __construct(
         private TriggerRelationCollection $triggerRelationCollection,
         private ActionCollection $actionCollection,
-        private Validator $validator,
         private Bus $bus,
     ) {}
 
     public function dispatch(Trigger $trigger): void
     {
-        $this->validator->validateTrigger($trigger);
+        if ($trigger->data !== null) {
+            if ($trigger->contract === null) {
+                throw new InvalidArgumentException('Trigger contract will be received');
+            }
+
+            if ($trigger->data instanceof $trigger->contract === false) {
+                throw new InvalidArgumentException('Trigger data will be compatible with ' . $trigger->contract);
+            }
+        } else {
+            if ($trigger->contract !== null) {
+                throw new InvalidArgumentException('Trigger data will be received for ' . $trigger->contract);
+            }
+        }
 
         $actions = $this->actionCollection->getByTrigger($trigger->id);
 
