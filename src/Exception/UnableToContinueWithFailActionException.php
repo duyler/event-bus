@@ -10,6 +10,6 @@ class UnableToContinueWithFailActionException extends Exception
 {
     public function __construct(string $actionId)
     {
-        parent::__construct('Unable to continue with fail action: ' . $actionId);
+        parent::__construct('Unable to push action ' . $actionId . ' with fail required actions');
     }
 }

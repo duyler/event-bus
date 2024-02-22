@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\Action\ActionRequiredIterator;
+use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Dto\Action;
@@ -25,6 +26,7 @@ class Bus
         private readonly TaskQueue $taskQueue,
         private readonly ActionCollection $actionCollection,
         private readonly CompleteActionCollection $completeActionCollection,
+        private readonly BusConfig $config,
     ) {}
 
     public function doAction(Action $action): void
@@ -105,45 +107,46 @@ class Bus
 
         foreach ($completeActions as $completeAction) {
             if (ResultStatus::Fail === $completeAction->result->status) {
-                if (false === $completeAction->action->continueIfFail) {
-                    throw new UnableToContinueWithFailActionException($completeAction->action->id);
-                }
-
                 $failActions[] = $completeAction;
             }
         }
 
         foreach ($failActions as $failAction) {
-            if ($failAction->action->contract === null) {
-                continue;
-            }
+            $this->alternates[$failAction->action->id] = $failAction->action->alternates;
 
-            $actionsWithContract = $this->actionCollection->getByContract($failAction->action->contract);
-
-            unset($actionsWithContract[$failAction->action->id]);
-
-            if ($this->isReplacedFailAction($actionsWithContract)) {
-                $replacedActions[] = $actionsWithContract;
+            if ($this->isReplacedFailAction($failAction->action->id)) {
+                $replacedActions[] = $failAction;
             }
         }
 
         if (count($failActions) > count($replacedActions)) {
+            if ($this->taskQueue->isEmpty()) {
+                if ($this->config->allowSkipUnresolvedActions) {
+                    return false;
+                }
+                throw new UnableToContinueWithFailActionException($task->action->id);
+            }
             return false;
         }
 
         return true;
     }
 
-    /** @param array<string, Action> $actionsWithContract  */
-    protected function isReplacedFailAction(array $actionsWithContract): bool
+    private function isReplacedFailAction(string $failActionId): bool
     {
-        foreach ($actionsWithContract as $actionWithContract) {
-            if ($this->completeActionCollection->isExists($actionWithContract->id)) {
-                $completeAction = $this->completeActionCollection->get($actionWithContract->id);
+        foreach ($this->alternates[$failActionId] as $actionId) {
+            $alternate = $this->actionCollection->get($actionId);
+
+            if ($this->completeActionCollection->isExists($alternate->id)) {
+                $completeAction = $this->completeActionCollection->get($alternate->id);
                 if (ResultStatus::Success === $completeAction->result->status) {
                     return true;
                 }
+                continue;
             }
+
+            $this->doAction($alternate);
+            return false;
         }
 
         return false;

@@ -37,6 +37,12 @@ readonly class ActionService
             }
         }
 
+        foreach ($action->alternates as $actionId) {
+            if (false === $this->actionCollection->isExists($actionId)) {
+                $this->throwActionNotDefined($actionId);
+            }
+        }
+
         $this->actionCollection->save($action);
     }
 
@@ -88,6 +94,12 @@ readonly class ActionService
             foreach ($requiredIterator as $subject) {
                 if (false === array_key_exists($subject, $actions)) {
                     $this->throwActionNotDefined($subject);
+                }
+            }
+
+            foreach ($action->alternates as $actionId) {
+                if (false === array_key_exists($actionId, $actions)) {
+                    $this->throwActionNotDefined($actionId);
                 }
             }
 

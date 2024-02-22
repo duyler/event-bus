@@ -59,4 +59,12 @@ class ActionCollection
         $this->data = [];
         $this->byContract = [];
     }
+
+    /**
+     * @return array<string, Action>
+     */
+    public function getAllByArray(array $array): array
+    {
+        return array_intersect_key($this->data, array_flip($array));
+    }
 }

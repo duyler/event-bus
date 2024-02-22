@@ -7,7 +7,6 @@ namespace Duyler\EventBus\Action;
 use Closure;
 use Duyler\EventBus\Action\Exception\InvalidArgumentFactoryException;
 use Duyler\EventBus\Bus\CompleteAction;
-use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Action;
@@ -25,7 +24,6 @@ class ActionHandlerArgumentBuilder
     public function __construct(
         private CompleteActionCollection $completeActionCollection,
         private ActionSubstitution $actionSubstitution,
-        private ActionCollection $actionCollection,
         private TriggerRelationCollection $triggerRelationCollection,
     ) {}
 
@@ -88,21 +86,17 @@ class ActionHandlerArgumentBuilder
         $results = [];
 
         if (ResultStatus::Fail === $completeAction->result->status && $completeAction->action->contract !== null) {
-            $actionsWithContract = $this->actionCollection->getByContract($completeAction->action->contract);
+            $alternatesActions = $this->completeActionCollection->getAllByArray($completeAction->action->alternates);
 
-            foreach ($actionsWithContract as $actionWithContract) {
-                if ($this->completeActionCollection->isExists($actionWithContract->id)) {
-                    $replaceTaskEvent = $this->completeActionCollection->get($actionWithContract->id);
-
-                    if (ResultStatus::Success === $replaceTaskEvent->result->status) {
-                        if ($replaceTaskEvent->result->data === null) {
-                            continue;
-                        }
-
-                        $results[$completeAction->action->contract] = $replaceTaskEvent->result->data;
-
-                        return $results;
+            foreach ($alternatesActions as $alternateAction) {
+                if (ResultStatus::Success === $alternateAction->result->status) {
+                    if ($alternateAction->result->data === null) {
+                        continue;
                     }
+
+                    $results[$completeAction->action->contract] = $alternateAction->result->data;
+
+                    return $results;
                 }
             }
         }

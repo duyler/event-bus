@@ -27,11 +27,12 @@ readonly class Action
         public null | string | Closure $rollback = null,
         public bool $externalAccess = true,
         public bool $repeatable = false,
-        public bool $continueIfFail = true,
         public bool $private = false,
         /** @var string[] */
         public array $sealed = [],
         public bool $silent = false,
+        /** @var string[] */
+        public array $alternates = [],
     ) {
         $this->required = new RecursiveArrayIterator($required);
     }

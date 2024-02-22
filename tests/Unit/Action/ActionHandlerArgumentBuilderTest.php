@@ -44,7 +44,6 @@ class ActionHandlerArgumentBuilderTest extends TestCase
         $this->argumentBuilder = new ActionHandlerArgumentBuilder(
             completeActionCollection: $this->eventCollection,
             actionSubstitution: $this->actionSubstitution,
-            actionCollection: $this->actionCollection,
             triggerRelationCollection: $this->triggerRelationCollection,
         );
     }
