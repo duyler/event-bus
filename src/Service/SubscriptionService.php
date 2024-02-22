@@ -8,7 +8,6 @@ use Duyler\EventBus\Bus\Bus;
 use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\SubscriptionCollection;
-use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
@@ -20,7 +19,6 @@ readonly class SubscriptionService
         private SubscriptionCollection $subscriptionCollection,
         private ActionCollection $actionCollection,
         private Bus $bus,
-        private BusConfig $config,
     ) {}
 
     public function addSubscription(Subscription $subscription): void
@@ -34,11 +32,9 @@ readonly class SubscriptionService
         }
 
         if ($this->actionCollection->isExists($subscription->subjectId) === false) {
-            if ($this->config->enableTriggers === false) {
-                throw new InvalidArgumentException(
-                    'Subscribed action ' . $subscription->subjectId . ' not registered in the bus'
-                );
-            }
+            throw new InvalidArgumentException(
+                'Subscribed action ' . $subscription->subjectId . ' not registered in the bus'
+            );
         }
 
         $this->subscriptionCollection->save($subscription);

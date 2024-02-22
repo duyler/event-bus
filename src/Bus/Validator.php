@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
+use Duyler\EventBus\Dto\Trigger;
 use Duyler\EventBus\Exception\CircularCallActionException;
 use Duyler\EventBus\Exception\ConsecutiveRepeatedActionException;
+use InvalidArgumentException;
 
 class Validator
 {
@@ -39,6 +41,23 @@ class Validator
 
         if (count($mainEventLog) === count($repeatedEventLog)) {
             throw new CircularCallActionException($completeAction->action->id, (string) end($mainEventLog));
+        }
+    }
+
+    public function validateTrigger(Trigger $trigger): void
+    {
+        if ($trigger->data !== null) {
+            if ($trigger->contract === null) {
+                throw new InvalidArgumentException('Trigger contract will be received');
+            }
+
+            if ($trigger->data instanceof $trigger->contract === false) {
+                throw new InvalidArgumentException('Trigger data will be compatible with ' . $trigger->contract);
+            }
+        } else {
+            if ($trigger->contract !== null) {
+                throw new InvalidArgumentException('Trigger data will be received for ' . $trigger->contract);
+            }
         }
     }
 }

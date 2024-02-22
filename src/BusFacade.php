@@ -10,19 +10,20 @@ use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Trigger;
+use Duyler\EventBus\Internal\Event\TriggerPushedEvent;
 use Duyler\EventBus\Service\ResultService;
-use Duyler\EventBus\Service\TriggerService;
 use Override;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 class BusFacade implements BusInterface
 {
     public function __construct(
         private Runner $runner,
         private ResultService $resultService,
-        private TriggerService $triggerService,
         private CompleteActionCollection $completeActionCollection,
         private ActionContainerCollection $actionContainerCollection,
         private TriggerRelationCollection $triggerRelationCollection,
+        private EventDispatcherInterface $eventDispatcher,
         private Log $log,
     ) {}
 
@@ -48,7 +49,7 @@ class BusFacade implements BusInterface
     #[Override]
     public function dispatchTrigger(Trigger $trigger): BusInterface
     {
-        $this->triggerService->dispatch($trigger);
+        $this->eventDispatcher->dispatch(new TriggerPushedEvent($trigger));
         return $this;
     }
 

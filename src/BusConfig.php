@@ -21,8 +21,10 @@ use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
 use Duyler\EventBus\Internal\Event\TaskBeforeRunEvent;
 use Duyler\EventBus\Internal\Event\TaskResumeEvent;
 use Duyler\EventBus\Internal\Event\TaskSuspendedEvent;
+use Duyler\EventBus\Internal\Event\TriggerPushedEvent;
 use Duyler\EventBus\Internal\EventDispatcher;
 use Duyler\EventBus\Internal\Listener\Bus\BindContractCompleteActionEventListener;
+use Duyler\EventBus\Internal\Listener\Bus\DispatchTriggerEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\LogCompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveCompleteActionSubscriptionsEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveHeldTasksEventListener;
@@ -56,7 +58,6 @@ class BusConfig
 
         /** @var Definition[] */
         public readonly array $definitions = [],
-        public readonly bool $enableTriggers = true,
         public readonly bool $saveStateActionContainer = false,
         public readonly bool $allowSkipUnresolvedActions = true,
     ) {
@@ -114,6 +115,9 @@ class BusConfig
             ActionThrownExceptionEvent::class => [
                 StateActionThrowingEventListener::class,
             ],
+            TriggerPushedEvent::class => [
+                DispatchTriggerEventListener::class,
+            ]
         ];
     }
 }
