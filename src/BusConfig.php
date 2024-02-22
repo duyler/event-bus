@@ -15,6 +15,7 @@ use Duyler\EventBus\Internal\Event\ActionAfterRunEvent;
 use Duyler\EventBus\Internal\Event\ActionBeforeRunEvent;
 use Duyler\EventBus\Internal\Event\ActionIsCompleteEvent;
 use Duyler\EventBus\Internal\Event\ActionThrownExceptionEvent;
+use Duyler\EventBus\Internal\Event\BusCompletedEvent;
 use Duyler\EventBus\Internal\Event\DoWhileBeginEvent;
 use Duyler\EventBus\Internal\Event\DoWhileEndEvent;
 use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
@@ -28,6 +29,7 @@ use Duyler\EventBus\Internal\Listener\Bus\DispatchTriggerEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\LogCompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveCompleteActionSubscriptionsEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveHeldTasksEventListener;
+use Duyler\EventBus\Internal\Listener\Bus\TerminateBusEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ValidateCompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateActionAfterEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateActionBeforeEventListener;
@@ -60,6 +62,7 @@ class BusConfig
         public readonly array $definitions = [],
         public readonly bool $saveStateActionContainer = false,
         public readonly bool $allowSkipUnresolvedActions = true,
+        public readonly bool $autoreset = false,
     ) {
         $this->bind = $this->getBind() + $bind;
     }
@@ -117,7 +120,10 @@ class BusConfig
             ],
             TriggerPushedEvent::class => [
                 DispatchTriggerEventListener::class,
-            ]
+            ],
+            BusCompletedEvent::class => [
+                TerminateBusEventListener::class,
+            ],
         ];
     }
 }

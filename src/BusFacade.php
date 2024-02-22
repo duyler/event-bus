@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
-use Duyler\EventBus\Bus\Log;
-use Duyler\EventBus\Collection\ActionContainerCollection;
-use Duyler\EventBus\Collection\CompleteActionCollection;
-use Duyler\EventBus\Collection\TriggerRelationCollection;
+use Duyler\EventBus\Bus\Termination;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Trigger;
+use Duyler\EventBus\Internal\Event\BusCompletedEvent;
 use Duyler\EventBus\Internal\Event\TriggerPushedEvent;
 use Duyler\EventBus\Service\ResultService;
 use Override;
@@ -20,17 +18,15 @@ class BusFacade implements BusInterface
     public function __construct(
         private Runner $runner,
         private ResultService $resultService,
-        private CompleteActionCollection $completeActionCollection,
-        private ActionContainerCollection $actionContainerCollection,
-        private TriggerRelationCollection $triggerRelationCollection,
         private EventDispatcherInterface $eventDispatcher,
-        private Log $log,
+        private Termination $termination,
     ) {}
 
     #[Override]
     public function run(): BusInterface
     {
         $this->runner->run();
+        $this->eventDispatcher->dispatch(new BusCompletedEvent());
         return $this;
     }
 
@@ -56,10 +52,7 @@ class BusFacade implements BusInterface
     #[Override]
     public function reset(): BusInterface
     {
-        $this->completeActionCollection->cleanUp();
-        $this->actionContainerCollection->cleanUp();
-        $this->log->cleanUp();
-        $this->triggerRelationCollection->cleanUp();
+        $this->termination->run();
         return $this;
     }
 }

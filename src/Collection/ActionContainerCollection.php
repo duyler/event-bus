@@ -28,7 +28,7 @@ class ActionContainerCollection
         return array_intersect_key($this->data, array_flip($array));
     }
 
-    public function cleanUp(): void
+    public function reset(): void
     {
         foreach ($this->data as $container) {
             $container->softCleanUp();

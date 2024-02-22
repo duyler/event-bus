@@ -47,7 +47,7 @@ class Log
         return $this->repeatedEventLog;
     }
 
-    public function cleanUp(): void
+    public function reset(): void
     {
         $this->actionLog = [];
         $this->mainEventLog = [];

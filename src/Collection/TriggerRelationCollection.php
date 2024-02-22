@@ -51,7 +51,7 @@ class TriggerRelationCollection
         return $this->data;
     }
 
-    public function cleanUp(): void
+    public function reset(): void
     {
         $this->data = [];
         $this->lastById = [];
