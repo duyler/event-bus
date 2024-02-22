@@ -6,6 +6,8 @@ namespace Duyler\EventBus;
 
 use Duyler\EventBus\Bus\DoWhile;
 use Duyler\EventBus\Bus\Rollback;
+use Duyler\EventBus\Internal\Event\ThrowExceptionEvent;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
 class Runner
@@ -13,6 +15,7 @@ class Runner
     public function __construct(
         private DoWhile $doWhile,
         private Rollback $rollback,
+        private EventDispatcherInterface $eventDispatcher
     ) {}
 
     /**
@@ -24,6 +27,7 @@ class Runner
             $this->doWhile->run();
         } catch (Throwable $exception) {
             $this->rollback->run();
+            $this->eventDispatcher->dispatch(new ThrowExceptionEvent($exception));
             throw $exception;
         }
     }

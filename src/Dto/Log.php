@@ -18,8 +18,7 @@ readonly class Log
 
         /** @var string[] */
         private array $triggerLog,
-    ) {
-    }
+    ) {}
 
     public function getActionLog(): array
     {

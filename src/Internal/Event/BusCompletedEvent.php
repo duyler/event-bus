@@ -4,7 +4,4 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Internal\Event;
 
-class BusCompletedEvent
-{
-
-}
+class BusCompletedEvent {}
