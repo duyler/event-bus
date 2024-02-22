@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
-use Duyler\EventBus\Bus\Termination;
+use Duyler\EventBus\Dto\Log;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Trigger;
 use Duyler\EventBus\Internal\Event\BusCompletedEvent;
@@ -54,5 +54,11 @@ class BusFacade implements BusInterface
     {
         $this->termination->run();
         return $this;
+    }
+
+    #[Override]
+    public function getLog(): Log
+    {
+        return $this->termination->getLog();
     }
 }

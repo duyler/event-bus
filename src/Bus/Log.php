@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Dto\Log as LogDto;
 
 class Log
 {
@@ -58,6 +59,16 @@ class Log
     public function getTriggerEventLog(): array
     {
         return $this->triggerLog;
+    }
+
+    public function getLog(): LogDto
+    {
+        return new LogDto(
+            $this->actionLog,
+            $this->mainEventLog,
+            $this->repeatedEventLog,
+            $this->triggerLog
+        );
     }
 
     public function reset(): void
