@@ -25,17 +25,17 @@ readonly class Log
         return $this->actionLog;
     }
 
-    public function getMainEventLog(): array
+    public function getMainActionLog(): array
     {
         return $this->mainEventLog;
     }
 
-    public function getRepeatedEventLog(): array
+    public function getRepeatedActionLog(): array
     {
         return $this->repeatedEventLog;
     }
 
-    public function getTriggerEventLog(): array
+    public function getTriggerLog(): array
     {
         return $this->triggerLog;
     }
