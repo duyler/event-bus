@@ -85,7 +85,6 @@ class BusConfig
     {
         return [
             ActionIsCompleteEvent::class => [
-                BindContractCompleteActionEventListener::class,
                 LogCompleteActionEventListener::class,
                 ValidateCompleteActionEventListener::class,
                 ResolveCompleteActionSubscriptionsEventListener::class,
