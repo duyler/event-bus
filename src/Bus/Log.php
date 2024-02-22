@@ -17,6 +17,9 @@ class Log
     /** @var string[] */
     private array $repeatedEventLog = [];
 
+    /** @var string[] */
+    private array $triggerLog = [];
+
     public function pushActionLog(Action $action): void
     {
         $this->actionLog[] = $action->id;
@@ -45,6 +48,16 @@ class Log
     public function getRepeatedEventLog(): array
     {
         return $this->repeatedEventLog;
+    }
+
+    public function pushTriggerEventLog(string $triggerId): void
+    {
+        $this->triggerLog[] = $triggerId;
+    }
+
+    public function getTriggerEventLog(): array
+    {
+        return $this->triggerLog;
     }
 
     public function reset(): void
