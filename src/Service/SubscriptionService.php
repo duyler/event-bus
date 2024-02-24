@@ -9,7 +9,6 @@ use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\SubscriptionCollection;
 use Duyler\EventBus\Dto\Subscription;
-use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\SubscribedActionNotDefinedException;
 use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
 use Duyler\EventBus\Exception\SubscriptionOnNotDefinedActionException;
@@ -63,10 +62,5 @@ readonly class SubscriptionService
 
             $this->bus->doAction($action);
         }
-    }
-
-    public function getSubscriptions(string $actionId, ResultStatus $status): array
-    {
-        return $this->subscriptionCollection->getSubscriptions($actionId, $status);
     }
 }

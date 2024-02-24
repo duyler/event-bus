@@ -79,10 +79,4 @@ class SubscriptionCollection
     {
         return $this->data;
     }
-
-    public function cleanUp(): void
-    {
-        $this->data = [];
-        $this->byActionId = [];
-    }
 }
