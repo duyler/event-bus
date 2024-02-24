@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Duyler\EventBus\State\Service;
 
 use Duyler\EventBus\Action\ActionContainer;
+use Duyler\EventBus\Dto\Subscription;
+use Duyler\EventBus\Service\SubscriptionService;
 
 class StateActionBeforeService
 {
     public function __construct(
         private readonly ActionContainer $container,
         private readonly string $actionId,
+        private readonly SubscriptionService $subscriptionService,
     ) {}
 
     public function getContainer(): ActionContainer
@@ -21,5 +24,10 @@ class StateActionBeforeService
     public function getActionId(): string
     {
         return $this->actionId;
+    }
+
+    public function removeSubscription(Subscription $subscription): void
+    {
+        $this->subscriptionService->remove($subscription);
     }
 }

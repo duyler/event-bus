@@ -54,7 +54,7 @@ class SubscriptionCollection
         );
     }
 
-    public function remove(string $actionId): void
+    public function removeByActionId(string $actionId): void
     {
         $subscriptions = $this->byActionId[$actionId] ?? [];
 
@@ -63,6 +63,13 @@ class SubscriptionCollection
         }
 
         unset($this->byActionId[$actionId]);
+    }
+
+    public function remove(Subscription $subscription): void
+    {
+        $id = $this->makeSubscriptionId($subscription);
+        unset($this->data[$id]);
+        unset($this->byActionId[$subscription->actionId]);
     }
 
     private function makeActionIdWithStatus(string $actionId, ResultStatus $status): string

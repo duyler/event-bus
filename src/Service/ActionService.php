@@ -166,6 +166,6 @@ readonly class ActionService
         }
 
         $this->actionCollection->remove($actionId);
-        $this->subscriptionCollection->remove($actionId);
+        $this->subscriptionCollection->removeByActionId($actionId);
     }
 }

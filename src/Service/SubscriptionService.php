@@ -11,6 +11,7 @@ use Duyler\EventBus\Collection\SubscriptionCollection;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Exception\SubscribedActionNotDefinedException;
 use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
+use Duyler\EventBus\Exception\SubscriptionNotFoundException;
 use Duyler\EventBus\Exception\SubscriptionOnNotDefinedActionException;
 use Duyler\EventBus\Exception\SubscriptionOnSilentActionException;
 
@@ -62,5 +63,14 @@ readonly class SubscriptionService
 
             $this->bus->doAction($action);
         }
+    }
+
+    public function remove(Subscription $subscription): void
+    {
+        if ($this->subscriptionCollection->isExists($subscription) === false) {
+            throw new SubscriptionNotFoundException($subscription);
+        }
+
+        $this->subscriptionCollection->remove($subscription);
     }
 }
