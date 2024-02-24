@@ -7,6 +7,7 @@ namespace Duyler\EventBus\Test\Functional\Run;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Exception\CannotRequirePrivateActionException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -61,11 +62,8 @@ class PrivateActionTest extends TestCase
             )
         );
 
-        $bus = $builder->build();
-        $bus->run();
+        $this->expectException(CannotRequirePrivateActionException::class);
 
-        $this->assertFalse($bus->resultIsExists('TestAction'));
-        $this->assertFalse($bus->resultIsExists('PrivateAction'));
-        $this->assertFalse($bus->resultIsExists('PrivateWithSealedAction'));
+        $builder->build();
     }
 }

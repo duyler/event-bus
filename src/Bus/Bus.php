@@ -41,14 +41,6 @@ class Bus
         foreach ($requiredIterator as $subject) {
             $requiredAction = $this->actionCollection->get($subject);
 
-            if (!empty($requiredAction->sealed) && !in_array($action->id, $requiredAction->sealed)) {
-                return;
-            }
-
-            if ($requiredAction->private) {
-                return;
-            }
-
             if ($this->isRepeat($requiredAction->id) && false === $requiredAction->repeatable) {
                 continue;
             }

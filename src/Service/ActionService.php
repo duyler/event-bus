@@ -13,6 +13,9 @@ use Duyler\EventBus\Contract\ActionSubstitutionInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
 use Duyler\EventBus\Exception\ActionNotDefinedException;
+use Duyler\EventBus\Exception\CannotRequirePrivateActionException;
+use Duyler\EventBus\Exception\NotAllowedSealedActionException;
+use Duyler\EventBus\Exception\TriggeredActionNotBeRequiredException;
 
 readonly class ActionService
 {
@@ -35,6 +38,10 @@ readonly class ActionService
             if (false === $this->actionCollection->isExists($subject)) {
                 $this->throwActionNotDefined($subject);
             }
+
+            $requiredAction = $this->actionCollection->get($subject);
+
+            $this->checkRequiredAction($action->id, $requiredAction);
         }
 
         foreach ($action->alternates as $actionId) {
@@ -95,6 +102,10 @@ readonly class ActionService
                 if (false === array_key_exists($subject, $actions)) {
                     $this->throwActionNotDefined($subject);
                 }
+
+                $requiredAction = $actions[$subject];
+
+                $this->checkRequiredAction($action->id, $requiredAction);
             }
 
             foreach ($action->alternates as $actionId) {
@@ -104,6 +115,21 @@ readonly class ActionService
             }
 
             $this->actionCollection->save($action);
+        }
+    }
+
+    private function checkRequiredAction(string $subject, Action $requiredAction): void
+    {
+        if ($requiredAction->private) {
+            throw new CannotRequirePrivateActionException($subject, $requiredAction->id);
+        }
+
+        if (count($requiredAction->sealed) > 0 && !in_array($subject, $requiredAction->sealed)) {
+            throw new NotAllowedSealedActionException($subject, $requiredAction->id);
+        }
+
+        if ($requiredAction->triggeredOn !== null) {
+            throw new TriggeredActionNotBeRequiredException($subject, $requiredAction->id);
         }
     }
 
@@ -131,6 +157,14 @@ readonly class ActionService
 
     public function removeAction(string $actionId): void
     {
+        $actions = $this->actionCollection->getAll();
+
+        foreach ($actions as $action) {
+            if (in_array($actionId, $action->alternates) || in_array($actionId, $action->required->getArrayCopy())) {
+                $this->removeAction($action->id);
+            }
+        }
+
         $this->actionCollection->remove($actionId);
         $this->subscriptionCollection->remove($actionId);
     }
