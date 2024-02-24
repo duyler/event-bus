@@ -10,9 +10,10 @@ use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\SubscriptionCollection;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Exception\SubscribedActionNotDefinedException;
 use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
+use Duyler\EventBus\Exception\SubscriptionOnNotDefinedActionException;
 use Duyler\EventBus\Exception\SubscriptionOnSilentActionException;
-use InvalidArgumentException;
 
 readonly class SubscriptionService
 {
@@ -29,13 +30,11 @@ readonly class SubscriptionService
         }
 
         if ($this->actionCollection->isExists($subscription->actionId) === false) {
-            throw new InvalidArgumentException('Action ' . $subscription->actionId . ' not registered in the bus');
+            throw new SubscribedActionNotDefinedException($subscription->subjectId);
         }
 
         if ($this->actionCollection->isExists($subscription->subjectId) === false) {
-            throw new InvalidArgumentException(
-                'Subscribed action ' . $subscription->subjectId . ' not registered in the bus'
-            );
+            throw new SubscriptionOnNotDefinedActionException($subscription);
         }
 
         $subject = $this->actionCollection->get($subscription->subjectId);

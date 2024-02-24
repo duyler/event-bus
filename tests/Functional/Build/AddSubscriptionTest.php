@@ -8,7 +8,9 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Subscription;
+use Duyler\EventBus\Exception\SubscribedActionNotDefinedException;
 use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
+use Duyler\EventBus\Exception\SubscriptionOnNotDefinedActionException;
 use Duyler\EventBus\Exception\SubscriptionOnSilentActionException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -58,6 +60,54 @@ class AddSubscriptionTest extends TestCase
         );
 
         $this->expectException(SubscriptionOnSilentActionException::class);
+
+        $builder->addSubscription(
+            new Subscription(
+                subjectId: 'Action',
+                actionId: 'Subscriber',
+            )
+        );
+
+        $builder->build();
+    }
+
+    #[Test]
+    public function AddSubscription_on_not_defined_subject_action()
+    {
+        $builder = new BusBuilder(new BusConfig());
+
+        $builder->addAction(
+            new Action(
+                id: 'Subscriber',
+                handler: fn() => null,
+            )
+        );
+
+        $this->expectException(SubscriptionOnNotDefinedActionException::class);
+
+        $builder->addSubscription(
+            new Subscription(
+                subjectId: 'Action',
+                actionId: 'Subscriber',
+            )
+        );
+
+        $builder->build();
+    }
+
+    #[Test]
+    public function AddSubscription_with_undefined_target_action()
+    {
+        $builder = new BusBuilder(new BusConfig());
+
+        $builder->addAction(
+            new Action(
+                id: 'Action',
+                handler: fn() => null,
+            )
+        );
+
+        $this->expectException(SubscribedActionNotDefinedException::class);
 
         $builder->addSubscription(
             new Subscription(

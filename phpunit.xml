@@ -10,8 +10,8 @@
          failOnRisky="false"
          failOnWarning="false"
          colors="true"
-         stopOnError="true"
-         stopOnFailure="true"
+         stopOnError="false"
+         stopOnFailure="false"
          stopOnIncomplete="false"
          stopOnSkipped="false">
     <testsuites>
