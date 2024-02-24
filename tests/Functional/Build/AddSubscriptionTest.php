@@ -6,8 +6,10 @@ namespace Duyler\EventBus\Test\Functional\Build;
 
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
+use Duyler\EventBus\Exception\SubscriptionOnSilentActionException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -33,5 +35,37 @@ class AddSubscriptionTest extends TestCase
                 actionId: 'Subscriber',
             )
         );
+    }
+
+    #[Test]
+    public function AddSubscription_on_silent_action()
+    {
+        $builder = new BusBuilder(new BusConfig());
+
+        $builder->addAction(
+            new Action(
+                id: 'Action',
+                handler: fn() => null,
+                silent: true,
+            )
+        );
+
+        $builder->addAction(
+            new Action(
+                id: 'Subscriber',
+                handler: fn() => null,
+            )
+        );
+
+        $this->expectException(SubscriptionOnSilentActionException::class);
+
+        $builder->addSubscription(
+            new Subscription(
+                subjectId: 'Action',
+                actionId: 'Subscriber',
+            )
+        );
+
+        $builder->build();
     }
 }

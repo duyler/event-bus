@@ -11,6 +11,7 @@ use Duyler\EventBus\Collection\SubscriptionCollection;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
+use Duyler\EventBus\Exception\SubscriptionOnSilentActionException;
 use InvalidArgumentException;
 
 readonly class SubscriptionService
@@ -37,6 +38,12 @@ readonly class SubscriptionService
             );
         }
 
+        $subject = $this->actionCollection->get($subscription->subjectId);
+
+        if ($subject->silent) {
+            throw new SubscriptionOnSilentActionException($subscription->actionId, $subscription->subjectId);
+        }
+
         $this->subscriptionCollection->save($subscription);
     }
 
@@ -47,10 +54,6 @@ readonly class SubscriptionService
 
     public function resolveSubscriptions(CompleteAction $completeAction): void
     {
-        if ($completeAction->action->silent) {
-            return;
-        }
-
         $subscriptions = $this->subscriptionCollection->getSubscriptions(
             $completeAction->action->id,
             $completeAction->result->status
