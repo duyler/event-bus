@@ -64,6 +64,7 @@ class BusConfig
         public readonly bool $saveStateActionContainer = false,
         public readonly bool $allowSkipUnresolvedActions = true,
         public readonly bool $autoreset = false,
+        public readonly bool $allowCircularCall = false,
     ) {
         $this->bind = $this->getBind() + $bind;
     }
