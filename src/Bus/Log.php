@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Dto\Log as LogDto;
 
 class Log
 {
@@ -16,6 +17,9 @@ class Log
 
     /** @var string[] */
     private array $repeatedEventLog = [];
+
+    /** @var string[] */
+    private array $triggerLog = [];
 
     public function pushActionLog(Action $action): void
     {
@@ -47,7 +51,27 @@ class Log
         return $this->repeatedEventLog;
     }
 
-    public function cleanUp(): void
+    public function pushTriggerEventLog(string $triggerId): void
+    {
+        $this->triggerLog[] = $triggerId;
+    }
+
+    public function getTriggerEventLog(): array
+    {
+        return $this->triggerLog;
+    }
+
+    public function getLog(): LogDto
+    {
+        return new LogDto(
+            $this->actionLog,
+            $this->mainEventLog,
+            $this->repeatedEventLog,
+            $this->triggerLog
+        );
+    }
+
+    public function reset(): void
     {
         $this->actionLog = [];
         $this->mainEventLog = [];

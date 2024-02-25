@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
+use Duyler\EventBus\Dto\Log;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Trigger;
 use Throwable;
@@ -22,4 +23,6 @@ interface BusInterface
     public function dispatchTrigger(Trigger $trigger): BusInterface;
 
     public function reset(): BusInterface;
+
+    public function getLog(): Log;
 }

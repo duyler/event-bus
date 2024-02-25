@@ -15,17 +15,22 @@ use Duyler\EventBus\Internal\Event\ActionAfterRunEvent;
 use Duyler\EventBus\Internal\Event\ActionBeforeRunEvent;
 use Duyler\EventBus\Internal\Event\ActionIsCompleteEvent;
 use Duyler\EventBus\Internal\Event\ActionThrownExceptionEvent;
+use Duyler\EventBus\Internal\Event\BusCompletedEvent;
 use Duyler\EventBus\Internal\Event\DoWhileBeginEvent;
 use Duyler\EventBus\Internal\Event\DoWhileEndEvent;
 use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
 use Duyler\EventBus\Internal\Event\TaskBeforeRunEvent;
 use Duyler\EventBus\Internal\Event\TaskResumeEvent;
 use Duyler\EventBus\Internal\Event\TaskSuspendedEvent;
+use Duyler\EventBus\Internal\Event\ThrowExceptionEvent;
+use Duyler\EventBus\Internal\Event\TriggerPushedEvent;
 use Duyler\EventBus\Internal\EventDispatcher;
-use Duyler\EventBus\Internal\Listener\Bus\BindContractCompleteActionEventListener;
+use Duyler\EventBus\Internal\Listener\Bus\DispatchTriggerEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\LogCompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveCompleteActionSubscriptionsEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveHeldTasksEventListener;
+use Duyler\EventBus\Internal\Listener\Bus\TerminateAfterExceptionEventListener;
+use Duyler\EventBus\Internal\Listener\Bus\TerminateBusEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ValidateCompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateActionAfterEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateActionBeforeEventListener;
@@ -56,7 +61,10 @@ class BusConfig
 
         /** @var Definition[] */
         public readonly array $definitions = [],
-        public readonly bool $enableTriggers = true,
+        public readonly bool $saveStateActionContainer = false,
+        public readonly bool $allowSkipUnresolvedActions = true,
+        public readonly bool $autoreset = false,
+        public readonly bool $allowCircularCall = false,
     ) {
         $this->bind = $this->getBind() + $bind;
     }
@@ -79,7 +87,6 @@ class BusConfig
     {
         return [
             ActionIsCompleteEvent::class => [
-                BindContractCompleteActionEventListener::class,
                 LogCompleteActionEventListener::class,
                 ValidateCompleteActionEventListener::class,
                 ResolveCompleteActionSubscriptionsEventListener::class,
@@ -111,6 +118,15 @@ class BusConfig
             ],
             ActionThrownExceptionEvent::class => [
                 StateActionThrowingEventListener::class,
+            ],
+            TriggerPushedEvent::class => [
+                DispatchTriggerEventListener::class,
+            ],
+            BusCompletedEvent::class => [
+                TerminateBusEventListener::class,
+            ],
+            ThrowExceptionEvent::class => [
+                TerminateAfterExceptionEventListener::class,
             ],
         ];
     }

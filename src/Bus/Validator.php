@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
+use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Exception\CircularCallActionException;
 use Duyler\EventBus\Exception\ConsecutiveRepeatedActionException;
 
@@ -11,6 +12,7 @@ class Validator
 {
     public function __construct(
         private Log $log,
+        private BusConfig $config,
     ) {}
 
     /**
@@ -38,7 +40,9 @@ class Validator
         }
 
         if (count($mainEventLog) === count($repeatedEventLog)) {
-            throw new CircularCallActionException($completeAction->action->id, (string) end($mainEventLog));
+            if ($this->config->allowCircularCall === false) {
+                throw new CircularCallActionException($completeAction->action->id, (string) end($mainEventLog));
+            }
         }
     }
 }

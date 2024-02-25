@@ -8,11 +8,12 @@ use Duyler\EventBus\Bus\Bus;
 use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\SubscriptionCollection;
-use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Subscription;
-use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Exception\SubscribedActionNotDefinedException;
 use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
-use InvalidArgumentException;
+use Duyler\EventBus\Exception\SubscriptionNotFoundException;
+use Duyler\EventBus\Exception\SubscriptionOnNotDefinedActionException;
+use Duyler\EventBus\Exception\SubscriptionOnSilentActionException;
 
 readonly class SubscriptionService
 {
@@ -20,7 +21,6 @@ readonly class SubscriptionService
         private SubscriptionCollection $subscriptionCollection,
         private ActionCollection $actionCollection,
         private Bus $bus,
-        private BusConfig $config,
     ) {}
 
     public function addSubscription(Subscription $subscription): void
@@ -30,15 +30,17 @@ readonly class SubscriptionService
         }
 
         if ($this->actionCollection->isExists($subscription->actionId) === false) {
-            throw new InvalidArgumentException('Action ' . $subscription->actionId . ' not registered in the bus');
+            throw new SubscribedActionNotDefinedException($subscription->subjectId);
         }
 
         if ($this->actionCollection->isExists($subscription->subjectId) === false) {
-            if ($this->config->enableTriggers === false) {
-                throw new InvalidArgumentException(
-                    'Subscribed action ' . $subscription->subjectId . ' not registered in the bus'
-                );
-            }
+            throw new SubscriptionOnNotDefinedActionException($subscription);
+        }
+
+        $subject = $this->actionCollection->get($subscription->subjectId);
+
+        if ($subject->silent) {
+            throw new SubscriptionOnSilentActionException($subscription->actionId, $subscription->subjectId);
         }
 
         $this->subscriptionCollection->save($subscription);
@@ -51,10 +53,6 @@ readonly class SubscriptionService
 
     public function resolveSubscriptions(CompleteAction $completeAction): void
     {
-        if ($completeAction->action->silent) {
-            return;
-        }
-
         $subscriptions = $this->subscriptionCollection->getSubscriptions(
             $completeAction->action->id,
             $completeAction->result->status
@@ -67,8 +65,12 @@ readonly class SubscriptionService
         }
     }
 
-    public function getSubscriptions(string $actionId, ResultStatus $status): array
+    public function remove(Subscription $subscription): void
     {
-        return $this->subscriptionCollection->getSubscriptions($actionId, $status);
+        if ($this->subscriptionCollection->isExists($subscription) === false) {
+            throw new SubscriptionNotFoundException($subscription);
+        }
+
+        $this->subscriptionCollection->remove($subscription);
     }
 }

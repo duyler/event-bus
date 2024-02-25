@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\Action\ActionRequiredIterator;
+use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Dto\Action;
@@ -18,10 +19,14 @@ class Bus
     /** @var Task[] */
     protected array $heldTasks = [];
 
+    /** @var array<string, string[]>  */
+    private array $alternates = [];
+
     public function __construct(
         private readonly TaskQueue $taskQueue,
         private readonly ActionCollection $actionCollection,
         private readonly CompleteActionCollection $completeActionCollection,
+        private readonly BusConfig $config,
     ) {}
 
     public function doAction(Action $action): void
@@ -35,14 +40,6 @@ class Bus
         /** @var string $subject */
         foreach ($requiredIterator as $subject) {
             $requiredAction = $this->actionCollection->get($subject);
-
-            if (!empty($requiredAction->sealed) && !in_array($action->id, $requiredAction->sealed)) {
-                return;
-            }
-
-            if ($requiredAction->private) {
-                return;
-            }
 
             if ($this->isRepeat($requiredAction->id) && false === $requiredAction->repeatable) {
                 continue;
@@ -95,41 +92,53 @@ class Bus
             return false;
         }
 
+        /** @var CompleteAction[] $failActions */
+        $failActions = [];
+        /** @var CompleteAction[] $replacedActions */
+        $replacedActions = [];
+
         foreach ($completeActions as $completeAction) {
             if (ResultStatus::Fail === $completeAction->result->status) {
-                if (false === $completeAction->action->continueIfFail) {
-                    throw new UnableToContinueWithFailActionException($completeAction->action->id);
-                }
-
-                if ($completeAction->action->contract === null) {
-                    continue;
-                }
-
-                $actionsWithContract = $this->actionCollection->getByContract($completeAction->action->contract);
-
-                unset($actionsWithContract[$completeAction->action->id]);
-
-                if ($this->isReplacedFailAction($actionsWithContract)) {
-                    return true;
-                }
-
-                return false;
+                $failActions[] = $completeAction;
             }
+        }
+
+        foreach ($failActions as $failAction) {
+            $this->alternates[$failAction->action->id] = $failAction->action->alternates;
+
+            if ($this->isReplacedFailAction($failAction->action->id)) {
+                $replacedActions[] = $failAction;
+            }
+        }
+
+        if (count($failActions) > count($replacedActions)) {
+            if ($this->taskQueue->isEmpty()) {
+                if ($this->config->allowSkipUnresolvedActions) {
+                    return false;
+                }
+                throw new UnableToContinueWithFailActionException($task->action->id);
+            }
+            return false;
         }
 
         return true;
     }
 
-    /** @param Action[] $actionsWithContract  */
-    protected function isReplacedFailAction(array $actionsWithContract): bool
+    private function isReplacedFailAction(string $failActionId): bool
     {
-        foreach ($actionsWithContract as $actionWithContract) {
-            if ($this->completeActionCollection->isExists($actionWithContract->id)) {
-                $completeAction = $this->completeActionCollection->get($actionWithContract->id);
+        foreach ($this->alternates[$failActionId] as $actionId) {
+            $alternate = $this->actionCollection->get($actionId);
+
+            if ($this->completeActionCollection->isExists($alternate->id)) {
+                $completeAction = $this->completeActionCollection->get($alternate->id);
                 if (ResultStatus::Success === $completeAction->result->status) {
                     return true;
                 }
+                continue;
             }
+
+            $this->doAction($alternate);
+            return false;
         }
 
         return false;

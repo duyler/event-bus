@@ -18,13 +18,21 @@ class ActionCollection
     /** @var array<string, array<string, Action>>  */
     private array $byContract = [];
 
+    /** @var array<string, array<string, Action>>  */
+    private array $byTrigger = [];
+
     public function save(Action $action): void
     {
-        $this->data[$action->id] = $action;
-
         if ($action->contract !== null) {
             $this->byContract[$action->contract][$action->id] = $action;
         }
+
+        if ($action->triggeredOn !== null) {
+            $this->byTrigger[$action->triggeredOn][$action->id] = $action;
+            return;
+        }
+
+        $this->data[$action->id] = $action;
     }
 
     public function get(string $actionId): Action
@@ -58,5 +66,12 @@ class ActionCollection
     {
         $this->data = [];
         $this->byContract = [];
+        $this->byTrigger = [];
+    }
+
+    /** @return array<string, Action> */
+    public function getByTrigger(string $triggerId): array
+    {
+        return $this->byTrigger[$triggerId] ?? [];
     }
 }

@@ -50,7 +50,7 @@ class CompleteActionCollection
         return $this->data;
     }
 
-    public function cleanUp(): void
+    public function reset(): void
     {
         $this->data = [];
     }

@@ -7,7 +7,6 @@ namespace Duyler\EventBus\Test\Functional\Run;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Dto\Trigger;
 use Duyler\EventBus\Enum\ResultStatus;
 use PHPUnit\Framework\Attributes\Test;
@@ -24,14 +23,8 @@ class TriggerTest extends TestCase
             new Action(
                 id: 'ForTriggerAction',
                 handler: function () {},
+                triggeredOn: 'TestTrigger',
                 externalAccess: true,
-            )
-        );
-
-        $builder->addSubscription(
-            new Subscription(
-                subjectId: 'TestTrigger',
-                actionId: 'ForTriggerAction',
             )
         );
 
@@ -57,15 +50,9 @@ class TriggerTest extends TestCase
             new Action(
                 id: 'ForTriggerAction',
                 handler: function (stdClass $data) {},
+                triggeredOn: 'TestTrigger',
                 argument: stdClass::class,
                 externalAccess: true
-            )
-        );
-
-        $builder->addSubscription(
-            new Subscription(
-                subjectId: 'TestTrigger',
-                actionId: 'ForTriggerAction',
             )
         );
 

@@ -4,21 +4,26 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
+use Closure;
 use Duyler\EventBus\Action\Exception\InvalidArgumentFactoryException;
 use Duyler\EventBus\Bus\CompleteAction;
-use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Enum\ResultStatus;
+use InvalidArgumentException;
 use LogicException;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionFunction;
+use ReflectionFunctionAbstract;
+use ReflectionNamedType;
 
 class ActionHandlerArgumentBuilder
 {
     public function __construct(
         private CompleteActionCollection $completeActionCollection,
         private ActionSubstitution $actionSubstitution,
-        private ActionCollection $actionCollection,
         private TriggerRelationCollection $triggerRelationCollection,
     ) {}
 
@@ -49,11 +54,6 @@ class ActionHandlerArgumentBuilder
             $results = $this->actionSubstitution->getSubstituteResult($action->id) + $results;
         }
 
-        foreach ($results as $interface => $definition) {
-            $container->bind([$interface => $definition::class]);
-            $container->set($definition);
-        }
-
         if ($action->argumentFactory === null) {
             foreach ($results as $definition) {
                 if ($definition instanceof $action->argument) {
@@ -65,13 +65,19 @@ class ActionHandlerArgumentBuilder
             );
         }
 
-        $factory = $container->get($action->argumentFactory);
+        $factoryArguments = $this->buildFactoryArguments($action->argumentFactory, $results);
 
-        if (false === is_callable($factory)) {
+        $factory = $action->argumentFactory;
+
+        if (is_string($factory)) {
+            $factory = $container->get($factory);
+        }
+
+        if (!is_callable($factory)) {
             throw new InvalidArgumentFactoryException($action->argument);
         }
 
-        return $factory();
+        return $factory(...$factoryArguments);
     }
 
     /** @return array<string, object>  */
@@ -80,38 +86,85 @@ class ActionHandlerArgumentBuilder
         $results = [];
 
         if (ResultStatus::Fail === $completeAction->result->status && $completeAction->action->contract !== null) {
-            $actionsWithContract = $this->actionCollection->getByContract($completeAction->action->contract);
+            $alternatesActions = $this->completeActionCollection->getAllByArray($completeAction->action->alternates);
 
-            foreach ($actionsWithContract as $actionWithContract) {
-                if ($this->completeActionCollection->isExists($actionWithContract->id)) {
-                    $replaceTaskEvent = $this->completeActionCollection->get($actionWithContract->id);
-
-                    if (ResultStatus::Success === $replaceTaskEvent->result->status) {
-                        if ($replaceTaskEvent->result->data === null) {
-                            continue;
-                        }
-
-                        $interface = array_search($replaceTaskEvent->result->data::class, $actionWithContract->bind);
-                        if (!is_string($interface)) {
-                            $interface = $replaceTaskEvent->result->data::class;
-                        }
-
-                        $results[$interface] = $replaceTaskEvent->result->data;
-
-                        return $results;
+            foreach ($alternatesActions as $alternateAction) {
+                if (ResultStatus::Success === $alternateAction->result->status) {
+                    if ($alternateAction->result->data === null) {
+                        continue;
                     }
+
+                    $results[$completeAction->action->contract] = $alternateAction->result->data;
+
+                    return $results;
                 }
             }
         }
 
-        if ($completeAction->result->data !== null) {
-            $interface = array_search($completeAction->result->data::class, $completeAction->action->bind);
-            if (!is_string($interface)) {
-                $interface = $completeAction->result->data::class;
-            }
-            $results[$interface] = $completeAction->result->data;
+        if ($completeAction->result->data !== null && $completeAction->action->contract !== null) {
+            $results[$completeAction->action->contract] = $completeAction->result->data;
         }
 
         return $results;
+    }
+
+    /**
+     * @param array<string, object> $arguments
+     * @throws ReflectionException
+     */
+    private function buildFactoryArguments(string|Closure $factory, array $arguments = []): array
+    {
+        if (is_string($factory)) {
+
+            /**
+             * @psalm-suppress ArgumentTypeCoercion
+             */
+            $reflection = new ReflectionClass($factory);
+            $methodReflection = null;
+            foreach ($reflection->getMethods() as $method) {
+                if ($method->getName() === '__invoke') {
+                    $methodReflection = $method;
+                    break;
+                }
+            }
+
+            if ($methodReflection === null) {
+                throw new InvalidArgumentException(
+                    'Method __invoke not found in ' . $factory
+                );
+            }
+
+            return $this->matchArguments($methodReflection, $arguments);
+        }
+
+        return $this->matchArguments(new ReflectionFunction($factory), $arguments);
+    }
+
+    /** @param array<string, object> $arguments */
+    private function matchArguments(ReflectionFunctionAbstract $reflection, array $arguments = []): array
+    {
+        $params = $reflection->getParameters();
+
+        if (empty($params)) {
+            return [];
+        }
+
+        $result = [];
+
+        foreach ($params as $param) {
+            /** @var null|ReflectionNamedType $paramType */
+            $paramType = $param->getType();
+
+            if ($paramType === null) {
+                throw new InvalidArgumentException('Type hint not set for ' . $param->getName());
+            }
+
+            $className = $paramType->getName();
+
+            $result[$param->getName()] = $arguments[$className]
+                ?? throw new InvalidArgumentException('Contract not found for ' . $className);
+        }
+
+        return $result;
     }
 }

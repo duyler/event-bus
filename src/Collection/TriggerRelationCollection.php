@@ -19,7 +19,7 @@ class TriggerRelationCollection
 
     public function save(TriggerRelation $triggerRelation): void
     {
-        $this->data[$triggerRelation->subscription->actionId][] = $triggerRelation;
+        $this->data[$triggerRelation->action->id][] = $triggerRelation;
         $this->lastById[$triggerRelation->trigger->id] = $triggerRelation;
     }
 
@@ -51,7 +51,7 @@ class TriggerRelationCollection
         return $this->data;
     }
 
-    public function cleanUp(): void
+    public function reset(): void
     {
         $this->data = [];
         $this->lastById = [];

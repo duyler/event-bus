@@ -8,6 +8,7 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Exception\NotAllowedSealedActionException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -72,9 +73,8 @@ class SealedActionTest extends TestCase
             )
         );
 
-        $bus = $builder->build();
-        $bus->run();
+        $this->expectException(NotAllowedSealedActionException::class);
 
-        $this->assertFalse($bus->resultIsExists('SealedAction'));
+        $builder->build();
     }
 }

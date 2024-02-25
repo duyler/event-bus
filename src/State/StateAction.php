@@ -7,6 +7,7 @@ namespace Duyler\EventBus\State;
 use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Contract\StateActionInterface;
 use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Service\SubscriptionService;
 use Duyler\EventBus\State\Service\StateActionAfterService;
 use Duyler\EventBus\State\Service\StateActionBeforeService;
 use Duyler\EventBus\State\Service\StateActionThrowingService;
@@ -19,6 +20,7 @@ class StateAction implements StateActionInterface
         private StateHandlerStorage $stateHandlerStorage,
         private ActionContainerCollection $actionContainerCollection,
         private StateContextScope $contextScope,
+        private readonly SubscriptionService $subscriptionService,
     ) {}
 
     #[Override]
@@ -27,6 +29,7 @@ class StateAction implements StateActionInterface
         $stateService = new StateActionBeforeService(
             $this->actionContainerCollection->get($action->id),
             $action->id,
+            $this->subscriptionService,
         );
 
         foreach ($this->stateHandlerStorage->getActionBefore() as $handler) {
@@ -43,6 +46,7 @@ class StateAction implements StateActionInterface
         $stateService = new StateActionAfterService(
             $this->actionContainerCollection->get($action->id),
             $action->id,
+            $this->subscriptionService,
         );
 
         foreach ($this->stateHandlerStorage->getActionAfter() as $handler) {

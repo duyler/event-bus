@@ -17,21 +17,23 @@ readonly class Action
         public string $id,
         public string | Closure $handler,
         array $required = [],
+        public ?string $triggeredOn = null,
         /** @var array<string, string> */
         public array $bind = [],
         /** @var array<string, string> */
         public array $providers = [],
         public ?string $argument = null,
-        public ?string $argumentFactory = null,
+        public null | string | Closure $argumentFactory = null,
         public ?string $contract = null,
         public null | string | Closure $rollback = null,
         public bool $externalAccess = true,
         public bool $repeatable = false,
-        public bool $continueIfFail = true,
         public bool $private = false,
         /** @var string[] */
         public array $sealed = [],
         public bool $silent = false,
+        /** @var string[] */
+        public array $alternates = [],
     ) {
         $this->required = new RecursiveArrayIterator($required);
     }
