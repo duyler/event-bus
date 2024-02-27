@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Action;
+namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\Dto\Action;
-use RecursiveIteratorIterator;
+use Duyler\EventBus\Exception\ActionNotDefinedException;
 use RecursiveIterator;
-use InvalidArgumentException;
+use RecursiveIteratorIterator;
 
 /** @psalm-suppress MissingTemplateParam */
 class ActionRequiredIterator extends RecursiveIteratorIterator
@@ -48,6 +48,6 @@ class ActionRequiredIterator extends RecursiveIteratorIterator
 
     private function throwNotFoundAction(string $actionId): never
     {
-        throw new InvalidArgumentException('Required action ' . $actionId . ' not found');
+        throw new ActionNotDefinedException($actionId);
     }
 }
