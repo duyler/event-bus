@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use Duyler\EventBus\Action\ActionRequiredIterator;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\CompleteActionCollection;
