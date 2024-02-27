@@ -29,7 +29,6 @@ class ActionCollection
 
         if ($action->triggeredOn !== null) {
             $this->byTrigger[$action->triggeredOn][$action->id] = $action;
-            return;
         }
 
         $this->data[$action->id] = $action;

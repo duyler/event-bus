@@ -45,6 +45,10 @@ class Bus
                 continue;
             }
 
+            if ($requiredAction->triggeredOn !== null) {
+                continue;
+            }
+
             $this->pushTask($this->createTask($requiredAction));
         }
 

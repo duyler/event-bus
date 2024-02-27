@@ -15,7 +15,6 @@ use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
 use Duyler\EventBus\Exception\ActionNotDefinedException;
 use Duyler\EventBus\Exception\CannotRequirePrivateActionException;
 use Duyler\EventBus\Exception\NotAllowedSealedActionException;
-use Duyler\EventBus\Exception\TriggeredActionNotBeRequiredException;
 
 readonly class ActionService
 {
@@ -126,10 +125,6 @@ readonly class ActionService
 
         if (count($requiredAction->sealed) > 0 && !in_array($subject, $requiredAction->sealed)) {
             throw new NotAllowedSealedActionException($subject, $requiredAction->id);
-        }
-
-        if ($requiredAction->triggeredOn !== null) {
-            throw new TriggeredActionNotBeRequiredException($subject, $requiredAction->id);
         }
     }
 
