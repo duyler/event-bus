@@ -72,4 +72,91 @@ class TriggerTest extends TestCase
         $this->assertTrue($bus->resultIsExists('TestTrigger'));
         $this->assertInstanceOf(stdClass::class, $bus->getResult('TestTrigger')->data);
     }
+
+    #[Test]
+    public function run_with_contract_and_required_triggered_action(): void
+    {
+        $builder = new BusBuilder(new BusConfig());
+        $builder->addAction(
+            new Action(
+                id: 'ForTriggerAction',
+                handler: fn(stdClass $data) => $data,
+                triggeredOn: 'TestTrigger',
+                argument: stdClass::class,
+                contract: stdClass::class,
+                externalAccess: true,
+            )
+        );
+
+        $builder->doAction(
+            new Action(
+                id: 'RequiredTriggered',
+                handler: function (stdClass $data) {},
+                required: ['ForTriggerAction'],
+                argument: stdClass::class,
+                externalAccess: true,
+            )
+        );
+
+        $bus = $builder->build();
+        $bus->dispatchTrigger(
+            new Trigger(
+                id: 'TestTrigger',
+                status: ResultStatus::Success,
+                data: new stdClass(),
+                contract: stdClass::class,
+            )
+        );
+
+        $bus->run();
+
+        $this->assertTrue($bus->resultIsExists('ForTriggerAction'));
+        $this->assertTrue($bus->resultIsExists('TestTrigger'));
+        $this->assertTrue($bus->resultIsExists('RequiredTriggered'));
+        $this->assertInstanceOf(stdClass::class, $bus->getResult('TestTrigger')->data);
+        $this->assertNull($bus->getResult('RequiredTriggered')->data);
+        $this->assertInstanceOf(stdClass::class, $bus->getResult('ForTriggerAction')->data);
+    }
+
+    #[Test]
+    public function run_with_contract_and_required_triggered_action_without_trigger(): void
+    {
+        $builder = new BusBuilder(new BusConfig());
+        $builder->addAction(
+            new Action(
+                id: 'ForTriggerAction',
+                handler: fn(stdClass $data) => $data,
+                triggeredOn: 'TestTrigger',
+                argument: stdClass::class,
+                contract: stdClass::class,
+                externalAccess: true,
+            )
+        );
+
+        $builder->doAction(
+            new Action(
+                id: 'SomeAction',
+                handler: function () {},
+                externalAccess: true,
+            )
+        );
+
+        $builder->doAction(
+            new Action(
+                id: 'RequiredTriggered',
+                handler: function (stdClass $data) {},
+                required: ['ForTriggerAction'],
+                argument: stdClass::class,
+                externalAccess: true,
+            )
+        );
+
+        $bus = $builder->build();
+
+        $bus->run();
+
+        $this->assertFalse($bus->resultIsExists('ForTriggerAction'));
+        $this->assertFalse($bus->resultIsExists('TestTrigger'));
+        $this->assertFalse($bus->resultIsExists('RequiredTriggered'));
+    }
 }
