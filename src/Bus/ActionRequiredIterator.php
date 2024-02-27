@@ -9,7 +9,7 @@ use Duyler\EventBus\Exception\ActionNotDefinedException;
 use RecursiveIterator;
 use RecursiveIteratorIterator;
 
-/** @psalm-suppress MissingTemplateParam */
+/** @extends RecursiveIteratorIterator<RecursiveIterator> */
 class ActionRequiredIterator extends RecursiveIteratorIterator
 {
     /** @var array<string, Action>  */
