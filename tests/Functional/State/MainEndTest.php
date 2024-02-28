@@ -14,7 +14,7 @@ use Override;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
-class MailEndTest extends TestCase
+class MainEndTest extends TestCase
 {
     #[Test]
     public function end_with_result(): void
