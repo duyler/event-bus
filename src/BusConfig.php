@@ -13,7 +13,6 @@ use Duyler\EventBus\Contract\StateActionInterface;
 use Duyler\EventBus\Contract\StateMainInterface;
 use Duyler\EventBus\Internal\Event\ActionAfterRunEvent;
 use Duyler\EventBus\Internal\Event\ActionBeforeRunEvent;
-use Duyler\EventBus\Internal\Event\ActionIsCompleteEvent;
 use Duyler\EventBus\Internal\Event\ActionThrownExceptionEvent;
 use Duyler\EventBus\Internal\Event\BusCompletedEvent;
 use Duyler\EventBus\Internal\Event\DoWhileBeginEvent;
@@ -27,8 +26,9 @@ use Duyler\EventBus\Internal\Event\TriggerPushedEvent;
 use Duyler\EventBus\Internal\EventDispatcher;
 use Duyler\EventBus\Internal\Listener\Bus\DispatchTriggerEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\LogCompleteActionEventListener;
-use Duyler\EventBus\Internal\Listener\Bus\ResolveCompleteActionSubscriptionsEventListener;
+use Duyler\EventBus\Internal\Listener\Bus\CompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveHeldTasksEventListener;
+use Duyler\EventBus\Internal\Listener\Bus\ResolveSubscriptionsEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\TerminateAfterExceptionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\TerminateBusEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ValidateCompleteActionEventListener;
@@ -86,12 +86,6 @@ class BusConfig
     public function getListeners(): array
     {
         return [
-            ActionIsCompleteEvent::class => [
-                LogCompleteActionEventListener::class,
-                ValidateCompleteActionEventListener::class,
-                ResolveCompleteActionSubscriptionsEventListener::class,
-                ResolveHeldTasksEventListener::class,
-            ],
             DoWhileBeginEvent::class => [
                 StateMainBeginEventListener::class,
             ],
@@ -108,7 +102,12 @@ class BusConfig
                 StateMainSuspendEventListener::class,
             ],
             TaskAfterRunEvent::class => [
+                CompleteActionEventListener::class,
                 StateMainAfterEventListener::class,
+                ResolveSubscriptionsEventListener::class,
+                LogCompleteActionEventListener::class,
+                ValidateCompleteActionEventListener::class,
+                ResolveHeldTasksEventListener::class,
             ],
             ActionBeforeRunEvent::class => [
                 StateActionBeforeEventListener::class,

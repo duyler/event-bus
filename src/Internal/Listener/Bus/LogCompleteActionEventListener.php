@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Internal\Listener\Bus;
 
 use Duyler\EventBus\Bus\Log;
-use Duyler\EventBus\Internal\Event\ActionIsCompleteEvent;
+use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
 
 class LogCompleteActionEventListener
 {
     public function __construct(private Log $log) {}
 
-    public function __invoke(ActionIsCompleteEvent $event): void
+    public function __invoke(TaskAfterRunEvent $event): void
     {
-        $this->log->pushActionLog($event->completeAction->action);
+        $this->log->pushActionLog($event->task->action);
     }
 }
