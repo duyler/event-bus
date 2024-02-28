@@ -16,7 +16,6 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 class DoWhile
 {
     public function __construct(
-        private Publisher $publisher,
         private ActionRunnerProviderInterface $actionRunnerProvider,
         private TaskQueue $taskQueue,
         private EventDispatcherInterface $eventDispatcher,
@@ -50,7 +49,6 @@ class DoWhile
             $this->eventDispatcher->dispatch(new TaskSuspendedEvent($task));
         } else {
             $this->eventDispatcher->dispatch(new TaskAfterRunEvent($task));
-            $this->publisher->publish($task);
         }
     }
 }

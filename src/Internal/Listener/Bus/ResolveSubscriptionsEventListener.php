@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Internal\Listener\Bus;
 
-use Duyler\EventBus\Bus\Validator;
 use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
+use Duyler\EventBus\Service\SubscriptionService;
 
-class ValidateCompleteActionEventListener
+class ResolveSubscriptionsEventListener
 {
     public function __construct(
-        private Validator $validateService,
+        private SubscriptionService $subscriptionService,
         private CompleteActionCollection $completeActionCollection,
     ) {}
 
     public function __invoke(TaskAfterRunEvent $event): void
     {
         $completeAction = $this->completeActionCollection->get($event->task->action->id);
-        $this->validateService->validateCompleteAction($completeAction);
+        $this->subscriptionService->resolveSubscriptions($completeAction);
     }
 }

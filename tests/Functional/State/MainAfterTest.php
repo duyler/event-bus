@@ -74,7 +74,9 @@ class MainAfterStateHandler implements MainAfterStateHandlerInterface
     #[Override]
     public function handle(StateMainAfterService $stateService, StateContext $context): void
     {
-        $stateService->removeAction('RemovedActionFromBuilder');
+        if ($stateService->resultIsExists('ActionFromBuilder')) {
+            $stateService->removeAction('RemovedActionFromBuilder');
+        }
     }
 
     #[Override]
