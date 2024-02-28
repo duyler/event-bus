@@ -8,6 +8,7 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
+use Duyler\EventBus\Exception\ActionNotDefinedException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -57,5 +58,32 @@ class AddActionTest extends TestCase
                 externalAccess: true,
             )
         );
+    }
+
+    #[Test]
+    public function doAction_with_underdefine()
+    {
+        $builder = new BusBuilder(new BusConfig());
+
+        $builder->doAction(
+            new Action(
+                id: 'Test',
+                handler: function () {},
+                externalAccess: true,
+            )
+        );
+
+        $builder->doAction(
+            new Action(
+                id: 'TestWithUndefinedRequire',
+                handler: function () {},
+                required: ['UndefinedRequire'],
+                externalAccess: true,
+            )
+        );
+
+        $this->expectException(ActionNotDefinedException::class);
+
+        $builder->build()->run();
     }
 }
