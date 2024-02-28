@@ -44,7 +44,7 @@ class SubscriptionCollection
      */
     public function getSubscriptions(string $actionId, ResultStatus $status): array
     {
-        $pattern = '/' . preg_quote($this->makeActionIdWithStatus($actionId, $status) . '@') . '/';
+        $pattern = '/^' . preg_quote($this->makeActionIdWithStatus($actionId, $status) . '@') . '/';
 
         return array_intersect_key(
             $this->data,

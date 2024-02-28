@@ -49,8 +49,8 @@ class DoWhile
             $this->taskQueue->push($task);
             $this->eventDispatcher->dispatch(new TaskSuspendedEvent($task));
         } else {
-            $this->publisher->publish($task);
             $this->eventDispatcher->dispatch(new TaskAfterRunEvent($task));
+            $this->publisher->publish($task);
         }
     }
 }

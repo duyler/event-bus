@@ -46,7 +46,7 @@ class ActionCollection
 
     public function remove(string $actionId): void
     {
-        unset($actionId, $this->data);
+        unset($this->data[$actionId]);
     }
 
     /** @return array<string, Action> */
