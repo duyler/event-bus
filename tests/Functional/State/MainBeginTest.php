@@ -21,7 +21,7 @@ class MainBeginTest extends TestCase
     public function run_with_add_action_from_state_handler(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->addStateHandler(new MainBegintStateHandler());
+        $busBuilder->addStateHandler(new MainBeginStateHandler());
         $busBuilder->doAction(
             new Action(
                 id: 'ActionFromBuilder',
@@ -36,10 +36,9 @@ class MainBeginTest extends TestCase
         $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
         $this->assertTrue($bus->resultIsExists('ActionFromStateMainBegin'));
     }
-
 }
 
-class MainBegintStateHandler implements MainBeginStateHandlerInterface
+class MainBeginStateHandler implements MainBeginStateHandlerInterface
 {
     #[Override]
     public function handle(StateMainBeginService $stateService, StateContext $context): void
