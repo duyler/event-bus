@@ -8,6 +8,7 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\ActionThrowingStateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Dto\Context;
 use Duyler\EventBus\State\Service\StateActionThrowingService;
 use Duyler\EventBus\State\StateContext;
 use Override;
@@ -22,6 +23,9 @@ class ActionThrowingTest extends TestCase
     {
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new ActionThrowingStateHandler());
+        $busBuilder->addStateContext(new Context(
+            [ActionThrowingStateHandler::class]
+        ));
         $busBuilder->doAction(
             new Action(
                 id: 'Test',

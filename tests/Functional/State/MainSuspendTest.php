@@ -9,6 +9,7 @@ use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\MainResumeStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainSuspendStateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Dto\Context;
 use Duyler\EventBus\State\Service\StateMainResumeService;
 use Duyler\EventBus\State\Service\StateMainSuspendService;
 use Duyler\EventBus\State\StateContext;
@@ -26,6 +27,12 @@ class MainSuspendTest extends TestCase
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainSuspendStateHandler());
         $busBuilder->addStateHandler(new MainResumeStateHandler());
+        $busBuilder->addStateContext(new Context(
+            [
+                MainSuspendStateHandler::class,
+                MainResumeStateHandler::class,
+            ]
+        ));
         $busBuilder->doAction(
             new Action(
                 id: 'TestSuspend',

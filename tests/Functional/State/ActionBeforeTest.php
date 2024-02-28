@@ -8,6 +8,7 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\ActionBeforeStateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Dto\Context;
 use Duyler\EventBus\State\Service\StateActionBeforeService;
 use Duyler\EventBus\State\StateContext;
 use Override;
@@ -21,6 +22,9 @@ class ActionBeforeTest extends TestCase
     {
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new ActionBeforeStateHandler());
+        $busBuilder->addStateContext(new Context(
+            [ActionBeforeStateHandler::class]
+        ));
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
