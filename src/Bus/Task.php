@@ -56,7 +56,9 @@ class Task
             }
 
             if ($this->action->contract !== null && $resultData->data === null) {
-                throw new ActionReturnValueNotExistsException($this->action->id);
+                if ($resultData->status === ResultStatus::Success) {
+                    throw new ActionReturnValueNotExistsException($this->action->id);
+                }
             }
 
             return $resultData;
