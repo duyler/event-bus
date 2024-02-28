@@ -8,6 +8,7 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Dto\Context;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\State\Service\StateMainAfterService;
 use Duyler\EventBus\State\StateContext;
@@ -22,6 +23,9 @@ class MainAfterTest extends TestCase
     {
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainAfterStateHandler());
+        $busBuilder->addStateContext(new Context(
+            [MainAfterStateHandler::class]
+        ));
         $busBuilder->doAction(
             new Action(
                 id: 'ActionFromBuilder',

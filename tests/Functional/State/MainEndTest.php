@@ -8,6 +8,7 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\MainEndStateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Dto\Context;
 use Duyler\EventBus\State\Service\StateMainEndService;
 use Duyler\EventBus\State\StateContext;
 use Override;
@@ -21,6 +22,9 @@ class MainEndTest extends TestCase
     {
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainEndStateHandler());
+        $busBuilder->addStateContext(new Context(
+            [MainEndStateHandler::class]
+        ));
         $busBuilder->doAction(
             new Action(
                 id: 'ActionFromBuilder',
