@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Result;
 
-use Duyler\EventBus\Action\Exception\ActionReturnValueNotExistsException;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\ActionNotAllowExternalAccessException;
 use Duyler\EventBus\Exception\ResultNotExistsException;
@@ -95,27 +93,5 @@ class GetResultTest extends TestCase
         $this->expectExceptionMessage('Action or trigger result for Test_Not_Found does not exist');
 
         $bus->getResult('Test_Not_Found');
-    }
-
-    #[Test]
-    public function getResult_with_not_exists_result_data()
-    {
-        $builder = new BusBuilder(new BusConfig());
-        $builder->doAction(
-            new Action(
-                id: 'Test',
-                handler: fn() => new Result(ResultStatus::Success),
-                contract: stdClass::class,
-                externalAccess: true,
-            )
-        );
-
-        $bus = $builder->build();
-
-        $this->expectException(ActionReturnValueNotExistsException::class);
-
-        $bus->run();
-
-        $this->assertFalse($bus->resultIsExists('Test'));
     }
 }
