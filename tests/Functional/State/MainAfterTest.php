@@ -6,10 +6,13 @@ namespace Duyler\EventBus\Test\Functional\State;
 
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Contract\RollbackActionInterface;
 use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Context;
+use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Subscription;
+use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\State\Service\StateMainAfterService;
 use Duyler\EventBus\State\StateContext;
 use Override;
@@ -73,7 +76,7 @@ class MainAfterTest extends TestCase
     }
 
     #[Test]
-    public function rollback_without_exception(): void
+    public function rollback_callback_without_exception(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainAfterStateHandlerWithRollback());
@@ -84,6 +87,29 @@ class MainAfterTest extends TestCase
             new Action(
                 id: 'ActionFromBuilder',
                 handler: function (): void {},
+                rollback: function (): void {},
+                externalAccess: true,
+            )
+        );
+
+        $bus = $busBuilder->build();
+        $bus->run();
+        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
+    }
+
+    #[Test]
+    public function rollback_class_without_exception(): void
+    {
+        $busBuilder = new BusBuilder(new BusConfig());
+        $busBuilder->addStateHandler(new MainAfterStateHandlerWithRollback());
+        $busBuilder->addStateContext(new Context(
+            [MainAfterStateHandlerWithRollback::class]
+        ));
+        $busBuilder->doAction(
+            new Action(
+                id: 'ActionFromBuilder',
+                handler: function (): void {},
+                rollback: Rollback::class,
                 externalAccess: true,
             )
         );
@@ -93,6 +119,7 @@ class MainAfterTest extends TestCase
         $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
     }
 }
+
 
 class MainAfterStateHandlerWithRemoveAction implements MainAfterStateHandlerInterface
 {
@@ -127,5 +154,14 @@ class MainAfterStateHandlerWithRollback implements MainAfterStateHandlerInterfac
     public function observed(StateContext $context): array
     {
         return [];
+    }
+}
+
+class Rollback implements RollbackActionInterface
+{
+    #[Override]
+    public function run(Result $result): void
+    {
+        $result->status === ResultStatus::Success;
     }
 }
