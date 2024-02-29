@@ -73,7 +73,7 @@ class MainAfterTest extends TestCase
     }
 
     #[Test]
-    public function rollback_without_exception()
+    public function rollback_without_exception(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainAfterStateHandlerWithRollback());
@@ -126,6 +126,6 @@ class MainAfterStateHandlerWithRollback implements MainAfterStateHandlerInterfac
     #[Override]
     public function observed(StateContext $context): array
     {
-        return ['ActionFromBuilder'];
+        return [];
     }
 }
