@@ -61,13 +61,6 @@ class ActionCollection
         return $this->data;
     }
 
-    public function cleanUp(): void
-    {
-        $this->data = [];
-        $this->byContract = [];
-        $this->byTrigger = [];
-    }
-
     /** @return array<string, Action> */
     public function getByTrigger(string $triggerId): array
     {

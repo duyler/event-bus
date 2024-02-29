@@ -31,7 +31,7 @@ class ActionContainerCollection
     public function reset(): void
     {
         foreach ($this->data as $container) {
-            $container->softCleanUp();
+            $container->softReset();
         }
     }
 
