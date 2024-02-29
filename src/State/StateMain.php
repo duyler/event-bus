@@ -133,6 +133,7 @@ readonly class StateMain implements StateMainInterface
             $this->resultService,
             $this->logService,
             $this->triggerService,
+            $this->rollbackService,
         );
 
         foreach ($this->stateHandlerStorage->getMainAfter() as $handler) {
