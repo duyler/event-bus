@@ -15,6 +15,7 @@ use Duyler\EventBus\Internal\Event\ActionAfterRunEvent;
 use Duyler\EventBus\Internal\Event\ActionBeforeRunEvent;
 use Duyler\EventBus\Internal\Event\ActionThrownExceptionEvent;
 use Duyler\EventBus\Internal\Event\BusCompletedEvent;
+use Duyler\EventBus\Internal\Event\DoCyclicEvent;
 use Duyler\EventBus\Internal\Event\DoWhileBeginEvent;
 use Duyler\EventBus\Internal\Event\DoWhileEndEvent;
 use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
@@ -38,6 +39,7 @@ use Duyler\EventBus\Internal\Listener\State\StateActionThrowingEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainAfterEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainBeforeEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainBeginEventListener;
+use Duyler\EventBus\Internal\Listener\State\StateMainCyclicEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainEndEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainResumeEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainSuspendEventListener;
@@ -88,6 +90,9 @@ class BusConfig
         return [
             DoWhileBeginEvent::class => [
                 StateMainBeginEventListener::class,
+            ],
+            DoCyclicEvent::class => [
+                StateMainCyclicEventListener::class,
             ],
             DoWhileEndEvent::class => [
                 StateMainEndEventListener::class,

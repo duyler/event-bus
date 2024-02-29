@@ -10,6 +10,8 @@ interface StateMainInterface
 {
     public function begin(): void;
 
+    public function cyclic(): void;
+
     public function before(Task $task): void;
 
     public function suspend(Task $task): void;

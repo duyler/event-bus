@@ -9,12 +9,14 @@ use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Contract\StateMainInterface;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\LogService;
+use Duyler\EventBus\Service\QueueService;
 use Duyler\EventBus\Service\ResultService;
 use Duyler\EventBus\Service\RollbackService;
 use Duyler\EventBus\Service\SubscriptionService;
 use Duyler\EventBus\Service\TriggerService;
 use Duyler\EventBus\State\Service\StateMainAfterService;
 use Duyler\EventBus\State\Service\StateMainBeforeService;
+use Duyler\EventBus\State\Service\StateMainCyclicService;
 use Duyler\EventBus\State\Service\StateMainEndService;
 use Duyler\EventBus\State\Service\StateMainResumeService;
 use Duyler\EventBus\State\Service\StateMainBeginService;
@@ -34,6 +36,7 @@ readonly class StateMain implements StateMainInterface
         private StateSuspendContext $context,
         private TriggerService $triggerService,
         private StateContextScope $contextScope,
+        private QueueService $queueService,
     ) {}
 
     #[Override]
@@ -46,6 +49,18 @@ readonly class StateMain implements StateMainInterface
         );
 
         foreach ($this->stateHandlerStorage->getMainBegin() as $handler) {
+            $handler->handle($stateService, $this->contextScope->getContext($handler::class));
+        }
+    }
+
+    #[Override]
+    public function cyclic(): void
+    {
+        $stateService = new StateMainCyclicService(
+            $this->queueService,
+        );
+
+        foreach ($this->stateHandlerStorage->getMainCyclic() as $handler) {
             $handler->handle($stateService, $this->contextScope->getContext($handler::class));
         }
     }

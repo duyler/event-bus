@@ -9,6 +9,7 @@ use Duyler\EventBus\Contract\State\ActionBeforeStateHandlerInterface;
 use Duyler\EventBus\Contract\State\ActionThrowingStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainBeforeStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainCyclicStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainEndStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainResumeStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainBeginStateHandlerInterface;
@@ -20,6 +21,9 @@ class StateHandlerStorage
 {
     /** @var MainBeginStateHandlerInterface[] */
     private array $mainBegin = [];
+
+    /** @var MainCyclicStateHandlerInterface[] */
+    private array $mainCyclic = [];
 
     /** @var MainBeforeStateHandlerInterface[] */
     private array $mainBefore = [];
@@ -50,6 +54,8 @@ class StateHandlerStorage
         match (true) {
             $stateHandler instanceof MainBeginStateHandlerInterface =>
                 $this->mainBegin[] = $stateHandler,
+            $stateHandler instanceof MainCyclicStateHandlerInterface =>
+                $this->mainCyclic[] = $stateHandler,
             $stateHandler instanceof MainBeforeStateHandlerInterface =>
                 $this->mainBefore[] = $stateHandler,
             $stateHandler instanceof MainSuspendStateHandlerInterface =>
@@ -79,6 +85,12 @@ class StateHandlerStorage
     public function getMainBegin(): array
     {
         return $this->mainBegin;
+    }
+
+    /** @return MainCyclicStateHandlerInterface[] */
+    public function getMainCyclic(): array
+    {
+        return $this->mainCyclic;
     }
 
     /** @return MainBeforeStateHandlerInterface[] */
