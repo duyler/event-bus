@@ -8,10 +8,12 @@ use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\ResultService;
+use Duyler\EventBus\Service\RollbackService;
 use Duyler\EventBus\Service\TriggerService;
 use Duyler\EventBus\State\Service\Trait\ActionServiceTrait;
 use Duyler\EventBus\State\Service\Trait\LogServiceTrait;
 use Duyler\EventBus\State\Service\Trait\ResultServiceTrait;
+use Duyler\EventBus\State\Service\Trait\RollbackServiceTrait;
 use Duyler\EventBus\State\Service\Trait\TriggerServiceTrait;
 
 class StateMainAfterService
@@ -20,6 +22,7 @@ class StateMainAfterService
     use ResultServiceTrait;
     use LogServiceTrait;
     use TriggerServiceTrait;
+    use RollbackServiceTrait;
 
     public function __construct(
         private readonly ResultStatus $resultStatus,
@@ -29,6 +32,7 @@ class StateMainAfterService
         private readonly ResultService $resultService,
         private readonly LogService $logService,
         private readonly TriggerService $triggerService,
+        private readonly RollbackService $rollbackService,
     ) {}
 
     public function getActionId(): string

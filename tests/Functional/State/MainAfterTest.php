@@ -22,9 +22,9 @@ class MainAfterTest extends TestCase
     public function remove_action_from_state_handler(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->addStateHandler(new MainAfterStateHandler());
+        $busBuilder->addStateHandler(new MainAfterStateHandlerWithRemoveAction());
         $busBuilder->addStateContext(new Context(
-            [MainAfterStateHandler::class]
+            [MainAfterStateHandlerWithRemoveAction::class]
         ));
         $busBuilder->doAction(
             new Action(
@@ -71,15 +71,55 @@ class MainAfterTest extends TestCase
         $this->assertFalse($bus->resultIsExists('RemovedActionFromBuilder'));
         $this->assertFalse($bus->resultIsExists('SubscribedActionFromBuilder'));
     }
+
+    #[Test]
+    public function rollback_without_exception()
+    {
+        $busBuilder = new BusBuilder(new BusConfig());
+        $busBuilder->addStateHandler(new MainAfterStateHandlerWithRollback());
+        $busBuilder->addStateContext(new Context(
+            [MainAfterStateHandlerWithRollback::class]
+        ));
+        $busBuilder->doAction(
+            new Action(
+                id: 'ActionFromBuilder',
+                handler: function (): void {},
+                externalAccess: true,
+            )
+        );
+
+        $bus = $busBuilder->build();
+        $bus->run();
+        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
+    }
 }
 
-class MainAfterStateHandler implements MainAfterStateHandlerInterface
+class MainAfterStateHandlerWithRemoveAction implements MainAfterStateHandlerInterface
 {
     #[Override]
     public function handle(StateMainAfterService $stateService, StateContext $context): void
     {
         if ($stateService->resultIsExists('ActionFromBuilder')) {
             $stateService->removeAction('RemovedActionFromBuilder');
+        }
+    }
+
+    #[Override]
+    public function observed(StateContext $context): array
+    {
+        return ['ActionFromBuilder'];
+    }
+}
+
+class MainAfterStateHandlerWithRollback implements MainAfterStateHandlerInterface
+{
+    #[Override]
+    public function handle(StateMainAfterService $stateService, StateContext $context): void
+    {
+        if ($stateService->resultIsExists('ActionFromBuilder')) {
+            $stateService->rollbackWithoutException();
+        } else {
+            $stateService->rollbackWithoutException(1);
         }
     }
 
