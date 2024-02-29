@@ -28,7 +28,7 @@ class ActionHandlerArgumentBuilder
     ) {}
 
     /** @psalm-suppress MixedReturnStatement */
-    public function build(Action $action, ActionContainer $container): null|object
+    public function build(Action $action, ActionContainer $container): mixed
     {
         if ($action->argument === null) {
             return null;

@@ -23,7 +23,7 @@
         "phpunit/phpunit": "^10.0",
         "friendsofphp/php-cs-fixer": "^3.30",
         "squizlabs/php_codesniffer": "^4.0",
-        "vimeo/psalm": "^6.0@dev"
+        "vimeo/psalm": "^5.0"
     },
     "minimum-stability": "dev",
     "autoload": {
