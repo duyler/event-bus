@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
+use Duyler\EventBus\Internal\Event\DoCyclicEvent;
 use Duyler\EventBus\Internal\Event\DoWhileBeginEvent;
 use Duyler\EventBus\Internal\Event\DoWhileEndEvent;
 use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
@@ -26,6 +27,8 @@ class DoWhile
         $this->eventDispatcher->dispatch(new DoWhileBeginEvent());
 
         do {
+            $this->eventDispatcher->dispatch(new DoCyclicEvent());
+
             $task = $this->taskQueue->dequeue();
 
             if ($task->isRunning()) {
