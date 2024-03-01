@@ -9,6 +9,8 @@ use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\MainCyclicStateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Context;
+use Duyler\EventBus\Dto\Trigger;
+use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\State\Service\StateMainCyclicService;
 use Duyler\EventBus\State\StateContext;
 use Override;
@@ -36,6 +38,7 @@ class MainCyclicTest extends TestCase
         $bus = $busBuilder->build();
         $bus->run();
         $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('ActionFromHandler'));
     }
 }
 
@@ -44,6 +47,22 @@ class MainCyclicStateHandler implements MainCyclicStateHandlerInterface
     #[Override]
     public function handle(StateMainCyclicService $stateService, StateContext $context): void
     {
+        $stateService->addAction(
+            new Action(
+                id: 'ActionFromHandler',
+                handler: function (): void {},
+                triggeredOn: 'TriggerFromHandler',
+                externalAccess: true,
+            )
+        );
+
+        $stateService->doTrigger(
+            new Trigger(
+                id: 'TriggerFromHandler',
+                status: ResultStatus::Success,
+            )
+        );
+
         $stateService->inQueue('ActionFromBuilder');
         $stateService->queueIsEmpty();
         $stateService->queueIsNotEmpty();

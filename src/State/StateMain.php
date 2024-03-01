@@ -58,6 +58,8 @@ readonly class StateMain implements StateMainInterface
     {
         $stateService = new StateMainCyclicService(
             $this->queueService,
+            $this->actionService,
+            $this->triggerService,
         );
 
         foreach ($this->stateHandlerStorage->getMainCyclic() as $handler) {
