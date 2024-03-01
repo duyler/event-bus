@@ -23,7 +23,7 @@ class Validator
     {
         $actionId = $completeAction->action->id . '.' . $completeAction->result->status->value;
 
-        if (in_array($actionId, $this->log->getMainEventLog()) && false === $completeAction->action->repeatable) {
+        if (in_array($actionId, $this->log->getMainEventLog())) {
             $this->log->pushRepeatedEventLog($actionId);
         } else {
             $this->log->pushMainEventLog($actionId);
@@ -32,15 +32,19 @@ class Validator
         $mainEventLog = $this->log->getMainEventLog();
         $repeatedEventLog = $this->log->getRepeatedEventLog();
 
-        if (end($repeatedEventLog) === $actionId && false === $completeAction->action->repeatable) {
-            throw new ConsecutiveRepeatedActionException(
-                $completeAction->action->id,
-                $completeAction->result->status->value
-            );
+        if ($completeAction->action->repeatable) {
+            $repeatedEventLog = array_diff($repeatedEventLog, [$actionId]);
         }
 
-        if (count($mainEventLog) === count($repeatedEventLog)) {
-            if ($this->config->allowCircularCall === false) {
+        if ($this->config->allowCircularCall === false) {
+            if (end($repeatedEventLog) === $actionId && false === $completeAction->action->repeatable) {
+                throw new ConsecutiveRepeatedActionException(
+                    $completeAction->action->id,
+                    $completeAction->result->status->value
+                );
+            }
+
+            if (count($mainEventLog) === count($repeatedEventLog)) {
                 throw new CircularCallActionException($completeAction->action->id, (string) end($mainEventLog));
             }
         }

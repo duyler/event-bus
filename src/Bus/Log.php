@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
+use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Log as LogDto;
 
@@ -21,8 +22,13 @@ class Log
     /** @var string[] */
     private array $triggerLog = [];
 
+    public function __construct(private BusConfig $config) {}
+
     public function pushActionLog(Action $action): void
     {
+        if ($this->config->allowCircularCall && count($this->actionLog) === $this->config->logMaxSize) {
+            array_shift($this->actionLog);
+        }
         $this->actionLog[] = $action->id;
     }
 
@@ -33,6 +39,9 @@ class Log
 
     public function pushMainEventLog(string $actionIdWithStatus): void
     {
+        if ($this->config->allowCircularCall && count($this->mainEventLog) === $this->config->logMaxSize) {
+            array_shift($this->mainEventLog);
+        }
         $this->mainEventLog[] = $actionIdWithStatus;
     }
 
@@ -43,6 +52,9 @@ class Log
 
     public function pushRepeatedEventLog(string $actionIdWithStatus): void
     {
+        if ($this->config->allowCircularCall && count($this->repeatedEventLog) === $this->config->logMaxSize) {
+            array_shift($this->repeatedEventLog);
+        }
         $this->repeatedEventLog[] = $actionIdWithStatus;
     }
 
@@ -53,12 +65,10 @@ class Log
 
     public function pushTriggerEventLog(string $triggerId): void
     {
+        if ($this->config->allowCircularCall && count($this->triggerLog) === $this->config->logMaxSize) {
+            array_shift($this->triggerLog);
+        }
         $this->triggerLog[] = $triggerId;
-    }
-
-    public function getTriggerEventLog(): array
-    {
-        return $this->triggerLog;
     }
 
     public function getLog(): LogDto
@@ -76,5 +86,6 @@ class Log
         $this->actionLog = [];
         $this->mainEventLog = [];
         $this->repeatedEventLog = [];
+        $this->triggerLog = [];
     }
 }
