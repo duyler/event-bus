@@ -67,6 +67,7 @@ class BusConfig
         public readonly bool $allowSkipUnresolvedActions = true,
         public readonly bool $autoreset = false,
         public readonly bool $allowCircularCall = false,
+        public readonly int $logMaxSize = 50,
     ) {
         $this->bind = $this->getBind() + $bind;
     }
