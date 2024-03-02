@@ -85,6 +85,10 @@ class Bus
 
     protected function isSatisfiedConditions(Task $task): bool
     {
+        if ($task->action->lock && $this->taskQueue->inQueue($task->action->id)) {
+            return false;
+        }
+
         if ($task->action->required->count() === 0) {
             return true;
         }
