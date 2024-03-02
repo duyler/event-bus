@@ -28,6 +28,7 @@ readonly class Action
         public null | string | Closure $rollback = null,
         public bool $externalAccess = true,
         public bool $repeatable = false,
+        public bool $lock = false,
         public bool $private = false,
         /** @var string[] */
         public array $sealed = [],
