@@ -85,6 +85,7 @@ class MainCyclicStateHandlerWithTrigger implements MainCyclicStateHandlerInterfa
         $stateService->inQueue('ActionFromBuilder');
         $stateService->queueIsEmpty();
         $stateService->queueIsNotEmpty();
+        $stateService->queueCount();
     }
 }
 
