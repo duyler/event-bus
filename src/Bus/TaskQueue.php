@@ -53,4 +53,9 @@ class TaskQueue
     {
         return in_array($actionId, $this->queueLog);
     }
+
+    public function count(): int
+    {
+        return count($this->queueLog);
+    }
 }

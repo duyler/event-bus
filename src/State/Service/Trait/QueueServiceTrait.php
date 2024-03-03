@@ -25,4 +25,9 @@ trait QueueServiceTrait
     {
         return $this->queueService->inQueue($actionId);
     }
+
+    public function queueCount(): int
+    {
+        return $this->queueService->count();
+    }
 }
