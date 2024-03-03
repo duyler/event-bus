@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
+use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
+use Duyler\EventBus\Enum\Mode;
 use Duyler\EventBus\Internal\Event\DoCyclicEvent;
 use Duyler\EventBus\Internal\Event\DoWhileBeginEvent;
 use Duyler\EventBus\Internal\Event\DoWhileEndEvent;
@@ -20,6 +22,7 @@ class DoWhile
         private ActionRunnerProviderInterface $actionRunnerProvider,
         private TaskQueue $taskQueue,
         private EventDispatcherInterface $eventDispatcher,
+        private BusConfig $busConfig,
     ) {}
 
     public function run(): void
@@ -28,6 +31,10 @@ class DoWhile
 
         do {
             $this->eventDispatcher->dispatch(new DoCyclicEvent());
+
+            if ($this->taskQueue->isEmpty() && $this->busConfig->mode === Mode::Loop) {
+                continue;
+            }
 
             $task = $this->taskQueue->dequeue();
 
@@ -40,7 +47,7 @@ class DoWhile
             $this->eventDispatcher->dispatch(new TaskBeforeRunEvent($task));
             $task->run($this->actionRunnerProvider->getRunner($task->action));
             $this->process($task);
-        } while ($this->taskQueue->isNotEmpty());
+        } while ($this->busConfig->mode === Mode::Loop || $this->taskQueue->isNotEmpty());
 
         $this->eventDispatcher->dispatch(new DoWhileEndEvent());
     }
