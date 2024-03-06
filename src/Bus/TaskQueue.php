@@ -7,7 +7,7 @@ namespace Duyler\EventBus\Bus;
 use SplQueue;
 use RuntimeException;
 
-class TaskQueue
+final class TaskQueue
 {
     private SplQueue $queue;
     private array $queueLog = [];
@@ -56,6 +56,6 @@ class TaskQueue
 
     public function count(): int
     {
-        return count($this->queueLog);
+        return $this->queue->count();
     }
 }

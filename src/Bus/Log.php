@@ -8,23 +8,40 @@ use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Log as LogDto;
 
-class Log
+final class Log
 {
     /** @var string[] */
     private array $actionLog = [];
 
     /** @var string[] */
-    private array $mainEventLog = [];
+    private array $mainLog = [];
 
     /** @var string[] */
-    private array $repeatedEventLog = [];
+    private array $repeatedLog = [];
 
     /** @var string[] */
     private array $triggerLog = [];
 
+    /** @var string[] */
+    private array $retriesLog = [];
+
     public function __construct(private BusConfig $config) {}
 
-    public function pushActionLog(Action $action): void
+    public function pushCompleteAction(CompleteAction $completeAction): void
+    {
+        $actionId = $completeAction->action->id . '.' . $completeAction->result->status->value;
+
+        if (in_array($actionId, $this->mainLog) && $completeAction->action->retries === 0) {
+            $this->pushRepeatedLog($actionId);
+            $this->pushRetriesLog($actionId);
+        } else {
+            $this->pushMainLog($actionId);
+        }
+
+        $this->pushActionLog($completeAction->action);
+    }
+
+    private function pushActionLog(Action $action): void
     {
         if ($this->config->allowCircularCall && count($this->actionLog) === $this->config->logMaxSize) {
             array_shift($this->actionLog);
@@ -37,33 +54,41 @@ class Log
         return $this->actionLog;
     }
 
-    public function pushMainEventLog(string $actionIdWithStatus): void
+    private function pushMainLog(string $actionIdWithStatus): void
     {
-        if ($this->config->allowCircularCall && count($this->mainEventLog) === $this->config->logMaxSize) {
-            array_shift($this->mainEventLog);
+        if ($this->config->allowCircularCall && count($this->mainLog) === $this->config->logMaxSize) {
+            array_shift($this->mainLog);
         }
-        $this->mainEventLog[] = $actionIdWithStatus;
+        $this->mainLog[] = $actionIdWithStatus;
     }
 
-    public function getMainEventLog(): array
+    public function getMainLog(): array
     {
-        return $this->mainEventLog;
+        return $this->mainLog;
     }
 
-    public function pushRepeatedEventLog(string $actionIdWithStatus): void
+    private function pushRepeatedLog(string $actionIdWithStatus): void
     {
-        if ($this->config->allowCircularCall && count($this->repeatedEventLog) === $this->config->logMaxSize) {
-            array_shift($this->repeatedEventLog);
+        if ($this->config->allowCircularCall && count($this->repeatedLog) === $this->config->logMaxSize) {
+            array_shift($this->repeatedLog);
         }
-        $this->repeatedEventLog[] = $actionIdWithStatus;
+        $this->repeatedLog[] = $actionIdWithStatus;
     }
 
-    public function getRepeatedEventLog(): array
+    private function pushRetriesLog(string $actionIdWithStatus): void
     {
-        return $this->repeatedEventLog;
+        if ($this->config->allowCircularCall && count($this->retriesLog) === $this->config->logMaxSize) {
+            array_shift($this->retriesLog);
+        }
+        $this->retriesLog[] = $actionIdWithStatus;
     }
 
-    public function pushTriggerEventLog(string $triggerId): void
+    public function getRepeatedLog(): array
+    {
+        return $this->repeatedLog;
+    }
+
+    public function pushTriggerLog(string $triggerId): void
     {
         if ($this->config->allowCircularCall && count($this->triggerLog) === $this->config->logMaxSize) {
             array_shift($this->triggerLog);
@@ -75,17 +100,19 @@ class Log
     {
         return new LogDto(
             $this->actionLog,
-            $this->mainEventLog,
-            $this->repeatedEventLog,
-            $this->triggerLog
+            $this->mainLog,
+            $this->repeatedLog,
+            $this->triggerLog,
+            $this->retriesLog,
         );
     }
 
     public function reset(): void
     {
         $this->actionLog = [];
-        $this->mainEventLog = [];
-        $this->repeatedEventLog = [];
+        $this->mainLog = [];
+        $this->repeatedLog = [];
         $this->triggerLog = [];
+        $this->retriesLog = [];
     }
 }

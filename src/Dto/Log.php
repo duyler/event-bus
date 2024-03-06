@@ -18,6 +18,9 @@ readonly class Log
 
         /** @var string[] */
         private array $triggerLog,
+
+        /** @var string[] */
+        private array $retriesLog,
     ) {}
 
     public function getActionLog(): array
@@ -38,5 +41,10 @@ readonly class Log
     public function getTriggerLog(): array
     {
         return $this->triggerLog;
+    }
+
+    public function getRetriesLog(): array
+    {
+        return $this->retriesLog;
     }
 }

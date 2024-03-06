@@ -17,7 +17,7 @@ class DispatchTriggerEventListener
 
     public function __invoke(TriggerPushedEvent $event): void
     {
-        $this->log->pushTriggerEventLog($event->trigger->id);
+        $this->log->pushTriggerLog($event->trigger->id);
         $this->triggerService->dispatch($event->trigger);
     }
 }

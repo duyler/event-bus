@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use Duyler\EventBus\Action\Exception\ActionReturnValueExistsException;
-use Duyler\EventBus\Action\Exception\ActionReturnValueMustBeCompatibleException;
-use Duyler\EventBus\Action\Exception\ActionReturnValueMustBeTypeObjectException;
-use Duyler\EventBus\Action\Exception\ActionReturnValueNotExistsException;
+use Closure;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
-use Closure;
 use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Exception\ActionReturnValueExistsException;
+use Duyler\EventBus\Exception\ActionReturnValueMustBeCompatibleException;
+use Duyler\EventBus\Exception\ActionReturnValueMustBeTypeObjectException;
+use Duyler\EventBus\Exception\ActionReturnValueNotExistsException;
 use Fiber;
 
-class Task
+final class Task
 {
     public readonly Action $action;
     private mixed $value = null;

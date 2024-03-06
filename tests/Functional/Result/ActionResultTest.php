@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Result;
 
-use Duyler\EventBus\Action\Exception\ActionReturnValueExistsException;
-use Duyler\EventBus\Action\Exception\ActionReturnValueMustBeCompatibleException;
-use Duyler\EventBus\Action\Exception\ActionReturnValueMustBeTypeObjectException;
-use Duyler\EventBus\Action\Exception\ActionReturnValueNotExistsException;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Exception\ActionReturnValueExistsException;
+use Duyler\EventBus\Exception\ActionReturnValueMustBeCompatibleException;
+use Duyler\EventBus\Exception\ActionReturnValueMustBeTypeObjectException;
+use Duyler\EventBus\Exception\ActionReturnValueNotExistsException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
