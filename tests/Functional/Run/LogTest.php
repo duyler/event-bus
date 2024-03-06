@@ -40,6 +40,7 @@ class LogTest extends TestCase
         $this->assertSame($log->getMainActionLog(), ['Test.Success']);
         $this->assertSame($log->getTriggerLog(), []);
         $this->assertSame($log->getRepeatedActionLog(), []);
+        $this->assertSame($log->getRetriesLog(), []);
     }
 
     #[Test]
