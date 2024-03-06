@@ -21,6 +21,9 @@ class Bus
     /** @var array<string, string[]>  */
     private array $alternates = [];
 
+    /** @var array<string, int>  */
+    private array $retries = [];
+
     public function __construct(
         private readonly TaskQueue $taskQueue,
         private readonly ActionCollection $actionCollection,
@@ -68,8 +71,9 @@ class Bus
     {
         if ($this->isSatisfiedConditions($task)) {
             $this->taskQueue->push($task);
+            $this->retries[$task->action->id] = 0;
         } else {
-            $this->heldTasks[$task->action->id] = $task;
+            $this->heldTasks[] = $task;
         }
     }
 
@@ -149,5 +153,17 @@ class Bus
         }
 
         return false;
+    }
+
+    public function completeDoAction(CompleteAction $completeAction): void
+    {
+        if ($completeAction->result->status === ResultStatus::Fail) {
+            if ($completeAction->action->retries > 0
+                && $this->retries[$completeAction->action->id] < $completeAction->action->retries
+            ) {
+                $this->taskQueue->push($this->createTask($completeAction->action));
+                $this->retries[$completeAction->action->id]++;
+            }
+        }
     }
 }

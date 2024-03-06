@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Internal\Listener\Bus;
 
+use Duyler\EventBus\Bus\Bus;
 use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
@@ -12,6 +13,7 @@ class CompleteActionEventListener
 {
     public function __construct(
         private CompleteActionCollection $completeActionCollection,
+        private Bus $bus,
     ) {}
 
     public function __invoke(TaskAfterRunEvent $event): void
@@ -22,5 +24,6 @@ class CompleteActionEventListener
         );
 
         $this->completeActionCollection->save($completeAction);
+        $this->bus->completeDoAction($completeAction);
     }
 }
