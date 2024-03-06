@@ -56,6 +56,6 @@ final class TaskQueue
 
     public function count(): int
     {
-        return count($this->queueLog);
+        return $this->queue->count();
     }
 }
