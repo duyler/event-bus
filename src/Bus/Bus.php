@@ -73,7 +73,7 @@ class Bus
             $this->taskQueue->push($task);
             $this->retries[$task->action->id] = 0;
         } else {
-            $this->heldTasks[$task->action->id] = $task;
+            $this->heldTasks[] = $task;
         }
     }
 
