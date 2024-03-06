@@ -35,6 +35,7 @@ readonly class Action
         public bool $silent = false,
         /** @var string[] */
         public array $alternates = [],
+        public int $retries = 0,
     ) {
         $this->required = new RecursiveArrayIterator($required);
     }

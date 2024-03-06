@@ -23,7 +23,7 @@ class Validator
     {
         $actionId = $completeAction->action->id . '.' . $completeAction->result->status->value;
 
-        if (in_array($actionId, $this->log->getMainEventLog())) {
+        if (in_array($actionId, $this->log->getMainEventLog()) && $completeAction->action->retries === 0) {
             $this->log->pushRepeatedEventLog($actionId);
         } else {
             $this->log->pushMainEventLog($actionId);
