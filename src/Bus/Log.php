@@ -8,7 +8,7 @@ use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Log as LogDto;
 
-class Log
+final class Log
 {
     /** @var string[] */
     private array $actionLog = [];

@@ -7,7 +7,7 @@ namespace Duyler\EventBus\Bus;
 use SplQueue;
 use RuntimeException;
 
-class TaskQueue
+final class TaskQueue
 {
     private SplQueue $queue;
     private array $queueLog = [];

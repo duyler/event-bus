@@ -13,10 +13,10 @@ use Duyler\EventBus\Exception\UnableToContinueWithFailActionException;
 
 use function count;
 
-class Bus
+final class Bus
 {
     /** @var Task[] */
-    protected array $heldTasks = [];
+    private array $heldTasks = [];
 
     /** @var array<string, string[]>  */
     private array $alternates = [];
@@ -57,17 +57,17 @@ class Bus
         $this->pushTask($this->createTask($action));
     }
 
-    protected function isRepeat(string $actionId): bool
+    private function isRepeat(string $actionId): bool
     {
         return $this->taskQueue->inQueue($actionId) || $this->completeActionCollection->isExists($actionId);
     }
 
-    protected function createTask(Action $action): Task
+    private function createTask(Action $action): Task
     {
         return new Task($action);
     }
 
-    protected function pushTask(Task $task): void
+    private function pushTask(Task $task): void
     {
         if ($this->isSatisfiedConditions($task)) {
             $this->taskQueue->push($task);
@@ -87,7 +87,7 @@ class Bus
         }
     }
 
-    protected function isSatisfiedConditions(Task $task): bool
+    private function isSatisfiedConditions(Task $task): bool
     {
         if ($task->action->lock && $this->taskQueue->inQueue($task->action->id)) {
             return false;
@@ -117,7 +117,7 @@ class Bus
         foreach ($failActions as $failAction) {
             $this->alternates[$failAction->action->id] = $failAction->action->alternates;
 
-            if ($this->isReplacedFailAction($failAction->action->id)) {
+            if ($this->tryReplacedFailAction($failAction->action->id)) {
                 $replacedActions[] = $failAction;
             }
         }
@@ -135,7 +135,7 @@ class Bus
         return true;
     }
 
-    private function isReplacedFailAction(string $failActionId): bool
+    private function tryReplacedFailAction(string $failActionId): bool
     {
         foreach ($this->alternates[$failActionId] as $actionId) {
             $alternate = $this->actionCollection->get($actionId);

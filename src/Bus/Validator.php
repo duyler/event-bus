@@ -8,7 +8,7 @@ use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Exception\CircularCallActionException;
 use Duyler\EventBus\Exception\ConsecutiveRepeatedActionException;
 
-class Validator
+final class Validator
 {
     public function __construct(
         private Log $log,

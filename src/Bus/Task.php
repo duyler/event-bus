@@ -14,7 +14,7 @@ use Closure;
 use Duyler\EventBus\Enum\ResultStatus;
 use Fiber;
 
-class Task
+final class Task
 {
     public readonly Action $action;
     private mixed $value = null;

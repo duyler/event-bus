@@ -10,7 +10,7 @@ use RecursiveIterator;
 use RecursiveIteratorIterator;
 
 /** @extends RecursiveIteratorIterator<RecursiveIterator> */
-class ActionRequiredIterator extends RecursiveIteratorIterator
+final class ActionRequiredIterator extends RecursiveIteratorIterator
 {
     /** @var array<string, Action>  */
     private iterable $actions;

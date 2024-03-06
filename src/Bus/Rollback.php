@@ -11,7 +11,7 @@ use Duyler\EventBus\Dto\Result;
 
 use function is_callable;
 
-class Rollback
+final class Rollback
 {
     public function __construct(
         private CompleteActionCollection $completeActionCollection,
