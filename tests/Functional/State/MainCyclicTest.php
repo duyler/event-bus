@@ -10,7 +10,6 @@ use Duyler\EventBus\Contract\State\MainCyclicStateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Context;
 use Duyler\EventBus\Dto\Trigger;
-use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\CircularCallActionException;
 use Duyler\EventBus\State\Service\StateMainCyclicService;
 use Duyler\EventBus\State\StateContext;
@@ -78,7 +77,6 @@ class MainCyclicStateHandlerWithTrigger implements MainCyclicStateHandlerInterfa
         $stateService->doTrigger(
             new Trigger(
                 id: 'TriggerFromHandler',
-                status: ResultStatus::Success,
             )
         );
 
@@ -110,7 +108,6 @@ class MainCyclicStateHandlerWithRepeatableTrigger implements MainCyclicStateHand
         $stateService->doTrigger(
             new Trigger(
                 id: 'TriggerFromHandler',
-                status: ResultStatus::Success,
             )
         );
     }

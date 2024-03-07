@@ -7,6 +7,7 @@ namespace Duyler\EventBus\Service;
 use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Result;
+use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\ActionNotAllowExternalAccessException;
 use Duyler\EventBus\Exception\ResultNotExistsException;
 
@@ -35,7 +36,7 @@ class ResultService
 
         $triggerRelation = $this->triggerRelationCollection->getLast($actionId);
         return new Result(
-            $triggerRelation->trigger->status,
+            ResultStatus::Success,
             $triggerRelation->trigger->data,
         );
     }
