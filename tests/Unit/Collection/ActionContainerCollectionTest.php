@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Unit\Collection;
 
-use Duyler\EventBus\Action\ActionContainer;
-use Duyler\EventBus\Collection\ActionContainerCollection;
+use Duyler\EventBus\Bus\ActionContainer;
 use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Collection\ActionContainerCollection;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

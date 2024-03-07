@@ -8,7 +8,6 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Trigger;
-use Duyler\EventBus\Enum\ResultStatus;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -32,7 +31,6 @@ class TriggerTest extends TestCase
         $bus->dispatchTrigger(
             new Trigger(
                 id: 'TestTrigger',
-                status: ResultStatus::Success,
             )
         );
 
@@ -60,7 +58,6 @@ class TriggerTest extends TestCase
         $bus->dispatchTrigger(
             new Trigger(
                 id: 'TestTrigger',
-                status: ResultStatus::Success,
                 data: new stdClass(),
                 contract: stdClass::class,
             )
@@ -102,7 +99,6 @@ class TriggerTest extends TestCase
         $bus->dispatchTrigger(
             new Trigger(
                 id: 'TestTrigger',
-                status: ResultStatus::Success,
                 data: new stdClass(),
                 contract: stdClass::class,
             )

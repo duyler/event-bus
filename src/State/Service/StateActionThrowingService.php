@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service;
 
-use Duyler\EventBus\Action\ActionContainer;
+use Duyler\EventBus\Bus\ActionContainer;
 use Throwable;
 
 class StateActionThrowingService

@@ -6,6 +6,7 @@ namespace Duyler\EventBus\Action;
 
 use Closure;
 use Duyler\EventBus\Action\Exception\InvalidArgumentFactoryException;
+use Duyler\EventBus\Bus\ActionContainer;
 use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;

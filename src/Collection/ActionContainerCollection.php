@@ -2,7 +2,7 @@
 
 namespace Duyler\EventBus\Collection;
 
-use Duyler\EventBus\Action\ActionContainer;
+use Duyler\EventBus\Bus\ActionContainer;
 
 class ActionContainerCollection
 {

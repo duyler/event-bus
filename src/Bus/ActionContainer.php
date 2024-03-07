@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Action;
+namespace Duyler\EventBus\Bus;
 
 use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerConfig;

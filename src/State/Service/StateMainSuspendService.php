@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service;
 
-use Duyler\EventBus\Action\ActionContainer;
+use Duyler\EventBus\Bus\ActionContainer;
 use Duyler\EventBus\Bus\Task;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\ResultService;
