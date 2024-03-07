@@ -10,9 +10,9 @@ use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\ActionReturnValueExistsException;
-use Duyler\EventBus\Exception\ActionReturnValueMustBeCompatibleException;
+use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
 use Duyler\EventBus\Exception\ActionReturnValueMustBeTypeObjectException;
-use Duyler\EventBus\Exception\ActionReturnValueNotExistsException;
+use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -52,7 +52,7 @@ class ActionResultTest extends TestCase
 
         $bus = $builder->build();
 
-        $this->expectException(ActionReturnValueNotExistsException::class);
+        $this->expectException(DataForContractNotReceivedException::class);
 
         $bus->run();
 
@@ -91,7 +91,7 @@ class ActionResultTest extends TestCase
 
         $bus = $busBuilder->build();
 
-        $this->expectException(ActionReturnValueMustBeCompatibleException::class);
+        $this->expectException(DataMustBeCompatibleWithContractException::class);
 
         $bus->run();
     }

@@ -8,6 +8,9 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Trigger;
+use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
+use Duyler\EventBus\Exception\DataForContractNotReceivedException;
+use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -154,5 +157,84 @@ class TriggerTest extends TestCase
         $this->assertFalse($bus->resultIsExists('ForTriggerAction'));
         $this->assertFalse($bus->resultIsExists('TestTrigger'));
         $this->assertFalse($bus->resultIsExists('RequiredTriggered'));
+    }
+
+    #[Test]
+    public function run_with_contract_and_without_data(): void
+    {
+        $builder = new BusBuilder(new BusConfig());
+        $builder->addAction(
+            new Action(
+                id: 'ForTriggerAction',
+                handler: function () {},
+                triggeredOn: 'TestTrigger',
+                argument: stdClass::class,
+                externalAccess: true,
+            )
+        );
+
+        $bus = $builder->build();
+
+        $this->expectException(DataForContractNotReceivedException::class);
+
+        $bus->dispatchTrigger(
+            new Trigger(
+                id: 'TestTrigger',
+                contract: stdClass::class,
+            )
+        );
+    }
+
+    #[Test]
+    public function run_with_data_and_without_contract(): void
+    {
+        $builder = new BusBuilder(new BusConfig());
+        $builder->addAction(
+            new Action(
+                id: 'ForTriggerAction',
+                handler: function () {},
+                triggeredOn: 'TestTrigger',
+                argument: stdClass::class,
+                externalAccess: true,
+            )
+        );
+
+        $bus = $builder->build();
+
+        $this->expectException(ContractForDataNotReceivedException::class);
+
+        $bus->dispatchTrigger(
+            new Trigger(
+                id: 'TestTrigger',
+                data: new stdClass(),
+            )
+        );
+    }
+
+    #[Test]
+    public function run_with_invalid_data_for_contract(): void
+    {
+        $builder = new BusBuilder(new BusConfig());
+        $builder->addAction(
+            new Action(
+                id: 'ForTriggerAction',
+                handler: function () {},
+                triggeredOn: 'TestTrigger',
+                argument: stdClass::class,
+                externalAccess: true,
+            )
+        );
+
+        $bus = $builder->build();
+
+        $this->expectException(DataMustBeCompatibleWithContractException::class);
+
+        $bus->dispatchTrigger(
+            new Trigger(
+                id: 'TestTrigger',
+                data: new stdClass(),
+                contract: 'ClassName',
+            )
+        );
     }
 }
