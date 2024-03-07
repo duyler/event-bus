@@ -9,9 +9,9 @@ use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\ActionReturnValueExistsException;
-use Duyler\EventBus\Exception\ActionReturnValueMustBeCompatibleException;
+use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
 use Duyler\EventBus\Exception\ActionReturnValueMustBeTypeObjectException;
-use Duyler\EventBus\Exception\ActionReturnValueNotExistsException;
+use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Fiber;
 
 final class Task
@@ -52,12 +52,12 @@ final class Task
             }
 
             if ($resultData->data !== null && $resultData->data instanceof $this->action->contract === false) {
-                throw new ActionReturnValueMustBeCompatibleException($this->action->id, $this->action->contract);
+                throw new DataMustBeCompatibleWithContractException($this->action->id, $this->action->contract);
             }
 
             if ($this->action->contract !== null && $resultData->data === null) {
                 if ($resultData->status === ResultStatus::Success) {
-                    throw new ActionReturnValueNotExistsException($this->action->id);
+                    throw new DataForContractNotReceivedException($this->action->id, $this->action->contract);
                 }
             }
 
@@ -74,14 +74,14 @@ final class Task
             }
 
             if ($resultData instanceof $this->action->contract === false) {
-                throw new ActionReturnValueMustBeCompatibleException($this->action->id, $this->action->contract);
+                throw new DataMustBeCompatibleWithContractException($this->action->id, $this->action->contract);
             }
 
             return new Result(ResultStatus::Success, $resultData);
         }
 
         if ($this->action->contract !== null) {
-            throw new ActionReturnValueNotExistsException($this->action->id);
+            throw new DataForContractNotReceivedException($this->action->id, $this->action->contract);
         }
 
         return new Result(ResultStatus::Success);

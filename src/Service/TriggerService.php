@@ -9,7 +9,9 @@ use Duyler\EventBus\Bus\TriggerRelation;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Trigger;
-use InvalidArgumentException;
+use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
+use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
+use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 
 class TriggerService
 {
@@ -23,15 +25,15 @@ class TriggerService
     {
         if ($trigger->data !== null) {
             if ($trigger->contract === null) {
-                throw new InvalidArgumentException('Trigger contract will be received');
+                throw new ContractForDataNotReceivedException($trigger->id);
             }
 
             if ($trigger->data instanceof $trigger->contract === false) {
-                throw new InvalidArgumentException('Trigger data will be compatible with ' . $trigger->contract);
+                throw new DataMustBeCompatibleWithContractException($trigger->id, $trigger->contract);
             }
         } else {
             if ($trigger->contract !== null) {
-                throw new InvalidArgumentException('Trigger data will be received for ' . $trigger->contract);
+                throw new DataForContractNotReceivedException($trigger->id, $trigger->contract);
             }
         }
 
