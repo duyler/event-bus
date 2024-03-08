@@ -35,10 +35,10 @@ class BusBuilder
     /** @var object[] */
     private array $sharedServices = [];
 
-    /** @var array<string, string>  */
+    /** @var array<string, string> */
     private array $bind = [];
 
-    /** @var Context[]  */
+    /** @var Context[] */
     private array $contexts = [];
 
     public function __construct(private BusConfig $config) {}

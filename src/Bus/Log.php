@@ -31,7 +31,7 @@ final class Log
     {
         $actionId = $completeAction->action->id . '.' . $completeAction->result->status->value;
 
-        if (in_array($actionId, $this->mainLog) && $completeAction->action->retries === 0) {
+        if (in_array($actionId, $this->mainLog) && 0 === $completeAction->action->retries) {
             $this->pushRepeatedLog($actionId);
             $this->pushRetriesLog($actionId);
         } else {

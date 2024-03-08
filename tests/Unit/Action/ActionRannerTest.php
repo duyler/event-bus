@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Test\Unit\Action;
 
 use Duyler\EventBus\Action\ActionContainerProvider;
-use Duyler\EventBus\Action\ActionRunnerProvider;
 use Duyler\EventBus\Action\ActionHandlerArgumentBuilder;
 use Duyler\EventBus\Action\ActionHandlerBuilder;
+use Duyler\EventBus\Action\ActionRunnerProvider;
 use Duyler\EventBus\Dto\Action;
 use Exception;
 use PHPUnit\Framework\Attributes\Test;
@@ -49,7 +49,6 @@ class ActionRannerTest extends TestCase
         $this->argumentBuilder = $this->createMock(ActionHandlerArgumentBuilder::class);
         $this->handlerBuilder = $this->createMock(ActionHandlerBuilder::class);
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
-
 
         parent::setUp();
     }

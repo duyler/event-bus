@@ -120,7 +120,6 @@ class MainAfterTest extends TestCase
     }
 }
 
-
 class MainAfterStateHandlerWithRemoveAction implements MainAfterStateHandlerInterface
 {
     #[Override]
@@ -162,6 +161,6 @@ class Rollback implements RollbackActionInterface
     #[Override]
     public function run(Result $result): void
     {
-        $result->status === ResultStatus::Success;
+        ResultStatus::Success === $result->status;
     }
 }

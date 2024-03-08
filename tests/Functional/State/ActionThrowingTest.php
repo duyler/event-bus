@@ -29,7 +29,7 @@ class ActionThrowingTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function () {throw new RuntimeException('Test exception message');},
+                handler: function () {throw new RuntimeException('Test exception message'); },
                 externalAccess: true,
             )
         );
@@ -52,7 +52,8 @@ class ActionThrowingStateHandler implements ActionThrowingStateHandlerInterface
         $stateService->getContainer();
     }
 
-    #[Override] public function observed(StateContext $context): array
+    #[Override]
+    public function observed(StateContext $context): array
     {
         return [];
     }

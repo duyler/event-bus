@@ -15,19 +15,19 @@ class ActionCollection
      */
     private array $data = [];
 
-    /** @var array<string, array<string, Action>>  */
+    /** @var array<string, array<string, Action>> */
     private array $byContract = [];
 
-    /** @var array<string, array<string, Action>>  */
+    /** @var array<string, array<string, Action>> */
     private array $byTrigger = [];
 
     public function save(Action $action): void
     {
-        if ($action->contract !== null) {
+        if (null !== $action->contract) {
             $this->byContract[$action->contract][$action->id] = $action;
         }
 
-        if ($action->triggeredOn !== null) {
+        if (null !== $action->triggeredOn) {
             $this->byTrigger[$action->triggeredOn][$action->id] = $action;
         }
 

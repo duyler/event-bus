@@ -32,7 +32,7 @@ final class DoWhile
         do {
             $this->eventDispatcher->dispatch(new DoCyclicEvent());
 
-            if ($this->taskQueue->isEmpty() && $this->busConfig->mode === Mode::Loop) {
+            if ($this->taskQueue->isEmpty() && Mode::Loop === $this->busConfig->mode) {
                 continue;
             }
 
@@ -47,7 +47,7 @@ final class DoWhile
             $this->eventDispatcher->dispatch(new TaskBeforeRunEvent($task));
             $task->run($this->actionRunnerProvider->getRunner($task->action));
             $this->process($task);
-        } while ($this->busConfig->mode === Mode::Loop || $this->taskQueue->isNotEmpty());
+        } while (Mode::Loop === $this->busConfig->mode || $this->taskQueue->isNotEmpty());
 
         $this->eventDispatcher->dispatch(new DoWhileEndEvent());
     }

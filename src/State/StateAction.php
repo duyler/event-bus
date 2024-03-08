@@ -11,8 +11,8 @@ use Duyler\EventBus\Service\SubscriptionService;
 use Duyler\EventBus\State\Service\StateActionAfterService;
 use Duyler\EventBus\State\Service\StateActionBeforeService;
 use Duyler\EventBus\State\Service\StateActionThrowingService;
-use Throwable;
 use Override;
+use Throwable;
 
 class StateAction implements StateActionInterface
 {

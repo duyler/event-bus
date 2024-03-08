@@ -8,7 +8,7 @@ readonly class Trigger
 {
     public function __construct(
         public string $id,
-        public object|null $data = null,
-        public string|null $contract = null,
+        public ?object $data = null,
+        public ?string $contract = null,
     ) {}
 }

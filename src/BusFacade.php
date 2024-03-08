@@ -27,6 +27,7 @@ class BusFacade implements BusInterface
     {
         $this->runner->run();
         $this->eventDispatcher->dispatch(new BusCompletedEvent());
+
         return $this;
     }
 
@@ -46,6 +47,7 @@ class BusFacade implements BusInterface
     public function dispatchTrigger(Trigger $trigger): BusInterface
     {
         $this->eventDispatcher->dispatch(new TriggerPushedEvent($trigger));
+
         return $this;
     }
 
@@ -53,6 +55,7 @@ class BusFacade implements BusInterface
     public function reset(): BusInterface
     {
         $this->termination->run();
+
         return $this;
     }
 

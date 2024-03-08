@@ -21,7 +21,7 @@ readonly class LogService
         return (string) current($actionLog);
     }
 
-    public function getLastAction(): null|string
+    public function getLastAction(): ?string
     {
         $actionLog = $this->log->getActionLog();
 

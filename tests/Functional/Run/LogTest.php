@@ -68,7 +68,7 @@ class LogTest extends TestCase
         $bus = $busBuilder->build()->run();
         $log = $bus->getLog();
 
-        $this->asserttrue(count($log->getActionLog()) === 3);
-        $this->asserttrue(count($log->getRepeatedActionLog()) === 1);
+        $this->asserttrue(3 === count($log->getActionLog()));
+        $this->asserttrue(1 === count($log->getRepeatedActionLog()));
     }
 }

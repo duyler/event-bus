@@ -26,7 +26,7 @@ final class Validator
         $mainEventLog = $this->log->getMainLog();
         $repeatedEventLog = $this->log->getRepeatedLog();
 
-        if ($this->config->allowCircularCall === false) {
+        if (false === $this->config->allowCircularCall) {
             if (end($repeatedEventLog) === $actionId && false === $completeAction->action->repeatable) {
                 throw new ConsecutiveRepeatedActionException(
                     $completeAction->action->id,

@@ -26,7 +26,7 @@ class StateMainAfterService
 
     public function __construct(
         private readonly ResultStatus $resultStatus,
-        private readonly object|null $resultData,
+        private readonly ?object $resultData,
         private readonly string $actionId,
         private readonly ActionService $actionService,
         private readonly ResultService $resultService,
@@ -40,7 +40,7 @@ class StateMainAfterService
         return $this->actionId;
     }
 
-    public function getResultData(): object|null
+    public function getResultData(): ?object
     {
         return $this->resultData;
     }

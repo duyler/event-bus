@@ -9,7 +9,7 @@ use Psr\EventDispatcher\ListenerProviderInterface;
 
 class ListenerProvider implements ListenerProviderInterface
 {
-    /** @var array<string, callable[]>  */
+    /** @var array<string, callable[]> */
     private array $listeners = [];
 
     #[Override]

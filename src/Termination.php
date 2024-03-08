@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
-use Duyler\EventBus\Dto\Log as LogDto;
 use Duyler\EventBus\Bus\Log;
 use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;
+use Duyler\EventBus\Dto\Log as LogDto;
 
 class Termination
 {
-    private null|LogDto $logDto = null;
+    private ?LogDto $logDto = null;
 
     public function __construct(
         private CompleteActionCollection $completeActionCollection,
@@ -32,9 +32,10 @@ class Termination
 
     public function getLog(): LogDto
     {
-        if ($this->logDto === null) {
+        if (null === $this->logDto) {
             $this->logDto = $this->log->getLog();
         }
+
         return $this->logDto;
     }
 }

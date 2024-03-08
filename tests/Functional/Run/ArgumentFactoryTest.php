@@ -32,8 +32,7 @@ class ArgumentFactoryTest extends TestCase
                     handler: fn(TestArgument $argument) => $argument,
                     required: ['TestArgumentFactoryAction'],
                     argument: TestArgument::class,
-                    argumentFactory: fn(TestArgumentContract $contract)
-                        => new TestArgument($contract->seyHello . ' Duyler! With callback factory'),
+                    argumentFactory: fn(TestArgumentContract $contract) => new TestArgument($contract->seyHello . ' Duyler! With callback factory'),
                     contract: TestArgument::class,
                     externalAccess: true,
                 )

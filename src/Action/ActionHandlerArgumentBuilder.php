@@ -31,7 +31,7 @@ class ActionHandlerArgumentBuilder
     /** @psalm-suppress MixedReturnStatement */
     public function build(Action $action, ActionContainer $container): mixed
     {
-        if ($action->argument === null) {
+        if (null === $action->argument) {
             return null;
         }
 
@@ -40,7 +40,7 @@ class ActionHandlerArgumentBuilder
 
         if ($this->triggerRelationCollection->has($action->id)) {
             $trigger = $this->triggerRelationCollection->shift($action->id)->trigger;
-            if ($trigger->data !== null && $trigger->contract !== null) {
+            if (null !== $trigger->data && null !== $trigger->contract) {
                 $results[$trigger->contract] = $trigger->data;
             }
         }
@@ -55,7 +55,7 @@ class ActionHandlerArgumentBuilder
             $results = $this->actionSubstitution->getSubstituteResult($action->id) + $results;
         }
 
-        if ($action->argumentFactory === null) {
+        if (null === $action->argumentFactory) {
             foreach ($results as $definition) {
                 if ($definition instanceof $action->argument) {
                     return $definition;
@@ -86,12 +86,12 @@ class ActionHandlerArgumentBuilder
     {
         $results = [];
 
-        if (ResultStatus::Fail === $completeAction->result->status && $completeAction->action->contract !== null) {
+        if (ResultStatus::Fail === $completeAction->result->status && null !== $completeAction->action->contract) {
             $alternatesActions = $this->completeActionCollection->getAllByArray($completeAction->action->alternates);
 
             foreach ($alternatesActions as $alternateAction) {
                 if (ResultStatus::Success === $alternateAction->result->status) {
-                    if ($alternateAction->result->data === null) {
+                    if (null === $alternateAction->result->data) {
                         continue;
                     }
 
@@ -102,7 +102,7 @@ class ActionHandlerArgumentBuilder
             }
         }
 
-        if ($completeAction->result->data !== null && $completeAction->action->contract !== null) {
+        if (null !== $completeAction->result->data && null !== $completeAction->action->contract) {
             $results[$completeAction->action->contract] = $completeAction->result->data;
         }
 
@@ -111,28 +111,26 @@ class ActionHandlerArgumentBuilder
 
     /**
      * @param array<string, object> $arguments
+     *
      * @throws ReflectionException
      */
     private function buildFactoryArguments(string|Closure $factory, array $arguments = []): array
     {
         if (is_string($factory)) {
-
             /**
              * @psalm-suppress ArgumentTypeCoercion
              */
             $reflection = new ReflectionClass($factory);
             $methodReflection = null;
             foreach ($reflection->getMethods() as $method) {
-                if ($method->getName() === '__invoke') {
+                if ('__invoke' === $method->getName()) {
                     $methodReflection = $method;
                     break;
                 }
             }
 
-            if ($methodReflection === null) {
-                throw new InvalidArgumentException(
-                    'Method __invoke not found in ' . $factory
-                );
+            if (null === $methodReflection) {
+                throw new InvalidArgumentException('Method __invoke not found in ' . $factory);
             }
 
             return $this->matchArguments($methodReflection, $arguments);
@@ -153,10 +151,10 @@ class ActionHandlerArgumentBuilder
         $result = [];
 
         foreach ($params as $param) {
-            /** @var null|ReflectionNamedType $paramType */
+            /** @var ReflectionNamedType|null $paramType */
             $paramType = $param->getType();
 
-            if ($paramType === null) {
+            if (null === $paramType) {
                 throw new InvalidArgumentException('Type hint not set for ' . $param->getName());
             }
 

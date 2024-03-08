@@ -29,11 +29,11 @@ readonly class SubscriptionService
             throw new SubscriptionAlreadyDefinedException($subscription);
         }
 
-        if ($this->actionCollection->isExists($subscription->actionId) === false) {
+        if (false === $this->actionCollection->isExists($subscription->actionId)) {
             throw new SubscribedActionNotDefinedException($subscription->subjectId);
         }
 
-        if ($this->actionCollection->isExists($subscription->subjectId) === false) {
+        if (false === $this->actionCollection->isExists($subscription->subjectId)) {
             throw new SubscriptionOnNotDefinedActionException($subscription);
         }
 
@@ -67,7 +67,7 @@ readonly class SubscriptionService
 
     public function remove(Subscription $subscription): void
     {
-        if ($this->subscriptionCollection->isExists($subscription) === false) {
+        if (false === $this->subscriptionCollection->isExists($subscription)) {
             throw new SubscriptionNotFoundException($subscription);
         }
 
