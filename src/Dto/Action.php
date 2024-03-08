@@ -15,7 +15,7 @@ readonly class Action
     /** @param array<array-key, string> $required  */
     public function __construct(
         public string $id,
-        public string | Closure $handler,
+        public string|Closure $handler,
         array $required = [],
         public ?string $triggeredOn = null,
         /** @var array<string, string> */
@@ -23,9 +23,9 @@ readonly class Action
         /** @var array<string, string> */
         public array $providers = [],
         public ?string $argument = null,
-        public null | string | Closure $argumentFactory = null,
+        public string|Closure|null $argumentFactory = null,
         public ?string $contract = null,
-        public null | string | Closure $rollback = null,
+        public string|Closure|null $rollback = null,
         public bool $externalAccess = true,
         public bool $repeatable = false,
         public bool $lock = true,

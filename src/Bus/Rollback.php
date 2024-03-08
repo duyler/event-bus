@@ -25,7 +25,7 @@ final class Rollback
             : $this->completeActionCollection->getAllByArray($slice);
 
         foreach ($completeActions as $completeAction) {
-            if ($completeAction->action->rollback === null) {
+            if (null === $completeAction->action->rollback) {
                 continue;
             }
 

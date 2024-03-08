@@ -41,6 +41,7 @@ class ActionRunnerProvider implements ActionRunnerProviderInterface
             }
 
             $this->eventDispatcher->dispatch(new ActionAfterRunEvent($action));
+
             return $resultData;
         };
     }

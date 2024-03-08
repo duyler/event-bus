@@ -14,7 +14,7 @@ class TriggerRelationCollection
      */
     private array $data = [];
 
-    /** @var array<string, TriggerRelation>  */
+    /** @var array<string, TriggerRelation> */
     private array $lastById = [];
 
     public function save(TriggerRelation $triggerRelation): void
@@ -33,6 +33,7 @@ class TriggerRelationCollection
         if (empty($this->data[$actionId])) {
             throw new RuntimeException('Trigger relation for action ' . $actionId . ' not found');
         }
+
         return array_shift($this->data[$actionId]);
     }
 

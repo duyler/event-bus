@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use SplQueue;
 use RuntimeException;
+use SplQueue;
 
 final class TaskQueue
 {

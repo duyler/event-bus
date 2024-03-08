@@ -9,9 +9,9 @@ use Duyler\EventBus\Enum\ResultStatus;
 readonly class Result
 {
     public ResultStatus $status;
-    public object|null $data;
+    public ?object $data;
 
-    public function __construct(ResultStatus $status, object $data = null)
+    public function __construct(ResultStatus $status, ?object $data = null)
     {
         $this->status = $status;
         $this->data = $data;

@@ -7,12 +7,12 @@ namespace Duyler\EventBus\Collection;
 use Duyler\EventBus\Dto\Subscription;
 use Duyler\EventBus\Enum\ResultStatus;
 
-use function array_key_exists;
-use function preg_quote;
-use function array_intersect_key;
 use function array_flip;
-use function preg_grep;
+use function array_intersect_key;
+use function array_key_exists;
 use function array_keys;
+use function preg_grep;
+use function preg_quote;
 
 class SubscriptionCollection
 {
@@ -21,7 +21,7 @@ class SubscriptionCollection
      */
     private array $data = [];
 
-    /** @var array<string, array<array-key, Subscription>>  */
+    /** @var array<string, array<array-key, Subscription>> */
     private array $byActionId = [];
 
     public function save(Subscription $subscription): void

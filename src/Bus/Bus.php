@@ -18,10 +18,10 @@ final class Bus
     /** @var Task[] */
     private array $heldTasks = [];
 
-    /** @var array<string, string[]>  */
+    /** @var array<string, string[]> */
     private array $alternates = [];
 
-    /** @var array<string, int>  */
+    /** @var array<string, int> */
     private array $retries = [];
 
     public function __construct(
@@ -47,7 +47,7 @@ final class Bus
                 continue;
             }
 
-            if ($requiredAction->triggeredOn !== null) {
+            if (null !== $requiredAction->triggeredOn) {
                 continue;
             }
 
@@ -93,7 +93,7 @@ final class Bus
             return false;
         }
 
-        if ($task->action->required->count() === 0) {
+        if (0 === $task->action->required->count()) {
             return true;
         }
 
@@ -129,6 +129,7 @@ final class Bus
                 }
                 throw new UnableToContinueWithFailActionException($task->action->id);
             }
+
             return false;
         }
 
@@ -149,6 +150,7 @@ final class Bus
             }
 
             $this->doAction($alternate);
+
             return false;
         }
 
@@ -157,12 +159,12 @@ final class Bus
 
     public function completeDoAction(CompleteAction $completeAction): void
     {
-        if ($completeAction->result->status === ResultStatus::Fail) {
+        if (ResultStatus::Fail === $completeAction->result->status) {
             if ($completeAction->action->retries > 0
                 && $this->retries[$completeAction->action->id] < $completeAction->action->retries
             ) {
                 $this->taskQueue->push($this->createTask($completeAction->action));
-                $this->retries[$completeAction->action->id]++;
+                ++$this->retries[$completeAction->action->id];
             }
         }
     }

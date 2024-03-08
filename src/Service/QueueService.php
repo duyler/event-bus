@@ -24,6 +24,7 @@ class QueueService
     {
         return $this->taskQueue->inQueue($actionId);
     }
+
     public function count(): int
     {
         return $this->taskQueue->count();

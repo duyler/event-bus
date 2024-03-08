@@ -10,6 +10,7 @@ class ActionContainerCollection
      * @var array<string, ActionContainer>
      */
     private array $data = [];
+
     public function save(ActionContainer $container): void
     {
         $this->data[$container->actionId] = $container;

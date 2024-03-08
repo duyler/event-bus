@@ -46,7 +46,7 @@ class MainEndStateHandler implements MainEndStateHandlerInterface
     {
         $stateService->resultIsExists('ActionFromBuilder');
         $stateService->getResult('ActionFromBuilder');
-        $stateService->getFirstAction() === 'ActionFromBuilder';
-        $stateService->getLastAction() === 'ActionFromBuilder';
+        'ActionFromBuilder' === $stateService->getFirstAction();
+        'ActionFromBuilder' === $stateService->getLastAction();
     }
 }

@@ -11,9 +11,9 @@ use Duyler\EventBus\Dto\Action;
 
 class ActionContainerProvider
 {
-    /** @var array<string, object>  */
+    /** @var array<string, object> */
     private array $sharedServices = [];
-    /** @var array<string, string>  */
+    /** @var array<string, string> */
     private array $bind = [];
 
     public function __construct(

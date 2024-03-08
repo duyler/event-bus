@@ -41,6 +41,7 @@ class MainSuspendTest extends TestCase
                     $result = $callback();
                     $data = new stdClass();
                     $data->hello = $result;
+
                     return $data;
                 },
                 contract: stdClass::class,

@@ -9,9 +9,9 @@ use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\ActionReturnValueExistsException;
-use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
 use Duyler\EventBus\Exception\ActionReturnValueMustBeTypeObjectException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
+use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
 use Fiber;
 
 final class Task
@@ -47,16 +47,16 @@ final class Task
         $resultData = $this->fiber?->getReturn();
 
         if ($resultData instanceof Result) {
-            if ($this->action->contract === null && $resultData->data !== null) {
+            if (null === $this->action->contract && null !== $resultData->data) {
                 throw new ActionReturnValueExistsException($this->action->id);
             }
 
-            if ($resultData->data !== null && $resultData->data instanceof $this->action->contract === false) {
+            if (null !== $resultData->data && false === $resultData->data instanceof $this->action->contract) {
                 throw new DataMustBeCompatibleWithContractException($this->action->id, $this->action->contract);
             }
 
-            if ($this->action->contract !== null && $resultData->data === null) {
-                if ($resultData->status === ResultStatus::Success) {
+            if (null !== $this->action->contract && null === $resultData->data) {
+                if (ResultStatus::Success === $resultData->status) {
                     throw new DataForContractNotReceivedException($this->action->id, $this->action->contract);
                 }
             }
@@ -64,23 +64,23 @@ final class Task
             return $resultData;
         }
 
-        if ($resultData !== null) {
-            if (is_object($resultData) === false) {
+        if (null !== $resultData) {
+            if (false === is_object($resultData)) {
                 throw new ActionReturnValueMustBeTypeObjectException($this->action->id, $resultData);
             }
 
-            if ($this->action->contract === null) {
+            if (null === $this->action->contract) {
                 throw new ActionReturnValueExistsException($this->action->id);
             }
 
-            if ($resultData instanceof $this->action->contract === false) {
+            if (false === $resultData instanceof $this->action->contract) {
                 throw new DataMustBeCompatibleWithContractException($this->action->id, $this->action->contract);
             }
 
             return new Result(ResultStatus::Success, $resultData);
         }
 
-        if ($this->action->contract !== null) {
+        if (null !== $this->action->contract) {
             throw new DataForContractNotReceivedException($this->action->id, $this->action->contract);
         }
 

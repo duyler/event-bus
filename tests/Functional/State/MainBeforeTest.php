@@ -62,7 +62,7 @@ class MainBeforeTest extends TestCase
                 id: 'ActionWithRequired',
                 handler: fn(ResultInterface $result): ResultInterface => $result,
                 required: [
-                    'RequiredAction'
+                    'RequiredAction',
                 ],
                 argument: ResultInterface::class,
                 contract: ResultInterface::class,
@@ -84,7 +84,7 @@ class MainBeforeStateHandlerWithSubstituteActionHandler implements MainBeforeSta
     public function handle(StateMainBeforeService $stateService, StateContext $context): void
     {
         $stateService->substituteHandler(
-            actionId:'ActionFromBuilder',
+            actionId: 'ActionFromBuilder',
             handlerSubstitution: NewHandler::class
         );
     }

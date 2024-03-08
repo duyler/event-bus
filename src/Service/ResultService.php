@@ -30,11 +30,12 @@ class ResultService
             return $this->completeActionCollection->getResult($actionId);
         }
 
-        if ($this->triggerRelationCollection->isExists($actionId) === false) {
+        if (false === $this->triggerRelationCollection->isExists($actionId)) {
             throw new ResultNotExistsException($actionId);
         }
 
         $triggerRelation = $this->triggerRelationCollection->getLast($actionId);
+
         return new Result(
             ResultStatus::Success,
             $triggerRelation->trigger->data,

@@ -16,10 +16,10 @@ use Duyler\EventBus\Service\SubscriptionService;
 use Duyler\EventBus\Service\TriggerService;
 use Duyler\EventBus\State\Service\StateMainAfterService;
 use Duyler\EventBus\State\Service\StateMainBeforeService;
+use Duyler\EventBus\State\Service\StateMainBeginService;
 use Duyler\EventBus\State\Service\StateMainCyclicService;
 use Duyler\EventBus\State\Service\StateMainEndService;
 use Duyler\EventBus\State\Service\StateMainResumeService;
-use Duyler\EventBus\State\Service\StateMainBeginService;
 use Duyler\EventBus\State\Service\StateMainSuspendService;
 use Override;
 
@@ -110,7 +110,7 @@ readonly class StateMain implements StateMainInterface
         $resumeValue = null;
         foreach ($handlers as $handler) {
             $context = $this->contextScope->getContext($handler::class);
-            if ($handler->isResumable($stateService->getValue()) && $resumeValue === null) {
+            if ($handler->isResumable($stateService->getValue()) && null === $resumeValue) {
                 $resumeValue = $handler->handle($stateService, $context);
                 $this->context->addResumeValue($task->action->id, $resumeValue);
             } else {

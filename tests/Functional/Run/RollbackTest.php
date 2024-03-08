@@ -23,7 +23,7 @@ class RollbackTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function () {throw new RuntimeException('Test error with closure');},
+                handler: function () {throw new RuntimeException('Test error with closure'); },
                 rollback: function () {},
                 externalAccess: true,
             )
@@ -43,7 +43,7 @@ class RollbackTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function () {throw new RuntimeException('Test error with class');},
+                handler: function () {throw new RuntimeException('Test error with class'); },
                 rollback: Rollback::class,
                 externalAccess: true,
             )

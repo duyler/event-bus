@@ -12,7 +12,7 @@ use RecursiveIteratorIterator;
 /** @extends RecursiveIteratorIterator<RecursiveIterator> */
 final class ActionRequiredIterator extends RecursiveIteratorIterator
 {
-    /** @var array<string, Action>  */
+    /** @var array<string, Action> */
     private iterable $actions;
 
     /** @param array<string, Action> $actions */
