@@ -17,7 +17,7 @@ You can control the execution of actions using state handlers. Any action instan
 * StateMainSuspend - run when action call `Fiber::suspend()`
 * StateMainResume - run before returning of control to suspended action
 * StateMainAfter - run after executing action
-* StateMainEnd - run when bus queue is empty and all actions is  complete ("Queue" mode only)
+* StateMainEnd - run when bus queue is empty and all actions is complete ("Queue" mode only)
 
 **States of action context (inside fiber):**
 
