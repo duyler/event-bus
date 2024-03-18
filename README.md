@@ -4,15 +4,15 @@
 [![codecov](https://codecov.io/gh/duyler/event-bus/graph/badge.svg?token=Z60T9EMXD6)](https://codecov.io/gh/duyler/event-bus)
 # Event Bus
 
-Event bus implements cooperative multitasking by design. All work is done in "actions" and run inside php fibers.
-You can control the execution of actions using state handlers. Any action instantiate and run in isolate di container.
+Event bus implements cooperative multitasking by design. All work is done in "actions" and run inside php fibers. 
+You can control the execution of actions using state handlers. Any action instantiate and run in isolated container.
 
 ### Types of states
 
 **States of main context:**
 
 * StateMainBegin - run before start
-* StateMainCyclic - run always while queue is not empty or cyclic if bus mode set as "Loop"
+* StateMainCyclic - run always while queue is not empty or cyclic if set as "Loop" bus mode
 * StateMainBefore - run before build and executing action
 * StateMainSuspend - run when action call `Fiber::suspend()`
 * StateMainResume - run before returning of control to suspended action
