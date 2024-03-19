@@ -59,6 +59,12 @@ final class Bus
 
     private function isRepeat(string $actionId): bool
     {
+        foreach ($this->heldTasks as $task) {
+            if ($task->action->id === $actionId) {
+                return true;
+            }
+        }
+
         return $this->taskQueue->inQueue($actionId) || $this->completeActionCollection->isExists($actionId);
     }
 
