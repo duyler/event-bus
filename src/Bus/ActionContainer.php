@@ -7,6 +7,7 @@ namespace Duyler\EventBus\Bus;
 use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerConfig;
 use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Enum\ResetMode;
 
 class ActionContainer extends Container
 {
@@ -23,5 +24,14 @@ class ActionContainer extends Container
         }
 
         parent::__construct($containerConfig);
+    }
+
+    public function reset(): void
+    {
+        if ($this->config->resetMode === ResetMode::Soft) {
+            $this->softReset();
+        } else {
+            $this->selectiveReset();
+        }
     }
 }

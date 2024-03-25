@@ -12,6 +12,7 @@ use Duyler\EventBus\Contract\ActionSubstitutionInterface;
 use Duyler\EventBus\Contract\StateActionInterface;
 use Duyler\EventBus\Contract\StateMainInterface;
 use Duyler\EventBus\Enum\Mode;
+use Duyler\EventBus\Enum\ResetMode;
 use Duyler\EventBus\Internal\Event\ActionAfterRunEvent;
 use Duyler\EventBus\Internal\Event\ActionBeforeRunEvent;
 use Duyler\EventBus\Internal\Event\ActionThrownExceptionEvent;
@@ -69,7 +70,8 @@ class BusConfig
         public readonly bool $autoreset = false,
         public readonly bool $allowCircularCall = false,
         public readonly int $logMaxSize = 50,
-        public readonly Mode $mode = Mode::Queue
+        public readonly Mode $mode = Mode::Queue,
+        public readonly ResetMode $resetMode = ResetMode::Soft,
     ) {
         $this->bind = $this->getBind() + $bind;
     }

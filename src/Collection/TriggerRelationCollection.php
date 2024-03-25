@@ -30,9 +30,7 @@ class TriggerRelationCollection
 
     public function shift(string $actionId): TriggerRelation
     {
-        if (empty($this->data[$actionId])) {
-            throw new RuntimeException('Trigger relation for action ' . $actionId . ' not found');
-        }
+        $this->data[$actionId] ?? throw new RuntimeException('Trigger relation for action ' . $actionId . ' not found');
 
         return array_shift($this->data[$actionId]);
     }
