@@ -36,6 +36,8 @@ readonly class Action
         /** @var string[] */
         public array $alternates = [],
         public int $retries = 0,
+        /** @var array<string|int, mixed> */
+        public array $labels = [],
     ) {
         $this->required = new RecursiveArrayIterator($required);
     }
