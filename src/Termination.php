@@ -4,30 +4,25 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
+use Duyler\DependencyInjection\ContainerInterface;
 use Duyler\EventBus\Bus\Log;
-use Duyler\EventBus\Collection\ActionContainerCollection;
-use Duyler\EventBus\Collection\CompleteActionCollection;
-use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Log as LogDto;
 
 class Termination
 {
+    private Log $log;
     private ?LogDto $logDto = null;
 
     public function __construct(
-        private CompleteActionCollection $completeActionCollection,
-        private ActionContainerCollection $actionContainerCollection,
-        private TriggerRelationCollection $triggerRelationCollection,
-        private Log $log,
-    ) {}
+        private ContainerInterface $container,
+    ) {
+        $this->log = $this->container->get(Log::class);
+    }
 
     public function run(): void
     {
         $this->logDto = $this->log->getLog();
-        $this->completeActionCollection->reset();
-        $this->actionContainerCollection->reset();
-        $this->log->reset();
-        $this->triggerRelationCollection->reset();
+        $this->container->selectiveReset();
     }
 
     public function getLog(): LogDto

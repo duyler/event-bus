@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
+use Duyler\DependencyInjection\Attribute\Reset;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\CompleteActionCollection;
@@ -13,6 +14,7 @@ use Duyler\EventBus\Exception\UnableToContinueWithFailActionException;
 
 use function count;
 
+#[Reset]
 final class Bus
 {
     /** @var Task[] */
@@ -173,5 +175,12 @@ final class Bus
                 ++$this->retries[$completeAction->action->id];
             }
         }
+    }
+
+    public function reset(): void
+    {
+        $this->heldTasks = [];
+        $this->retries = [];
+        $this->alternates = [];
     }
 }

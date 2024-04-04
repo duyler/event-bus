@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
+use Duyler\DependencyInjection\Attribute\Reset;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Log as LogDto;
 
+#[Reset]
 final class Log
 {
     /** @var string[] */

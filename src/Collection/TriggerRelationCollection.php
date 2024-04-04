@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Collection;
 
+use Duyler\DependencyInjection\Attribute\Reset;
 use Duyler\EventBus\Bus\TriggerRelation;
 use RuntimeException;
 
+#[Reset]
 class TriggerRelationCollection
 {
     /**
