@@ -11,6 +11,7 @@ use Duyler\EventBus\Dto\Trigger;
 use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
+use Duyler\EventBus\Exception\TriggerHandlersNotFoundException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -234,6 +235,22 @@ class TriggerTest extends TestCase
                 id: 'TestTrigger',
                 data: new stdClass(),
                 contract: 'ClassName',
+            )
+        );
+    }
+
+    #[Test]
+    public function run_with_not_found_trigger_handler(): void
+    {
+        $builder = new BusBuilder(new BusConfig());
+
+        $bus = $builder->build();
+
+        $this->expectException(TriggerHandlersNotFoundException::class);
+
+        $bus->dispatchTrigger(
+            new Trigger(
+                id: 'TestTrigger',
             )
         );
     }

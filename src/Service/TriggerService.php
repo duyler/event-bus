@@ -12,6 +12,7 @@ use Duyler\EventBus\Dto\Trigger;
 use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
+use Duyler\EventBus\Exception\TriggerHandlersNotFoundException;
 
 class TriggerService
 {
@@ -38,6 +39,10 @@ class TriggerService
         }
 
         $actions = $this->actionCollection->getByTrigger($trigger->id);
+
+        if (count($actions) === 0) {
+            throw new TriggerHandlersNotFoundException($trigger->id);
+        }
 
         foreach ($actions as $action) {
             $this->triggerRelationCollection->save(new TriggerRelation($action, $trigger));
