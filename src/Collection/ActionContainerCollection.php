@@ -2,8 +2,10 @@
 
 namespace Duyler\EventBus\Collection;
 
+use Duyler\DependencyInjection\Attribute\Reset;
 use Duyler\EventBus\Bus\ActionContainer;
 
+#[Reset]
 class ActionContainerCollection
 {
     /**

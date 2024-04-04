@@ -91,6 +91,9 @@ class BusBuilder
             $stateService->addStateContext($context);
         }
 
+        $termination = new Termination($container);
+        $container->set($termination);
+
         /** @var ListenerProvider $listenerProvider */
         $listenerProvider = $container->get(ListenerProviderInterface::class);
 
