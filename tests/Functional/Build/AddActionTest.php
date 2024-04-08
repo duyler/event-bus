@@ -23,7 +23,7 @@ class AddActionTest extends TestCase
             new Action(
                 id: 'Test',
                 handler: function () {},
-            )
+            ),
         );
 
         $this->expectException(ActionAlreadyDefinedException::class);
@@ -32,7 +32,7 @@ class AddActionTest extends TestCase
             new Action(
                 id: 'Test',
                 handler: function () {},
-            )
+            ),
         );
     }
 
@@ -46,7 +46,7 @@ class AddActionTest extends TestCase
                 id: 'Test',
                 handler: function () {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $this->expectException(ActionAlreadyDefinedException::class);
@@ -56,7 +56,7 @@ class AddActionTest extends TestCase
                 id: 'Test',
                 handler: function () {},
                 externalAccess: true,
-            )
+            ),
         );
     }
 
@@ -70,7 +70,7 @@ class AddActionTest extends TestCase
                 id: 'Test',
                 handler: function () {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $builder->doAction(
@@ -79,7 +79,7 @@ class AddActionTest extends TestCase
                 handler: function () {},
                 required: ['UndefinedRequire'],
                 externalAccess: true,
-            )
+            ),
         );
 
         $this->expectException(ActionNotDefinedException::class);

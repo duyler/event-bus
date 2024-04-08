@@ -10,7 +10,6 @@ use Duyler\EventBus\Contract\State\ActionBeforeStateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\Context;
 use Duyler\EventBus\Dto\Subscription;
-use Duyler\EventBus\Exception\SubscriptionNotFoundException;
 use Duyler\EventBus\State\Service\StateActionBeforeService;
 use Duyler\EventBus\State\StateContext;
 use Override;
@@ -26,14 +25,14 @@ class ActionBeforeTest extends TestCase
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new ActionBeforeStateHandler());
         $busBuilder->addStateContext(new Context(
-            [ActionBeforeStateHandler::class]
+            [ActionBeforeStateHandler::class],
         ));
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
                 handler: function () {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $busBuilder->doAction(
@@ -42,7 +41,7 @@ class ActionBeforeTest extends TestCase
                 handler: fn(): stdClass => new stdClass(),
                 contract: stdClass::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $busBuilder->doAction(
@@ -52,29 +51,11 @@ class ActionBeforeTest extends TestCase
                 required: ['TestArgumentReturn'],
                 argument: stdClass::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $busBuilder->build()->run();
         $this->assertTrue($bus->resultIsExists('Test'));
-    }
-
-    #[Test]
-    public function before_with_remove_not_found_subscription(): void
-    {
-        $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->addStateHandler(new ActionBeforeThrowsStateHandler());
-        $busBuilder->doAction(
-            new Action(
-                id: 'ExistsAction',
-                handler: function () {},
-                externalAccess: true,
-            )
-        );
-
-        $bus = $busBuilder->build();
-        $this->expectException(SubscriptionNotFoundException::class);
-        $bus->run();
     }
 }
 
@@ -84,10 +65,8 @@ class ActionBeforeStateHandler implements ActionBeforeStateHandlerInterface
     public function handle(StateActionBeforeService $stateService, StateContext $context): void
     {
         $stateService->getContainer();
-        $stateService->getActionId();
-        if ($stateService->argumentIsExists()) {
-            $stateService->getArgument();
-        }
+        $stateService->getAction();
+        $stateService->getArgument();
     }
 
     #[Override]

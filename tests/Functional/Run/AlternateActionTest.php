@@ -26,7 +26,7 @@ class AlternateActionTest extends TestCase
                 handler: function () {},
                 required: ['RequiredAction'],
                 externalAccess: true,
-            )
+            ),
         );
 
         $busBuilder->addAction(
@@ -39,7 +39,7 @@ class AlternateActionTest extends TestCase
                 alternates: [
                     'AlternateRequiredAction',
                 ],
-            )
+            ),
         );
 
         $busBuilder->addAction(
@@ -48,7 +48,7 @@ class AlternateActionTest extends TestCase
                 handler: fn() => new stdClass(),
                 contract: stdClass::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $busBuilder->build()->run();
@@ -68,7 +68,7 @@ class AlternateActionTest extends TestCase
                 handler: function () {},
                 required: ['RequiredAction'],
                 externalAccess: true,
-            )
+            ),
         );
 
         $busBuilder->addAction(
@@ -81,7 +81,7 @@ class AlternateActionTest extends TestCase
                 alternates: [
                     'AlternateRequiredAction',
                 ],
-            )
+            ),
         );
 
         $busBuilder->addAction(
@@ -90,7 +90,7 @@ class AlternateActionTest extends TestCase
                 handler: fn() => new Result(ResultStatus::Fail, new stdClass()),
                 contract: stdClass::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $this->expectException(UnableToContinueWithFailActionException::class);

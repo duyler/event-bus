@@ -24,7 +24,7 @@ class ActionHandlerTest extends TestCase
                 id: 'Test',
                 handler: 'string',
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $busBuilder->build();
@@ -43,7 +43,7 @@ class ActionHandlerTest extends TestCase
                 id: 'Test',
                 handler: Handler::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $busBuilder->build();

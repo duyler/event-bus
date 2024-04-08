@@ -7,8 +7,6 @@ namespace Duyler\EventBus\State;
 use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Contract\StateActionInterface;
 use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Service\ActionService;
-use Duyler\EventBus\Service\SubscriptionService;
 use Duyler\EventBus\State\Service\StateActionAfterService;
 use Duyler\EventBus\State\Service\StateActionBeforeService;
 use Duyler\EventBus\State\Service\StateActionThrowingService;
@@ -21,18 +19,15 @@ class StateAction implements StateActionInterface
         private StateHandlerStorage $stateHandlerStorage,
         private ActionContainerCollection $actionContainerCollection,
         private StateContextScope $contextScope,
-        private readonly SubscriptionService $subscriptionService,
-        private ActionService $actionService,
     ) {}
 
     #[Override]
-    public function before(Action $action): void
+    public function before(Action $action, object|null $argument): void
     {
         $stateService = new StateActionBeforeService(
             $this->actionContainerCollection->get($action->id),
-            $action->id,
-            $this->subscriptionService,
-            $this->actionService,
+            $action,
+            $argument,
         );
 
         foreach ($this->stateHandlerStorage->getActionBefore() as $handler) {
@@ -44,12 +39,12 @@ class StateAction implements StateActionInterface
     }
 
     #[Override]
-    public function after(Action $action): void
+    public function after(Action $action, mixed $resultData): void
     {
         $stateService = new StateActionAfterService(
             $this->actionContainerCollection->get($action->id),
-            $action->id,
-            $this->subscriptionService,
+            $action,
+            $resultData,
         );
 
         foreach ($this->stateHandlerStorage->getActionAfter() as $handler) {
@@ -66,7 +61,7 @@ class StateAction implements StateActionInterface
         $stateService = new StateActionThrowingService(
             $this->actionContainerCollection->get($action->id),
             $exception,
-            $action->id,
+            $action,
         );
 
         foreach ($this->stateHandlerStorage->getActionThrowing() as $handler) {

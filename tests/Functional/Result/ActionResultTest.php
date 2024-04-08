@@ -27,7 +27,7 @@ class ActionResultTest extends TestCase
             new Action(
                 id: 'TestAction',
                 handler: fn() => new stdClass(),
-            )
+            ),
         );
 
         $bus = $busBuilder->build();
@@ -47,7 +47,7 @@ class ActionResultTest extends TestCase
                 handler: fn() => new Result(ResultStatus::Success),
                 contract: stdClass::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $builder->build();
@@ -67,7 +67,7 @@ class ActionResultTest extends TestCase
             new Action(
                 id: 'TestAction',
                 handler: fn() => 123,
-            )
+            ),
         );
 
         $bus = $busBuilder->build();
@@ -86,7 +86,7 @@ class ActionResultTest extends TestCase
                 id: 'TestAction',
                 handler: fn() => new class () {},
                 contract: stdClass::class,
-            )
+            ),
         );
 
         $bus = $busBuilder->build();

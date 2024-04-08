@@ -8,5 +8,8 @@ use Duyler\EventBus\Dto\Action;
 
 readonly class ActionAfterRunEvent
 {
-    public function __construct(public Action $action) {}
+    public function __construct(
+        public Action $action,
+        public mixed $result = null,
+    ) {}
 }

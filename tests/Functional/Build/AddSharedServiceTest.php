@@ -20,7 +20,7 @@ class AddSharedServiceTest extends TestCase
             new SharedService('Test service'),
             [
                 SharedInterface::class => SharedService::class,
-            ]
+            ],
         );
 
         $busBuilder->doAction(
@@ -28,8 +28,8 @@ class AddSharedServiceTest extends TestCase
                 id: 'Test',
                 handler: Handler::class,
                 contract: SharedInterface::class,
-                externalAccess: true
-            )
+                externalAccess: true,
+            ),
         );
 
         $bus = $busBuilder->build()->run();
@@ -49,7 +49,7 @@ interface SharedInterface {}
 readonly class Handler
 {
     public function __construct(
-        public SharedInterface $shared
+        public SharedInterface $shared,
     ) {}
 
     public function __invoke(): SharedInterface

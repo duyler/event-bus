@@ -22,7 +22,7 @@ class EventCollectionTest extends TestCase
         $action = new Action(id: 'test', handler: 'test');
         $event = new CompleteAction(
             action: $action,
-            result: new Result(status: ResultStatus::Success)
+            result: new Result(status: ResultStatus::Success),
         );
 
         $this->eventCollection->save($event);

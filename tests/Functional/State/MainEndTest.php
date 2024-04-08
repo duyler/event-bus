@@ -23,14 +23,14 @@ class MainEndTest extends TestCase
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainEndStateHandler());
         $busBuilder->addStateContext(new Context(
-            [MainEndStateHandler::class]
+            [MainEndStateHandler::class],
         ));
         $busBuilder->doAction(
             new Action(
                 id: 'ActionFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $busBuilder->build()->run();

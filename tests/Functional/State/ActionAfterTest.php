@@ -23,14 +23,14 @@ class ActionAfterTest extends TestCase
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new ActionAfterStateHandler());
         $busBuilder->addStateContext(new Context(
-            [ActionAfterStateHandler::class]
+            [ActionAfterStateHandler::class],
         ));
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
                 handler: function () {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $busBuilder->build()->run();
@@ -44,7 +44,7 @@ class ActionAfterStateHandler implements ActionAfterStateHandlerInterface
     public function handle(StateActionAfterService $stateService, StateContext $context): void
     {
         $stateService->getContainer();
-        $stateService->getActionId();
+        $stateService->getAction();
     }
 
     #[Override]

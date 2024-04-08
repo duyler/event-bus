@@ -22,7 +22,7 @@ class SubscriptionTest extends TestCase
                 id: 'ActionFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $busBuilder->addAction(
@@ -30,14 +30,14 @@ class SubscriptionTest extends TestCase
                 id: 'SubscribedActionFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $busBuilder->addSubscription(
             new Subscription(
                 subjectId: 'ActionFromBuilder',
                 actionId: 'SubscribedActionFromBuilder',
-            )
+            ),
         );
 
         $bus = $busBuilder->build();

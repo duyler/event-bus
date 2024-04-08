@@ -59,7 +59,7 @@ class ActionRannerTest extends TestCase
             actionContainerProvider: $this->containerBuilder,
             argumentBuilder: $this->argumentBuilder,
             handlerBuilder: $this->handlerBuilder,
-            eventDispatcher: $this->eventDispatcher
+            eventDispatcher: $this->eventDispatcher,
         );
     }
 }

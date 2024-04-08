@@ -31,7 +31,7 @@ class MainSuspendTest extends TestCase
             [
                 MainSuspendStateHandler::class,
                 MainResumeStateHandler::class,
-            ]
+            ],
         ));
         $busBuilder->doAction(
             new Action(
@@ -46,7 +46,7 @@ class MainSuspendTest extends TestCase
                 },
                 contract: stdClass::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $busBuilder->build();

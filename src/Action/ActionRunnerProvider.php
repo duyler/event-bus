@@ -31,7 +31,7 @@ class ActionRunnerProvider implements ActionRunnerProviderInterface
         $argument = $this->argumentBuilder->build($action, $container);
 
         return function () use ($action, $handler, $argument): mixed {
-            $this->eventDispatcher->dispatch(new ActionBeforeRunEvent($action));
+            $this->eventDispatcher->dispatch(new ActionBeforeRunEvent($action, $argument));
 
             try {
                 $resultData = $handler($argument);
@@ -40,7 +40,7 @@ class ActionRunnerProvider implements ActionRunnerProviderInterface
                 throw $exception;
             }
 
-            $this->eventDispatcher->dispatch(new ActionAfterRunEvent($action));
+            $this->eventDispatcher->dispatch(new ActionAfterRunEvent($action, $resultData));
 
             return $resultData;
         };

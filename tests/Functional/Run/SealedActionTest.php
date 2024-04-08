@@ -24,7 +24,7 @@ class SealedActionTest extends TestCase
                 handler: function () {},
                 externalAccess: true,
                 sealed: ['AcceptAction'],
-            )
+            ),
         );
 
         $builder->doAction(
@@ -33,7 +33,7 @@ class SealedActionTest extends TestCase
                 handler: function () {},
                 required: ['SealedAction'],
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $builder->build();
@@ -53,7 +53,7 @@ class SealedActionTest extends TestCase
                 handler: function () {},
                 externalAccess: true,
                 sealed: ['AcceptAction'],
-            )
+            ),
         );
 
         $builder->doAction(
@@ -62,7 +62,7 @@ class SealedActionTest extends TestCase
                 handler: function () {},
                 required: ['SealedAction'],
                 externalAccess: true,
-            )
+            ),
         );
 
         $builder->doAction(
@@ -70,7 +70,7 @@ class SealedActionTest extends TestCase
                 id: 'SomeAction',
                 handler: function () {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $this->expectException(NotAllowedSealedActionException::class);

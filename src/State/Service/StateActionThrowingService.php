@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\State\Service;
 
 use Duyler\EventBus\Bus\ActionContainer;
+use Duyler\EventBus\Dto\Action;
 use Throwable;
 
 class StateActionThrowingService
@@ -12,7 +13,7 @@ class StateActionThrowingService
     public function __construct(
         private readonly ActionContainer $container,
         private readonly Throwable $exception,
-        private readonly string $actionId,
+        private readonly Action $action,
     ) {}
 
     public function getContainer(): ActionContainer
@@ -20,9 +21,9 @@ class StateActionThrowingService
         return $this->container;
     }
 
-    public function getActionId(): string
+    public function getAction(): Action
     {
-        return $this->actionId;
+        return $this->action;
     }
 
     public function getException(): Throwable

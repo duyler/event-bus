@@ -55,7 +55,7 @@ readonly class SubscriptionService
     {
         $subscriptions = $this->subscriptionCollection->getSubscriptions(
             $completeAction->action->id,
-            $completeAction->result->status
+            $completeAction->result->status,
         );
 
         foreach ($subscriptions as $subscription) {

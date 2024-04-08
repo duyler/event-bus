@@ -27,14 +27,14 @@ class MainAfterTest extends TestCase
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainAfterStateHandlerWithRemoveAction());
         $busBuilder->addStateContext(new Context(
-            [MainAfterStateHandlerWithRemoveAction::class]
+            [MainAfterStateHandlerWithRemoveAction::class],
         ));
         $busBuilder->doAction(
             new Action(
                 id: 'ActionFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $busBuilder->addAction(
@@ -42,7 +42,7 @@ class MainAfterTest extends TestCase
                 id: 'RemovedActionFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $busBuilder->addAction(
@@ -50,21 +50,21 @@ class MainAfterTest extends TestCase
                 id: 'SubscribedActionFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $busBuilder->addSubscription(
             new Subscription(
                 subjectId: 'ActionFromBuilder',
                 actionId: 'RemovedActionFromBuilder',
-            )
+            ),
         );
 
         $busBuilder->addSubscription(
             new Subscription(
                 subjectId: 'RemovedActionFromBuilder',
                 actionId: 'SubscribedActionFromBuilder',
-            )
+            ),
         );
 
         $bus = $busBuilder->build();
@@ -76,12 +76,42 @@ class MainAfterTest extends TestCase
     }
 
     #[Test]
+    public function remove_subscription_from_state_handler(): void
+    {
+        $busBuilder = new BusBuilder(new BusConfig());
+        $busBuilder->addStateHandler(new MainAfterStateHandlerWithSubscription());
+        $busBuilder->addStateContext(new Context(
+            [MainAfterStateHandlerWithSubscription::class],
+        ));
+        $busBuilder->doAction(
+            new Action(
+                id: 'ActionFromTest',
+                handler: function (): void {},
+                externalAccess: true,
+            ),
+        );
+
+        $busBuilder->addAction(
+            new Action(
+                id: 'SubscribedActionFromTest',
+                handler: function (): void {},
+                externalAccess: true,
+            ),
+        );
+
+        $bus = $busBuilder->build();
+        $bus->run();
+        $this->assertTrue($bus->resultIsExists('ActionFromTest'));
+        $this->assertFalse($bus->resultIsExists('SubscribedActionFromTest'));
+    }
+
+    #[Test]
     public function rollback_callback_without_exception(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainAfterStateHandlerWithRollback());
         $busBuilder->addStateContext(new Context(
-            [MainAfterStateHandlerWithRollback::class]
+            [MainAfterStateHandlerWithRollback::class],
         ));
         $busBuilder->doAction(
             new Action(
@@ -89,7 +119,7 @@ class MainAfterTest extends TestCase
                 handler: function (): void {},
                 rollback: function (): void {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $busBuilder->build();
@@ -103,7 +133,7 @@ class MainAfterTest extends TestCase
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainAfterStateHandlerWithRollback());
         $busBuilder->addStateContext(new Context(
-            [MainAfterStateHandlerWithRollback::class]
+            [MainAfterStateHandlerWithRollback::class],
         ));
         $busBuilder->doAction(
             new Action(
@@ -111,7 +141,7 @@ class MainAfterTest extends TestCase
                 handler: function (): void {},
                 rollback: Rollback::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $busBuilder->build();
@@ -147,6 +177,40 @@ class MainAfterStateHandlerWithRollback implements MainAfterStateHandlerInterfac
         } else {
             $stateService->rollbackWithoutException(1);
         }
+    }
+
+    #[Override]
+    public function observed(StateContext $context): array
+    {
+        return [];
+    }
+}
+
+class MainAfterStateHandlerWithSubscription implements MainAfterStateHandlerInterface
+{
+    #[Override]
+    public function handle(StateMainAfterService $stateService, StateContext $context): void
+    {
+        $stateService->addSubscription(
+            new Subscription(
+                subjectId: 'ActionFromTest',
+                actionId: 'SubscribedActionFromTest',
+            ),
+        );
+
+        $stateService->subscriptionIsExists(
+            new Subscription(
+                subjectId: 'ActionFromTest',
+                actionId: 'SubscribedActionFromTest',
+            ),
+        );
+
+        $stateService->removeSubscription(
+            new Subscription(
+                subjectId: 'ActionFromTest',
+                actionId: 'SubscribedActionFromTest',
+            ),
+        );
     }
 
     #[Override]

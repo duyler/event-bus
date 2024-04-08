@@ -30,7 +30,7 @@ class ActionHandlerArgumentBuilder
         private ActionArgumentCollection $actionArgumentCollection,
     ) {}
 
-    public function build(Action $action, ActionContainer $container): mixed
+    public function build(Action $action, ActionContainer $container): object|null
     {
         if (null === $action->argument) {
             return null;
@@ -55,7 +55,7 @@ class ActionHandlerArgumentBuilder
         if ($this->actionSubstitution->isSubstituteResult($action->id)) {
             $actionResultSubstitution = $this->actionSubstitution->getSubstituteResult($action->id);
             $substitution = [
-                $actionResultSubstitution->requiredContract => $actionResultSubstitution->substitution
+                $actionResultSubstitution->requiredContract => $actionResultSubstitution->substitution,
             ];
             $results = $substitution + $results;
         }
@@ -68,7 +68,7 @@ class ActionHandlerArgumentBuilder
                 }
             }
             throw new LogicException(
-                'Argument factory is not set to unresolved argument: ' . $action->argument . ' for ' . $action->id
+                'Argument factory is not set to unresolved argument: ' . $action->argument . ' for ' . $action->id,
             );
         }
 

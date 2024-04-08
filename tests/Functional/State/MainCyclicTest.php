@@ -26,14 +26,14 @@ class MainCyclicTest extends TestCase
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainCyclicStateHandlerWithTrigger());
         $busBuilder->addStateContext(new Context(
-            [MainCyclicStateHandlerWithTrigger::class]
+            [MainCyclicStateHandlerWithTrigger::class],
         ));
         $busBuilder->doAction(
             new Action(
                 id: 'ActionFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $busBuilder->build();
@@ -48,7 +48,7 @@ class MainCyclicTest extends TestCase
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainCyclicStateHandlerWithRepeatableTrigger());
         $busBuilder->addStateContext(new Context(
-            [MainCyclicStateHandlerWithRepeatableTrigger::class]
+            [MainCyclicStateHandlerWithRepeatableTrigger::class],
         ));
 
         $bus = $busBuilder->build();
@@ -71,13 +71,13 @@ class MainCyclicStateHandlerWithTrigger implements MainCyclicStateHandlerInterfa
                 handler: function (): void {},
                 triggeredOn: 'TriggerFromHandler',
                 externalAccess: true,
-            )
+            ),
         );
 
         $stateService->doTrigger(
             new Trigger(
                 id: 'TriggerFromHandler',
-            )
+            ),
         );
 
         $stateService->inQueue('ActionFromBuilder');
@@ -102,13 +102,13 @@ class MainCyclicStateHandlerWithRepeatableTrigger implements MainCyclicStateHand
                 externalAccess: true,
                 repeatable: true,
                 lock: true,
-            )
+            ),
         );
 
         $stateService->doTrigger(
             new Trigger(
                 id: 'TriggerFromHandler',
-            )
+            ),
         );
     }
 }

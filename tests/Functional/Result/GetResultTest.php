@@ -25,7 +25,7 @@ class GetResultTest extends TestCase
                 id: 'Test',
                 handler: function () {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $builder->build();
@@ -47,7 +47,7 @@ class GetResultTest extends TestCase
                 handler: fn() => new stdClass(),
                 contract: stdClass::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $builder->build();
@@ -68,7 +68,7 @@ class GetResultTest extends TestCase
                 id: 'Test',
                 handler: function () {},
                 externalAccess: false,
-            )
+            ),
         );
 
         $bus = $builder->build();

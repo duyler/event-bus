@@ -28,7 +28,7 @@ class SubscriptionCollectionTest extends TestCase
         $this->assertTrue($this->subscriptionCollection->isExists($subscription));
         $this->assertSame(
             ['test.Success@test' => $subscription],
-            $this->subscriptionCollection->getSubscriptions('test', ResultStatus::Success)
+            $this->subscriptionCollection->getSubscriptions('test', ResultStatus::Success),
         );
     }
 

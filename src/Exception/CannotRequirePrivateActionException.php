@@ -11,7 +11,7 @@ class CannotRequirePrivateActionException extends Exception
     public function __construct(string $action, string $requiredAction)
     {
         parent::__construct(
-            sprintf('Action %s cannot require private action %s', $action, $requiredAction)
+            sprintf('Action %s cannot require private action %s', $action, $requiredAction),
         );
     }
 }

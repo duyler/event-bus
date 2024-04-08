@@ -25,7 +25,7 @@ class MainBeforeTest extends TestCase
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainBeforeStateHandlerWithSubstituteActionHandler());
         $busBuilder->addStateContext(new Context(
-            [MainBeforeStateHandlerWithSubstituteActionHandler::class]
+            [MainBeforeStateHandlerWithSubstituteActionHandler::class],
         ));
         $busBuilder->doAction(
             new Action(
@@ -33,7 +33,7 @@ class MainBeforeTest extends TestCase
                 handler: fn(): ResultInterface => new class () implements ResultInterface {},
                 contract: ResultInterface::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $busBuilder->doAction(
@@ -42,7 +42,7 @@ class MainBeforeTest extends TestCase
                 handler: fn(): ResultInterface => new class () implements ResultInterface {},
                 contract: ResultInterface::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $busBuilder->build();
@@ -60,7 +60,7 @@ class MainBeforeTest extends TestCase
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainBeforeStateHandlerWithSubstituteActionRequiredResult());
         $busBuilder->addStateContext(new Context(
-            [MainBeforeStateHandlerWithSubstituteActionRequiredResult::class]
+            [MainBeforeStateHandlerWithSubstituteActionRequiredResult::class],
         ));
         $busBuilder->doAction(
             new Action(
@@ -68,7 +68,7 @@ class MainBeforeTest extends TestCase
                 handler: fn(): ResultInterface => new class () implements ResultInterface {},
                 contract: ResultInterface::class,
                 externalAccess: true,
-            )
+            ),
         );
         $busBuilder->doAction(
             new Action(
@@ -80,7 +80,7 @@ class MainBeforeTest extends TestCase
                 argument: ResultInterface::class,
                 contract: ResultInterface::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $busBuilder->build();
@@ -100,14 +100,14 @@ class MainBeforeStateHandlerWithSubstituteActionHandler implements MainBeforeSta
             new ActionHandlerSubstitution(
                 actionId: 'ActionFromBuilder_1',
                 handler: NewHandler::class,
-            )
+            ),
         );
 
         $stateService->substituteHandler(
             new ActionHandlerSubstitution(
                 actionId: 'ActionFromBuilder_2',
                 handler: fn() => new NewResult('Value from new result 2'),
-            )
+            ),
         );
     }
 
