@@ -53,7 +53,11 @@ class ActionHandlerArgumentBuilder
         }
 
         if ($this->actionSubstitution->isSubstituteResult($action->id)) {
-            $results = $this->actionSubstitution->getSubstituteResult($action->id) + $results;
+            $actionResultSubstitution = $this->actionSubstitution->getSubstituteResult($action->id);
+            $substitution = [
+                $actionResultSubstitution->requiredContract => $actionResultSubstitution->substitution
+            ];
+            $results = $substitution + $results;
         }
 
         if (null === $action->argumentFactory) {

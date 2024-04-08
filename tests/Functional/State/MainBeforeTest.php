@@ -8,6 +8,8 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\MainBeforeStateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
+use Duyler\EventBus\Dto\ActionHandlerSubstitution;
+use Duyler\EventBus\Dto\ActionResultSubstitution;
 use Duyler\EventBus\Dto\Context;
 use Duyler\EventBus\State\Service\StateMainBeforeService;
 use Duyler\EventBus\State\StateContext;
@@ -27,7 +29,16 @@ class MainBeforeTest extends TestCase
         ));
         $busBuilder->doAction(
             new Action(
-                id: 'ActionFromBuilder',
+                id: 'ActionFromBuilder_1',
+                handler: fn(): ResultInterface => new class () implements ResultInterface {},
+                contract: ResultInterface::class,
+                externalAccess: true,
+            )
+        );
+
+        $busBuilder->doAction(
+            new Action(
+                id: 'ActionFromBuilder_2',
                 handler: fn(): ResultInterface => new class () implements ResultInterface {},
                 contract: ResultInterface::class,
                 externalAccess: true,
@@ -37,8 +48,10 @@ class MainBeforeTest extends TestCase
         $bus = $busBuilder->build();
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
-        $this->assertEquals('Value from new result', $bus->getResult('ActionFromBuilder')->data->value);
+        $this->assertTrue($bus->resultIsExists('ActionFromBuilder_1'));
+        $this->assertTrue($bus->resultIsExists('ActionFromBuilder_2'));
+        $this->assertEquals('Value from new result 1', $bus->getResult('ActionFromBuilder_1')->data->value);
+        $this->assertEquals('Value from new result 2', $bus->getResult('ActionFromBuilder_2')->data->value);
     }
 
     #[Test]
@@ -84,15 +97,24 @@ class MainBeforeStateHandlerWithSubstituteActionHandler implements MainBeforeSta
     public function handle(StateMainBeforeService $stateService, StateContext $context): void
     {
         $stateService->substituteHandler(
-            actionId: 'ActionFromBuilder',
-            handlerSubstitution: NewHandler::class
+            new ActionHandlerSubstitution(
+                actionId: 'ActionFromBuilder_1',
+                handler: NewHandler::class,
+            )
+        );
+
+        $stateService->substituteHandler(
+            new ActionHandlerSubstitution(
+                actionId: 'ActionFromBuilder_2',
+                handler: fn() => new NewResult('Value from new result 2'),
+            )
         );
     }
 
     #[Override]
     public function observed(StateContext $context): array
     {
-        return ['ActionFromBuilder'];
+        return ['ActionFromBuilder_1', 'ActionFromBuilder_2'];
     }
 }
 
@@ -102,10 +124,11 @@ class MainBeforeStateHandlerWithSubstituteActionRequiredResult implements MainBe
     public function handle(StateMainBeforeService $stateService, StateContext $context): void
     {
         $stateService->substituteResult(
-            actionId: $stateService->getActionId(),
-            substitutions: [
-                ResultInterface::class => new NewResult('Value from substitute result'),
-            ]
+            new ActionResultSubstitution(
+                actionId: $stateService->getActionId(),
+                requiredContract: ResultInterface::class,
+                substitution: new NewResult('Value from substitute result'),
+            ),
         );
     }
 
@@ -120,7 +143,7 @@ class NewHandler
 {
     public function __invoke()
     {
-        return new NewResult('Value from new result');
+        return new NewResult('Value from new result 1');
     }
 }
 
