@@ -6,6 +6,7 @@ namespace Duyler\EventBus\State\Service;
 
 use Duyler\EventBus\Bus\ActionContainer;
 use Duyler\EventBus\Dto\Subscription;
+use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\SubscriptionService;
 
 class StateActionBeforeService
@@ -14,6 +15,7 @@ class StateActionBeforeService
         private readonly ActionContainer $container,
         private readonly string $actionId,
         private readonly SubscriptionService $subscriptionService,
+        private readonly ActionService $actionService,
     ) {}
 
     public function getContainer(): ActionContainer
@@ -29,5 +31,15 @@ class StateActionBeforeService
     public function removeSubscription(Subscription $subscription): void
     {
         $this->subscriptionService->remove($subscription);
+    }
+
+    public function getArgument(): object
+    {
+        return $this->actionService->getArgument($this->actionId);
+    }
+
+    public function argumentIsExists(): bool
+    {
+        return $this->actionService->argumentIsExists($this->actionId);
     }
 }

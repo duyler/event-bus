@@ -8,6 +8,7 @@ use Closure;
 use Duyler\EventBus\Action\Exception\InvalidArgumentFactoryException;
 use Duyler\EventBus\Bus\ActionContainer;
 use Duyler\EventBus\Bus\CompleteAction;
+use Duyler\EventBus\Collection\ActionArgumentCollection;
 use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Action;
@@ -26,9 +27,9 @@ class ActionHandlerArgumentBuilder
         private CompleteActionCollection $completeActionCollection,
         private ActionSubstitution $actionSubstitution,
         private TriggerRelationCollection $triggerRelationCollection,
+        private ActionArgumentCollection $actionArgumentCollection,
     ) {}
 
-    /** @psalm-suppress MixedReturnStatement */
     public function build(Action $action, ActionContainer $container): mixed
     {
         if (null === $action->argument) {
@@ -58,6 +59,7 @@ class ActionHandlerArgumentBuilder
         if (null === $action->argumentFactory) {
             foreach ($results as $definition) {
                 if ($definition instanceof $action->argument) {
+                    $this->actionArgumentCollection->set($action->id, $definition);
                     return $definition;
                 }
             }
@@ -78,7 +80,10 @@ class ActionHandlerArgumentBuilder
             throw new InvalidArgumentFactoryException($action->argument);
         }
 
-        return $factory(...$factoryArguments);
+        /** @var object $argument */
+        $argument = $factory(...$factoryArguments);
+        $this->actionArgumentCollection->set($action->id, $argument);
+        return $argument;
     }
 
     /** @return array<string, object>  */

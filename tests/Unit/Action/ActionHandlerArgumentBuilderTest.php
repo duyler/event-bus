@@ -7,7 +7,7 @@ namespace Duyler\EventBus\Test\Unit\Action;
 use Duyler\EventBus\Action\ActionHandlerArgumentBuilder;
 use Duyler\EventBus\Action\ActionSubstitution;
 use Duyler\EventBus\Bus\ActionContainer;
-use Duyler\EventBus\Collection\ActionCollection;
+use Duyler\EventBus\Collection\ActionArgumentCollection;
 use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Collection\TriggerRelationCollection;
 use Duyler\EventBus\Dto\Action;
@@ -19,7 +19,7 @@ class ActionHandlerArgumentBuilderTest extends TestCase
 {
     private CompleteActionCollection $eventCollection;
     private ActionSubstitution $actionSubstitution;
-    private ActionCollection $actionCollection;
+    private ActionArgumentCollection $actionArgumentCollection;
     private ActionHandlerArgumentBuilder $argumentBuilder;
     private ActionContainer $actionContainer;
     private TriggerRelationCollection $triggerRelationCollection;
@@ -38,13 +38,14 @@ class ActionHandlerArgumentBuilderTest extends TestCase
     {
         $this->eventCollection = $this->createMock(CompleteActionCollection::class);
         $this->actionSubstitution = $this->createMock(ActionSubstitution::class);
-        $this->actionCollection = $this->createMock(ActionCollection::class);
+        $this->actionArgumentCollection = $this->createMock(ActionArgumentCollection::class);
         $this->actionContainer = $this->createMock(ActionContainer::class);
         $this->triggerRelationCollection = $this->createMock(TriggerRelationCollection::class);
         $this->argumentBuilder = new ActionHandlerArgumentBuilder(
             completeActionCollection: $this->eventCollection,
             actionSubstitution: $this->actionSubstitution,
             triggerRelationCollection: $this->triggerRelationCollection,
+            actionArgumentCollection: $this->actionArgumentCollection,
         );
     }
 }

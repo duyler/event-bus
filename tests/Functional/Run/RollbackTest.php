@@ -60,5 +60,5 @@ class RollbackTest extends TestCase
 class Rollback implements RollbackActionInterface
 {
     #[Override]
-    public function run(Result $result): void {}
+    public function run(Result $result, object|null $argument): void {}
 }

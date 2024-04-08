@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
+use Duyler\EventBus\Collection\ActionArgumentCollection;
 use Duyler\EventBus\Collection\ActionContainerCollection;
 use Duyler\EventBus\Collection\CompleteActionCollection;
 use Duyler\EventBus\Contract\RollbackActionInterface;
@@ -16,6 +17,7 @@ final class Rollback
     public function __construct(
         private CompleteActionCollection $completeActionCollection,
         private ActionContainerCollection $containerCollection,
+        private ActionArgumentCollection $actionArgumentCollection,
     ) {}
 
     public function run(array $slice = []): void
@@ -38,12 +40,15 @@ final class Rollback
 
             /** @var RollbackActionInterface $rollback */
             $rollback = $actionContainer->get($completeAction->action->rollback);
-            $this->rollback($rollback, $completeAction->result);
+            $argument = $this->actionArgumentCollection->isExists($completeAction->action->id)
+                ? $actionContainer->get($completeAction->action->id)
+                : null;
+            $this->rollback($rollback, $completeAction->result, $argument);
         }
     }
 
-    private function rollback(RollbackActionInterface $rollback, Result $result): void
+    private function rollback(RollbackActionInterface $rollback, Result $result, object|null $argument): void
     {
-        $rollback->run($result);
+        $rollback->run($result, $argument);
     }
 }

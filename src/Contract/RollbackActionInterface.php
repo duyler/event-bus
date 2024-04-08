@@ -8,5 +8,5 @@ use Duyler\EventBus\Dto\Result;
 
 interface RollbackActionInterface
 {
-    public function run(Result $result): void;
+    public function run(Result $result, object|null $argument): void;
 }

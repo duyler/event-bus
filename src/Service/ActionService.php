@@ -7,6 +7,7 @@ namespace Duyler\EventBus\Service;
 use Duyler\EventBus\Action\ActionContainerProvider;
 use Duyler\EventBus\Bus\ActionRequiredIterator;
 use Duyler\EventBus\Bus\Bus;
+use Duyler\EventBus\Collection\ActionArgumentCollection;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\SubscriptionCollection;
 use Duyler\EventBus\Contract\ActionSubstitutionInterface;
@@ -24,6 +25,7 @@ readonly class ActionService
         private ActionSubstitutionInterface $actionSubstitution,
         private SubscriptionCollection $subscriptionCollection,
         private Bus $bus,
+        private ActionArgumentCollection $actionArgumentCollection,
     ) {}
 
     public function addAction(Action $action): void
@@ -162,5 +164,15 @@ readonly class ActionService
 
         $this->actionCollection->remove($actionId);
         $this->subscriptionCollection->removeByActionId($actionId);
+    }
+
+    public function getArgument(string $actionId): object
+    {
+        return $this->actionArgumentCollection->get($actionId);
+    }
+
+    public function argumentIsExists(string $actionId): bool
+    {
+        return $this->actionArgumentCollection->isExists($actionId);
     }
 }
