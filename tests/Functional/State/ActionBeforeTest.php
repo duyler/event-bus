@@ -16,6 +16,7 @@ use Duyler\EventBus\State\StateContext;
 use Override;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class ActionBeforeTest extends TestCase
 {
@@ -31,6 +32,25 @@ class ActionBeforeTest extends TestCase
             new Action(
                 id: 'Test',
                 handler: function () {},
+                externalAccess: true,
+            )
+        );
+
+        $busBuilder->doAction(
+            new Action(
+                id: 'TestArgumentReturn',
+                handler: fn(): stdClass => new stdClass(),
+                contract: stdClass::class,
+                externalAccess: true,
+            )
+        );
+
+        $busBuilder->doAction(
+            new Action(
+                id: 'TestArgument',
+                handler: function (stdClass $argument) {},
+                required: ['TestArgumentReturn'],
+                argument: stdClass::class,
                 externalAccess: true,
             )
         );
@@ -65,6 +85,9 @@ class ActionBeforeStateHandler implements ActionBeforeStateHandlerInterface
     {
         $stateService->getContainer();
         $stateService->getActionId();
+        if ($stateService->argumentIsExists()) {
+            $stateService->getArgument();
+        }
     }
 
     #[Override]
