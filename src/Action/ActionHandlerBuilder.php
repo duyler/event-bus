@@ -18,7 +18,13 @@ class ActionHandlerBuilder
     public function build(Action $action, ActionContainer $container): callable
     {
         if ($this->actionSubstitution->isSubstituteHandler($action->id)) {
-            return $container->get($this->actionSubstitution->getSubstituteHandler($action->id));
+            $handlerSubstitution = $this->actionSubstitution->getSubstituteHandler($action->id);
+            if ($handlerSubstitution->handler instanceof Closure) {
+                return $handlerSubstitution->handler;
+            }
+            $container->addProviders($handlerSubstitution->providers);
+            $container->bind($handlerSubstitution->bind);
+            return $container->get($handlerSubstitution->handler);
         }
 
         if ($action->handler instanceof Closure) {
