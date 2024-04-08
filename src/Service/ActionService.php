@@ -13,6 +13,7 @@ use Duyler\EventBus\Collection\SubscriptionCollection;
 use Duyler\EventBus\Contract\ActionSubstitutionInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\ActionHandlerSubstitution;
+use Duyler\EventBus\Dto\ActionResultSubstitution;
 use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
 use Duyler\EventBus\Exception\ActionNotDefinedException;
 use Duyler\EventBus\Exception\CannotRequirePrivateActionException;
@@ -142,10 +143,9 @@ readonly class ActionService
         $this->actionContainerProvider->addSharedService($service, $bind);
     }
 
-    /** @param array<string, object> $substitutions */
-    public function addResultSubstitutions(string $actionId, array $substitutions): void
+    public function addResultSubstitutions(ActionResultSubstitution $actionResultSubstitution): void
     {
-        $this->actionSubstitution->addResultSubstitutions($actionId, $substitutions);
+        $this->actionSubstitution->addResultSubstitutions($actionResultSubstitution);
     }
 
     public function addHandlerSubstitution(ActionHandlerSubstitution $handlerSubstitution): void

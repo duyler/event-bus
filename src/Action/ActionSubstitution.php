@@ -7,21 +7,22 @@ namespace Duyler\EventBus\Action;
 use Duyler\DependencyInjection\Attribute\Reset;
 use Duyler\EventBus\Contract\ActionSubstitutionInterface;
 use Duyler\EventBus\Dto\ActionHandlerSubstitution;
+use Duyler\EventBus\Dto\ActionResultSubstitution;
 use Override;
 
 #[Reset]
 class ActionSubstitution implements ActionSubstitutionInterface
 {
-    /** @var array<string, array<string, object>> */
+    /** @var array<string, ActionResultSubstitution> */
     private array $requiredResultSubstitutions = [];
 
     /** @var array<string, ActionHandlerSubstitution> */
     private array $handlerSubstitutions = [];
 
     #[Override]
-    public function addResultSubstitutions(string $actionId, array $substitutions): void
+    public function addResultSubstitutions(ActionResultSubstitution $actionResultSubstitution): void
     {
-        $this->requiredResultSubstitutions[$actionId] = $substitutions;
+        $this->requiredResultSubstitutions[$actionResultSubstitution->actionId] = $actionResultSubstitution;
     }
 
     #[Override]
@@ -49,7 +50,7 @@ class ActionSubstitution implements ActionSubstitutionInterface
     }
 
     #[Override]
-    public function getSubstituteResult(string $actionId): array
+    public function getSubstituteResult(string $actionId): ActionResultSubstitution
     {
         return $this->requiredResultSubstitutions[$actionId];
     }

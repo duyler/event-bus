@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\State\Service;
 
 use Duyler\EventBus\Dto\ActionHandlerSubstitution;
+use Duyler\EventBus\Dto\ActionResultSubstitution;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\State\Service\Trait\LogServiceTrait;
@@ -19,10 +20,9 @@ class StateMainBeforeService
         private readonly ActionService $actionService,
     ) {}
 
-    /** @param array<string, object> $substitutions */
-    public function substituteResult(string $actionId, array $substitutions): void
+    public function substituteResult(ActionResultSubstitution $actionResultSubstitution): void
     {
-        $this->actionService->addResultSubstitutions($actionId, $substitutions);
+        $this->actionService->addResultSubstitutions($actionResultSubstitution);
     }
 
     public function substituteHandler(ActionHandlerSubstitution $handlerSubstitution): void

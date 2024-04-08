@@ -9,6 +9,7 @@ use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\MainBeforeStateHandlerInterface;
 use Duyler\EventBus\Dto\Action;
 use Duyler\EventBus\Dto\ActionHandlerSubstitution;
+use Duyler\EventBus\Dto\ActionResultSubstitution;
 use Duyler\EventBus\Dto\Context;
 use Duyler\EventBus\State\Service\StateMainBeforeService;
 use Duyler\EventBus\State\StateContext;
@@ -123,10 +124,11 @@ class MainBeforeStateHandlerWithSubstituteActionRequiredResult implements MainBe
     public function handle(StateMainBeforeService $stateService, StateContext $context): void
     {
         $stateService->substituteResult(
-            actionId: $stateService->getActionId(),
-            substitutions: [
-                ResultInterface::class => new NewResult('Value from substitute result'),
-            ]
+            new ActionResultSubstitution(
+                actionId: $stateService->getActionId(),
+                requiredContract: ResultInterface::class,
+                substitution: new NewResult('Value from substitute result'),
+            ),
         );
     }
 
