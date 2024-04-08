@@ -16,8 +16,8 @@ class SubscriptionAlreadyDefinedException extends Exception
                 'Subscription with action id %s, status %s, and subject id %s already defined',
                 $subscription->actionId,
                 $subscription->status->value,
-                $subscription->subjectId
-            )
+                $subscription->subjectId,
+            ),
         );
     }
 }

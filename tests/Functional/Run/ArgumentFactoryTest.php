@@ -24,7 +24,7 @@ class ArgumentFactoryTest extends TestCase
                     handler: fn() => new TestArgumentContract('Hello'),
                     contract: TestArgumentContract::class,
                     externalAccess: true,
-                )
+                ),
             )
             ->doAction(
                 new Action(
@@ -35,7 +35,7 @@ class ArgumentFactoryTest extends TestCase
                     argumentFactory: fn(TestArgumentContract $contract) => new TestArgument($contract->seyHello . ' Duyler! With callback factory'),
                     contract: TestArgument::class,
                     externalAccess: true,
-                )
+                ),
             );
 
         $bus = $builder->build()->run();
@@ -56,7 +56,7 @@ class ArgumentFactoryTest extends TestCase
                     handler: fn() => new TestArgumentContract('Hello'),
                     contract: TestArgumentContract::class,
                     externalAccess: true,
-                )
+                ),
             )
             ->doAction(
                 new Action(
@@ -67,7 +67,7 @@ class ArgumentFactoryTest extends TestCase
                     argumentFactory: ArgumentFactory::class,
                     contract: TestArgument::class,
                     externalAccess: true,
-                )
+                ),
             );
 
         $bus = $builder->build()->run();

@@ -15,6 +15,6 @@ class StateActionBeforeEventListener
 
     public function __invoke(ActionBeforeRunEvent $event): void
     {
-        $this->stateAction->before($event->action);
+        $this->stateAction->before($event->action, $event->argument);
     }
 }

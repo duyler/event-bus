@@ -30,7 +30,7 @@ final class Validator
             if (end($repeatedEventLog) === $actionId && false === $completeAction->action->repeatable) {
                 throw new ConsecutiveRepeatedActionException(
                     $completeAction->action->id,
-                    $completeAction->result->status->value
+                    $completeAction->result->status->value,
                 );
             }
 

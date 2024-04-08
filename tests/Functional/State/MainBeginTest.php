@@ -24,14 +24,14 @@ class MainBeginTest extends TestCase
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainBeginStateHandler());
         $busBuilder->addStateContext(new Context(
-            [MainBeginStateHandler::class]
+            [MainBeginStateHandler::class],
         ));
         $busBuilder->doAction(
             new Action(
                 id: 'ActionFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $busBuilder->build();
@@ -52,14 +52,14 @@ class MainBeginStateHandler implements MainBeginStateHandlerInterface
                 id: 'ActionFromStateMainBegin',
                 handler: function (): void {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $stateService->addSubscription(
             new Subscription(
                 subjectId: 'ActionFromBuilder',
                 actionId: 'ActionFromStateMainBegin',
-            )
+            ),
         );
     }
 }

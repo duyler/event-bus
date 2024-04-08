@@ -26,7 +26,7 @@ class AddSubscriptionTest extends TestCase
             new Subscription(
                 subjectId: 'Action',
                 actionId: 'Subscriber',
-            )
+            ),
         );
 
         $this->expectException(SubscriptionAlreadyDefinedException::class);
@@ -35,7 +35,7 @@ class AddSubscriptionTest extends TestCase
             new Subscription(
                 subjectId: 'Action',
                 actionId: 'Subscriber',
-            )
+            ),
         );
     }
 
@@ -49,14 +49,14 @@ class AddSubscriptionTest extends TestCase
                 id: 'Action',
                 handler: fn() => null,
                 silent: true,
-            )
+            ),
         );
 
         $builder->addAction(
             new Action(
                 id: 'Subscriber',
                 handler: fn() => null,
-            )
+            ),
         );
 
         $this->expectException(SubscriptionOnSilentActionException::class);
@@ -65,7 +65,7 @@ class AddSubscriptionTest extends TestCase
             new Subscription(
                 subjectId: 'Action',
                 actionId: 'Subscriber',
-            )
+            ),
         );
 
         $builder->build();
@@ -80,7 +80,7 @@ class AddSubscriptionTest extends TestCase
             new Action(
                 id: 'Subscriber',
                 handler: fn() => null,
-            )
+            ),
         );
 
         $this->expectException(SubscriptionOnNotDefinedActionException::class);
@@ -89,7 +89,7 @@ class AddSubscriptionTest extends TestCase
             new Subscription(
                 subjectId: 'Action',
                 actionId: 'Subscriber',
-            )
+            ),
         );
 
         $builder->build();
@@ -104,7 +104,7 @@ class AddSubscriptionTest extends TestCase
             new Action(
                 id: 'Action',
                 handler: fn() => null,
-            )
+            ),
         );
 
         $this->expectException(SubscribedActionNotDefinedException::class);
@@ -113,7 +113,7 @@ class AddSubscriptionTest extends TestCase
             new Subscription(
                 subjectId: 'Action',
                 actionId: 'Subscriber',
-            )
+            ),
         );
 
         $builder->build();

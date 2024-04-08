@@ -23,8 +23,8 @@ class RetriesActionTest extends TestCase
                 id: 'RetryAction',
                 handler: fn(): Result => new Result(status: ResultStatus::Fail),
                 repeatable: false,
-                retries: 3
-            )
+                retries: 3,
+            ),
         );
 
         $bus = $busBuilder->build();

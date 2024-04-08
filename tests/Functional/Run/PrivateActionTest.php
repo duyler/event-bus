@@ -23,7 +23,7 @@ class PrivateActionTest extends TestCase
                 handler: function () {},
                 externalAccess: true,
                 private: true,
-            )
+            ),
         );
 
         $builder->doAction(
@@ -32,7 +32,7 @@ class PrivateActionTest extends TestCase
                 handler: function () {},
                 required: ['PrivateAction'],
                 externalAccess: true,
-            )
+            ),
         );
 
         $builder->addAction(
@@ -42,7 +42,7 @@ class PrivateActionTest extends TestCase
                 externalAccess: true,
                 private: true,
                 sealed: ['TestAction'],
-            )
+            ),
         );
 
         $builder->doAction(
@@ -51,7 +51,7 @@ class PrivateActionTest extends TestCase
                 handler: function () {},
                 required: ['PrivateAction', 'PrivateWithSealedAction'],
                 externalAccess: true,
-            )
+            ),
         );
 
         $builder->doAction(
@@ -59,7 +59,7 @@ class PrivateActionTest extends TestCase
                 id: 'SomeAction',
                 handler: function () {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $this->expectException(CannotRequirePrivateActionException::class);

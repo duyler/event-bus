@@ -28,14 +28,14 @@ class TriggerTest extends TestCase
                 handler: function () {},
                 triggeredOn: 'TestTrigger',
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $builder->build();
         $bus->dispatchTrigger(
             new Trigger(
                 id: 'TestTrigger',
-            )
+            ),
         );
 
         $bus->run();
@@ -54,8 +54,8 @@ class TriggerTest extends TestCase
                 handler: function (stdClass $data) {},
                 triggeredOn: 'TestTrigger',
                 argument: stdClass::class,
-                externalAccess: true
-            )
+                externalAccess: true,
+            ),
         );
 
         $bus = $builder->build();
@@ -64,7 +64,7 @@ class TriggerTest extends TestCase
                 id: 'TestTrigger',
                 data: new stdClass(),
                 contract: stdClass::class,
-            )
+            ),
         );
 
         $bus->run();
@@ -86,7 +86,7 @@ class TriggerTest extends TestCase
                 argument: stdClass::class,
                 contract: stdClass::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $builder->doAction(
@@ -96,7 +96,7 @@ class TriggerTest extends TestCase
                 required: ['ForTriggerAction'],
                 argument: stdClass::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $builder->build();
@@ -105,7 +105,7 @@ class TriggerTest extends TestCase
                 id: 'TestTrigger',
                 data: new stdClass(),
                 contract: stdClass::class,
-            )
+            ),
         );
 
         $bus->run();
@@ -130,7 +130,7 @@ class TriggerTest extends TestCase
                 argument: stdClass::class,
                 contract: stdClass::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $builder->doAction(
@@ -138,7 +138,7 @@ class TriggerTest extends TestCase
                 id: 'SomeAction',
                 handler: function () {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $builder->doAction(
@@ -148,7 +148,7 @@ class TriggerTest extends TestCase
                 required: ['ForTriggerAction'],
                 argument: stdClass::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $builder->build();
@@ -171,7 +171,7 @@ class TriggerTest extends TestCase
                 triggeredOn: 'TestTrigger',
                 argument: stdClass::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $builder->build();
@@ -182,7 +182,7 @@ class TriggerTest extends TestCase
             new Trigger(
                 id: 'TestTrigger',
                 contract: stdClass::class,
-            )
+            ),
         );
     }
 
@@ -197,7 +197,7 @@ class TriggerTest extends TestCase
                 triggeredOn: 'TestTrigger',
                 argument: stdClass::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $builder->build();
@@ -208,7 +208,7 @@ class TriggerTest extends TestCase
             new Trigger(
                 id: 'TestTrigger',
                 data: new stdClass(),
-            )
+            ),
         );
     }
 
@@ -223,7 +223,7 @@ class TriggerTest extends TestCase
                 triggeredOn: 'TestTrigger',
                 argument: stdClass::class,
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $builder->build();
@@ -235,7 +235,7 @@ class TriggerTest extends TestCase
                 id: 'TestTrigger',
                 data: new stdClass(),
                 contract: 'ClassName',
-            )
+            ),
         );
     }
 
@@ -251,7 +251,7 @@ class TriggerTest extends TestCase
         $bus->dispatchTrigger(
             new Trigger(
                 id: 'TestTrigger',
-            )
+            ),
         );
     }
 }

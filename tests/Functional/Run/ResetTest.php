@@ -23,7 +23,7 @@ class ResetTest extends TestCase
                 id: 'Test',
                 handler: function (): void {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $busBuilder->build();
@@ -43,7 +43,7 @@ class ResetTest extends TestCase
                 id: 'Test',
                 handler: function (): void {},
                 externalAccess: true,
-            )
+            ),
         );
 
         $bus = $busBuilder->build();

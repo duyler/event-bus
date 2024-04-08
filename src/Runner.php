@@ -15,7 +15,7 @@ class Runner
     public function __construct(
         private DoWhile $doWhile,
         private Rollback $rollback,
-        private EventDispatcherInterface $eventDispatcher
+        private EventDispatcherInterface $eventDispatcher,
     ) {}
 
     /**

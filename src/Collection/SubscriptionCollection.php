@@ -49,8 +49,8 @@ class SubscriptionCollection
         return array_intersect_key(
             $this->data,
             array_flip(
-                preg_grep($pattern, array_keys($this->data))
-            )
+                preg_grep($pattern, array_keys($this->data)),
+            ),
         );
     }
 

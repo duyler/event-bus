@@ -21,4 +21,9 @@ trait SubscriptionServiceTrait
     {
         return $this->subscriptionService->subscriptionIsExists($subscription);
     }
+
+    public function removeSubscription(Subscription $subscription): void
+    {
+        $this->subscriptionService->remove($subscription);
+    }
 }

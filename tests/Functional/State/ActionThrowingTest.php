@@ -24,14 +24,14 @@ class ActionThrowingTest extends TestCase
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new ActionThrowingStateHandler());
         $busBuilder->addStateContext(new Context(
-            [ActionThrowingStateHandler::class]
+            [ActionThrowingStateHandler::class],
         ));
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
                 handler: function () {throw new RuntimeException('Test exception message'); },
                 externalAccess: true,
-            )
+            ),
         );
 
         $busBuilder->build();
@@ -48,7 +48,7 @@ class ActionThrowingStateHandler implements ActionThrowingStateHandlerInterface
     public function handle(StateActionThrowingService $stateService, StateContext $context): void
     {
         $stateService->getException();
-        $stateService->getActionId();
+        $stateService->getAction();
         $stateService->getContainer();
     }
 

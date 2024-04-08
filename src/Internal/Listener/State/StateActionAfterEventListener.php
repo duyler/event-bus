@@ -15,6 +15,6 @@ class StateActionAfterEventListener
 
     public function __invoke(ActionAfterRunEvent $event): void
     {
-        $this->stateAction->after($event->action);
+        $this->stateAction->after($event->action, $event->result);
     }
 }

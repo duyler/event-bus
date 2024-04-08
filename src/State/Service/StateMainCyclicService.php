@@ -20,6 +20,6 @@ class StateMainCyclicService
     public function __construct(
         private QueueService $queueService,
         private ActionService $actionService,
-        private TriggerService $triggerService
+        private TriggerService $triggerService,
     ) {}
 }

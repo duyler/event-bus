@@ -50,8 +50,8 @@ class LogTest extends TestCase
             new BusConfig(
                 autoreset: true,
                 allowCircularCall: true,
-                logMaxSize: 3
-            )
+                logMaxSize: 3,
+            ),
         );
         $busBuilder->doAction(new Action(id: 'Test1', handler: function () {}));
         $busBuilder->doAction(new Action(id: 'Test2', handler: function () {}));
@@ -61,8 +61,8 @@ class LogTest extends TestCase
         $busBuilder->addSubscription(
             new Subscription(
                 subjectId: 'Test4',
-                actionId: 'Test3'
-            )
+                actionId: 'Test3',
+            ),
         );
 
         $bus = $busBuilder->build()->run();

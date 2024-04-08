@@ -67,9 +67,9 @@ class StateHandlerStorage
                 sprintf(
                     'State handler %s must be compatibility with %s',
                     get_class($stateHandler),
-                    StateHandlerInterface::class
-                )
-            )
+                    StateHandlerInterface::class,
+                ),
+            ),
         };
     }
 

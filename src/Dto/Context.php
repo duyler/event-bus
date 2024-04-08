@@ -8,6 +8,6 @@ readonly class Context
 {
     public function __construct(
         /** @var array<array-key, string> */
-        public array $scope
+        public array $scope,
     ) {}
 }
