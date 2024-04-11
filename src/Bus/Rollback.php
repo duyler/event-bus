@@ -31,8 +31,12 @@ final class Rollback
                 continue;
             }
 
+            $argument = $this->actionArgumentCollection->isExists($completeAction->action->id)
+                ? $this->actionArgumentCollection->get($completeAction->action->id)
+                : null;
+
             if (is_callable($completeAction->action->rollback)) {
-                ($completeAction->action->rollback)();
+                ($completeAction->action->rollback)($completeAction->result, $argument);
                 continue;
             }
 
@@ -40,9 +44,6 @@ final class Rollback
 
             /** @var RollbackActionInterface $rollback */
             $rollback = $actionContainer->get($completeAction->action->rollback);
-            $argument = $this->actionArgumentCollection->isExists($completeAction->action->id)
-                ? $actionContainer->get($completeAction->action->id)
-                : null;
             $this->rollback($rollback, $completeAction->result, $argument);
         }
     }

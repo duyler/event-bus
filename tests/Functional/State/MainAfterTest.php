@@ -18,6 +18,7 @@ use Duyler\EventBus\State\StateContext;
 use Override;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class MainAfterTest extends TestCase
 {
@@ -148,6 +149,42 @@ class MainAfterTest extends TestCase
         $bus->run();
         $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
     }
+
+    #[Test]
+    public function rollback_callback_with_argument(): void
+    {
+        $busBuilder = new BusBuilder(new BusConfig());
+        $busBuilder->addStateHandler(new MainAfterStateHandlerWithRollback());
+        $busBuilder->addStateContext(new Context(
+            [MainAfterStateHandlerWithRollback::class],
+        ));
+        $busBuilder->doAction(
+            new Action(
+                id: 'ActionFromBuilder',
+                handler: function (stdClass $argument): void {},
+                required: [
+                    'ActionWithContract',
+                ],
+                argument: stdClass::class,
+                rollback: function (Result $result, stdClass $argument): void {},
+                externalAccess: true,
+            ),
+        );
+
+        $busBuilder->doAction(
+            new Action(
+                id: 'ActionWithContract',
+                handler: fn(): stdClass =>  new stdClass(),
+                contract: stdClass::class,
+                externalAccess: true,
+            ),
+        );
+
+        $bus = $busBuilder->build();
+        $bus->run();
+        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('ActionWithContract'));
+    }
 }
 
 class MainAfterStateHandlerWithRemoveAction implements MainAfterStateHandlerInterface
@@ -173,9 +210,11 @@ class MainAfterStateHandlerWithRollback implements MainAfterStateHandlerInterfac
     public function handle(StateMainAfterService $stateService, StateContext $context): void
     {
         if ($stateService->resultIsExists('ActionFromBuilder')) {
-            $stateService->rollbackWithoutException();
-        } else {
             $stateService->rollbackWithoutException(1);
+        }
+
+        if ($stateService->resultIsExists('ActionWithContract')) {
+            $stateService->rollbackWithoutException();
         }
     }
 
