@@ -26,6 +26,9 @@ final class Bus
     /** @var array<string, int> */
     private array $retries = [];
 
+    /** @var array<string, bool> */
+    private array $finalized = [];
+
     public function __construct(
         private readonly TaskQueue $taskQueue,
         private readonly ActionCollection $actionCollection,
@@ -80,6 +83,7 @@ final class Bus
         if ($this->isSatisfiedConditions($task)) {
             $this->taskQueue->push($task);
             $this->retries[$task->action->id] = 0;
+            $this->finalized[$task->action->id] = false;
         } else {
             $this->heldTasks[] = $task;
         }
@@ -118,6 +122,14 @@ final class Bus
 
         foreach ($completeActions as $completeAction) {
             if (ResultStatus::Fail === $completeAction->result->status) {
+                if ($this->retries[$completeAction->action->id] < $completeAction->action->retries) {
+                    return false;
+                }
+
+                if (false === $this->finalized[$completeAction->action->id]) {
+                    return false;
+                }
+
                 $failActions[] = $completeAction;
             }
         }
@@ -165,15 +177,18 @@ final class Bus
         return false;
     }
 
-    public function completeDoAction(CompleteAction $completeAction): void
+    public function finalizeCompleteAction(CompleteAction $completeAction): void
     {
-        if (ResultStatus::Fail === $completeAction->result->status) {
-            if ($completeAction->action->retries > 0
-                && $this->retries[$completeAction->action->id] < $completeAction->action->retries
-            ) {
-                $this->taskQueue->push($this->createTask($completeAction->action));
-                ++$this->retries[$completeAction->action->id];
-            }
+        if (ResultStatus::Success === $completeAction->result->status) {
+            $this->finalized[$completeAction->action->id] = true;
+            return;
+        }
+
+        if ($this->retries[$completeAction->action->id] < $completeAction->action->retries) {
+            $this->taskQueue->push($this->createTask($completeAction->action));
+            ++$this->retries[$completeAction->action->id];
+        } else {
+            $this->finalized[$completeAction->action->id] = true;
         }
     }
 
@@ -182,5 +197,6 @@ final class Bus
         $this->heldTasks = [];
         $this->retries = [];
         $this->alternates = [];
+        $this->finalized = [];
     }
 }

@@ -24,6 +24,6 @@ class CompleteActionEventListener
         );
 
         $this->completeActionCollection->save($completeAction);
-        $this->bus->completeDoAction($completeAction);
+        $this->bus->finalizeCompleteAction($completeAction);
     }
 }
