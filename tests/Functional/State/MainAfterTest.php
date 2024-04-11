@@ -34,6 +34,9 @@ class MainAfterTest extends TestCase
             new Action(
                 id: 'ActionFromBuilder',
                 handler: function (): void {},
+                required: [
+                    'RemovedActionFromBuilder',
+                ],
                 externalAccess: true,
             ),
         );
@@ -72,8 +75,8 @@ class MainAfterTest extends TestCase
         $bus->run();
 
         $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
-        $this->assertFalse($bus->resultIsExists('RemovedActionFromBuilder'));
-        $this->assertFalse($bus->resultIsExists('SubscribedActionFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('RemovedActionFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('SubscribedActionFromBuilder'));
     }
 
     #[Test]
@@ -192,7 +195,7 @@ class MainAfterStateHandlerWithRemoveAction implements MainAfterStateHandlerInte
     #[Override]
     public function handle(StateMainAfterService $stateService, StateContext $context): void
     {
-        if ($stateService->resultIsExists('ActionFromBuilder')) {
+        if ($stateService->resultIsExists('RemovedActionFromBuilder')) {
             $stateService->removeAction('RemovedActionFromBuilder');
         }
     }
