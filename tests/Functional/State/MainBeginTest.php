@@ -40,6 +40,29 @@ class MainBeginTest extends TestCase
         $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
         $this->assertTrue($bus->resultIsExists('ActionFromStateMainBegin'));
     }
+
+    #[Test]
+    public function run_with_get_action_from_state_handler(): void
+    {
+        $busBuilder = new BusBuilder(new BusConfig());
+        $busBuilder->addStateHandler(new MainBeginStateHandlerWithGetAndDoAction());
+        $busBuilder->addStateContext(new Context(
+            [MainBeginStateHandlerWithGetAndDoAction::class],
+        ));
+        $busBuilder->addAction(
+            new Action(
+                id: 'ActionFromBuilder',
+                handler: function (): void {},
+                externalAccess: true,
+            ),
+        );
+
+        $bus = $busBuilder->build();
+        $bus->run();
+
+        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('ActionFromStateMainBegin'));
+    }
 }
 
 class MainBeginStateHandler implements MainBeginStateHandlerInterface
@@ -59,6 +82,25 @@ class MainBeginStateHandler implements MainBeginStateHandlerInterface
             new Subscription(
                 subjectId: 'ActionFromBuilder',
                 actionId: 'ActionFromStateMainBegin',
+            ),
+        );
+    }
+}
+
+class MainBeginStateHandlerWithGetAndDoAction implements MainBeginStateHandlerInterface
+{
+    #[Override]
+    public function handle(StateMainBeginService $stateService, StateContext $context): void
+    {
+        if ($stateService->actionIsExists('ActionFromBuilder')) {
+            $action = $stateService->getById('ActionFromBuilder');
+            $stateService->doExistsAction($action->id);
+        }
+
+        $stateService->doAction(
+            new Action(
+                id: 'ActionFromStateMainBegin',
+                handler: function (): void {},
             ),
         );
     }
