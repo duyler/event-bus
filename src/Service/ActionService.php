@@ -166,14 +166,4 @@ readonly class ActionService
         $this->actionCollection->remove($actionId);
         $this->subscriptionCollection->removeByActionId($actionId);
     }
-
-    public function getArgument(string $actionId): object
-    {
-        return $this->actionArgumentCollection->get($actionId);
-    }
-
-    public function argumentIsExists(string $actionId): bool
-    {
-        return $this->actionArgumentCollection->isExists($actionId);
-    }
 }

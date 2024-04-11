@@ -34,6 +34,9 @@ class MainAfterTest extends TestCase
             new Action(
                 id: 'ActionFromBuilder',
                 handler: function (): void {},
+                required: [
+                    'RemovedActionFromBuilder',
+                ],
                 externalAccess: true,
             ),
         );
@@ -72,8 +75,8 @@ class MainAfterTest extends TestCase
         $bus->run();
 
         $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
-        $this->assertFalse($bus->resultIsExists('RemovedActionFromBuilder'));
-        $this->assertFalse($bus->resultIsExists('SubscribedActionFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('RemovedActionFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('SubscribedActionFromBuilder'));
     }
 
     #[Test]
@@ -185,6 +188,28 @@ class MainAfterTest extends TestCase
         $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
         $this->assertTrue($bus->resultIsExists('ActionWithContract'));
     }
+
+    #[Test]
+    public function get_action_by_contract(): void
+    {
+        $busBuilder = new BusBuilder(new BusConfig());
+        $busBuilder->addStateHandler(new MainAfterStateHandlerWithAction());
+        $busBuilder->addStateContext(new Context(
+            [MainAfterStateHandlerWithAction::class],
+        ));
+        $busBuilder->doAction(
+            new Action(
+                id: 'ActionFromBuilder',
+                handler: fn(): stdClass => new stdClass(),
+                contract: stdClass::class,
+                externalAccess: true,
+            ),
+        );
+
+        $bus = $busBuilder->build();
+        $bus->run();
+        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
+    }
 }
 
 class MainAfterStateHandlerWithRemoveAction implements MainAfterStateHandlerInterface
@@ -192,7 +217,7 @@ class MainAfterStateHandlerWithRemoveAction implements MainAfterStateHandlerInte
     #[Override]
     public function handle(StateMainAfterService $stateService, StateContext $context): void
     {
-        if ($stateService->resultIsExists('ActionFromBuilder')) {
+        if ($stateService->resultIsExists('RemovedActionFromBuilder')) {
             $stateService->removeAction('RemovedActionFromBuilder');
         }
     }
@@ -250,6 +275,21 @@ class MainAfterStateHandlerWithSubscription implements MainAfterStateHandlerInte
                 actionId: 'SubscribedActionFromTest',
             ),
         );
+    }
+
+    #[Override]
+    public function observed(StateContext $context): array
+    {
+        return [];
+    }
+}
+
+class MainAfterStateHandlerWithAction implements MainAfterStateHandlerInterface
+{
+    #[Override]
+    public function handle(StateMainAfterService $stateService, StateContext $context): void
+    {
+        $stateService->getByContract(stdClass::class);
     }
 
     #[Override]
