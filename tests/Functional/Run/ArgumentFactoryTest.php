@@ -7,8 +7,10 @@ namespace Duyler\EventBus\Test\Functional\Run;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Action;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class ArgumentFactoryTest extends TestCase
 {
@@ -74,6 +76,37 @@ class ArgumentFactoryTest extends TestCase
 
         $this->assertInstanceOf(TestArgument::class, $bus->getResult('TestArgument')->data);
         $this->assertEquals('Hello Duyler! With class factory', $bus->getResult('TestArgument')->data->seyHelloWithName);
+    }
+
+    #[Test]
+    public function run_action_with_invalid_class_factory(): void
+    {
+        $builder = new BusBuilder(new BusConfig());
+
+        $builder
+            ->addAction(
+                new Action(
+                    id: 'TestArgumentFactoryAction',
+                    handler: fn() => new TestArgumentContract('Hello'),
+                    contract: TestArgumentContract::class,
+                    externalAccess: true,
+                ),
+            )
+            ->doAction(
+                new Action(
+                    id: 'TestArgument',
+                    handler: fn(TestArgument $argument) => $argument,
+                    required: ['TestArgumentFactoryAction'],
+                    argument: TestArgument::class,
+                    argumentFactory: stdClass::class,
+                    contract: TestArgument::class,
+                    externalAccess: true,
+                ),
+            );
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $bus = $builder->build()->run();
     }
 }
 
