@@ -25,6 +25,7 @@ class AlternateActionTest extends TestCase
                 id: 'Test',
                 handler: function () {},
                 required: ['RequiredAction'],
+                argument: stdClass::class,
                 externalAccess: true,
             ),
         );
@@ -32,7 +33,7 @@ class AlternateActionTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'RequiredAction',
-                handler: fn() => new Result(ResultStatus::Fail, new stdClass()),
+                handler: fn() => new Result(ResultStatus::Fail, null),
                 required: [],
                 contract: stdClass::class,
                 externalAccess: true,
