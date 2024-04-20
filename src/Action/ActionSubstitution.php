@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-use Duyler\DependencyInjection\Attribute\Reset;
+use Duyler\DependencyInjection\Attribute\Finalize;
 use Duyler\EventBus\Contract\ActionSubstitutionInterface;
 use Duyler\EventBus\Dto\ActionHandlerSubstitution;
 use Duyler\EventBus\Dto\ActionResultSubstitution;
 use Override;
 
-#[Reset]
+#[Finalize(method: 'reset')]
 class ActionSubstitution implements ActionSubstitutionInterface
 {
     /** @var array<string, ActionResultSubstitution> */
