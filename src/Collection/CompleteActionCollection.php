@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Collection;
 
-use Duyler\DependencyInjection\Attribute\Reset;
+use Duyler\DependencyInjection\Attribute\Finalize;
 use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Dto\Result;
 
-#[Reset]
+#[Finalize(method: 'reset')]
 class CompleteActionCollection
 {
     /**

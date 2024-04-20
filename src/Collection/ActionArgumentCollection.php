@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Collection;
 
-use Duyler\DependencyInjection\Attribute\Reset;
+use Duyler\DependencyInjection\Attribute\Finalize;
 
-#[Reset]
+#[Finalize(method: 'reset')]
 class ActionArgumentCollection
 {
     /** @var array<string, object> */

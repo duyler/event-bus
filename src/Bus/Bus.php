@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use Duyler\DependencyInjection\Attribute\Reset;
+use Duyler\DependencyInjection\Attribute\Finalize;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Collection\ActionCollection;
 use Duyler\EventBus\Collection\CompleteActionCollection;
@@ -14,7 +14,7 @@ use Duyler\EventBus\Exception\UnableToContinueWithFailActionException;
 
 use function count;
 
-#[Reset]
+#[Finalize(method: 'reset')]
 final class Bus
 {
     /** @var Task[] */
