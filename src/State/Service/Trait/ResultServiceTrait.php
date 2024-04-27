@@ -5,20 +5,22 @@ declare(strict_types=1);
 namespace Duyler\EventBus\State\Service\Trait;
 
 use Duyler\EventBus\Dto\Result;
+use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Service\ResultService;
+use UnitEnum;
 
 /**
  * @property ResultService $resultService
  */
 trait ResultServiceTrait
 {
-    public function getResult(string $actionId): Result
+    public function getResult(string|UnitEnum $actionId): Result
     {
-        return $this->resultService->getResult($actionId);
+        return $this->resultService->getResult(IdFormatter::format($actionId));
     }
 
-    public function resultIsExists(string $actionId): bool
+    public function resultIsExists(string|UnitEnum $actionId): bool
     {
-        return $this->resultService->resultIsExists($actionId);
+        return $this->resultService->resultIsExists(IdFormatter::format($actionId));
     }
 }

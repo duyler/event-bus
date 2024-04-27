@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\State\Service;
 
 use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\ResultService;
@@ -17,6 +18,7 @@ use Duyler\EventBus\State\Service\Trait\ResultServiceTrait;
 use Duyler\EventBus\State\Service\Trait\RollbackServiceTrait;
 use Duyler\EventBus\State\Service\Trait\SubscriptionServiceTrait;
 use Duyler\EventBus\State\Service\Trait\TriggerServiceTrait;
+use UnitEnum;
 
 class StateMainAfterService
 {
@@ -39,9 +41,9 @@ class StateMainAfterService
         private readonly SubscriptionService $subscriptionService,
     ) {}
 
-    public function getActionId(): string
+    public function getActionId(): string|UnitEnum
     {
-        return $this->actionId;
+        return IdFormatter::reverse($this->actionId);
     }
 
     public function getResultData(): ?object

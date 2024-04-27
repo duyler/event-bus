@@ -18,8 +18,8 @@ class StateMainCyclicService
     use TriggerServiceTrait;
 
     public function __construct(
-        private QueueService $queueService,
-        private ActionService $actionService,
-        private TriggerService $triggerService,
+        private readonly QueueService $queueService,
+        private readonly ActionService $actionService,
+        private readonly TriggerService $triggerService,
     ) {}
 }

@@ -8,6 +8,7 @@ use Duyler\EventBus\Dto\Log;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Trigger;
 use Throwable;
+use UnitEnum;
 
 interface BusInterface
 {
@@ -16,9 +17,9 @@ interface BusInterface
      */
     public function run(): BusInterface;
 
-    public function getResult(string $actionId): Result;
+    public function getResult(string|UnitEnum $actionId): Result;
 
-    public function resultIsExists(string $actionId): bool;
+    public function resultIsExists(string|UnitEnum $actionId): bool;
 
     public function dispatchTrigger(Trigger $trigger): BusInterface;
 

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Duyler\EventBus\State\Service;
 
 use Duyler\EventBus\Bus\Task;
+use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Service\ResultService;
 use Duyler\EventBus\State\Service\Trait\ResultServiceTrait;
+use UnitEnum;
 
 class StateMainResumeService
 {
@@ -18,9 +20,9 @@ class StateMainResumeService
         private readonly ResultService $resultService,
     ) {}
 
-    public function getActionId(): string
+    public function getActionId(): string|UnitEnum
     {
-        return $this->task->action->id;
+        return IdFormatter::reverse($this->task->action->id);
     }
 
     public function getResumeValue(): mixed

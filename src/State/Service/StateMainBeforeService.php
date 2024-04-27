@@ -6,9 +6,11 @@ namespace Duyler\EventBus\State\Service;
 
 use Duyler\EventBus\Dto\ActionHandlerSubstitution;
 use Duyler\EventBus\Dto\ActionResultSubstitution;
+use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\State\Service\Trait\LogServiceTrait;
+use UnitEnum;
 
 class StateMainBeforeService
 {
@@ -30,8 +32,8 @@ class StateMainBeforeService
         $this->actionService->addHandlerSubstitution($handlerSubstitution);
     }
 
-    public function getActionId(): string
+    public function getActionId(): string|UnitEnum
     {
-        return $this->actionId;
+        return IdFormatter::reverse($this->actionId);
     }
 }
