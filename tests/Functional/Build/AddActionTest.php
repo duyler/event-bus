@@ -21,7 +21,7 @@ class AddActionTest extends TestCase
 
         $builder->addAction(
             new Action(
-                id: 'Test',
+                id: TestAction::TestAction,
                 handler: function () {},
             ),
         );
@@ -30,7 +30,7 @@ class AddActionTest extends TestCase
 
         $builder->addAction(
             new Action(
-                id: 'Test',
+                id: TestAction::TestAction,
                 handler: function () {},
             ),
         );
@@ -86,4 +86,9 @@ class AddActionTest extends TestCase
 
         $builder->build()->run();
     }
+}
+
+enum TestAction
+{
+    case TestAction;
 }

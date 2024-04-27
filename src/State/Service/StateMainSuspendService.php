@@ -6,6 +6,7 @@ namespace Duyler\EventBus\State\Service;
 
 use Duyler\EventBus\Bus\ActionContainer;
 use Duyler\EventBus\Bus\Task;
+use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\ResultService;
 use Duyler\EventBus\Service\SubscriptionService;
@@ -15,6 +16,7 @@ use Duyler\EventBus\State\Service\Trait\ResultServiceTrait;
 use Duyler\EventBus\State\Service\Trait\SubscriptionServiceTrait;
 use Duyler\EventBus\State\Service\Trait\TaskSuspendServiceTrait;
 use Duyler\EventBus\State\Service\Trait\TriggerServiceTrait;
+use UnitEnum;
 
 class StateMainSuspendService
 {
@@ -33,9 +35,9 @@ class StateMainSuspendService
         private readonly SubscriptionService $subscriptionService,
     ) {}
 
-    public function getActionId(): string
+    public function getActionId(): string|UnitEnum
     {
-        return $this->task->action->id;
+        return IdFormatter::reverse($this->task->action->id);
     }
 
     public function getContainer(): ActionContainer

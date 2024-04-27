@@ -6,7 +6,9 @@ namespace Duyler\EventBus\State;
 
 use Duyler\EventBus\Bus\Task;
 use Duyler\EventBus\Collection\ActionContainerCollection;
+use Duyler\EventBus\Contract\State\StateHandlerObservedInterface;
 use Duyler\EventBus\Contract\StateMainInterface;
+use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\QueueService;
@@ -22,6 +24,7 @@ use Duyler\EventBus\State\Service\StateMainEndService;
 use Duyler\EventBus\State\Service\StateMainResumeService;
 use Duyler\EventBus\State\Service\StateMainSuspendService;
 use Override;
+use UnitEnum;
 
 readonly class StateMain implements StateMainInterface
 {
@@ -78,7 +81,7 @@ readonly class StateMain implements StateMainInterface
 
         foreach ($this->stateHandlerStorage->getMainBefore() as $handler) {
             $context = $this->contextScope->getContext($handler::class);
-            if (empty($handler->observed($context)) || in_array($task->action->id, $handler->observed($context))) {
+            if ($this->isObserved($handler, $task, $context)) {
                 $handler->handle($stateService, $context);
             }
         }
@@ -156,7 +159,7 @@ readonly class StateMain implements StateMainInterface
 
         foreach ($this->stateHandlerStorage->getMainAfter() as $handler) {
             $context = $this->contextScope->getContext($handler::class);
-            if (empty($handler->observed($context)) || in_array($task->action->id, $handler->observed($context))) {
+            if ($this->isObserved($handler, $task, $context)) {
                 $handler->handle($stateService, $context);
             }
         }
@@ -176,5 +179,15 @@ readonly class StateMain implements StateMainInterface
         }
 
         $this->contextScope->cleanUp();
+    }
+
+    private function isObserved(StateHandlerObservedInterface $handler, Task $task, StateContext $context): bool
+    {
+        $observed = $handler->observed($context);
+        /** @var string|UnitEnum $actionId */
+        foreach ($observed as $actionId) {
+            $observed[] = IdFormatter::format($actionId);
+        }
+        return count($observed) === 0 || in_array($task->action->id, $observed);
     }
 }

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service\Trait;
 
+use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Service\QueueService;
+use UnitEnum;
 
 /**
  * @property QueueService $queueService
@@ -21,9 +23,9 @@ trait QueueServiceTrait
         return $this->queueService->isNotEmpty();
     }
 
-    public function inQueue(string $actionId): bool
+    public function inQueue(string|UnitEnum $actionId): bool
     {
-        return $this->queueService->inQueue($actionId);
+        return $this->queueService->inQueue(IdFormatter::format($actionId));
     }
 
     public function queueCount(): int

@@ -4,20 +4,28 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Dto;
 
+use UnitEnum;
 use Closure;
+use Duyler\EventBus\Formatter\IdFormatter;
 use RecursiveArrayIterator;
 
 readonly class Action
 {
+    public string $id;
     /** @var RecursiveArrayIterator<array-key, string> */
     public RecursiveArrayIterator $required;
+    public ?string $triggeredOn;
+    /** @var string[] */
+    public array $sealed;
+    /** @var string[] */
+    public array $alternates;
 
-    /** @param array<array-key, string> $required  */
     public function __construct(
-        public string $id,
+        string|UnitEnum $id,
         public string|Closure $handler,
+        /** @param array<array-key, string|UnitEnum> $required  */
         array $required = [],
-        public ?string $triggeredOn = null,
+        null|string|UnitEnum $triggeredOn = null,
         /** @var array<string, string> */
         public array $bind = [],
         /** @var array<string, string> */
@@ -30,15 +38,42 @@ readonly class Action
         public bool $repeatable = false,
         public bool $lock = true,
         public bool $private = false,
-        /** @var string[] */
-        public array $sealed = [],
+        /** @param array<array-key, string|UnitEnum> $sealed */
+        array $sealed = [],
         public bool $silent = false,
-        /** @var string[] */
-        public array $alternates = [],
+        /** @param array<array-key, string|UnitEnum> $alternates */
+        array $alternates = [],
         public int $retries = 0,
         /** @var array<string|int, mixed> */
         public array $labels = [],
     ) {
-        $this->required = new RecursiveArrayIterator($required);
+        $this->id = IdFormatter::format($id);
+
+        $this->required = new RecursiveArrayIterator();
+
+        /** @var string|UnitEnum $actionId */
+        foreach ($required as $actionId) {
+            $this->required->append(IdFormatter::format($actionId));
+        }
+
+        $alternatesActions = [];
+
+        /** @var string|UnitEnum $actionId */
+        foreach ($alternates as $actionId) {
+            $alternatesActions[] = IdFormatter::format($actionId);
+        }
+
+        $this->alternates = $alternatesActions;
+
+        $allowActions = [];
+
+        /** @var string|UnitEnum $actionId */
+        foreach ($sealed as $actionId) {
+            $allowActions[] = IdFormatter::format($actionId);
+        }
+
+        $this->sealed = $allowActions;
+
+        $this->triggeredOn = $triggeredOn === null ? null : IdFormatter::format($triggeredOn);
     }
 }

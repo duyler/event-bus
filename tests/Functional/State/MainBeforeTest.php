@@ -29,7 +29,7 @@ class MainBeforeTest extends TestCase
         ));
         $busBuilder->doAction(
             new Action(
-                id: 'ActionFromBuilder_1',
+                id: TestActionEnum::ActionFromBuilder_1,
                 handler: fn(): ResultInterface => new class () implements ResultInterface {},
                 contract: ResultInterface::class,
                 externalAccess: true,
@@ -38,7 +38,7 @@ class MainBeforeTest extends TestCase
 
         $busBuilder->doAction(
             new Action(
-                id: 'ActionFromBuilder_2',
+                id: TestActionEnum::ActionFromBuilder_2,
                 handler: fn(): ResultInterface => new class () implements ResultInterface {},
                 contract: ResultInterface::class,
                 externalAccess: true,
@@ -48,10 +48,16 @@ class MainBeforeTest extends TestCase
         $bus = $busBuilder->build();
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ActionFromBuilder_1'));
-        $this->assertTrue($bus->resultIsExists('ActionFromBuilder_2'));
-        $this->assertEquals('Value from new result 1', $bus->getResult('ActionFromBuilder_1')->data->value);
-        $this->assertEquals('Value from new result 2', $bus->getResult('ActionFromBuilder_2')->data->value);
+        $this->assertTrue($bus->resultIsExists(TestActionEnum::ActionFromBuilder_1));
+        $this->assertTrue($bus->resultIsExists(TestActionEnum::ActionFromBuilder_2));
+        $this->assertEquals(
+            'Value from new result 1',
+            $bus->getResult(TestActionEnum::ActionFromBuilder_1)->data->value,
+        );
+        $this->assertEquals(
+            'Value from new result 2',
+            $bus->getResult(TestActionEnum::ActionFromBuilder_2)->data->value,
+        );
     }
 
     #[Test]
@@ -96,25 +102,29 @@ class MainBeforeStateHandlerWithSubstituteActionHandler implements MainBeforeSta
     #[Override]
     public function handle(StateMainBeforeService $stateService, StateContext $context): void
     {
-        $stateService->substituteHandler(
-            new ActionHandlerSubstitution(
-                actionId: 'ActionFromBuilder_1',
-                handler: NewHandler::class,
-            ),
-        );
+        if ($stateService->getActionId() === TestActionEnum::ActionFromBuilder_1) {
+            $stateService->substituteHandler(
+                new ActionHandlerSubstitution(
+                    actionId: TestActionEnum::ActionFromBuilder_1,
+                    handler: NewHandler::class,
+                ),
+            );
+        }
 
-        $stateService->substituteHandler(
-            new ActionHandlerSubstitution(
-                actionId: 'ActionFromBuilder_2',
-                handler: fn() => new NewResult('Value from new result 2'),
-            ),
-        );
+        if ($stateService->getActionId() === TestActionEnum::ActionFromBuilder_2) {
+            $stateService->substituteHandler(
+                new ActionHandlerSubstitution(
+                    actionId: TestActionEnum::ActionFromBuilder_2,
+                    handler: fn() => new NewResult('Value from new result 2'),
+                ),
+            );
+        }
     }
 
     #[Override]
     public function observed(StateContext $context): array
     {
-        return ['ActionFromBuilder_1', 'ActionFromBuilder_2'];
+        return [TestActionEnum::ActionFromBuilder_1, TestActionEnum::ActionFromBuilder_2];
     }
 }
 
@@ -153,3 +163,9 @@ class NewResult implements ResultInterface
 }
 
 interface ResultInterface {}
+
+enum TestActionEnum
+{
+    case ActionFromBuilder_1;
+    case ActionFromBuilder_2;
+}

@@ -7,11 +7,13 @@ namespace Duyler\EventBus;
 use Duyler\EventBus\Dto\Log;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Dto\Trigger;
+use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Internal\Event\BusCompletedEvent;
 use Duyler\EventBus\Internal\Event\TriggerPushedEvent;
 use Duyler\EventBus\Service\ResultService;
 use Override;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use UnitEnum;
 
 class BusFacade implements BusInterface
 {
@@ -32,15 +34,15 @@ class BusFacade implements BusInterface
     }
 
     #[Override]
-    public function getResult(string $actionId): Result
+    public function getResult(string|UnitEnum $actionId): Result
     {
-        return $this->resultService->getResult($actionId);
+        return $this->resultService->getResult(IdFormatter::format($actionId));
     }
 
     #[Override]
-    public function resultIsExists(string $actionId): bool
+    public function resultIsExists(string|UnitEnum $actionId): bool
     {
-        return $this->resultService->resultIsExists($actionId);
+        return $this->resultService->resultIsExists(IdFormatter::format($actionId));
     }
 
     #[Override]

@@ -37,7 +37,7 @@ class ActionBeforeTest extends TestCase
 
         $busBuilder->doAction(
             new Action(
-                id: 'TestArgumentReturn',
+                id: TestAction::TestArgumentReturn,
                 handler: fn(): stdClass => new stdClass(),
                 contract: stdClass::class,
                 externalAccess: true,
@@ -46,9 +46,9 @@ class ActionBeforeTest extends TestCase
 
         $busBuilder->doAction(
             new Action(
-                id: 'TestArgument',
+                id: TestAction::TestArgument,
                 handler: function (stdClass $argument) {},
-                required: ['TestArgumentReturn'],
+                required: [TestAction::TestArgumentReturn],
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -72,7 +72,7 @@ class ActionBeforeStateHandler implements ActionBeforeStateHandlerInterface
     #[Override]
     public function observed(StateContext $context): array
     {
-        return [];
+        return ['Test', TestAction::TestArgumentReturn];
     }
 }
 
@@ -92,4 +92,10 @@ class ActionBeforeThrowsStateHandler implements ActionBeforeStateHandlerInterfac
     {
         return [];
     }
+}
+
+enum TestAction
+{
+    case TestArgumentReturn;
+    case TestArgument;
 }

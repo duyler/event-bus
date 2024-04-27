@@ -234,6 +234,10 @@ class MainAfterStateHandlerWithRollback implements MainAfterStateHandlerInterfac
     #[Override]
     public function handle(StateMainAfterService $stateService, StateContext $context): void
     {
+        if ($stateService->getActionId() === 'ActionFromBuilder') {
+            $stateService->getResultData();
+        }
+
         if ($stateService->resultIsExists('ActionFromBuilder')) {
             $stateService->rollbackWithoutException(1);
         }
