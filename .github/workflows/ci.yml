@@ -59,7 +59,7 @@ jobs:
           files: ./coverage.xml
         env:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: duyler/event-bus
+          slug: duyler/action-bus
 
       - name: Run PHP CS Fixer
         run: vendor/bin/php-cs-fixer check --diff -v
