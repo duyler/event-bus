@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Test\Unit\Collection;
+namespace Duyler\ActionBus\Test\Unit\Collection;
 
-use Duyler\EventBus\Collection\SubscriptionCollection;
-use Duyler\EventBus\Dto\Subscription;
-use Duyler\EventBus\Enum\ResultStatus;
-use Duyler\EventBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Collection\SubscriptionCollection;
+use Duyler\ActionBus\Dto\Subscription;
+use Duyler\ActionBus\Enum\ResultStatus;
+use Duyler\ActionBus\Formatter\IdFormatter;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

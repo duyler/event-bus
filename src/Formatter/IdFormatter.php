@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Formatter;
+namespace Duyler\ActionBus\Formatter;
 
 use UnitEnum;
 

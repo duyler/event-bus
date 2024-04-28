@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\State\Service\Trait;
+namespace Duyler\ActionBus\State\Service\Trait;
 
-use Duyler\EventBus\Dto\Trigger;
-use Duyler\EventBus\Service\TriggerService;
+use Duyler\ActionBus\Dto\Trigger;
+use Duyler\ActionBus\Service\TriggerService;
 
 /**
  * @property TriggerService $triggerService

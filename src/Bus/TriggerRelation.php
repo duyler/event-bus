@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Bus;
+namespace Duyler\ActionBus\Bus;
 
-use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Trigger;
+use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Dto\Trigger;
 
 final readonly class TriggerRelation
 {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus;
+namespace Duyler\ActionBus;
 
-use Duyler\EventBus\Dto\Log;
-use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Dto\Trigger;
+use Duyler\ActionBus\Dto\Log;
+use Duyler\ActionBus\Dto\Result;
+use Duyler\ActionBus\Dto\Trigger;
 use Throwable;
 use UnitEnum;
 

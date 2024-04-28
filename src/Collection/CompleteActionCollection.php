@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Collection;
+namespace Duyler\ActionBus\Collection;
 
 use Duyler\DependencyInjection\Attribute\Finalize;
-use Duyler\EventBus\Bus\CompleteAction;
-use Duyler\EventBus\Dto\Result;
+use Duyler\ActionBus\Bus\CompleteAction;
+use Duyler\ActionBus\Dto\Result;
 
 #[Finalize(method: 'reset')]
 class CompleteActionCollection

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Enum;
+namespace Duyler\ActionBus\Enum;
 
 enum ResultStatus: string
 {

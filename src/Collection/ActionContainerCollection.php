@@ -1,9 +1,9 @@
 <?php
 
-namespace Duyler\EventBus\Collection;
+namespace Duyler\ActionBus\Collection;
 
 use Duyler\DependencyInjection\Attribute\Finalize;
-use Duyler\EventBus\Bus\ActionContainer;
+use Duyler\ActionBus\Bus\ActionContainer;
 
 #[Finalize(method: 'reset')]
 class ActionContainerCollection

@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Service;
+namespace Duyler\ActionBus\Service;
 
-use Duyler\EventBus\Action\ActionContainerProvider;
-use Duyler\EventBus\Bus\ActionRequiredIterator;
-use Duyler\EventBus\Bus\Bus;
-use Duyler\EventBus\Collection\ActionArgumentCollection;
-use Duyler\EventBus\Collection\ActionCollection;
-use Duyler\EventBus\Collection\SubscriptionCollection;
-use Duyler\EventBus\Contract\ActionSubstitutionInterface;
-use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\ActionHandlerSubstitution;
-use Duyler\EventBus\Dto\ActionResultSubstitution;
-use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
-use Duyler\EventBus\Exception\ActionNotDefinedException;
-use Duyler\EventBus\Exception\CannotRequirePrivateActionException;
-use Duyler\EventBus\Exception\NotAllowedSealedActionException;
+use Duyler\ActionBus\Action\ActionContainerProvider;
+use Duyler\ActionBus\Bus\ActionRequiredIterator;
+use Duyler\ActionBus\Bus\Bus;
+use Duyler\ActionBus\Collection\ActionArgumentCollection;
+use Duyler\ActionBus\Collection\ActionCollection;
+use Duyler\ActionBus\Collection\SubscriptionCollection;
+use Duyler\ActionBus\Contract\ActionSubstitutionInterface;
+use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Dto\ActionHandlerSubstitution;
+use Duyler\ActionBus\Dto\ActionResultSubstitution;
+use Duyler\ActionBus\Exception\ActionAlreadyDefinedException;
+use Duyler\ActionBus\Exception\ActionNotDefinedException;
+use Duyler\ActionBus\Exception\CannotRequirePrivateActionException;
+use Duyler\ActionBus\Exception\NotAllowedSealedActionException;
 
 readonly class ActionService
 {

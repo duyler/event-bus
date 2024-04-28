@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\State\Service;
+namespace Duyler\ActionBus\State\Service;
 
-use Duyler\EventBus\Bus\Task;
-use Duyler\EventBus\Formatter\IdFormatter;
-use Duyler\EventBus\Service\ResultService;
-use Duyler\EventBus\State\Service\Trait\ResultServiceTrait;
+use Duyler\ActionBus\Bus\Task;
+use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Service\ResultService;
+use Duyler\ActionBus\State\Service\Trait\ResultServiceTrait;
 use UnitEnum;
 
 class StateMainResumeService

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Service;
+namespace Duyler\ActionBus\Service;
 
-use Duyler\EventBus\Bus\Bus;
-use Duyler\EventBus\Bus\TriggerRelation;
-use Duyler\EventBus\Collection\ActionCollection;
-use Duyler\EventBus\Collection\TriggerRelationCollection;
-use Duyler\EventBus\Dto\Trigger;
-use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
-use Duyler\EventBus\Exception\DataForContractNotReceivedException;
-use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
-use Duyler\EventBus\Exception\TriggerHandlersNotFoundException;
+use Duyler\ActionBus\Bus\Bus;
+use Duyler\ActionBus\Bus\TriggerRelation;
+use Duyler\ActionBus\Collection\ActionCollection;
+use Duyler\ActionBus\Collection\TriggerRelationCollection;
+use Duyler\ActionBus\Dto\Trigger;
+use Duyler\ActionBus\Exception\ContractForDataNotReceivedException;
+use Duyler\ActionBus\Exception\DataForContractNotReceivedException;
+use Duyler\ActionBus\Exception\DataMustBeCompatibleWithContractException;
+use Duyler\ActionBus\Exception\TriggerHandlersNotFoundException;
 
 class TriggerService
 {

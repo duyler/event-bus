@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Bus;
+namespace Duyler\ActionBus\Bus;
 
-use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Result;
+use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Dto\Result;
 
 final readonly class CompleteAction
 {

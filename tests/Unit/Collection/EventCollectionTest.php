@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Test\Unit\Collection;
+namespace Duyler\ActionBus\Test\Unit\Collection;
 
-use Duyler\EventBus\Bus\CompleteAction;
-use Duyler\EventBus\Collection\CompleteActionCollection;
-use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\ActionBus\Bus\CompleteAction;
+use Duyler\ActionBus\Collection\CompleteActionCollection;
+use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Dto\Result;
+use Duyler\ActionBus\Enum\ResultStatus;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Bus;
+namespace Duyler\ActionBus\Bus;
 
 use Duyler\DependencyInjection\Attribute\Finalize;
-use Duyler\EventBus\BusConfig;
-use Duyler\EventBus\Collection\ActionCollection;
-use Duyler\EventBus\Collection\CompleteActionCollection;
-use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Enum\ResultStatus;
-use Duyler\EventBus\Exception\UnableToContinueWithFailActionException;
+use Duyler\ActionBus\BusConfig;
+use Duyler\ActionBus\Collection\ActionCollection;
+use Duyler\ActionBus\Collection\CompleteActionCollection;
+use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Enum\ResultStatus;
+use Duyler\ActionBus\Exception\UnableToContinueWithFailActionException;
 
 use function count;
 

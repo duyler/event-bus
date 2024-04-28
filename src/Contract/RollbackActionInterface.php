@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Contract;
+namespace Duyler\ActionBus\Contract;
 
-use Duyler\EventBus\Dto\Result;
+use Duyler\ActionBus\Dto\Result;
 
 interface RollbackActionInterface
 {

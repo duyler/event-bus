@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Internal\Listener\Bus;
+namespace Duyler\ActionBus\Internal\Listener\Bus;
 
-use Duyler\EventBus\BusConfig;
-use Duyler\EventBus\Internal\Event\BusCompletedEvent;
-use Duyler\EventBus\Termination;
+use Duyler\ActionBus\BusConfig;
+use Duyler\ActionBus\Internal\Event\BusCompletedEvent;
+use Duyler\ActionBus\Termination;
 
 class TerminateBusEventListener
 {

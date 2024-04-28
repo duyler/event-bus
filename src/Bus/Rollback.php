@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Bus;
+namespace Duyler\ActionBus\Bus;
 
-use Duyler\EventBus\Collection\ActionArgumentCollection;
-use Duyler\EventBus\Collection\ActionContainerCollection;
-use Duyler\EventBus\Collection\CompleteActionCollection;
-use Duyler\EventBus\Contract\RollbackActionInterface;
-use Duyler\EventBus\Dto\Result;
+use Duyler\ActionBus\Collection\ActionArgumentCollection;
+use Duyler\ActionBus\Collection\ActionContainerCollection;
+use Duyler\ActionBus\Collection\CompleteActionCollection;
+use Duyler\ActionBus\Contract\RollbackActionInterface;
+use Duyler\ActionBus\Dto\Result;
 
 use function is_callable;
 

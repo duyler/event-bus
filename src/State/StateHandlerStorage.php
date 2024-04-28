@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\State;
+namespace Duyler\ActionBus\State;
 
-use Duyler\EventBus\Contract\State\ActionAfterStateHandlerInterface;
-use Duyler\EventBus\Contract\State\ActionBeforeStateHandlerInterface;
-use Duyler\EventBus\Contract\State\ActionThrowingStateHandlerInterface;
-use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
-use Duyler\EventBus\Contract\State\MainBeforeStateHandlerInterface;
-use Duyler\EventBus\Contract\State\MainBeginStateHandlerInterface;
-use Duyler\EventBus\Contract\State\MainCyclicStateHandlerInterface;
-use Duyler\EventBus\Contract\State\MainEndStateHandlerInterface;
-use Duyler\EventBus\Contract\State\MainResumeStateHandlerInterface;
-use Duyler\EventBus\Contract\State\MainSuspendStateHandlerInterface;
-use Duyler\EventBus\Contract\State\StateHandlerInterface;
+use Duyler\ActionBus\Contract\State\ActionAfterStateHandlerInterface;
+use Duyler\ActionBus\Contract\State\ActionBeforeStateHandlerInterface;
+use Duyler\ActionBus\Contract\State\ActionThrowingStateHandlerInterface;
+use Duyler\ActionBus\Contract\State\MainAfterStateHandlerInterface;
+use Duyler\ActionBus\Contract\State\MainBeforeStateHandlerInterface;
+use Duyler\ActionBus\Contract\State\MainBeginStateHandlerInterface;
+use Duyler\ActionBus\Contract\State\MainCyclicStateHandlerInterface;
+use Duyler\ActionBus\Contract\State\MainEndStateHandlerInterface;
+use Duyler\ActionBus\Contract\State\MainResumeStateHandlerInterface;
+use Duyler\ActionBus\Contract\State\MainSuspendStateHandlerInterface;
+use Duyler\ActionBus\Contract\State\StateHandlerInterface;
 use InvalidArgumentException;
 
 class StateHandlerStorage

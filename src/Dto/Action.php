@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Dto;
+namespace Duyler\ActionBus\Dto;
 
 use UnitEnum;
 use Closure;
-use Duyler\EventBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Formatter\IdFormatter;
 use RecursiveArrayIterator;
 
 readonly class Action

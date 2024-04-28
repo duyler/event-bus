@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Bus;
+namespace Duyler\ActionBus\Bus;
 
 use Closure;
-use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Enum\ResultStatus;
-use Duyler\EventBus\Exception\ActionReturnValueExistsException;
-use Duyler\EventBus\Exception\ActionReturnValueMustBeTypeObjectException;
-use Duyler\EventBus\Exception\DataForContractNotReceivedException;
-use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
+use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Dto\Result;
+use Duyler\ActionBus\Enum\ResultStatus;
+use Duyler\ActionBus\Exception\ActionReturnValueExistsException;
+use Duyler\ActionBus\Exception\ActionReturnValueMustBeTypeObjectException;
+use Duyler\ActionBus\Exception\DataForContractNotReceivedException;
+use Duyler\ActionBus\Exception\DataMustBeCompatibleWithContractException;
 use Fiber;
 
 final class Task

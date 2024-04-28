@@ -1,6 +1,6 @@
 <?php
 
-namespace Duyler\EventBus\Exception;
+namespace Duyler\ActionBus\Exception;
 
 use Exception;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Collection;
+namespace Duyler\ActionBus\Collection;
 
 use Duyler\DependencyInjection\Attribute\Finalize;
 

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Dto;
+namespace Duyler\ActionBus\Dto;
 
-use Duyler\EventBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Formatter\IdFormatter;
 use UnitEnum;
 
 readonly class ActionResultSubstitution

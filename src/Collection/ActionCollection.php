@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Collection;
+namespace Duyler\ActionBus\Collection;
 
-use Duyler\EventBus\Dto\Action;
+use Duyler\ActionBus\Dto\Action;
 
 use function array_key_exists;
 

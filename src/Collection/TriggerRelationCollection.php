@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Collection;
+namespace Duyler\ActionBus\Collection;
 
 use Duyler\DependencyInjection\Attribute\Finalize;
-use Duyler\EventBus\Bus\TriggerRelation;
+use Duyler\ActionBus\Bus\TriggerRelation;
 use RuntimeException;
 
 #[Finalize(method: 'reset')]

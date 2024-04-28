@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\State\Service;
+namespace Duyler\ActionBus\State\Service;
 
-use Duyler\EventBus\Enum\ResultStatus;
-use Duyler\EventBus\Formatter\IdFormatter;
-use Duyler\EventBus\Service\ActionService;
-use Duyler\EventBus\Service\LogService;
-use Duyler\EventBus\Service\ResultService;
-use Duyler\EventBus\Service\RollbackService;
-use Duyler\EventBus\Service\SubscriptionService;
-use Duyler\EventBus\Service\TriggerService;
-use Duyler\EventBus\State\Service\Trait\ActionServiceTrait;
-use Duyler\EventBus\State\Service\Trait\LogServiceTrait;
-use Duyler\EventBus\State\Service\Trait\ResultServiceTrait;
-use Duyler\EventBus\State\Service\Trait\RollbackServiceTrait;
-use Duyler\EventBus\State\Service\Trait\SubscriptionServiceTrait;
-use Duyler\EventBus\State\Service\Trait\TriggerServiceTrait;
+use Duyler\ActionBus\Enum\ResultStatus;
+use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Service\ActionService;
+use Duyler\ActionBus\Service\LogService;
+use Duyler\ActionBus\Service\ResultService;
+use Duyler\ActionBus\Service\RollbackService;
+use Duyler\ActionBus\Service\SubscriptionService;
+use Duyler\ActionBus\Service\TriggerService;
+use Duyler\ActionBus\State\Service\Trait\ActionServiceTrait;
+use Duyler\ActionBus\State\Service\Trait\LogServiceTrait;
+use Duyler\ActionBus\State\Service\Trait\ResultServiceTrait;
+use Duyler\ActionBus\State\Service\Trait\RollbackServiceTrait;
+use Duyler\ActionBus\State\Service\Trait\SubscriptionServiceTrait;
+use Duyler\ActionBus\State\Service\Trait\TriggerServiceTrait;
 use UnitEnum;
 
 class StateMainAfterService

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\State\Service;
+namespace Duyler\ActionBus\State\Service;
 
-use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Formatter\IdFormatter;
-use Duyler\EventBus\Service\ActionService;
-use Duyler\EventBus\Service\SubscriptionService;
-use Duyler\EventBus\Service\TriggerService;
-use Duyler\EventBus\State\Service\Trait\ActionServiceTrait;
-use Duyler\EventBus\State\Service\Trait\SubscriptionServiceTrait;
-use Duyler\EventBus\State\Service\Trait\TriggerServiceTrait;
+use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Service\ActionService;
+use Duyler\ActionBus\Service\SubscriptionService;
+use Duyler\ActionBus\Service\TriggerService;
+use Duyler\ActionBus\State\Service\Trait\ActionServiceTrait;
+use Duyler\ActionBus\State\Service\Trait\SubscriptionServiceTrait;
+use Duyler\ActionBus\State\Service\Trait\TriggerServiceTrait;
 use UnitEnum;
 
 class StateMainBeginService

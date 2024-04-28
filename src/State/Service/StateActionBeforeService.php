@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\State\Service;
+namespace Duyler\ActionBus\State\Service;
 
-use Duyler\EventBus\Bus\ActionContainer;
-use Duyler\EventBus\Dto\Action;
+use Duyler\ActionBus\Bus\ActionContainer;
+use Duyler\ActionBus\Dto\Action;
 
 class StateActionBeforeService
 {

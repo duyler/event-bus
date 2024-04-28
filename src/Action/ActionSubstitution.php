@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Action;
+namespace Duyler\ActionBus\Action;
 
 use Duyler\DependencyInjection\Attribute\Finalize;
-use Duyler\EventBus\Contract\ActionSubstitutionInterface;
-use Duyler\EventBus\Dto\ActionHandlerSubstitution;
-use Duyler\EventBus\Dto\ActionResultSubstitution;
+use Duyler\ActionBus\Contract\ActionSubstitutionInterface;
+use Duyler\ActionBus\Dto\ActionHandlerSubstitution;
+use Duyler\ActionBus\Dto\ActionResultSubstitution;
 use Override;
 
 #[Finalize(method: 'reset')]

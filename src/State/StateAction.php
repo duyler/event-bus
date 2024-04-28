@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\State;
+namespace Duyler\ActionBus\State;
 
-use Duyler\EventBus\Collection\ActionContainerCollection;
-use Duyler\EventBus\Contract\State\StateHandlerObservedInterface;
-use Duyler\EventBus\Contract\StateActionInterface;
-use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Formatter\IdFormatter;
-use Duyler\EventBus\State\Service\StateActionAfterService;
-use Duyler\EventBus\State\Service\StateActionBeforeService;
-use Duyler\EventBus\State\Service\StateActionThrowingService;
+use Duyler\ActionBus\Collection\ActionContainerCollection;
+use Duyler\ActionBus\Contract\State\StateHandlerObservedInterface;
+use Duyler\ActionBus\Contract\StateActionInterface;
+use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\State\Service\StateActionAfterService;
+use Duyler\ActionBus\State\Service\StateActionBeforeService;
+use Duyler\ActionBus\State\Service\StateActionThrowingService;
 use Override;
 use Throwable;
 use UnitEnum;

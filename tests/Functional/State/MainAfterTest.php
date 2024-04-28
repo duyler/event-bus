@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Test\Functional\State;
+namespace Duyler\ActionBus\Test\Functional\State;
 
-use Duyler\EventBus\BusBuilder;
-use Duyler\EventBus\BusConfig;
-use Duyler\EventBus\Contract\RollbackActionInterface;
-use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
-use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Context;
-use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Dto\Subscription;
-use Duyler\EventBus\Enum\ResultStatus;
-use Duyler\EventBus\State\Service\StateMainAfterService;
-use Duyler\EventBus\State\StateContext;
+use Duyler\ActionBus\BusBuilder;
+use Duyler\ActionBus\BusConfig;
+use Duyler\ActionBus\Contract\RollbackActionInterface;
+use Duyler\ActionBus\Contract\State\MainAfterStateHandlerInterface;
+use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Dto\Context;
+use Duyler\ActionBus\Dto\Result;
+use Duyler\ActionBus\Dto\Subscription;
+use Duyler\ActionBus\Enum\ResultStatus;
+use Duyler\ActionBus\State\Service\StateMainAfterService;
+use Duyler\ActionBus\State\StateContext;
 use Override;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
