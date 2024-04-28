@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Formatter;
 
 use UnitEnum;
-use ReflectionClass;
 
 final class IdFormatter
 {
-    public const string DELIMITER = '.';
+    public const string DELIMITER = '::';
 
     /** @var array<string, UnitEnum> */
     private static array $idMap = [];
@@ -26,7 +25,7 @@ final class IdFormatter
             return $actionId;
         }
 
-        $actionId = (new ReflectionClass($id))->getShortName() . self::DELIMITER . $id->name;
+        $actionId = $id::class . self::DELIMITER . $id->name;
         self::$idMap[$actionId] = $id;
         return $actionId;
     }

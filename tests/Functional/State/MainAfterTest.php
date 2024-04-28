@@ -217,9 +217,12 @@ class MainAfterStateHandlerWithRemoveAction implements MainAfterStateHandlerInte
     #[Override]
     public function handle(StateMainAfterService $stateService, StateContext $context): void
     {
-        if ($stateService->resultIsExists('RemovedActionFromBuilder')) {
+        $action = $stateService->getById('RemovedActionFromBuilder');
+        if ($stateService->resultIsExists($action->id)) {
             $stateService->removeAction('RemovedActionFromBuilder');
         }
+
+        $stateService->addSharedService($action);
     }
 
     #[Override]

@@ -47,6 +47,11 @@ trait ActionServiceTrait
         return $this->actionService->getByContract($contract);
     }
 
+    public function getById(string|UnitEnum $actionId): Action
+    {
+        return $this->actionService->getById(IdFormatter::format($actionId));
+    }
+
     /** @param array<string, string> $bind */
     public function addSharedService(object $service, array $bind = []): void
     {
