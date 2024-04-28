@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus;
+namespace Duyler\ActionBus;
 
 use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerConfig;
-use Duyler\EventBus\Contract\State\StateHandlerInterface;
-use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Context;
-use Duyler\EventBus\Dto\Subscription;
-use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
-use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
-use Duyler\EventBus\Internal\ListenerProvider;
-use Duyler\EventBus\Service\ActionService;
-use Duyler\EventBus\Service\StateService;
-use Duyler\EventBus\Service\SubscriptionService;
+use Duyler\ActionBus\Contract\State\StateHandlerInterface;
+use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Dto\Context;
+use Duyler\ActionBus\Dto\Subscription;
+use Duyler\ActionBus\Exception\ActionAlreadyDefinedException;
+use Duyler\ActionBus\Exception\SubscriptionAlreadyDefinedException;
+use Duyler\ActionBus\Internal\ListenerProvider;
+use Duyler\ActionBus\Service\ActionService;
+use Duyler\ActionBus\Service\StateService;
+use Duyler\ActionBus\Service\SubscriptionService;
 use Psr\EventDispatcher\ListenerProviderInterface;
 
 class BusBuilder

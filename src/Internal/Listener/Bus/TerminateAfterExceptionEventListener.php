@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Internal\Listener\Bus;
+namespace Duyler\ActionBus\Internal\Listener\Bus;
 
-use Duyler\EventBus\Internal\Event\ThrowExceptionEvent;
-use Duyler\EventBus\Termination;
+use Duyler\ActionBus\Internal\Event\ThrowExceptionEvent;
+use Duyler\ActionBus\Termination;
 
 class TerminateAfterExceptionEventListener
 {

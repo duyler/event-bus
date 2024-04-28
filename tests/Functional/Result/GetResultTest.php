@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Test\Functional\Result;
+namespace Duyler\ActionBus\Test\Functional\Result;
 
-use Duyler\EventBus\BusBuilder;
-use Duyler\EventBus\BusConfig;
-use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Enum\ResultStatus;
-use Duyler\EventBus\Exception\ActionNotAllowExternalAccessException;
-use Duyler\EventBus\Exception\ResultNotExistsException;
+use Duyler\ActionBus\BusBuilder;
+use Duyler\ActionBus\BusConfig;
+use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Enum\ResultStatus;
+use Duyler\ActionBus\Exception\ActionNotAllowExternalAccessException;
+use Duyler\ActionBus\Exception\ResultNotExistsException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\State;
+namespace Duyler\ActionBus\State;
 
 class StateSuspendContext
 {

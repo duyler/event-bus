@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\State\Service;
+namespace Duyler\ActionBus\State\Service;
 
-use Duyler\EventBus\Service\ActionService;
-use Duyler\EventBus\Service\QueueService;
-use Duyler\EventBus\Service\TriggerService;
-use Duyler\EventBus\State\Service\Trait\ActionServiceTrait;
-use Duyler\EventBus\State\Service\Trait\QueueServiceTrait;
-use Duyler\EventBus\State\Service\Trait\TriggerServiceTrait;
+use Duyler\ActionBus\Service\ActionService;
+use Duyler\ActionBus\Service\QueueService;
+use Duyler\ActionBus\Service\TriggerService;
+use Duyler\ActionBus\State\Service\Trait\ActionServiceTrait;
+use Duyler\ActionBus\State\Service\Trait\QueueServiceTrait;
+use Duyler\ActionBus\State\Service\Trait\TriggerServiceTrait;
 
 class StateMainCyclicService
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\State\Service\Trait;
+namespace Duyler\ActionBus\State\Service\Trait;
 
-use Duyler\EventBus\Bus\Task;
+use Duyler\ActionBus\Bus\Task;
 
 /**
  * @property Task $task

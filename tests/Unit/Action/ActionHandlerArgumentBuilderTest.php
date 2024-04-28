@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Test\Unit\Action;
+namespace Duyler\ActionBus\Test\Unit\Action;
 
-use Duyler\EventBus\Action\ActionHandlerArgumentBuilder;
-use Duyler\EventBus\Action\ActionSubstitution;
-use Duyler\EventBus\Bus\ActionContainer;
-use Duyler\EventBus\Collection\ActionArgumentCollection;
-use Duyler\EventBus\Collection\CompleteActionCollection;
-use Duyler\EventBus\Collection\TriggerRelationCollection;
-use Duyler\EventBus\Dto\Action;
+use Duyler\ActionBus\Action\ActionHandlerArgumentBuilder;
+use Duyler\ActionBus\Action\ActionSubstitution;
+use Duyler\ActionBus\Bus\ActionContainer;
+use Duyler\ActionBus\Collection\ActionArgumentCollection;
+use Duyler\ActionBus\Collection\CompleteActionCollection;
+use Duyler\ActionBus\Collection\TriggerRelationCollection;
+use Duyler\ActionBus\Dto\Action;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;

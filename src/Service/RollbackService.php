@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Service;
+namespace Duyler\ActionBus\Service;
 
-use Duyler\EventBus\Bus\Log;
-use Duyler\EventBus\Bus\Rollback;
+use Duyler\ActionBus\Bus\Log;
+use Duyler\ActionBus\Bus\Rollback;
 
 readonly class RollbackService
 {

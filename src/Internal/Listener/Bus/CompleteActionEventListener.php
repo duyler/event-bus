@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Internal\Listener\Bus;
+namespace Duyler\ActionBus\Internal\Listener\Bus;
 
-use Duyler\EventBus\Bus\Bus;
-use Duyler\EventBus\Bus\CompleteAction;
-use Duyler\EventBus\Collection\CompleteActionCollection;
-use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
+use Duyler\ActionBus\Bus\Bus;
+use Duyler\ActionBus\Bus\CompleteAction;
+use Duyler\ActionBus\Collection\CompleteActionCollection;
+use Duyler\ActionBus\Internal\Event\TaskAfterRunEvent;
 
 class CompleteActionEventListener
 {

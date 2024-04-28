@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus;
+namespace Duyler\ActionBus;
 
-use Duyler\EventBus\Dto\Log;
-use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Dto\Trigger;
-use Duyler\EventBus\Formatter\IdFormatter;
-use Duyler\EventBus\Internal\Event\BusCompletedEvent;
-use Duyler\EventBus\Internal\Event\TriggerPushedEvent;
-use Duyler\EventBus\Service\ResultService;
+use Duyler\ActionBus\Dto\Log;
+use Duyler\ActionBus\Dto\Result;
+use Duyler\ActionBus\Dto\Trigger;
+use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Internal\Event\BusCompletedEvent;
+use Duyler\ActionBus\Internal\Event\TriggerPushedEvent;
+use Duyler\ActionBus\Service\ResultService;
 use Override;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use UnitEnum;

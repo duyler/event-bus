@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Service;
+namespace Duyler\ActionBus\Service;
 
-use Duyler\EventBus\Collection\CompleteActionCollection;
-use Duyler\EventBus\Collection\TriggerRelationCollection;
-use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Enum\ResultStatus;
-use Duyler\EventBus\Exception\ActionNotAllowExternalAccessException;
-use Duyler\EventBus\Exception\ResultNotExistsException;
+use Duyler\ActionBus\Collection\CompleteActionCollection;
+use Duyler\ActionBus\Collection\TriggerRelationCollection;
+use Duyler\ActionBus\Dto\Result;
+use Duyler\ActionBus\Enum\ResultStatus;
+use Duyler\ActionBus\Exception\ActionNotAllowExternalAccessException;
+use Duyler\ActionBus\Exception\ResultNotExistsException;
 
 class ResultService
 {

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Test\Functional\Run;
+namespace Duyler\ActionBus\Test\Functional\Run;
 
-use Duyler\EventBus\BusBuilder;
-use Duyler\EventBus\BusConfig;
-use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Trigger;
-use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
-use Duyler\EventBus\Exception\DataForContractNotReceivedException;
-use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
-use Duyler\EventBus\Exception\TriggerHandlersNotFoundException;
+use Duyler\ActionBus\BusBuilder;
+use Duyler\ActionBus\BusConfig;
+use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Dto\Trigger;
+use Duyler\ActionBus\Exception\ContractForDataNotReceivedException;
+use Duyler\ActionBus\Exception\DataForContractNotReceivedException;
+use Duyler\ActionBus\Exception\DataMustBeCompatibleWithContractException;
+use Duyler\ActionBus\Exception\TriggerHandlersNotFoundException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;

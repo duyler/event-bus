@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Internal\Listener\Bus;
+namespace Duyler\ActionBus\Internal\Listener\Bus;
 
-use Duyler\EventBus\Bus\Log;
-use Duyler\EventBus\Collection\CompleteActionCollection;
-use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
+use Duyler\ActionBus\Bus\Log;
+use Duyler\ActionBus\Collection\CompleteActionCollection;
+use Duyler\ActionBus\Internal\Event\TaskAfterRunEvent;
 
 class LogCompleteActionEventListener
 {

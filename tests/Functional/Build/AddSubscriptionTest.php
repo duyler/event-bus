@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Test\Functional\Build;
+namespace Duyler\ActionBus\Test\Functional\Build;
 
-use Duyler\EventBus\BusBuilder;
-use Duyler\EventBus\BusConfig;
-use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Subscription;
-use Duyler\EventBus\Exception\SubscribedActionNotDefinedException;
-use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
-use Duyler\EventBus\Exception\SubscriptionOnNotDefinedActionException;
-use Duyler\EventBus\Exception\SubscriptionOnSilentActionException;
+use Duyler\ActionBus\BusBuilder;
+use Duyler\ActionBus\BusConfig;
+use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Dto\Subscription;
+use Duyler\ActionBus\Exception\SubscribedActionNotDefinedException;
+use Duyler\ActionBus\Exception\SubscriptionAlreadyDefinedException;
+use Duyler\ActionBus\Exception\SubscriptionOnNotDefinedActionException;
+use Duyler\ActionBus\Exception\SubscriptionOnSilentActionException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

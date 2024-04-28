@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Internal\Event;
+namespace Duyler\ActionBus\Internal\Event;
 
-use Duyler\EventBus\Bus\Task;
+use Duyler\ActionBus\Bus\Task;
 
 readonly class TaskSuspendedEvent
 {

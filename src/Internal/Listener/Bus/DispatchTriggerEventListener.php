@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Internal\Listener\Bus;
+namespace Duyler\ActionBus\Internal\Listener\Bus;
 
-use Duyler\EventBus\Bus\Log;
-use Duyler\EventBus\Internal\Event\TriggerPushedEvent;
-use Duyler\EventBus\Service\TriggerService;
+use Duyler\ActionBus\Bus\Log;
+use Duyler\ActionBus\Internal\Event\TriggerPushedEvent;
+use Duyler\ActionBus\Service\TriggerService;
 
 class DispatchTriggerEventListener
 {

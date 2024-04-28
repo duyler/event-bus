@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\State;
+namespace Duyler\ActionBus\State;
 
-use Duyler\EventBus\Dto\Context;
+use Duyler\ActionBus\Dto\Context;
 
 class StateContextScope
 {

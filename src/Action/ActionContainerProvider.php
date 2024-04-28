@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Action;
+namespace Duyler\ActionBus\Action;
 
-use Duyler\EventBus\Bus\ActionContainer;
-use Duyler\EventBus\BusConfig;
-use Duyler\EventBus\Collection\ActionContainerCollection;
-use Duyler\EventBus\Dto\Action;
+use Duyler\ActionBus\Bus\ActionContainer;
+use Duyler\ActionBus\BusConfig;
+use Duyler\ActionBus\Collection\ActionContainerCollection;
+use Duyler\ActionBus\Dto\Action;
 
 class ActionContainerProvider
 {

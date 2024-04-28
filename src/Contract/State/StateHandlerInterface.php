@@ -2,6 +2,6 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Contract\State;
+namespace Duyler\ActionBus\Contract\State;
 
 interface StateHandlerInterface {}

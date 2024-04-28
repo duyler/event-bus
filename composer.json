@@ -1,10 +1,10 @@
 {
-    "name": "duyler/event-bus",
+    "name": "duyler/action-bus",
     "type": "library",
-    "description": "Duyler event bus",
+    "description": "Duyler action bus",
     "license": "MIT",
     "keywords": [
-        "event-bus"
+        "action-bus"
     ],
     "authors": [
         {
@@ -13,7 +13,7 @@
         }
     ],
     "support": {
-        "docs": "https://duyler.org/docs/event-bus/"
+        "docs": "https://duyler.org/docs/action-bus/"
     },
     "require": {
         "php": "^8.3",
@@ -28,12 +28,12 @@
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
-            "Duyler\\EventBus\\": "src/"
+            "Duyler\\ActionBus\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Duyler\\EventBus\\Test\\": ["tests/"]
+            "Duyler\\ActionBus\\Test\\": ["tests/"]
         }
     }
 }

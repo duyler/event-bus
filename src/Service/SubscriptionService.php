@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Service;
+namespace Duyler\ActionBus\Service;
 
-use Duyler\EventBus\Bus\Bus;
-use Duyler\EventBus\Bus\CompleteAction;
-use Duyler\EventBus\Collection\ActionCollection;
-use Duyler\EventBus\Collection\SubscriptionCollection;
-use Duyler\EventBus\Dto\Subscription;
-use Duyler\EventBus\Exception\SubscribedActionNotDefinedException;
-use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
-use Duyler\EventBus\Exception\SubscriptionNotFoundException;
-use Duyler\EventBus\Exception\SubscriptionOnNotDefinedActionException;
-use Duyler\EventBus\Exception\SubscriptionOnSilentActionException;
+use Duyler\ActionBus\Bus\Bus;
+use Duyler\ActionBus\Bus\CompleteAction;
+use Duyler\ActionBus\Collection\ActionCollection;
+use Duyler\ActionBus\Collection\SubscriptionCollection;
+use Duyler\ActionBus\Dto\Subscription;
+use Duyler\ActionBus\Exception\SubscribedActionNotDefinedException;
+use Duyler\ActionBus\Exception\SubscriptionAlreadyDefinedException;
+use Duyler\ActionBus\Exception\SubscriptionNotFoundException;
+use Duyler\ActionBus\Exception\SubscriptionOnNotDefinedActionException;
+use Duyler\ActionBus\Exception\SubscriptionOnSilentActionException;
 
 readonly class SubscriptionService
 {

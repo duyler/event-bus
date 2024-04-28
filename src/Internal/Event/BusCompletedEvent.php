@@ -2,6 +2,6 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Internal\Event;
+namespace Duyler\ActionBus\Internal\Event;
 
 class BusCompletedEvent {}

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Bus;
+namespace Duyler\ActionBus\Bus;
 
 use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerConfig;
-use Duyler\EventBus\BusConfig;
-use Duyler\EventBus\Enum\ResetMode;
+use Duyler\ActionBus\BusConfig;
+use Duyler\ActionBus\Enum\ResetMode;
 
 class ActionContainer extends Container
 {

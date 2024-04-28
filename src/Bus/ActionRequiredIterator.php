@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Bus;
+namespace Duyler\ActionBus\Bus;
 
-use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Exception\ActionNotDefinedException;
+use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Exception\ActionNotDefinedException;
 use RecursiveIterator;
 use RecursiveIteratorIterator;
 

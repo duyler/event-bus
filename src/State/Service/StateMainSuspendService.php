@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\State\Service;
+namespace Duyler\ActionBus\State\Service;
 
-use Duyler\EventBus\Bus\ActionContainer;
-use Duyler\EventBus\Bus\Task;
-use Duyler\EventBus\Formatter\IdFormatter;
-use Duyler\EventBus\Service\ActionService;
-use Duyler\EventBus\Service\ResultService;
-use Duyler\EventBus\Service\SubscriptionService;
-use Duyler\EventBus\Service\TriggerService;
-use Duyler\EventBus\State\Service\Trait\ActionServiceTrait;
-use Duyler\EventBus\State\Service\Trait\ResultServiceTrait;
-use Duyler\EventBus\State\Service\Trait\SubscriptionServiceTrait;
-use Duyler\EventBus\State\Service\Trait\TaskSuspendServiceTrait;
-use Duyler\EventBus\State\Service\Trait\TriggerServiceTrait;
+use Duyler\ActionBus\Bus\ActionContainer;
+use Duyler\ActionBus\Bus\Task;
+use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Service\ActionService;
+use Duyler\ActionBus\Service\ResultService;
+use Duyler\ActionBus\Service\SubscriptionService;
+use Duyler\ActionBus\Service\TriggerService;
+use Duyler\ActionBus\State\Service\Trait\ActionServiceTrait;
+use Duyler\ActionBus\State\Service\Trait\ResultServiceTrait;
+use Duyler\ActionBus\State\Service\Trait\SubscriptionServiceTrait;
+use Duyler\ActionBus\State\Service\Trait\TaskSuspendServiceTrait;
+use Duyler\ActionBus\State\Service\Trait\TriggerServiceTrait;
 use UnitEnum;
 
 class StateMainSuspendService

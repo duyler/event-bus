@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus;
+namespace Duyler\ActionBus;
 
 use Duyler\DependencyInjection\ContainerInterface;
-use Duyler\EventBus\Bus\Log;
-use Duyler\EventBus\Dto\Log as LogDto;
+use Duyler\ActionBus\Bus\Log;
+use Duyler\ActionBus\Dto\Log as LogDto;
 
 class Termination
 {

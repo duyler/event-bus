@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Test\Functional\State;
+namespace Duyler\ActionBus\Test\Functional\State;
 
-use Duyler\EventBus\BusBuilder;
-use Duyler\EventBus\BusConfig;
-use Duyler\EventBus\Contract\State\MainEndStateHandlerInterface;
-use Duyler\EventBus\Dto\Action;
-use Duyler\EventBus\Dto\Context;
-use Duyler\EventBus\State\Service\StateMainEndService;
-use Duyler\EventBus\State\StateContext;
+use Duyler\ActionBus\BusBuilder;
+use Duyler\ActionBus\BusConfig;
+use Duyler\ActionBus\Contract\State\MainEndStateHandlerInterface;
+use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Dto\Context;
+use Duyler\ActionBus\State\Service\StateMainEndService;
+use Duyler\ActionBus\State\StateContext;
 use Override;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

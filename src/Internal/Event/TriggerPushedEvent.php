@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Internal\Event;
+namespace Duyler\ActionBus\Internal\Event;
 
-use Duyler\EventBus\Dto\Trigger;
+use Duyler\ActionBus\Dto\Trigger;
 
 readonly class TriggerPushedEvent
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Test\Unit\Collection;
+namespace Duyler\ActionBus\Test\Unit\Collection;
 
-use Duyler\EventBus\Collection\ActionCollection;
-use Duyler\EventBus\Dto\Action;
+use Duyler\ActionBus\Collection\ActionCollection;
+use Duyler\ActionBus\Dto\Action;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus;
+namespace Duyler\ActionBus;
 
-use Duyler\EventBus\Bus\DoWhile;
-use Duyler\EventBus\Bus\Rollback;
-use Duyler\EventBus\Internal\Event\ThrowExceptionEvent;
+use Duyler\ActionBus\Bus\DoWhile;
+use Duyler\ActionBus\Bus\Rollback;
+use Duyler\ActionBus\Internal\Event\ThrowExceptionEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
