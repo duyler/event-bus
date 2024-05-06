@@ -13,6 +13,7 @@ use Duyler\ActionBus\Dto\Context;
 use Duyler\ActionBus\State\Service\StateMainResumeService;
 use Duyler\ActionBus\State\Service\StateMainSuspendService;
 use Duyler\ActionBus\State\StateContext;
+use Duyler\ActionBus\State\Suspend;
 use Fiber;
 use Override;
 use PHPUnit\Framework\Attributes\Test;
@@ -95,7 +96,7 @@ class MainSuspendStateHandler implements MainSuspendStateHandlerInterface
     }
 
     #[Override]
-    public function isResumable(mixed $value): bool
+    public function isResumable(Suspend $suspend, StateContext $context): bool
     {
         return true;
     }

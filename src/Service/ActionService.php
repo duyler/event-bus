@@ -7,7 +7,6 @@ namespace Duyler\ActionBus\Service;
 use Duyler\ActionBus\Action\ActionContainerProvider;
 use Duyler\ActionBus\Bus\ActionRequiredIterator;
 use Duyler\ActionBus\Bus\Bus;
-use Duyler\ActionBus\Collection\ActionArgumentCollection;
 use Duyler\ActionBus\Collection\ActionCollection;
 use Duyler\ActionBus\Collection\SubscriptionCollection;
 use Duyler\ActionBus\Contract\ActionSubstitutionInterface;
@@ -27,7 +26,6 @@ readonly class ActionService
         private ActionSubstitutionInterface $actionSubstitution,
         private SubscriptionCollection $subscriptionCollection,
         private Bus $bus,
-        private ActionArgumentCollection $actionArgumentCollection,
     ) {}
 
     public function addAction(Action $action): void

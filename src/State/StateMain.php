@@ -92,11 +92,16 @@ readonly class StateMain implements StateMainInterface
     {
         $handlers = $this->stateHandlerStorage->getMainSuspend();
 
-        if (empty($handlers)) {
-            $value = $task->getValue();
+        $value = $task->getValue();
+
+        if (null === $value) {
+            $this->context->addResumeValue($task->action->id, $value);
+            return;
+        }
+
+        if (count($handlers) === 0) {
             $result = is_callable($value) ? $value() : $value;
             $this->context->addResumeValue($task->action->id, $result);
-
             return;
         }
 
@@ -109,15 +114,13 @@ readonly class StateMain implements StateMainInterface
             $this->subscriptionService,
         );
 
-        // @todo: refactor
-        $resumeValue = null;
         foreach ($handlers as $handler) {
             $context = $this->contextScope->getContext($handler::class);
-            if ($handler->isResumable($stateService->getValue()) && null === $resumeValue) {
+            $suspend = new Suspend(IdFormatter::format($task->action->id), $stateService->getValue());
+            if ($handler->isResumable($suspend, $context)) {
                 $resumeValue = $handler->handle($stateService, $context);
                 $this->context->addResumeValue($task->action->id, $resumeValue);
-            } else {
-                $handler->handle($stateService, $context);
+                break;
             }
         }
     }
