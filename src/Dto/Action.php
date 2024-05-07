@@ -6,7 +6,7 @@ namespace Duyler\ActionBus\Dto;
 
 use UnitEnum;
 use Closure;
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use RecursiveArrayIterator;
 
 readonly class Action
@@ -47,20 +47,20 @@ readonly class Action
         /** @var array<string|int, mixed> */
         public array $labels = [],
     ) {
-        $this->id = IdFormatter::format($id);
+        $this->id = ActionIdFormatter::toString($id);
 
         $this->required = new RecursiveArrayIterator();
 
         /** @var string|UnitEnum $actionId */
         foreach ($required as $actionId) {
-            $this->required->append(IdFormatter::format($actionId));
+            $this->required->append(ActionIdFormatter::toString($actionId));
         }
 
         $alternatesActions = [];
 
         /** @var string|UnitEnum $actionId */
         foreach ($alternates as $actionId) {
-            $alternatesActions[] = IdFormatter::format($actionId);
+            $alternatesActions[] = ActionIdFormatter::toString($actionId);
         }
 
         $this->alternates = $alternatesActions;
@@ -69,11 +69,11 @@ readonly class Action
 
         /** @var string|UnitEnum $actionId */
         foreach ($sealed as $actionId) {
-            $allowActions[] = IdFormatter::format($actionId);
+            $allowActions[] = ActionIdFormatter::toString($actionId);
         }
 
         $this->sealed = $allowActions;
 
-        $this->triggeredOn = $triggeredOn === null ? null : IdFormatter::format($triggeredOn);
+        $this->triggeredOn = $triggeredOn === null ? null : ActionIdFormatter::toString($triggeredOn);
     }
 }

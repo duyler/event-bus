@@ -7,7 +7,7 @@ namespace Duyler\ActionBus;
 use Duyler\ActionBus\Dto\Log;
 use Duyler\ActionBus\Dto\Result;
 use Duyler\ActionBus\Dto\Trigger;
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use Duyler\ActionBus\Internal\Event\BusCompletedEvent;
 use Duyler\ActionBus\Internal\Event\TriggerPushedEvent;
 use Duyler\ActionBus\Service\ResultService;
@@ -36,13 +36,13 @@ class BusFacade implements BusInterface
     #[Override]
     public function getResult(string|UnitEnum $actionId): Result
     {
-        return $this->resultService->getResult(IdFormatter::format($actionId));
+        return $this->resultService->getResult(ActionIdFormatter::toString($actionId));
     }
 
     #[Override]
     public function resultIsExists(string|UnitEnum $actionId): bool
     {
-        return $this->resultService->resultIsExists(IdFormatter::format($actionId));
+        return $this->resultService->resultIsExists(ActionIdFormatter::toString($actionId));
     }
 
     #[Override]

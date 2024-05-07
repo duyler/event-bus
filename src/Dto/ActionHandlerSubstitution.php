@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Duyler\ActionBus\Dto;
 
 use Closure;
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use UnitEnum;
 
 readonly class ActionHandlerSubstitution
@@ -18,6 +18,6 @@ readonly class ActionHandlerSubstitution
         public array $bind = [],
         public array $providers = [],
     ) {
-        $this->actionId = IdFormatter::format($actionId);
+        $this->actionId = ActionIdFormatter::toString($actionId);
     }
 }

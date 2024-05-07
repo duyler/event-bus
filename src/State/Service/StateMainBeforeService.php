@@ -6,7 +6,7 @@ namespace Duyler\ActionBus\State\Service;
 
 use Duyler\ActionBus\Dto\ActionHandlerSubstitution;
 use Duyler\ActionBus\Dto\ActionResultSubstitution;
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use Duyler\ActionBus\Service\ActionService;
 use Duyler\ActionBus\Service\LogService;
 use Duyler\ActionBus\State\Service\Trait\LogServiceTrait;
@@ -34,6 +34,6 @@ class StateMainBeforeService
 
     public function getActionId(): string|UnitEnum
     {
-        return IdFormatter::reverse($this->actionId);
+        return ActionIdFormatter::reverse($this->actionId);
     }
 }

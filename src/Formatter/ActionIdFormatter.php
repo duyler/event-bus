@@ -6,14 +6,14 @@ namespace Duyler\ActionBus\Formatter;
 
 use UnitEnum;
 
-final class IdFormatter
+final class ActionIdFormatter
 {
     public const string DELIMITER = '::';
 
     /** @var array<string, UnitEnum> */
     private static array $idMap = [];
 
-    public static function format(string|UnitEnum $id): string
+    public static function toString(string|UnitEnum $id): string
     {
         if (is_string($id)) {
             return $id;

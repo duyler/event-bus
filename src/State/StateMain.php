@@ -8,7 +8,7 @@ use Duyler\ActionBus\Bus\Task;
 use Duyler\ActionBus\Collection\ActionContainerCollection;
 use Duyler\ActionBus\Contract\State\StateHandlerObservedInterface;
 use Duyler\ActionBus\Contract\StateMainInterface;
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use Duyler\ActionBus\Service\ActionService;
 use Duyler\ActionBus\Service\LogService;
 use Duyler\ActionBus\Service\QueueService;
@@ -116,7 +116,7 @@ readonly class StateMain implements StateMainInterface
 
         foreach ($handlers as $handler) {
             $context = $this->contextScope->getContext($handler::class);
-            $suspend = new Suspend(IdFormatter::format($task->action->id), $stateService->getValue());
+            $suspend = new Suspend(ActionIdFormatter::reverse($task->action->id), $stateService->getValue());
             if ($handler->isResumable($suspend, $context)) {
                 $resumeValue = $handler->handle($stateService, $context);
                 $this->context->addResumeValue($task->action->id, $resumeValue);
@@ -189,7 +189,7 @@ readonly class StateMain implements StateMainInterface
         $observed = $handler->observed($context);
         /** @var string|UnitEnum $actionId */
         foreach ($observed as $actionId) {
-            $observed[] = IdFormatter::format($actionId);
+            $observed[] = ActionIdFormatter::toString($actionId);
         }
         return count($observed) === 0 || in_array($task->action->id, $observed);
     }

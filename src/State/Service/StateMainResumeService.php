@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Duyler\ActionBus\State\Service;
 
 use Duyler\ActionBus\Bus\Task;
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use Duyler\ActionBus\Service\ResultService;
 use Duyler\ActionBus\State\Service\Trait\ResultServiceTrait;
 use UnitEnum;
@@ -22,7 +22,7 @@ class StateMainResumeService
 
     public function getActionId(): string|UnitEnum
     {
-        return IdFormatter::reverse($this->task->action->id);
+        return ActionIdFormatter::reverse($this->task->action->id);
     }
 
     public function getResumeValue(): mixed

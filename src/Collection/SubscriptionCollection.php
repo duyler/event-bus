@@ -6,7 +6,7 @@ namespace Duyler\ActionBus\Collection;
 
 use Duyler\ActionBus\Dto\Subscription;
 use Duyler\ActionBus\Enum\ResultStatus;
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Formatter\ActionIdFormatter;
 
 use function array_flip;
 use function array_intersect_key;
@@ -75,13 +75,13 @@ class SubscriptionCollection
 
     private function makeActionIdWithStatus(string $actionId, ResultStatus $status): string
     {
-        return $actionId . IdFormatter::DELIMITER . $status->value;
+        return $actionId . ActionIdFormatter::DELIMITER . $status->value;
     }
 
     private function makeSubscriptionId(Subscription $subscription): string
     {
         return $subscription->subjectId
-            . IdFormatter::DELIMITER . $subscription->status->value
+            . ActionIdFormatter::DELIMITER . $subscription->status->value
             . '@' . $subscription->actionId;
     }
 
