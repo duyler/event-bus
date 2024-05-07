@@ -23,6 +23,31 @@ use stdClass;
 class MainSuspendTest extends TestCase
 {
     #[Test]
+    public function suspend_without_handlers()
+    {
+        $busBuilder = new BusBuilder(new BusConfig());
+
+        $busBuilder->doAction(
+            new Action(
+                id: 'TestSuspend',
+                handler: function () {
+                    $data = new stdClass();
+                    $data->hello = Fiber::suspend(fn() => 'Hello') . ', World!';
+
+                    return $data;
+                },
+                contract: stdClass::class,
+                externalAccess: true,
+            ),
+        );
+
+        $bus = $busBuilder->build();
+        $bus->run();
+
+        $this->assertEquals('Hello, World!', $bus->getResult('TestSuspend')->data->hello);
+    }
+
+    #[Test]
     public function suspend_with_callback()
     {
         $busBuilder = new BusBuilder(new BusConfig());

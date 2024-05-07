@@ -99,12 +99,6 @@ readonly class StateMain implements StateMainInterface
             return;
         }
 
-        if (count($handlers) === 0) {
-            $result = is_callable($value) ? $value() : $value;
-            $this->context->addResumeValue($task->action->id, $result);
-            return;
-        }
-
         $stateService = new StateMainSuspendService(
             $this->resultService,
             $task,
@@ -120,9 +114,12 @@ readonly class StateMain implements StateMainInterface
             if ($handler->isResumable($suspend, $context)) {
                 $resumeValue = $handler->handle($stateService, $context);
                 $this->context->addResumeValue($task->action->id, $resumeValue);
-                break;
+                return;
             }
         }
+
+        $result = is_callable($value) ? $value() : $value;
+        $this->context->addResumeValue($task->action->id, $result);
     }
 
     #[Override]
