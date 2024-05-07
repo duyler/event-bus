@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Duyler\ActionBus\State\Service\Trait;
 
 use Duyler\ActionBus\Dto\Action;
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use Duyler\ActionBus\Service\ActionService;
 use UnitEnum;
 
@@ -28,17 +28,17 @@ trait ActionServiceTrait
 
     public function doExistsAction(string|UnitEnum $actionId): void
     {
-        $this->actionService->doExistsAction(IdFormatter::format($actionId));
+        $this->actionService->doExistsAction(ActionIdFormatter::toString($actionId));
     }
 
     public function actionIsExists(string|UnitEnum $actionId): bool
     {
-        return $this->actionService->actionIsExists(IdFormatter::format($actionId));
+        return $this->actionService->actionIsExists(ActionIdFormatter::toString($actionId));
     }
 
     public function removeAction(string|UnitEnum $actionId): void
     {
-        $this->actionService->removeAction(IdFormatter::format($actionId));
+        $this->actionService->removeAction(ActionIdFormatter::toString($actionId));
     }
 
     /** @return array<string, Action> */
@@ -49,7 +49,7 @@ trait ActionServiceTrait
 
     public function getById(string|UnitEnum $actionId): Action
     {
-        return $this->actionService->getById(IdFormatter::format($actionId));
+        return $this->actionService->getById(ActionIdFormatter::toString($actionId));
     }
 
     /** @param array<string, string> $bind */

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Dto;
 
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use UnitEnum;
 
 readonly class Trigger
@@ -16,6 +16,6 @@ readonly class Trigger
         public ?object $data = null,
         public ?string $contract = null,
     ) {
-        $this->id = IdFormatter::format($id);
+        $this->id = ActionIdFormatter::toString($id);
     }
 }

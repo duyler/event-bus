@@ -8,7 +8,7 @@ use Duyler\ActionBus\Bus\Task;
 use Duyler\ActionBus\Collection\ActionContainerCollection;
 use Duyler\ActionBus\Contract\State\StateHandlerObservedInterface;
 use Duyler\ActionBus\Contract\StateMainInterface;
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use Duyler\ActionBus\Service\ActionService;
 use Duyler\ActionBus\Service\LogService;
 use Duyler\ActionBus\Service\QueueService;
@@ -92,11 +92,16 @@ readonly class StateMain implements StateMainInterface
     {
         $handlers = $this->stateHandlerStorage->getMainSuspend();
 
-        if (empty($handlers)) {
-            $value = $task->getValue();
+        $value = $task->getValue();
+
+        if (null === $value) {
+            $this->context->addResumeValue($task->action->id, $value);
+            return;
+        }
+
+        if (count($handlers) === 0) {
             $result = is_callable($value) ? $value() : $value;
             $this->context->addResumeValue($task->action->id, $result);
-
             return;
         }
 
@@ -109,15 +114,13 @@ readonly class StateMain implements StateMainInterface
             $this->subscriptionService,
         );
 
-        // @todo: refactor
-        $resumeValue = null;
         foreach ($handlers as $handler) {
             $context = $this->contextScope->getContext($handler::class);
-            if ($handler->isResumable($stateService->getValue()) && null === $resumeValue) {
+            $suspend = new Suspend(ActionIdFormatter::reverse($task->action->id), $stateService->getValue());
+            if ($handler->isResumable($suspend, $context)) {
                 $resumeValue = $handler->handle($stateService, $context);
                 $this->context->addResumeValue($task->action->id, $resumeValue);
-            } else {
-                $handler->handle($stateService, $context);
+                break;
             }
         }
     }
@@ -186,7 +189,7 @@ readonly class StateMain implements StateMainInterface
         $observed = $handler->observed($context);
         /** @var string|UnitEnum $actionId */
         foreach ($observed as $actionId) {
-            $observed[] = IdFormatter::format($actionId);
+            $observed[] = ActionIdFormatter::toString($actionId);
         }
         return count($observed) === 0 || in_array($task->action->id, $observed);
     }

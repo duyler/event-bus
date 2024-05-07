@@ -8,7 +8,7 @@ use Duyler\ActionBus\Collection\ActionContainerCollection;
 use Duyler\ActionBus\Contract\State\StateHandlerObservedInterface;
 use Duyler\ActionBus\Contract\StateActionInterface;
 use Duyler\ActionBus\Dto\Action;
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use Duyler\ActionBus\State\Service\StateActionAfterService;
 use Duyler\ActionBus\State\Service\StateActionBeforeService;
 use Duyler\ActionBus\State\Service\StateActionThrowingService;
@@ -80,7 +80,7 @@ class StateAction implements StateActionInterface
         $observed = $handler->observed($context);
         /** @var string|UnitEnum $actionId */
         foreach ($observed as $actionId) {
-            $observed[] = IdFormatter::format($actionId);
+            $observed[] = ActionIdFormatter::toString($actionId);
         }
         return count($observed) === 0 || in_array($action->id, $observed);
     }

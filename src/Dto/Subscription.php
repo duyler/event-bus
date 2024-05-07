@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Duyler\ActionBus\Dto;
 
 use Duyler\ActionBus\Enum\ResultStatus;
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use UnitEnum;
 
 readonly class Subscription
@@ -18,7 +18,7 @@ readonly class Subscription
         string|UnitEnum $actionId,
         public ResultStatus $status = ResultStatus::Success,
     ) {
-        $this->subjectId = IdFormatter::format($subjectId);
-        $this->actionId = IdFormatter::format($actionId);
+        $this->subjectId = ActionIdFormatter::toString($subjectId);
+        $this->actionId = ActionIdFormatter::toString($actionId);
     }
 }

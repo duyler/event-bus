@@ -7,7 +7,7 @@ namespace Duyler\ActionBus\Test\Unit\Collection;
 use Duyler\ActionBus\Collection\SubscriptionCollection;
 use Duyler\ActionBus\Dto\Subscription;
 use Duyler\ActionBus\Enum\ResultStatus;
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -28,7 +28,7 @@ class SubscriptionCollectionTest extends TestCase
 
         $this->assertTrue($this->subscriptionCollection->isExists($subscription));
         $this->assertSame(
-            ['test' . IdFormatter::DELIMITER . 'Success@test' => $subscription],
+            ['test' . ActionIdFormatter::DELIMITER . 'Success@test' => $subscription],
             $this->subscriptionCollection->getSubscriptions('test', ResultStatus::Success),
         );
     }

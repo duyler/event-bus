@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Duyler\ActionBus\State\Service;
 
 use Duyler\ActionBus\Dto\Action;
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use Duyler\ActionBus\Service\ActionService;
 use Duyler\ActionBus\Service\SubscriptionService;
 use Duyler\ActionBus\Service\TriggerService;
@@ -28,6 +28,6 @@ class StateMainBeginService
 
     public function getById(string|UnitEnum $actionId): Action
     {
-        return $this->actionService->getById(IdFormatter::format($actionId));
+        return $this->actionService->getById(ActionIdFormatter::toString($actionId));
     }
 }
