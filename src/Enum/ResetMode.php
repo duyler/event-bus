@@ -6,6 +6,6 @@ namespace Duyler\ActionBus\Enum;
 
 enum ResetMode
 {
-    case Soft;
+    case Full;
     case Selective;
 }

@@ -26,12 +26,12 @@ class ActionContainer extends Container
         parent::__construct($containerConfig);
     }
 
-    public function reset(): void
+    public function runReset(): void
     {
-        if ($this->config->resetMode === ResetMode::Soft) {
-            $this->softReset();
+        if ($this->config->resetMode === ResetMode::Full) {
+            $this->reset();
         } else {
-            $this->selectiveReset();
+            $this->finalize();
         }
     }
 }

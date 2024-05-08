@@ -16,7 +16,7 @@ class ResetTest extends TestCase
     #[Test]
     public function run_with_soft_reset(): void
     {
-        $busBuilder = new BusBuilder(new BusConfig(resetMode: ResetMode::Soft));
+        $busBuilder = new BusBuilder(new BusConfig(resetMode: ResetMode::Full));
 
         $busBuilder->doAction(
             new Action(

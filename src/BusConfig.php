@@ -65,13 +65,13 @@ class BusConfig
 
         /** @var Definition[] */
         public readonly array $definitions = [],
-        public readonly bool $saveStateActionContainer = false,
+        public readonly bool $saveStateActionContainer = true,
         public readonly bool $allowSkipUnresolvedActions = true,
         public readonly bool $autoreset = false,
         public readonly bool $allowCircularCall = false,
         public readonly int $logMaxSize = 50,
         public readonly Mode $mode = Mode::Queue,
-        public readonly ResetMode $resetMode = ResetMode::Soft,
+        public readonly ResetMode $resetMode = ResetMode::Selective,
     ) {
         $this->bind = $this->getBind() + $bind;
     }

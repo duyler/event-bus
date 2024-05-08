@@ -22,7 +22,7 @@ class Termination
     public function run(): void
     {
         $this->logDto = $this->log->getLog();
-        $this->container->selectiveReset();
+        $this->container->finalize();
     }
 
     public function getLog(): LogDto
