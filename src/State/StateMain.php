@@ -92,16 +92,37 @@ readonly class StateMain implements StateMainInterface
     {
         $handlers = $this->stateHandlerStorage->getMainSuspend();
 
-        $value = $task->getValue();
-
-        if (null === $value) {
-            $this->context->addResumeValue($task->action->id, $value);
-            return;
-        }
+        $suspend = new Suspend(ActionIdFormatter::reverse($task->action->id), $task->getValue());
 
         $stateService = new StateMainSuspendService(
+            $suspend,
             $this->resultService,
-            $task,
+            $this->actionContainerCollection->get($task->action->id),
+            $this->actionService,
+            $this->triggerService,
+            $this->subscriptionService,
+        );
+
+        $this->context->addSuspend($task->action->id, $suspend);
+
+        foreach ($handlers as $handler) {
+            $context = $this->contextScope->getContext($handler::class);
+            if ($handler->observed($suspend, $context)) {
+                $handler->handle($stateService, $context);
+            }
+        }
+    }
+
+    #[Override]
+    public function resume(Task $task): void
+    {
+        $handlers = $this->stateHandlerStorage->getMainResume();
+
+        $suspend = $this->context->getSuspend($task->action->id);
+
+        $stateService = new StateMainResumeService(
+            $suspend,
+            $this->resultService,
             $this->actionContainerCollection->get($task->action->id),
             $this->actionService,
             $this->triggerService,
@@ -110,35 +131,17 @@ readonly class StateMain implements StateMainInterface
 
         foreach ($handlers as $handler) {
             $context = $this->contextScope->getContext($handler::class);
-            $suspend = new Suspend(ActionIdFormatter::reverse($task->action->id), $stateService->getValue());
-            if ($handler->isResumable($suspend, $context)) {
-                $resumeValue = $handler->handle($stateService, $context);
-                $this->context->addResumeValue($task->action->id, $resumeValue);
-                return;
+            if ($handler->observed($suspend, $context)) {
+                $handler->handle($stateService, $context);
             }
         }
 
-        $result = is_callable($value) ? $value() : $value;
-        $this->context->addResumeValue($task->action->id, $result);
-    }
-
-    #[Override]
-    public function resume(Task $task): void
-    {
-        $handlers = $this->stateHandlerStorage->getMainResume();
-
-        $resumeValue = $this->context->getResumeValue($task->action->id);
-
-        $stateService = new StateMainResumeService(
-            $task,
-            $resumeValue,
-            $this->resultService,
-        );
-
-        foreach ($handlers as $handler) {
-            $handler->handle($stateService, $this->contextScope->getContext($handler::class));
+        if ($suspend->resumeValueIsExists()) {
+            $task->resume($suspend->getResumeValue());
+            return;
         }
 
+        $resumeValue = is_callable($suspend->value) ? ($suspend->value)() : $suspend->value;
         $task->resume($resumeValue);
     }
 

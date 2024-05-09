@@ -6,16 +6,16 @@ namespace Duyler\ActionBus\State;
 
 class StateSuspendContext
 {
-    /** @var array<string, mixed[]> */
-    private array $resumeValues = [];
+    /** @var array<string, Suspend[]> */
+    private array $suspend = [];
 
-    public function addResumeValue(string $actionId, mixed $value): void
+    public function addSuspend(string $actionId, Suspend $suspend): void
     {
-        $this->resumeValues[$actionId][] = $value;
+        $this->suspend[$actionId][] = $suspend;
     }
 
-    public function getResumeValue(string $actionId): mixed
+    public function getSuspend(string $actionId): Suspend
     {
-        return array_shift($this->resumeValues[$actionId]);
+        return array_shift($this->suspend[$actionId]);
     }
 }
