@@ -6,10 +6,27 @@ namespace Duyler\ActionBus\State;
 
 use UnitEnum;
 
-readonly class Suspend
+class Suspend
 {
+    private mixed $resumeValue = null;
+
     public function __construct(
-        public string|UnitEnum $actionId,
-        public mixed $value,
+        public readonly string|UnitEnum $actionId,
+        public readonly mixed $value,
     ) {}
+
+    public function setResumeValue(mixed $value): void
+    {
+        $this->resumeValue = $value;
+    }
+
+    public function getResumeValue(): mixed
+    {
+        return $this->resumeValue;
+    }
+
+    public function resumeValueIsExists(): bool
+    {
+        return null !== $this->resumeValue;
+    }
 }

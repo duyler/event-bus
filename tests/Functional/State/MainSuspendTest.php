@@ -106,10 +106,10 @@ class MainSuspendTest extends TestCase
 class MainSuspendStateHandler implements MainSuspendStateHandlerInterface
 {
     #[Override]
-    public function handle(StateMainSuspendService $stateService, StateContext $context): mixed
+    public function handle(StateMainSuspendService $stateService, StateContext $context): void
     {
         if ($stateService->getActionId() === 'TestSuspend1') {
-            $stateService->getContainer();
+            $stateService->getActionContainer();
         }
 
         /** @var callable $value */
@@ -117,11 +117,11 @@ class MainSuspendStateHandler implements MainSuspendStateHandlerInterface
 
         $result = $value();
 
-        return fn() => $result . ', World!';
+        $stateService->setResumeValue(fn() => $result . ', World!');
     }
 
     #[Override]
-    public function isResumable(Suspend $suspend, StateContext $context): bool
+    public function observed(Suspend $suspend, StateContext $context): bool
     {
         return true;
     }
@@ -130,12 +130,18 @@ class MainSuspendStateHandler implements MainSuspendStateHandlerInterface
 class MainResumeStateHandler implements MainResumeStateHandlerInterface
 {
     #[Override]
-    public function handle(StateMainResumeService $stateService, StateContext $context): mixed
+    public function handle(StateMainResumeService $stateService, StateContext $context): void
     {
         $stateService->getActionId();
         if ($stateService->resultIsExists('TestSuspend2')) {
             $stateService->getResult('TestSuspend2');
         }
-        return $stateService->getResumeValue();
+        $stateService->resumeValueIsExists();
+        $stateService->getActionContainer();
+    }
+
+    public function observed(Suspend $suspend, StateContext $context): bool
+    {
+        return true;
     }
 }

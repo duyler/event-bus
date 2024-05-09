@@ -10,7 +10,7 @@ use Duyler\ActionBus\State\Suspend;
 
 interface MainSuspendStateHandlerInterface extends StateHandlerInterface
 {
-    public function handle(StateMainSuspendService $stateService, StateContext $context): mixed;
+    public function handle(StateMainSuspendService $stateService, StateContext $context): void;
 
-    public function isResumable(Suspend $suspend, StateContext $context): bool;
+    public function observed(Suspend $suspend, StateContext $context): bool;
 }
