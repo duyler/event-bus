@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Service;
 
-use Duyler\ActionBus\Collection\CompleteActionCollection;
-use Duyler\ActionBus\Collection\TriggerRelationCollection;
+use Duyler\ActionBus\Storage\CompleteActionStorage;
+use Duyler\ActionBus\Storage\TriggerRelationStorage;
 use Duyler\ActionBus\Dto\Result;
 use Duyler\ActionBus\Enum\ResultStatus;
 use Duyler\ActionBus\Exception\ActionNotAllowExternalAccessException;
@@ -14,27 +14,27 @@ use Duyler\ActionBus\Exception\ResultNotExistsException;
 class ResultService
 {
     public function __construct(
-        private CompleteActionCollection $completeActionCollection,
-        private TriggerRelationCollection $triggerRelationCollection,
+        private CompleteActionStorage $completeActionStorage,
+        private TriggerRelationStorage $triggerRelationStorage,
     ) {}
 
     public function getResult(string $actionId): Result
     {
-        if ($this->completeActionCollection->isExists($actionId)) {
-            $completeAction = $this->completeActionCollection->get($actionId);
+        if ($this->completeActionStorage->isExists($actionId)) {
+            $completeAction = $this->completeActionStorage->get($actionId);
 
             if (false === $completeAction->action->externalAccess) {
                 throw new ActionNotAllowExternalAccessException($actionId);
             }
 
-            return $this->completeActionCollection->getResult($actionId);
+            return $this->completeActionStorage->getResult($actionId);
         }
 
-        if (false === $this->triggerRelationCollection->isExists($actionId)) {
+        if (false === $this->triggerRelationStorage->isExists($actionId)) {
             throw new ResultNotExistsException($actionId);
         }
 
-        $triggerRelation = $this->triggerRelationCollection->getLast($actionId);
+        $triggerRelation = $this->triggerRelationStorage->getLast($actionId);
 
         return new Result(
             ResultStatus::Success,
@@ -44,7 +44,7 @@ class ResultService
 
     public function resultIsExists(string $actionId): bool
     {
-        return $this->completeActionCollection->isExists($actionId)
-            || $this->triggerRelationCollection->isExists($actionId);
+        return $this->completeActionStorage->isExists($actionId)
+            || $this->triggerRelationStorage->isExists($actionId);
     }
 }

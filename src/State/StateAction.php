@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\State;
 
-use Duyler\ActionBus\Collection\ActionContainerCollection;
+use Duyler\ActionBus\Storage\ActionContainerStorage;
 use Duyler\ActionBus\Contract\State\StateHandlerObservedInterface;
 use Duyler\ActionBus\Contract\StateActionInterface;
 use Duyler\ActionBus\Dto\Action;
@@ -20,7 +20,7 @@ class StateAction implements StateActionInterface
 {
     public function __construct(
         private StateHandlerStorage $stateHandlerStorage,
-        private ActionContainerCollection $actionContainerCollection,
+        private ActionContainerStorage $actionContainerStorage,
         private StateContextScope $contextScope,
     ) {}
 
@@ -28,7 +28,7 @@ class StateAction implements StateActionInterface
     public function before(Action $action, object|null $argument): void
     {
         $stateService = new StateActionBeforeService(
-            $this->actionContainerCollection->get($action->id),
+            $this->actionContainerStorage->get($action->id),
             $action,
             $argument,
         );
@@ -45,7 +45,7 @@ class StateAction implements StateActionInterface
     public function after(Action $action, mixed $resultData): void
     {
         $stateService = new StateActionAfterService(
-            $this->actionContainerCollection->get($action->id),
+            $this->actionContainerStorage->get($action->id),
             $action,
             $resultData,
         );
@@ -62,7 +62,7 @@ class StateAction implements StateActionInterface
     public function throwing(Action $action, Throwable $exception): void
     {
         $stateService = new StateActionThrowingService(
-            $this->actionContainerCollection->get($action->id),
+            $this->actionContainerStorage->get($action->id),
             $exception,
             $action,
         );

@@ -6,8 +6,8 @@ namespace Duyler\ActionBus\Bus;
 
 use Duyler\DependencyInjection\Attribute\Finalize;
 use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Collection\ActionCollection;
-use Duyler\ActionBus\Collection\CompleteActionCollection;
+use Duyler\ActionBus\Storage\ActionStorage;
+use Duyler\ActionBus\Storage\CompleteActionStorage;
 use Duyler\ActionBus\Dto\Action;
 use Duyler\ActionBus\Enum\ResultStatus;
 use Duyler\ActionBus\Exception\UnableToContinueWithFailActionException;
@@ -31,8 +31,8 @@ final class Bus
 
     public function __construct(
         private readonly TaskQueue $taskQueue,
-        private readonly ActionCollection $actionCollection,
-        private readonly CompleteActionCollection $completeActionCollection,
+        private readonly ActionStorage $actionStorage,
+        private readonly CompleteActionStorage $completeActionStorage,
         private readonly BusConfig $config,
     ) {}
 
@@ -42,11 +42,11 @@ final class Bus
             return;
         }
 
-        $requiredIterator = new ActionRequiredIterator($action->required, $this->actionCollection->getAll());
+        $requiredIterator = new ActionRequiredIterator($action->required, $this->actionStorage->getAll());
 
         /** @var string $subject */
         foreach ($requiredIterator as $subject) {
-            $requiredAction = $this->actionCollection->get($subject);
+            $requiredAction = $this->actionStorage->get($subject);
 
             if ($this->isRepeat($requiredAction->id) && false === $requiredAction->repeatable) {
                 continue;
@@ -70,7 +70,7 @@ final class Bus
             }
         }
 
-        return $this->taskQueue->inQueue($actionId) || $this->completeActionCollection->isExists($actionId);
+        return $this->taskQueue->inQueue($actionId) || $this->completeActionStorage->isExists($actionId);
     }
 
     private function createTask(Action $action): Task
@@ -109,7 +109,7 @@ final class Bus
             return true;
         }
 
-        $completeActions = $this->completeActionCollection->getAllByArray($task->action->required->getArrayCopy());
+        $completeActions = $this->completeActionStorage->getAllByArray($task->action->required->getArrayCopy());
 
         if (count($completeActions) < $task->action->required->count()) {
             return false;
@@ -159,10 +159,10 @@ final class Bus
     private function tryReplacedFailAction(string $failActionId): bool
     {
         foreach ($this->alternates[$failActionId] as $actionId) {
-            $alternate = $this->actionCollection->get($actionId);
+            $alternate = $this->actionStorage->get($actionId);
 
-            if ($this->completeActionCollection->isExists($alternate->id)) {
-                $completeAction = $this->completeActionCollection->get($alternate->id);
+            if ($this->completeActionStorage->isExists($alternate->id)) {
+                $completeAction = $this->completeActionStorage->get($alternate->id);
                 if (ResultStatus::Success === $completeAction->result->status) {
                     return true;
                 }

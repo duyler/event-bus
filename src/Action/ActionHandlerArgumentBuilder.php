@@ -8,9 +8,9 @@ use Closure;
 use Duyler\ActionBus\Action\Exception\InvalidArgumentFactoryException;
 use Duyler\ActionBus\Bus\ActionContainer;
 use Duyler\ActionBus\Bus\CompleteAction;
-use Duyler\ActionBus\Collection\ActionArgumentCollection;
-use Duyler\ActionBus\Collection\CompleteActionCollection;
-use Duyler\ActionBus\Collection\TriggerRelationCollection;
+use Duyler\ActionBus\Storage\ActionArgumentStorage;
+use Duyler\ActionBus\Storage\CompleteActionStorage;
+use Duyler\ActionBus\Storage\TriggerRelationStorage;
 use Duyler\ActionBus\Dto\Action;
 use Duyler\ActionBus\Enum\ResultStatus;
 use InvalidArgumentException;
@@ -24,10 +24,10 @@ use ReflectionNamedType;
 class ActionHandlerArgumentBuilder
 {
     public function __construct(
-        private CompleteActionCollection $completeActionCollection,
+        private CompleteActionStorage $completeActionStorage,
         private ActionSubstitution $actionSubstitution,
-        private TriggerRelationCollection $triggerRelationCollection,
-        private ActionArgumentCollection $actionArgumentCollection,
+        private TriggerRelationStorage $triggerRelationStorage,
+        private ActionArgumentStorage $actionArgumentStorage,
     ) {}
 
     public function build(Action $action, ActionContainer $container): object|null
@@ -39,14 +39,14 @@ class ActionHandlerArgumentBuilder
         /** @var array<string, object> $results */
         $results = [];
 
-        if ($this->triggerRelationCollection->has($action->id)) {
-            $trigger = $this->triggerRelationCollection->shift($action->id)->trigger;
+        if ($this->triggerRelationStorage->has($action->id)) {
+            $trigger = $this->triggerRelationStorage->shift($action->id)->trigger;
             if (null !== $trigger->data && null !== $trigger->contract) {
                 $results[$trigger->contract] = $trigger->data;
             }
         }
 
-        $completeActions = $this->completeActionCollection->getAllByArray($action->required->getArrayCopy());
+        $completeActions = $this->completeActionStorage->getAllByArray($action->required->getArrayCopy());
 
         foreach ($completeActions as $completeAction) {
             $results = $this->prepareRequiredResults($completeAction) + $results;
@@ -63,7 +63,7 @@ class ActionHandlerArgumentBuilder
         if (null === $action->argumentFactory) {
             foreach ($results as $definition) {
                 if ($definition instanceof $action->argument) {
-                    $this->actionArgumentCollection->set($action->id, $definition);
+                    $this->actionArgumentStorage->set($action->id, $definition);
                     return $definition;
                 }
             }
@@ -86,7 +86,7 @@ class ActionHandlerArgumentBuilder
 
         /** @var object $argument */
         $argument = $factory(...$factoryArguments);
-        $this->actionArgumentCollection->set($action->id, $argument);
+        $this->actionArgumentStorage->set($action->id, $argument);
         return $argument;
     }
 
@@ -96,7 +96,7 @@ class ActionHandlerArgumentBuilder
         $results = [];
 
         if (ResultStatus::Fail === $completeAction->result->status && null !== $completeAction->action->contract) {
-            $alternatesActions = $this->completeActionCollection->getAllByArray($completeAction->action->alternates);
+            $alternatesActions = $this->completeActionStorage->getAllByArray($completeAction->action->alternates);
 
             foreach ($alternatesActions as $alternateAction) {
                 if (ResultStatus::Success === $alternateAction->result->status) {

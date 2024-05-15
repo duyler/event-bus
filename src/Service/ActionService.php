@@ -7,8 +7,8 @@ namespace Duyler\ActionBus\Service;
 use Duyler\ActionBus\Action\ActionContainerProvider;
 use Duyler\ActionBus\Bus\ActionRequiredIterator;
 use Duyler\ActionBus\Bus\Bus;
-use Duyler\ActionBus\Collection\ActionCollection;
-use Duyler\ActionBus\Collection\SubscriptionCollection;
+use Duyler\ActionBus\Storage\ActionStorage;
+use Duyler\ActionBus\Storage\SubscriptionStorage;
 use Duyler\ActionBus\Contract\ActionSubstitutionInterface;
 use Duyler\ActionBus\Dto\Action;
 use Duyler\ActionBus\Dto\ActionHandlerSubstitution;
@@ -21,37 +21,37 @@ use Duyler\ActionBus\Exception\NotAllowedSealedActionException;
 readonly class ActionService
 {
     public function __construct(
-        private ActionCollection $actionCollection,
+        private ActionStorage $actionStorage,
         private ActionContainerProvider $actionContainerProvider,
         private ActionSubstitutionInterface $actionSubstitution,
-        private SubscriptionCollection $subscriptionCollection,
+        private SubscriptionStorage $subscriptionStorage,
         private Bus $bus,
     ) {}
 
     public function addAction(Action $action): void
     {
-        if ($this->actionCollection->isExists($action->id)) {
+        if ($this->actionStorage->isExists($action->id)) {
             throw new ActionAlreadyDefinedException($action->id);
         }
 
         /** @var string $subject */
         foreach ($action->required as $subject) {
-            if (false === $this->actionCollection->isExists($subject)) {
+            if (false === $this->actionStorage->isExists($subject)) {
                 $this->throwActionNotDefined($subject);
             }
 
-            $requiredAction = $this->actionCollection->get($subject);
+            $requiredAction = $this->actionStorage->get($subject);
 
             $this->checkRequiredAction($action->id, $requiredAction);
         }
 
         foreach ($action->alternates as $actionId) {
-            if (false === $this->actionCollection->isExists($actionId)) {
+            if (false === $this->actionStorage->isExists($actionId)) {
                 $this->throwActionNotDefined($actionId);
             }
         }
 
-        $this->actionCollection->save($action);
+        $this->actionStorage->save($action);
     }
 
     public function doAction(Action $action): void
@@ -63,33 +63,33 @@ readonly class ActionService
 
     public function doExistsAction(string $actionId): void
     {
-        if (false === $this->actionCollection->isExists($actionId)) {
+        if (false === $this->actionStorage->isExists($actionId)) {
             $this->throwActionNotDefined($actionId);
         }
 
-        $action = $this->actionCollection->get($actionId);
+        $action = $this->actionStorage->get($actionId);
 
         $this->bus->doAction($action);
     }
 
     public function getById(string $actionId): Action
     {
-        if (false === $this->actionCollection->isExists($actionId)) {
+        if (false === $this->actionStorage->isExists($actionId)) {
             $this->throwActionNotDefined($actionId);
         }
 
-        return $this->actionCollection->get($actionId);
+        return $this->actionStorage->get($actionId);
     }
 
     /** @return array<string, Action> */
     public function getByContract(string $contract): array
     {
-        return $this->actionCollection->getByContract($contract);
+        return $this->actionStorage->getByContract($contract);
     }
 
     public function actionIsExists(string $actionId): bool
     {
-        return $this->actionCollection->isExists($actionId);
+        return $this->actionStorage->isExists($actionId);
     }
 
     /** @param array<string, Action> $actions */
@@ -115,7 +115,7 @@ readonly class ActionService
                 }
             }
 
-            $this->actionCollection->save($action);
+            $this->actionStorage->save($action);
         }
     }
 
@@ -153,7 +153,7 @@ readonly class ActionService
 
     public function removeAction(string $actionId): void
     {
-        $actions = $this->actionCollection->getAll();
+        $actions = $this->actionStorage->getAll();
 
         foreach ($actions as $action) {
             if (in_array($actionId, $action->alternates) || in_array($actionId, $action->required->getArrayCopy())) {
@@ -161,7 +161,7 @@ readonly class ActionService
             }
         }
 
-        $this->actionCollection->remove($actionId);
-        $this->subscriptionCollection->removeByActionId($actionId);
+        $this->actionStorage->remove($actionId);
+        $this->subscriptionStorage->removeByActionId($actionId);
     }
 }

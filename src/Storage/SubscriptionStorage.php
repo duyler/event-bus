@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Collection;
+namespace Duyler\ActionBus\Storage;
 
 use Duyler\ActionBus\Dto\Subscription;
 use Duyler\ActionBus\Enum\ResultStatus;
@@ -15,7 +15,7 @@ use function array_keys;
 use function preg_grep;
 use function preg_quote;
 
-class SubscriptionCollection
+class SubscriptionStorage
 {
     /**
      * @var array<string, Subscription>

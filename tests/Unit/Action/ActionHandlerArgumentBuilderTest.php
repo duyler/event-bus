@@ -7,9 +7,9 @@ namespace Duyler\ActionBus\Test\Unit\Action;
 use Duyler\ActionBus\Action\ActionHandlerArgumentBuilder;
 use Duyler\ActionBus\Action\ActionSubstitution;
 use Duyler\ActionBus\Bus\ActionContainer;
-use Duyler\ActionBus\Collection\ActionArgumentCollection;
-use Duyler\ActionBus\Collection\CompleteActionCollection;
-use Duyler\ActionBus\Collection\TriggerRelationCollection;
+use Duyler\ActionBus\Storage\ActionArgumentStorage;
+use Duyler\ActionBus\Storage\CompleteActionStorage;
+use Duyler\ActionBus\Storage\TriggerRelationStorage;
 use Duyler\ActionBus\Dto\Action;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Exception;
@@ -17,12 +17,12 @@ use PHPUnit\Framework\TestCase;
 
 class ActionHandlerArgumentBuilderTest extends TestCase
 {
-    private CompleteActionCollection $eventCollection;
+    private CompleteActionStorage $eventStorage;
     private ActionSubstitution $actionSubstitution;
-    private ActionArgumentCollection $actionArgumentCollection;
+    private ActionArgumentStorage $actionArgumentStorage;
     private ActionHandlerArgumentBuilder $argumentBuilder;
     private ActionContainer $actionContainer;
-    private TriggerRelationCollection $triggerRelationCollection;
+    private TriggerRelationStorage $triggerRelationStorage;
 
     #[Test]
     public function build_with_empty_action_required(): void
@@ -36,16 +36,16 @@ class ActionHandlerArgumentBuilderTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->eventCollection = $this->createMock(CompleteActionCollection::class);
+        $this->eventStorage = $this->createMock(CompleteActionStorage::class);
         $this->actionSubstitution = $this->createMock(ActionSubstitution::class);
-        $this->actionArgumentCollection = $this->createMock(ActionArgumentCollection::class);
+        $this->actionArgumentStorage = $this->createMock(ActionArgumentStorage::class);
         $this->actionContainer = $this->createMock(ActionContainer::class);
-        $this->triggerRelationCollection = $this->createMock(TriggerRelationCollection::class);
+        $this->triggerRelationStorage = $this->createMock(TriggerRelationStorage::class);
         $this->argumentBuilder = new ActionHandlerArgumentBuilder(
-            completeActionCollection: $this->eventCollection,
+            completeActionStorage: $this->eventStorage,
             actionSubstitution: $this->actionSubstitution,
-            triggerRelationCollection: $this->triggerRelationCollection,
-            actionArgumentCollection: $this->actionArgumentCollection,
+            triggerRelationStorage: $this->triggerRelationStorage,
+            actionArgumentStorage: $this->actionArgumentStorage,
         );
     }
 }

@@ -15,7 +15,7 @@ use Override;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use UnitEnum;
 
-class BusFacade implements BusInterface
+class Bus implements BusInterface
 {
     public function __construct(
         private Runner $runner,

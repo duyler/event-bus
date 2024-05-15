@@ -6,7 +6,7 @@ namespace Duyler\ActionBus\Action;
 
 use Duyler\ActionBus\Bus\ActionContainer;
 use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Collection\ActionContainerCollection;
+use Duyler\ActionBus\Storage\ActionContainerStorage;
 use Duyler\ActionBus\Dto\Action;
 
 class ActionContainerProvider
@@ -18,14 +18,14 @@ class ActionContainerProvider
 
     public function __construct(
         private readonly BusConfig $config,
-        private readonly ActionContainerCollection $containerCollection,
+        private readonly ActionContainerStorage $containerStorage,
     ) {}
 
     public function get(Action $action): ActionContainer
     {
-        if ($this->containerCollection->isExists($action->id)) {
+        if ($this->containerStorage->isExists($action->id)) {
             if ($this->config->saveStateActionContainer) {
-                return $this->containerCollection->get($action->id);
+                return $this->containerStorage->get($action->id);
             }
         }
 
@@ -48,7 +48,7 @@ class ActionContainerProvider
 
         $container->bind($this->bind);
 
-        $this->containerCollection->save($container);
+        $this->containerStorage->save($container);
 
         return $container;
     }

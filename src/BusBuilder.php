@@ -103,7 +103,7 @@ class BusBuilder
             }
         }
 
-        return $container->get(BusFacade::class);
+        return $container->get(Bus::class);
     }
 
     public function addAction(Action $action): static

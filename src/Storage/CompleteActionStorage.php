@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Collection;
+namespace Duyler\ActionBus\Storage;
 
 use Duyler\DependencyInjection\Attribute\Finalize;
 use Duyler\ActionBus\Bus\CompleteAction;
 use Duyler\ActionBus\Dto\Result;
 
 #[Finalize(method: 'reset')]
-class CompleteActionCollection
+class CompleteActionStorage
 {
     /**
      * @var array<string, CompleteAction>

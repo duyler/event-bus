@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Test\Unit\Collection;
+namespace Duyler\ActionBus\Test\Unit\Storage;
 
-use Duyler\ActionBus\Collection\ActionCollection;
+use Duyler\ActionBus\Storage\ActionStorage;
 use Duyler\ActionBus\Dto\Action;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
-class ActionCollectionTest extends TestCase
+class ActionStorageTest extends TestCase
 {
-    private ActionCollection $actionCollection;
+    private ActionStorage $actionStorage;
 
     #[Test]
     public function save_action(): void
@@ -21,13 +21,13 @@ class ActionCollectionTest extends TestCase
             handler: 'test',
             contract: 'test',
         );
-        $this->actionCollection->save($action);
+        $this->actionStorage->save($action);
 
-        $this->assertSame($action, $this->actionCollection->get($action->id));
+        $this->assertSame($action, $this->actionStorage->get($action->id));
     }
 
     protected function setUp(): void
     {
-        $this->actionCollection = new ActionCollection();
+        $this->actionStorage = new ActionStorage();
     }
 }

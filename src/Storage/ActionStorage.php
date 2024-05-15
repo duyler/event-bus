@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Collection;
+namespace Duyler\ActionBus\Storage;
 
 use Duyler\ActionBus\Dto\Action;
 
 use function array_key_exists;
 
-class ActionCollection
+class ActionStorage
 {
     /**
      * @var array<string, Action>
