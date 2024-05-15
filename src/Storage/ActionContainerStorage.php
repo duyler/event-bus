@@ -1,12 +1,12 @@
 <?php
 
-namespace Duyler\ActionBus\Collection;
+namespace Duyler\ActionBus\Storage;
 
 use Duyler\DependencyInjection\Attribute\Finalize;
 use Duyler\ActionBus\Bus\ActionContainer;
 
 #[Finalize(method: 'reset')]
-class ActionContainerCollection
+class ActionContainerStorage
 {
     /**
      * @var array<string, ActionContainer>

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Duyler\ActionBus\State;
 
 use Duyler\ActionBus\Bus\Task;
-use Duyler\ActionBus\Collection\ActionContainerCollection;
+use Duyler\ActionBus\Storage\ActionContainerStorage;
 use Duyler\ActionBus\Contract\State\StateHandlerObservedInterface;
 use Duyler\ActionBus\Contract\StateMainInterface;
 use Duyler\ActionBus\Formatter\ActionIdFormatter;
@@ -30,7 +30,7 @@ readonly class StateMain implements StateMainInterface
 {
     public function __construct(
         private StateHandlerStorage $stateHandlerStorage,
-        private ActionContainerCollection $actionContainerCollection,
+        private ActionContainerStorage $actionContainerStorage,
         private ActionService $actionService,
         private LogService $logService,
         private ResultService $resultService,
@@ -97,7 +97,7 @@ readonly class StateMain implements StateMainInterface
         $stateService = new StateMainSuspendService(
             $suspend,
             $this->resultService,
-            $this->actionContainerCollection->get($task->action->id),
+            $this->actionContainerStorage->get($task->action->id),
             $this->actionService,
             $this->triggerService,
             $this->subscriptionService,
@@ -123,7 +123,7 @@ readonly class StateMain implements StateMainInterface
         $stateService = new StateMainResumeService(
             $suspend,
             $this->resultService,
-            $this->actionContainerCollection->get($task->action->id),
+            $this->actionContainerStorage->get($task->action->id),
             $this->actionService,
             $this->triggerService,
             $this->subscriptionService,

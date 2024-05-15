@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Test\Unit\Collection;
+namespace Duyler\ActionBus\Test\Unit\Storage;
 
-use Duyler\ActionBus\Collection\SubscriptionCollection;
+use Duyler\ActionBus\Storage\SubscriptionStorage;
 use Duyler\ActionBus\Dto\Subscription;
 use Duyler\ActionBus\Enum\ResultStatus;
 use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
-class SubscriptionCollectionTest extends TestCase
+class SubscriptionStorageTest extends TestCase
 {
-    private SubscriptionCollection $subscriptionCollection;
+    private SubscriptionStorage $subscriptionStorage;
 
     #[Test]
     public function save_subscription(): void
@@ -24,18 +24,18 @@ class SubscriptionCollectionTest extends TestCase
             status: ResultStatus::Success,
         );
 
-        $this->subscriptionCollection->save($subscription);
+        $this->subscriptionStorage->save($subscription);
 
-        $this->assertTrue($this->subscriptionCollection->isExists($subscription));
+        $this->assertTrue($this->subscriptionStorage->isExists($subscription));
         $this->assertSame(
             ['test' . ActionIdFormatter::DELIMITER . 'Success@test' => $subscription],
-            $this->subscriptionCollection->getSubscriptions('test', ResultStatus::Success),
+            $this->subscriptionStorage->getSubscriptions('test', ResultStatus::Success),
         );
     }
 
     public function setUp(): void
     {
-        $this->subscriptionCollection = new SubscriptionCollection();
+        $this->subscriptionStorage = new SubscriptionStorage();
         parent::setUp();
     }
 }

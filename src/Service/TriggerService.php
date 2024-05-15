@@ -6,8 +6,8 @@ namespace Duyler\ActionBus\Service;
 
 use Duyler\ActionBus\Bus\Bus;
 use Duyler\ActionBus\Bus\TriggerRelation;
-use Duyler\ActionBus\Collection\ActionCollection;
-use Duyler\ActionBus\Collection\TriggerRelationCollection;
+use Duyler\ActionBus\Storage\ActionStorage;
+use Duyler\ActionBus\Storage\TriggerRelationStorage;
 use Duyler\ActionBus\Dto\Trigger;
 use Duyler\ActionBus\Exception\ContractForDataNotReceivedException;
 use Duyler\ActionBus\Exception\DataForContractNotReceivedException;
@@ -17,8 +17,8 @@ use Duyler\ActionBus\Exception\TriggerHandlersNotFoundException;
 class TriggerService
 {
     public function __construct(
-        private TriggerRelationCollection $triggerRelationCollection,
-        private ActionCollection $actionCollection,
+        private TriggerRelationStorage $triggerRelationStorage,
+        private ActionStorage $actionStorage,
         private Bus $bus,
     ) {}
 
@@ -38,14 +38,14 @@ class TriggerService
             }
         }
 
-        $actions = $this->actionCollection->getByTrigger($trigger->id);
+        $actions = $this->actionStorage->getByTrigger($trigger->id);
 
         if (count($actions) === 0) {
             throw new TriggerHandlersNotFoundException($trigger->id);
         }
 
         foreach ($actions as $action) {
-            $this->triggerRelationCollection->save(new TriggerRelation($action, $trigger));
+            $this->triggerRelationStorage->save(new TriggerRelation($action, $trigger));
             $this->bus->doAction($action);
         }
     }

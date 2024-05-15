@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Collection;
+namespace Duyler\ActionBus\Storage;
 
 use Duyler\DependencyInjection\Attribute\Finalize;
 
 #[Finalize(method: 'reset')]
-class ActionArgumentCollection
+class ActionArgumentStorage
 {
     /** @var array<string, object> */
     private array $data = [];

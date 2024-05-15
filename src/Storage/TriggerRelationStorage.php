@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Collection;
+namespace Duyler\ActionBus\Storage;
 
 use Duyler\DependencyInjection\Attribute\Finalize;
 use Duyler\ActionBus\Bus\TriggerRelation;
 use RuntimeException;
 
 #[Finalize(method: 'reset')]
-class TriggerRelationCollection
+class TriggerRelationStorage
 {
     /**
      * @var array<string, array<array-key, TriggerRelation>>
