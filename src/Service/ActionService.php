@@ -104,9 +104,7 @@ readonly class ActionService
                     $this->throwActionNotDefined($subject);
                 }
 
-                $requiredAction = $actions[$subject];
-
-                $this->checkRequiredAction($action->id, $requiredAction);
+                $this->checkRequiredAction($action->id, $actions[$subject]);
             }
 
             foreach ($action->alternates as $actionId) {
