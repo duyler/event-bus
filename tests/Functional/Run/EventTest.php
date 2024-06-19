@@ -16,7 +16,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-class TriggerTest extends TestCase
+class EventTest extends TestCase
 {
     #[Test]
     public function run_without_contract(): void
@@ -24,24 +24,26 @@ class TriggerTest extends TestCase
         $builder = new BusBuilder(new BusConfig());
         $builder->addAction(
             new Action(
-                id: 'ForTriggerAction',
+                id: 'ForEventAction',
                 handler: function () {},
-                listen: 'TestTrigger',
+                listen: 'TestEvent',
                 externalAccess: true,
             ),
         );
 
+        $builder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'TestEvent'));
+
         $bus = $builder->build();
         $bus->dispatchEvent(
             new Event(
-                id: 'TestTrigger',
+                id: 'TestEvent',
             ),
         );
 
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ForTriggerAction'));
-        $this->assertTrue($bus->resultIsExists('TestTrigger'));
+        $this->assertTrue($bus->resultIsExists('ForEventAction'));
+        $this->assertTrue($bus->resultIsExists('TestEvent'));
     }
 
     #[Test]
@@ -50,28 +52,29 @@ class TriggerTest extends TestCase
         $builder = new BusBuilder(new BusConfig());
         $builder->addAction(
             new Action(
-                id: 'ForTriggerAction',
+                id: 'ForEventAction',
                 handler: function (stdClass $data) {},
-                listen: 'TestTrigger',
+                listen: 'TestEvent',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
         );
 
+        $builder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
+
         $bus = $builder->build();
         $bus->dispatchEvent(
             new Event(
-                id: 'TestTrigger',
+                id: 'TestEvent',
                 data: new stdClass(),
-                contract: stdClass::class,
             ),
         );
 
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ForTriggerAction'));
-        $this->assertTrue($bus->resultIsExists('TestTrigger'));
-        $this->assertInstanceOf(stdClass::class, $bus->getResult('TestTrigger')->data);
+        $this->assertTrue($bus->resultIsExists('ForEventAction'));
+        $this->assertTrue($bus->resultIsExists('TestEvent'));
+        $this->assertInstanceOf(stdClass::class, $bus->getResult('TestEvent')->data);
     }
 
     #[Test]
@@ -80,9 +83,9 @@ class TriggerTest extends TestCase
         $builder = new BusBuilder(new BusConfig());
         $builder->addAction(
             new Action(
-                id: 'ForTriggerAction',
+                id: 'ForEventAction',
                 handler: fn(stdClass $data) => $data,
-                listen: 'TestTrigger',
+                listen: 'TestEvent',
                 argument: stdClass::class,
                 contract: stdClass::class,
                 externalAccess: true,
@@ -91,42 +94,43 @@ class TriggerTest extends TestCase
 
         $builder->doAction(
             new Action(
-                id: 'RequiredTriggered',
+                id: 'RequiredListening',
                 handler: function (stdClass $data) {},
-                required: ['ForTriggerAction'],
+                required: ['ForEventAction'],
                 argument: stdClass::class,
                 externalAccess: true,
             ),
         );
 
+        $builder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
+
         $bus = $builder->build();
         $bus->dispatchEvent(
             new Event(
-                id: 'TestTrigger',
+                id: 'TestEvent',
                 data: new stdClass(),
-                contract: stdClass::class,
             ),
         );
 
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ForTriggerAction'));
-        $this->assertTrue($bus->resultIsExists('TestTrigger'));
-        $this->assertTrue($bus->resultIsExists('RequiredTriggered'));
-        $this->assertInstanceOf(stdClass::class, $bus->getResult('TestTrigger')->data);
-        $this->assertNull($bus->getResult('RequiredTriggered')->data);
-        $this->assertInstanceOf(stdClass::class, $bus->getResult('ForTriggerAction')->data);
+        $this->assertTrue($bus->resultIsExists('ForEventAction'));
+        $this->assertTrue($bus->resultIsExists('TestEvent'));
+        $this->assertTrue($bus->resultIsExists('RequiredListening'));
+        $this->assertInstanceOf(stdClass::class, $bus->getResult('TestEvent')->data);
+        $this->assertNull($bus->getResult('RequiredListening')->data);
+        $this->assertInstanceOf(stdClass::class, $bus->getResult('ForEventAction')->data);
     }
 
     #[Test]
-    public function run_with_contract_and_required_event_action_without_event(): void
+    public function run_with_contract_and_required_event_action_without_dispatch_event(): void
     {
         $builder = new BusBuilder(new BusConfig());
         $builder->addAction(
             new Action(
-                id: 'ForTriggerAction',
+                id: 'ForEventAction',
                 handler: fn(stdClass $data) => $data,
-                listen: 'TestTrigger',
+                listen: 'TestEvent',
                 argument: stdClass::class,
                 contract: stdClass::class,
                 externalAccess: true,
@@ -143,20 +147,22 @@ class TriggerTest extends TestCase
 
         $builder->doAction(
             new Action(
-                id: 'RequiredTriggered',
+                id: 'RequiredListening',
                 handler: function (stdClass $data) {},
-                required: ['ForTriggerAction'],
+                required: ['ForEventAction'],
                 argument: stdClass::class,
                 externalAccess: true,
             ),
         );
 
+        $builder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
+
         $bus = $builder->build();
 
         $bus->run();
 
-        $this->assertFalse($bus->resultIsExists('ForTriggerAction'));
-        $this->assertFalse($bus->resultIsExists('TestTrigger'));
+        $this->assertFalse($bus->resultIsExists('ForEventAction'));
+        $this->assertFalse($bus->resultIsExists('TestEvent'));
         $this->assertFalse($bus->resultIsExists('RequiredTriggered'));
     }
 
@@ -166,13 +172,15 @@ class TriggerTest extends TestCase
         $builder = new BusBuilder(new BusConfig());
         $builder->addAction(
             new Action(
-                id: 'ForTriggerAction',
+                id: 'ForEventAction',
                 handler: function () {},
-                listen: 'TestTrigger',
+                listen: 'TestEvent',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
         );
+
+        $builder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
 
         $bus = $builder->build();
 
@@ -180,8 +188,7 @@ class TriggerTest extends TestCase
 
         $bus->dispatchEvent(
             new Event(
-                id: 'TestTrigger',
-                contract: stdClass::class,
+                id: 'TestEvent',
             ),
         );
     }
@@ -192,13 +199,15 @@ class TriggerTest extends TestCase
         $builder = new BusBuilder(new BusConfig());
         $builder->addAction(
             new Action(
-                id: 'ForTriggerAction',
+                id: 'ForEventAction',
                 handler: function () {},
-                listen: 'TestTrigger',
+                listen: 'TestEvent',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
         );
+
+        $builder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'TestEvent'));
 
         $bus = $builder->build();
 
@@ -206,7 +215,7 @@ class TriggerTest extends TestCase
 
         $bus->dispatchEvent(
             new Event(
-                id: 'TestTrigger',
+                id: 'TestEvent',
                 data: new stdClass(),
             ),
         );
@@ -218,13 +227,15 @@ class TriggerTest extends TestCase
         $builder = new BusBuilder(new BusConfig());
         $builder->addAction(
             new Action(
-                id: 'ForTriggerAction',
+                id: 'ForEventAction',
                 handler: function () {},
-                listen: 'TestTrigger',
+                listen: 'TestEvent',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
         );
+
+        $builder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
 
         $bus = $builder->build();
 
@@ -232,9 +243,8 @@ class TriggerTest extends TestCase
 
         $bus->dispatchEvent(
             new Event(
-                id: 'TestTrigger',
-                data: new stdClass(),
-                contract: 'ClassName',
+                id: 'TestEvent',
+                data: new class () {},
             ),
         );
     }
@@ -244,13 +254,15 @@ class TriggerTest extends TestCase
     {
         $builder = new BusBuilder(new BusConfig());
 
+        $builder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'TestEvent'));
+
         $bus = $builder->build();
 
         $this->expectException(EventHandlersNotFoundException::class);
 
         $bus->dispatchEvent(
             new Event(
-                id: 'TestTrigger',
+                id: 'TestEvent',
             ),
         );
     }

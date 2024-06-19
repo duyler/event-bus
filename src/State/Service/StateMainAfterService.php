@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Duyler\ActionBus\State\Service;
 
 use Duyler\ActionBus\Enum\ResultStatus;
-use Duyler\ActionBus\Formatter\ActionIdFormatter;
+use Duyler\ActionBus\Formatter\IdFormatter;
 use Duyler\ActionBus\Service\ActionService;
 use Duyler\ActionBus\Service\LogService;
 use Duyler\ActionBus\Service\ResultService;
@@ -43,7 +43,7 @@ class StateMainAfterService
 
     public function getActionId(): string|UnitEnum
     {
-        return ActionIdFormatter::reverse($this->actionId);
+        return IdFormatter::reverse($this->actionId);
     }
 
     public function getResultData(): ?object

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Dto;
+namespace Duyler\ActionBus\Build;
 
 use Duyler\ActionBus\Formatter\IdFormatter;
 use UnitEnum;
@@ -13,7 +13,7 @@ final readonly class Event
 
     public function __construct(
         string|UnitEnum $id,
-        public ?object $data = null,
+        public ?string $contract = null,
     ) {
         $this->id = IdFormatter::toString($id);
     }

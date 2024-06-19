@@ -6,12 +6,14 @@ namespace Duyler\ActionBus;
 
 use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\Build\Context;
+use Duyler\ActionBus\Build\Event;
 use Duyler\ActionBus\Build\Subscription;
 use Duyler\ActionBus\Contract\State\StateHandlerInterface;
 use Duyler\ActionBus\Exception\ActionAlreadyDefinedException;
 use Duyler\ActionBus\Exception\SubscriptionAlreadyDefinedException;
 use Duyler\ActionBus\Internal\ListenerProvider;
 use Duyler\ActionBus\Service\ActionService;
+use Duyler\ActionBus\Service\EventService;
 use Duyler\ActionBus\Service\StateService;
 use Duyler\ActionBus\Service\SubscriptionService;
 use Duyler\DependencyInjection\Container;
@@ -41,6 +43,9 @@ class BusBuilder
     /** @var Context[] */
     private array $contexts = [];
 
+    /** @var array<string, Event> */
+    private array $events = [];
+
     public function __construct(private BusConfig $config) {}
 
     /**
@@ -63,11 +68,16 @@ class BusBuilder
         /** @var ActionService $actionService */
         $actionService = $container->get(ActionService::class);
 
+        /** @var EventService $eventService */
+        $eventService = $container->get(EventService::class);
+
         /** @var SubscriptionService $subscriptionService */
         $subscriptionService = $container->get(SubscriptionService::class);
 
         /** @var StateService $stateService */
         $stateService = $container->get(StateService::class);
+
+        $eventService->collect($this->events);
 
         $actionService->collect($this->actions);
 
@@ -161,6 +171,13 @@ class BusBuilder
     {
         $this->sharedServices[] = $service;
         $this->bind = $bind + $this->bind;
+
+        return $this;
+    }
+
+    public function addEvent(Event $event): static
+    {
+        $this->events[$event->id] = $event;
 
         return $this;
     }

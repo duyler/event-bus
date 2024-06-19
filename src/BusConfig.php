@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus;
 
+use Duyler\ActionBus\Internal\Event\EventRemovedEvent;
+use Duyler\ActionBus\Internal\Listener\Bus\ResolveActionsAfterEventDeletedEventListener;
 use Duyler\DependencyInjection\Definition;
 use Duyler\ActionBus\Action\ActionRunnerProvider;
 use Duyler\ActionBus\Action\ActionSubstitution;
@@ -136,6 +138,9 @@ class BusConfig
             ],
             ThrowExceptionEvent::class => [
                 TerminateAfterExceptionEventListener::class,
+            ],
+            EventRemovedEvent::class => [
+                ResolveActionsAfterEventDeletedEventListener::class,
             ],
         ];
     }

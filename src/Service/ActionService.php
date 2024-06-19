@@ -14,8 +14,10 @@ use Duyler\ActionBus\Contract\ActionSubstitutionInterface;
 use Duyler\ActionBus\Exception\ActionAlreadyDefinedException;
 use Duyler\ActionBus\Exception\ActionNotDefinedException;
 use Duyler\ActionBus\Exception\CannotRequirePrivateActionException;
+use Duyler\ActionBus\Exception\EventNotDefinedException;
 use Duyler\ActionBus\Exception\NotAllowedSealedActionException;
 use Duyler\ActionBus\Storage\ActionStorage;
+use Duyler\ActionBus\Storage\EventStorage;
 use Duyler\ActionBus\Storage\SubscriptionStorage;
 
 readonly class ActionService
@@ -25,6 +27,7 @@ readonly class ActionService
         private ActionContainerProvider $actionContainerProvider,
         private ActionSubstitutionInterface $actionSubstitution,
         private SubscriptionStorage $subscriptionStorage,
+        private EventStorage $eventStorage,
         private Bus $bus,
     ) {}
 
@@ -48,6 +51,12 @@ readonly class ActionService
         foreach ($action->alternates as $actionId) {
             if (false === $this->actionStorage->isExists($actionId)) {
                 $this->throwActionNotDefined($actionId);
+            }
+        }
+
+        if (null !== $action->listen) {
+            if (false === $this->eventStorage->has($action->listen)) {
+                $this->throwEventNotDefined($action->listen, $action->id);
             }
         }
 
@@ -92,7 +101,9 @@ readonly class ActionService
         return $this->actionStorage->isExists($actionId);
     }
 
-    /** @param array<string, Action> $actions */
+    /**
+     * @param array<string, Action> $actions
+     */
     public function collect(array $actions): void
     {
         foreach ($actions as $action) {
@@ -110,6 +121,12 @@ readonly class ActionService
             foreach ($action->alternates as $actionId) {
                 if (false === array_key_exists($actionId, $actions)) {
                     $this->throwActionNotDefined($actionId);
+                }
+            }
+
+            if (null !== $action->listen) {
+                if (false === $this->eventStorage->has($action->listen)) {
+                    $this->throwEventNotDefined($action->listen, $action->id);
                 }
             }
 
@@ -131,6 +148,11 @@ readonly class ActionService
     private function throwActionNotDefined(string $subject): never
     {
         throw new ActionNotDefinedException($subject);
+    }
+
+    private function throwEventNotDefined(string $eventId, string $actionId): never
+    {
+        throw new EventNotDefinedException($eventId, $actionId);
     }
 
     /** @param array<string, string> $bind  */

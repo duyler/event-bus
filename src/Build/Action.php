@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Duyler\ActionBus\Build;
 
 use Closure;
-use Duyler\ActionBus\Formatter\ActionIdFormatter;
+use Duyler\ActionBus\Formatter\IdFormatter;
 use RecursiveArrayIterator;
 use UnitEnum;
 
-readonly class Action
+final readonly class Action
 {
     public string $id;
     /** @var RecursiveArrayIterator<array-key, string> */
@@ -47,20 +47,20 @@ readonly class Action
         /** @var array<string|int, mixed> */
         public array $labels = [],
     ) {
-        $this->id = ActionIdFormatter::toString($id);
+        $this->id = IdFormatter::toString($id);
 
         $this->required = new RecursiveArrayIterator();
 
         /** @var string|UnitEnum $actionId */
         foreach ($required as $actionId) {
-            $this->required->append(ActionIdFormatter::toString($actionId));
+            $this->required->append(IdFormatter::toString($actionId));
         }
 
         $alternatesActions = [];
 
         /** @var string|UnitEnum $actionId */
         foreach ($alternates as $actionId) {
-            $alternatesActions[] = ActionIdFormatter::toString($actionId);
+            $alternatesActions[] = IdFormatter::toString($actionId);
         }
 
         $this->alternates = $alternatesActions;
@@ -69,11 +69,11 @@ readonly class Action
 
         /** @var string|UnitEnum $actionId */
         foreach ($sealed as $actionId) {
-            $allowActions[] = ActionIdFormatter::toString($actionId);
+            $allowActions[] = IdFormatter::toString($actionId);
         }
 
         $this->sealed = $allowActions;
 
-        $this->listen = $listen === null ? null : ActionIdFormatter::toString($listen);
+        $this->listen = $listen === null ? null : IdFormatter::toString($listen);
     }
 }

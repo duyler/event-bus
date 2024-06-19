@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Dto;
 
-readonly class Log
+final readonly class Log
 {
     public function __construct(
         /** @var string[] */

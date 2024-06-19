@@ -11,18 +11,20 @@ use Duyler\ActionBus\Bus\ActionContainer;
 use Duyler\ActionBus\Storage\ActionArgumentStorage;
 use Duyler\ActionBus\Storage\CompleteActionStorage;
 use Duyler\ActionBus\Storage\EventRelationStorage;
+use Duyler\ActionBus\Storage\EventStorage;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 
 class ActionHandlerArgumentBuilderTest extends TestCase
 {
-    private CompleteActionStorage $eventStorage;
+    private CompleteActionStorage $completeStorage;
     private ActionSubstitution $actionSubstitution;
     private ActionArgumentStorage $actionArgumentStorage;
     private ActionHandlerArgumentBuilder $argumentBuilder;
     private ActionContainer $actionContainer;
     private EventRelationStorage $eventRelationStorage;
+    private EventStorage $eventStorage;
 
     #[Test]
     public function build_with_empty_action_required(): void
@@ -36,16 +38,18 @@ class ActionHandlerArgumentBuilderTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->eventStorage = $this->createMock(CompleteActionStorage::class);
+        $this->completeStorage = $this->createMock(CompleteActionStorage::class);
         $this->actionSubstitution = $this->createMock(ActionSubstitution::class);
         $this->actionArgumentStorage = $this->createMock(ActionArgumentStorage::class);
         $this->actionContainer = $this->createMock(ActionContainer::class);
         $this->eventRelationStorage = $this->createMock(EventRelationStorage::class);
+        $this->eventStorage = $this->createMock(EventStorage::class);
         $this->argumentBuilder = new ActionHandlerArgumentBuilder(
-            completeActionStorage: $this->eventStorage,
+            completeActionStorage: $this->completeStorage,
             actionSubstitution: $this->actionSubstitution,
             eventRelationStorage: $this->eventRelationStorage,
             actionArgumentStorage: $this->actionArgumentStorage,
+            eventStorage: $this->eventStorage,
         );
     }
 }

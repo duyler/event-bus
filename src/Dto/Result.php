@@ -6,7 +6,7 @@ namespace Duyler\ActionBus\Dto;
 
 use Duyler\ActionBus\Enum\ResultStatus;
 
-readonly class Result
+final readonly class Result
 {
     public ResultStatus $status;
     public ?object $data;

@@ -13,6 +13,7 @@ use Duyler\ActionBus\Enum\ResultStatus;
 use Duyler\ActionBus\Storage\ActionArgumentStorage;
 use Duyler\ActionBus\Storage\CompleteActionStorage;
 use Duyler\ActionBus\Storage\EventRelationStorage;
+use Duyler\ActionBus\Storage\EventStorage;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
@@ -28,6 +29,7 @@ class ActionHandlerArgumentBuilder
         private ActionSubstitution $actionSubstitution,
         private EventRelationStorage $eventRelationStorage,
         private ActionArgumentStorage $actionArgumentStorage,
+        private EventStorage $eventStorage,
     ) {}
 
     public function build(Action $action, ActionContainer $container): object|null
@@ -40,9 +42,10 @@ class ActionHandlerArgumentBuilder
         $results = [];
 
         if ($this->eventRelationStorage->has($action->id)) {
-            $event = $this->eventRelationStorage->shift($action->id)->event;
-            if (null !== $event->data && null !== $event->contract) {
-                $results[$event->contract] = $event->data;
+            $eventDto = $this->eventRelationStorage->shift($action->id)->event;
+            $event = $this->eventStorage->get($eventDto->id);
+            if (null !== $eventDto->data && null !== $event && null !== $event->contract) {
+                $results[$event->contract] = $eventDto->data;
             }
         }
 

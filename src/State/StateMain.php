@@ -8,7 +8,7 @@ use Duyler\ActionBus\Bus\Task;
 use Duyler\ActionBus\Storage\ActionContainerStorage;
 use Duyler\ActionBus\Contract\State\StateHandlerObservedInterface;
 use Duyler\ActionBus\Contract\StateMainInterface;
-use Duyler\ActionBus\Formatter\ActionIdFormatter;
+use Duyler\ActionBus\Formatter\IdFormatter;
 use Duyler\ActionBus\Service\ActionService;
 use Duyler\ActionBus\Service\LogService;
 use Duyler\ActionBus\Service\QueueService;
@@ -92,7 +92,7 @@ readonly class StateMain implements StateMainInterface
     {
         $handlers = $this->stateHandlerStorage->getMainSuspend();
 
-        $suspend = new Suspend(ActionIdFormatter::reverse($task->action->id), $task->getValue());
+        $suspend = new Suspend(IdFormatter::reverse($task->action->id), $task->getValue());
 
         $stateService = new StateMainSuspendService(
             $suspend,
@@ -189,7 +189,7 @@ readonly class StateMain implements StateMainInterface
         $observed = $handler->observed($context);
         /** @var string|UnitEnum $actionId */
         foreach ($observed as $actionId) {
-            $observed[] = ActionIdFormatter::toString($actionId);
+            $observed[] = IdFormatter::toString($actionId);
         }
         return count($observed) === 0 || in_array($task->action->id, $observed);
     }
