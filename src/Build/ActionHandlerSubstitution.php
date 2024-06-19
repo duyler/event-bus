@@ -2,19 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Dto;
+namespace Duyler\ActionBus\Build;
 
+use Closure;
 use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use UnitEnum;
 
-readonly class ActionResultSubstitution
+readonly class ActionHandlerSubstitution
 {
     public string $actionId;
 
     public function __construct(
         string|UnitEnum $actionId,
-        public string $requiredContract,
-        public object $substitution,
+        public string|Closure $handler,
+        public array $bind = [],
+        public array $providers = [],
     ) {
         $this->actionId = ActionIdFormatter::toString($actionId);
     }

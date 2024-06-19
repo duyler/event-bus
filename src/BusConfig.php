@@ -25,10 +25,10 @@ use Duyler\ActionBus\Internal\Event\TaskBeforeRunEvent;
 use Duyler\ActionBus\Internal\Event\TaskResumeEvent;
 use Duyler\ActionBus\Internal\Event\TaskSuspendedEvent;
 use Duyler\ActionBus\Internal\Event\ThrowExceptionEvent;
-use Duyler\ActionBus\Internal\Event\TriggerPushedEvent;
+use Duyler\ActionBus\Internal\Event\EventDispatchedEvent;
 use Duyler\ActionBus\Internal\EventDispatcher;
 use Duyler\ActionBus\Internal\Listener\Bus\CompleteActionEventListener;
-use Duyler\ActionBus\Internal\Listener\Bus\DispatchTriggerEventListener;
+use Duyler\ActionBus\Internal\Listener\Bus\DispatchEventEventListener;
 use Duyler\ActionBus\Internal\Listener\Bus\LogCompleteActionEventListener;
 use Duyler\ActionBus\Internal\Listener\Bus\ResolveHeldTasksEventListener;
 use Duyler\ActionBus\Internal\Listener\Bus\ResolveSubscriptionsEventListener;
@@ -128,8 +128,8 @@ class BusConfig
             ActionThrownExceptionEvent::class => [
                 StateActionThrowingEventListener::class,
             ],
-            TriggerPushedEvent::class => [
-                DispatchTriggerEventListener::class,
+            EventDispatchedEvent::class => [
+                DispatchEventEventListener::class,
             ],
             BusCompletedEvent::class => [
                 TerminateBusEventListener::class,

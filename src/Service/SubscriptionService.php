@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Service;
 
+use Duyler\ActionBus\Build\Subscription;
 use Duyler\ActionBus\Bus\Bus;
 use Duyler\ActionBus\Bus\CompleteAction;
-use Duyler\ActionBus\Storage\ActionStorage;
-use Duyler\ActionBus\Storage\SubscriptionStorage;
-use Duyler\ActionBus\Dto\Subscription;
 use Duyler\ActionBus\Exception\SubscribedActionNotDefinedException;
 use Duyler\ActionBus\Exception\SubscriptionAlreadyDefinedException;
 use Duyler\ActionBus\Exception\SubscriptionNotFoundException;
 use Duyler\ActionBus\Exception\SubscriptionOnNotDefinedActionException;
 use Duyler\ActionBus\Exception\SubscriptionOnSilentActionException;
+use Duyler\ActionBus\Storage\ActionStorage;
+use Duyler\ActionBus\Storage\SubscriptionStorage;
 
 readonly class SubscriptionService
 {

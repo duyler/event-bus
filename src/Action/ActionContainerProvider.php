@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Action;
 
+use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\Bus\ActionContainer;
 use Duyler\ActionBus\BusConfig;
 use Duyler\ActionBus\Storage\ActionContainerStorage;
-use Duyler\ActionBus\Dto\Action;
 
 class ActionContainerProvider
 {

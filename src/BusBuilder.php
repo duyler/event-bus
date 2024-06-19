@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus;
 
-use Duyler\DependencyInjection\Container;
-use Duyler\DependencyInjection\ContainerConfig;
+use Duyler\ActionBus\Build\Action;
+use Duyler\ActionBus\Build\Context;
+use Duyler\ActionBus\Build\Subscription;
 use Duyler\ActionBus\Contract\State\StateHandlerInterface;
-use Duyler\ActionBus\Dto\Action;
-use Duyler\ActionBus\Dto\Context;
-use Duyler\ActionBus\Dto\Subscription;
 use Duyler\ActionBus\Exception\ActionAlreadyDefinedException;
 use Duyler\ActionBus\Exception\SubscriptionAlreadyDefinedException;
 use Duyler\ActionBus\Internal\ListenerProvider;
 use Duyler\ActionBus\Service\ActionService;
 use Duyler\ActionBus\Service\StateService;
 use Duyler\ActionBus\Service\SubscriptionService;
+use Duyler\DependencyInjection\Container;
+use Duyler\DependencyInjection\ContainerConfig;
 use Psr\EventDispatcher\ListenerProviderInterface;
 
 class BusBuilder

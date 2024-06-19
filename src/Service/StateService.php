@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Service;
 
+use Duyler\ActionBus\Build\Context;
 use Duyler\ActionBus\Contract\State\StateHandlerInterface;
-use Duyler\ActionBus\Dto\Context;
 use Duyler\ActionBus\State\StateContextScope;
 use Duyler\ActionBus\State\StateHandlerStorage;
 

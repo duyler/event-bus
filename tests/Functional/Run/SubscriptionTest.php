@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Test\Functional\Run;
 
+use Duyler\ActionBus\Build\Action;
+use Duyler\ActionBus\Build\Subscription;
 use Duyler\ActionBus\BusBuilder;
 use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Dto\Action;
-use Duyler\ActionBus\Dto\Subscription;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Test\Unit\Storage;
 
+use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\Storage\ActionStorage;
-use Duyler\ActionBus\Dto\Action;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

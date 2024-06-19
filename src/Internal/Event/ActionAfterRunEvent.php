@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Internal\Event;
 
-use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Build\Action;
 
 readonly class ActionAfterRunEvent
 {

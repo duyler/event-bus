@@ -10,6 +10,6 @@ class ResultNotExistsException extends Exception
 {
     public function __construct(string $actionId)
     {
-        parent::__construct('Action or trigger result for ' . $actionId . ' does not exist');
+        parent::__construct('Action or event result for ' . $actionId . ' does not exist');
     }
 }

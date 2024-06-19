@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Test\Functional\State;
 
+use Duyler\ActionBus\Build\Action;
+use Duyler\ActionBus\Build\Context;
+use Duyler\ActionBus\Build\Subscription;
 use Duyler\ActionBus\BusBuilder;
 use Duyler\ActionBus\BusConfig;
 use Duyler\ActionBus\Contract\State\MainBeginStateHandlerInterface;
-use Duyler\ActionBus\Dto\Action;
-use Duyler\ActionBus\Dto\Context;
-use Duyler\ActionBus\Dto\Subscription;
 use Duyler\ActionBus\State\Service\StateMainBeginService;
 use Duyler\ActionBus\State\StateContext;
 use Override;

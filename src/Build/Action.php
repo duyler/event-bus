@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Dto;
+namespace Duyler\ActionBus\Build;
 
-use UnitEnum;
 use Closure;
 use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use RecursiveArrayIterator;
+use UnitEnum;
 
 readonly class Action
 {
     public string $id;
     /** @var RecursiveArrayIterator<array-key, string> */
     public RecursiveArrayIterator $required;
-    public ?string $triggeredOn;
+    public ?string $listen;
     /** @var string[] */
     public array $sealed;
     /** @var string[] */
@@ -25,7 +25,7 @@ readonly class Action
         public string|Closure $handler,
         /** @param array<array-key, string|UnitEnum> $required  */
         array $required = [],
-        null|string|UnitEnum $triggeredOn = null,
+        null|string|UnitEnum $listen = null,
         /** @var array<string, string> */
         public array $bind = [],
         /** @var array<string, string> */
@@ -74,6 +74,6 @@ readonly class Action
 
         $this->sealed = $allowActions;
 
-        $this->triggeredOn = $triggeredOn === null ? null : ActionIdFormatter::toString($triggeredOn);
+        $this->listen = $listen === null ? null : ActionIdFormatter::toString($listen);
     }
 }

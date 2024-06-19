@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Storage;
 
-use Duyler\ActionBus\Dto\Subscription;
+use Duyler\ActionBus\Build\Subscription;
 use Duyler\ActionBus\Enum\ResultStatus;
 use Duyler\ActionBus\Formatter\ActionIdFormatter;
 

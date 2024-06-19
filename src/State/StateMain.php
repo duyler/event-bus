@@ -15,7 +15,7 @@ use Duyler\ActionBus\Service\QueueService;
 use Duyler\ActionBus\Service\ResultService;
 use Duyler\ActionBus\Service\RollbackService;
 use Duyler\ActionBus\Service\SubscriptionService;
-use Duyler\ActionBus\Service\TriggerService;
+use Duyler\ActionBus\Service\EventService;
 use Duyler\ActionBus\State\Service\StateMainAfterService;
 use Duyler\ActionBus\State\Service\StateMainBeforeService;
 use Duyler\ActionBus\State\Service\StateMainBeginService;
@@ -37,7 +37,7 @@ readonly class StateMain implements StateMainInterface
         private RollbackService $rollbackService,
         private SubscriptionService $subscriptionService,
         private StateSuspendContext $context,
-        private TriggerService $triggerService,
+        private EventService $eventService,
         private StateContextScope $contextScope,
         private QueueService $queueService,
     ) {}
@@ -48,7 +48,7 @@ readonly class StateMain implements StateMainInterface
         $stateService = new StateMainBeginService(
             $this->actionService,
             $this->subscriptionService,
-            $this->triggerService,
+            $this->eventService,
         );
 
         foreach ($this->stateHandlerStorage->getMainBegin() as $handler) {
@@ -62,7 +62,7 @@ readonly class StateMain implements StateMainInterface
         $stateService = new StateMainCyclicService(
             $this->queueService,
             $this->actionService,
-            $this->triggerService,
+            $this->eventService,
         );
 
         foreach ($this->stateHandlerStorage->getMainCyclic() as $handler) {
@@ -99,7 +99,7 @@ readonly class StateMain implements StateMainInterface
             $this->resultService,
             $this->actionContainerStorage->get($task->action->id),
             $this->actionService,
-            $this->triggerService,
+            $this->eventService,
             $this->subscriptionService,
         );
 
@@ -125,7 +125,7 @@ readonly class StateMain implements StateMainInterface
             $this->resultService,
             $this->actionContainerStorage->get($task->action->id),
             $this->actionService,
-            $this->triggerService,
+            $this->eventService,
             $this->subscriptionService,
         );
 
@@ -155,7 +155,7 @@ readonly class StateMain implements StateMainInterface
             $this->actionService,
             $this->resultService,
             $this->logService,
-            $this->triggerService,
+            $this->eventService,
             $this->rollbackService,
             $this->subscriptionService,
         );

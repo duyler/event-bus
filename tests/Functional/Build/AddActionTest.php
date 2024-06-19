@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Test\Functional\Build;
 
+use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\BusBuilder;
 use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Dto\Action;
 use Duyler\ActionBus\Exception\ActionAlreadyDefinedException;
 use Duyler\ActionBus\Exception\ActionNotDefinedException;
 use PHPUnit\Framework\Attributes\Test;

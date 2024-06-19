@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Test\Functional\State;
 
+use Duyler\ActionBus\Build\Action;
+use Duyler\ActionBus\Build\Context;
 use Duyler\ActionBus\BusBuilder;
 use Duyler\ActionBus\BusConfig;
 use Duyler\ActionBus\Contract\State\MainCyclicStateHandlerInterface;
-use Duyler\ActionBus\Dto\Action;
-use Duyler\ActionBus\Dto\Context;
-use Duyler\ActionBus\Dto\Trigger;
+use Duyler\ActionBus\Dto\Event;
 use Duyler\ActionBus\Exception\CircularCallActionException;
 use Duyler\ActionBus\State\Service\StateMainCyclicService;
 use Duyler\ActionBus\State\StateContext;
@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
 class MainCyclicTest extends TestCase
 {
     #[Test]
-    public function cyclic_with_trigger(): void
+    public function cyclic_with_event(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainCyclicStateHandlerWithTrigger());
@@ -69,13 +69,13 @@ class MainCyclicStateHandlerWithTrigger implements MainCyclicStateHandlerInterfa
             new Action(
                 id: 'ActionFromHandler',
                 handler: function (): void {},
-                triggeredOn: 'TriggerFromHandler',
+                listen: 'TriggerFromHandler',
                 externalAccess: true,
             ),
         );
 
-        $stateService->doTrigger(
-            new Trigger(
+        $stateService->dispatchEvent(
+            new Event(
                 id: 'TriggerFromHandler',
             ),
         );
@@ -98,15 +98,15 @@ class MainCyclicStateHandlerWithRepeatableTrigger implements MainCyclicStateHand
                 handler: function (): void {
                     Fiber::suspend();
                 },
-                triggeredOn: 'TriggerFromHandler',
+                listen: 'TriggerFromHandler',
                 externalAccess: true,
                 repeatable: true,
                 lock: true,
             ),
         );
 
-        $stateService->doTrigger(
-            new Trigger(
+        $stateService->dispatchEvent(
+            new Event(
                 id: 'TriggerFromHandler',
             ),
         );

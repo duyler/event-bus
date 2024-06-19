@@ -7,7 +7,7 @@ namespace Duyler\ActionBus\Dto;
 use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use UnitEnum;
 
-readonly class Trigger
+readonly class Event
 {
     public string $id;
 

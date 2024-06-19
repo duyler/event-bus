@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Action;
 
-use Duyler\DependencyInjection\Attribute\Finalize;
+use Duyler\ActionBus\Build\ActionHandlerSubstitution;
+use Duyler\ActionBus\Build\ActionResultSubstitution;
 use Duyler\ActionBus\Contract\ActionSubstitutionInterface;
-use Duyler\ActionBus\Dto\ActionHandlerSubstitution;
-use Duyler\ActionBus\Dto\ActionResultSubstitution;
+use Duyler\DependencyInjection\Attribute\Finalize;
 use Override;
 
 #[Finalize(method: 'reset')]

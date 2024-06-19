@@ -6,8 +6,8 @@ namespace Duyler\ActionBus\Action;
 
 use Closure;
 use Duyler\ActionBus\Action\Exception\ActionHandlerMustBeCallableException;
+use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\Bus\ActionContainer;
-use Duyler\ActionBus\Dto\Action;
 
 class ActionHandlerBuilder
 {

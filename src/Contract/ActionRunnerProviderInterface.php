@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Duyler\ActionBus\Contract;
 
 use Closure;
-use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Build\Action;
 
 interface ActionRunnerProviderInterface
 {

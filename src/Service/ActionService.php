@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace Duyler\ActionBus\Service;
 
 use Duyler\ActionBus\Action\ActionContainerProvider;
+use Duyler\ActionBus\Build\Action;
+use Duyler\ActionBus\Build\ActionHandlerSubstitution;
+use Duyler\ActionBus\Build\ActionResultSubstitution;
 use Duyler\ActionBus\Bus\ActionRequiredIterator;
 use Duyler\ActionBus\Bus\Bus;
-use Duyler\ActionBus\Storage\ActionStorage;
-use Duyler\ActionBus\Storage\SubscriptionStorage;
 use Duyler\ActionBus\Contract\ActionSubstitutionInterface;
-use Duyler\ActionBus\Dto\Action;
-use Duyler\ActionBus\Dto\ActionHandlerSubstitution;
-use Duyler\ActionBus\Dto\ActionResultSubstitution;
 use Duyler\ActionBus\Exception\ActionAlreadyDefinedException;
 use Duyler\ActionBus\Exception\ActionNotDefinedException;
 use Duyler\ActionBus\Exception\CannotRequirePrivateActionException;
 use Duyler\ActionBus\Exception\NotAllowedSealedActionException;
+use Duyler\ActionBus\Storage\ActionStorage;
+use Duyler\ActionBus\Storage\SubscriptionStorage;
 
 readonly class ActionService
 {

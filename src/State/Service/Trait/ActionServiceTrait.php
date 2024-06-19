@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\State\Service\Trait;
 
-use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use Duyler\ActionBus\Service\ActionService;
 use UnitEnum;

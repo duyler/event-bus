@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Test\Functional\State;
 
+use Duyler\ActionBus\Build\Action;
+use Duyler\ActionBus\Build\Context;
 use Duyler\ActionBus\BusBuilder;
 use Duyler\ActionBus\BusConfig;
 use Duyler\ActionBus\Contract\State\MainResumeStateHandlerInterface;
 use Duyler\ActionBus\Contract\State\MainSuspendStateHandlerInterface;
-use Duyler\ActionBus\Dto\Action;
-use Duyler\ActionBus\Dto\Context;
 use Duyler\ActionBus\State\Service\StateMainResumeService;
 use Duyler\ActionBus\State\Service\StateMainSuspendService;
 use Duyler\ActionBus\State\StateContext;

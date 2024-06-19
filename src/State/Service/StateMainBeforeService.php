@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\State\Service;
 
-use Duyler\ActionBus\Dto\ActionHandlerSubstitution;
-use Duyler\ActionBus\Dto\ActionResultSubstitution;
+use Duyler\ActionBus\Build\ActionHandlerSubstitution;
+use Duyler\ActionBus\Build\ActionResultSubstitution;
 use Duyler\ActionBus\Formatter\ActionIdFormatter;
 use Duyler\ActionBus\Service\ActionService;
 use Duyler\ActionBus\Service\LogService;

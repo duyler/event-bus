@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Bus;
 
-use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\Exception\ActionNotDefinedException;
 use RecursiveIterator;
 use RecursiveIteratorIterator;

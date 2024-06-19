@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Test\Functional\Run;
 
+use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\BusBuilder;
 use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Dto\Action;
-use Duyler\ActionBus\Dto\Trigger;
+use Duyler\ActionBus\Dto\Event;
 use Duyler\ActionBus\Exception\ContractForDataNotReceivedException;
 use Duyler\ActionBus\Exception\DataForContractNotReceivedException;
 use Duyler\ActionBus\Exception\DataMustBeCompatibleWithContractException;
-use Duyler\ActionBus\Exception\TriggerHandlersNotFoundException;
+use Duyler\ActionBus\Exception\EventHandlersNotFoundException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -26,14 +26,14 @@ class TriggerTest extends TestCase
             new Action(
                 id: 'ForTriggerAction',
                 handler: function () {},
-                triggeredOn: 'TestTrigger',
+                listen: 'TestTrigger',
                 externalAccess: true,
             ),
         );
 
         $bus = $builder->build();
-        $bus->dispatchTrigger(
-            new Trigger(
+        $bus->dispatchEvent(
+            new Event(
                 id: 'TestTrigger',
             ),
         );
@@ -52,15 +52,15 @@ class TriggerTest extends TestCase
             new Action(
                 id: 'ForTriggerAction',
                 handler: function (stdClass $data) {},
-                triggeredOn: 'TestTrigger',
+                listen: 'TestTrigger',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
         );
 
         $bus = $builder->build();
-        $bus->dispatchTrigger(
-            new Trigger(
+        $bus->dispatchEvent(
+            new Event(
                 id: 'TestTrigger',
                 data: new stdClass(),
                 contract: stdClass::class,
@@ -75,14 +75,14 @@ class TriggerTest extends TestCase
     }
 
     #[Test]
-    public function run_with_contract_and_required_triggered_action(): void
+    public function run_with_contract_and_required_event_action(): void
     {
         $builder = new BusBuilder(new BusConfig());
         $builder->addAction(
             new Action(
                 id: 'ForTriggerAction',
                 handler: fn(stdClass $data) => $data,
-                triggeredOn: 'TestTrigger',
+                listen: 'TestTrigger',
                 argument: stdClass::class,
                 contract: stdClass::class,
                 externalAccess: true,
@@ -100,8 +100,8 @@ class TriggerTest extends TestCase
         );
 
         $bus = $builder->build();
-        $bus->dispatchTrigger(
-            new Trigger(
+        $bus->dispatchEvent(
+            new Event(
                 id: 'TestTrigger',
                 data: new stdClass(),
                 contract: stdClass::class,
@@ -119,14 +119,14 @@ class TriggerTest extends TestCase
     }
 
     #[Test]
-    public function run_with_contract_and_required_triggered_action_without_trigger(): void
+    public function run_with_contract_and_required_event_action_without_event(): void
     {
         $builder = new BusBuilder(new BusConfig());
         $builder->addAction(
             new Action(
                 id: 'ForTriggerAction',
                 handler: fn(stdClass $data) => $data,
-                triggeredOn: 'TestTrigger',
+                listen: 'TestTrigger',
                 argument: stdClass::class,
                 contract: stdClass::class,
                 externalAccess: true,
@@ -168,7 +168,7 @@ class TriggerTest extends TestCase
             new Action(
                 id: 'ForTriggerAction',
                 handler: function () {},
-                triggeredOn: 'TestTrigger',
+                listen: 'TestTrigger',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -178,8 +178,8 @@ class TriggerTest extends TestCase
 
         $this->expectException(DataForContractNotReceivedException::class);
 
-        $bus->dispatchTrigger(
-            new Trigger(
+        $bus->dispatchEvent(
+            new Event(
                 id: 'TestTrigger',
                 contract: stdClass::class,
             ),
@@ -194,7 +194,7 @@ class TriggerTest extends TestCase
             new Action(
                 id: 'ForTriggerAction',
                 handler: function () {},
-                triggeredOn: 'TestTrigger',
+                listen: 'TestTrigger',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -204,8 +204,8 @@ class TriggerTest extends TestCase
 
         $this->expectException(ContractForDataNotReceivedException::class);
 
-        $bus->dispatchTrigger(
-            new Trigger(
+        $bus->dispatchEvent(
+            new Event(
                 id: 'TestTrigger',
                 data: new stdClass(),
             ),
@@ -220,7 +220,7 @@ class TriggerTest extends TestCase
             new Action(
                 id: 'ForTriggerAction',
                 handler: function () {},
-                triggeredOn: 'TestTrigger',
+                listen: 'TestTrigger',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -230,8 +230,8 @@ class TriggerTest extends TestCase
 
         $this->expectException(DataMustBeCompatibleWithContractException::class);
 
-        $bus->dispatchTrigger(
-            new Trigger(
+        $bus->dispatchEvent(
+            new Event(
                 id: 'TestTrigger',
                 data: new stdClass(),
                 contract: 'ClassName',
@@ -240,16 +240,16 @@ class TriggerTest extends TestCase
     }
 
     #[Test]
-    public function run_with_not_found_trigger_handler(): void
+    public function run_with_not_found_event_handler(): void
     {
         $builder = new BusBuilder(new BusConfig());
 
         $bus = $builder->build();
 
-        $this->expectException(TriggerHandlersNotFoundException::class);
+        $this->expectException(EventHandlersNotFoundException::class);
 
-        $bus->dispatchTrigger(
-            new Trigger(
+        $bus->dispatchEvent(
+            new Event(
                 id: 'TestTrigger',
             ),
         );
