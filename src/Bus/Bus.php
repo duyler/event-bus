@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Bus;
 
-use Duyler\DependencyInjection\Attribute\Finalize;
+use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Storage\ActionStorage;
-use Duyler\ActionBus\Storage\CompleteActionStorage;
-use Duyler\ActionBus\Dto\Action;
 use Duyler\ActionBus\Enum\ResultStatus;
 use Duyler\ActionBus\Exception\UnableToContinueWithFailActionException;
+use Duyler\ActionBus\Storage\ActionStorage;
+use Duyler\ActionBus\Storage\CompleteActionStorage;
+use Duyler\DependencyInjection\Attribute\Finalize;
 
 use function count;
 
@@ -52,7 +52,7 @@ final class Bus
                 continue;
             }
 
-            if (null !== $requiredAction->triggeredOn) {
+            if (null !== $requiredAction->listen) {
                 continue;
             }
 

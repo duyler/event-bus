@@ -8,12 +8,12 @@ use Duyler\ActionBus\Bus\ActionContainer;
 use Duyler\ActionBus\Service\ActionService;
 use Duyler\ActionBus\Service\ResultService;
 use Duyler\ActionBus\Service\SubscriptionService;
-use Duyler\ActionBus\Service\TriggerService;
+use Duyler\ActionBus\Service\EventService;
 use Duyler\ActionBus\State\Service\Trait\ActionServiceTrait;
 use Duyler\ActionBus\State\Service\Trait\ResultServiceTrait;
 use Duyler\ActionBus\State\Service\Trait\SubscriptionServiceTrait;
 use Duyler\ActionBus\State\Service\Trait\TaskSuspendResumeServiceTrait;
-use Duyler\ActionBus\State\Service\Trait\TriggerServiceTrait;
+use Duyler\ActionBus\State\Service\Trait\EventServiceTrait;
 use Duyler\ActionBus\State\Suspend;
 
 class StateMainResumeService
@@ -21,7 +21,7 @@ class StateMainResumeService
     use ResultServiceTrait;
     use TaskSuspendResumeServiceTrait;
     use ActionServiceTrait;
-    use TriggerServiceTrait;
+    use EventServiceTrait;
     use SubscriptionServiceTrait;
 
     public function __construct(
@@ -29,7 +29,7 @@ class StateMainResumeService
         private readonly ResultService $resultService,
         private readonly ActionContainer $container,
         private readonly ActionService $actionService,
-        private readonly TriggerService $triggerService,
+        private readonly EventService $eventService,
         private readonly SubscriptionService $subscriptionService,
     ) {}
 

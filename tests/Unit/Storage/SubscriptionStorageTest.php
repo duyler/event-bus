@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Test\Unit\Storage;
 
-use Duyler\ActionBus\Storage\SubscriptionStorage;
-use Duyler\ActionBus\Dto\Subscription;
+use Duyler\ActionBus\Build\Subscription;
 use Duyler\ActionBus\Enum\ResultStatus;
-use Duyler\ActionBus\Formatter\ActionIdFormatter;
+use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\ActionBus\Storage\SubscriptionStorage;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -28,7 +28,7 @@ class SubscriptionStorageTest extends TestCase
 
         $this->assertTrue($this->subscriptionStorage->isExists($subscription));
         $this->assertSame(
-            ['test' . ActionIdFormatter::DELIMITER . 'Success@test' => $subscription],
+            ['test' . IdFormatter::DELIMITER . 'Success@test' => $subscription],
             $this->subscriptionStorage->getSubscriptions('test', ResultStatus::Success),
         );
     }

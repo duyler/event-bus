@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Bus;
 
+use Duyler\DependencyInjection\Attribute\Finalize;
 use RuntimeException;
 use SplQueue;
 
+#[Finalize]
 final class TaskQueue
 {
     private SplQueue $queue;
@@ -57,5 +59,12 @@ final class TaskQueue
     public function count(): int
     {
         return $this->queue->count();
+    }
+
+    public function finalize(): void
+    {
+        $this->queue = new SplQueue();
+        $this->queue->setIteratorMode(SplQueue::IT_MODE_DELETE);
+        $this->queueLog = [];
     }
 }

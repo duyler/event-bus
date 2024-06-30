@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace Duyler\ActionBus\State\Service;
 
 use Duyler\ActionBus\Enum\ResultStatus;
-use Duyler\ActionBus\Formatter\ActionIdFormatter;
+use Duyler\ActionBus\Formatter\IdFormatter;
 use Duyler\ActionBus\Service\ActionService;
 use Duyler\ActionBus\Service\LogService;
 use Duyler\ActionBus\Service\ResultService;
 use Duyler\ActionBus\Service\RollbackService;
 use Duyler\ActionBus\Service\SubscriptionService;
-use Duyler\ActionBus\Service\TriggerService;
+use Duyler\ActionBus\Service\EventService;
 use Duyler\ActionBus\State\Service\Trait\ActionServiceTrait;
 use Duyler\ActionBus\State\Service\Trait\LogServiceTrait;
 use Duyler\ActionBus\State\Service\Trait\ResultServiceTrait;
 use Duyler\ActionBus\State\Service\Trait\RollbackServiceTrait;
 use Duyler\ActionBus\State\Service\Trait\SubscriptionServiceTrait;
-use Duyler\ActionBus\State\Service\Trait\TriggerServiceTrait;
+use Duyler\ActionBus\State\Service\Trait\EventServiceTrait;
 use UnitEnum;
 
 class StateMainAfterService
@@ -25,7 +25,7 @@ class StateMainAfterService
     use ActionServiceTrait;
     use ResultServiceTrait;
     use LogServiceTrait;
-    use TriggerServiceTrait;
+    use EventServiceTrait;
     use RollbackServiceTrait;
     use SubscriptionServiceTrait;
 
@@ -36,14 +36,14 @@ class StateMainAfterService
         private readonly ActionService $actionService,
         private readonly ResultService $resultService,
         private readonly LogService $logService,
-        private readonly TriggerService $triggerService,
+        private readonly EventService $eventService,
         private readonly RollbackService $rollbackService,
         private readonly SubscriptionService $subscriptionService,
     ) {}
 
     public function getActionId(): string|UnitEnum
     {
-        return ActionIdFormatter::reverse($this->actionId);
+        return IdFormatter::reverse($this->actionId);
     }
 
     public function getResultData(): ?object

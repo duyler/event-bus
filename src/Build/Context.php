@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Dto;
+namespace Duyler\ActionBus\Build;
 
-readonly class Context
+final readonly class Context
 {
     public function __construct(
         /** @var array<array-key, string> */

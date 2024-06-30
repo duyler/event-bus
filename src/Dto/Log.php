@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Dto;
 
-readonly class Log
+final readonly class Log
 {
     public function __construct(
         /** @var string[] */
@@ -17,7 +17,7 @@ readonly class Log
         private array $repeatedEventLog,
 
         /** @var string[] */
-        private array $triggerLog,
+        private array $eventLog,
 
         /** @var string[] */
         private array $retriesLog,
@@ -38,9 +38,9 @@ readonly class Log
         return $this->repeatedEventLog;
     }
 
-    public function getTriggerLog(): array
+    public function getEventLog(): array
     {
-        return $this->triggerLog;
+        return $this->eventLog;
     }
 
     public function getRetriesLog(): array

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Dto;
+namespace Duyler\ActionBus\Build;
 
-use Duyler\ActionBus\Formatter\ActionIdFormatter;
+use Duyler\ActionBus\Formatter\IdFormatter;
 use UnitEnum;
 
-readonly class ActionResultSubstitution
+final readonly class ActionResultSubstitution
 {
     public string $actionId;
 
@@ -16,6 +16,6 @@ readonly class ActionResultSubstitution
         public string $requiredContract,
         public object $substitution,
     ) {
-        $this->actionId = ActionIdFormatter::toString($actionId);
+        $this->actionId = IdFormatter::toString($actionId);
     }
 }

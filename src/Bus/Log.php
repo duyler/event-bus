@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Bus;
 
-use Duyler\DependencyInjection\Attribute\Finalize;
+use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Dto\Action;
 use Duyler\ActionBus\Dto\Log as LogDto;
+use Duyler\DependencyInjection\Attribute\Finalize;
 
 #[Finalize(method: 'reset')]
 final class Log
@@ -22,7 +22,7 @@ final class Log
     private array $repeatedLog = [];
 
     /** @var string[] */
-    private array $triggerLog = [];
+    private array $eventLog = [];
 
     /** @var string[] */
     private array $retriesLog = [];
@@ -90,12 +90,12 @@ final class Log
         return $this->repeatedLog;
     }
 
-    public function pushTriggerLog(string $triggerId): void
+    public function dispatchEventLog(string $eventId): void
     {
-        if ($this->config->allowCircularCall && count($this->triggerLog) === $this->config->logMaxSize) {
-            array_shift($this->triggerLog);
+        if ($this->config->allowCircularCall && count($this->eventLog) === $this->config->logMaxSize) {
+            array_shift($this->eventLog);
         }
-        $this->triggerLog[] = $triggerId;
+        $this->eventLog[] = $eventId;
     }
 
     public function getLog(): LogDto
@@ -104,7 +104,7 @@ final class Log
             $this->actionLog,
             $this->mainLog,
             $this->repeatedLog,
-            $this->triggerLog,
+            $this->eventLog,
             $this->retriesLog,
         );
     }
@@ -114,7 +114,7 @@ final class Log
         $this->actionLog = [];
         $this->mainLog = [];
         $this->repeatedLog = [];
-        $this->triggerLog = [];
+        $this->eventLog = [];
         $this->retriesLog = [];
     }
 }

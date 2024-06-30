@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Duyler\ActionBus\Bus;
 
 use Closure;
-use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\Dto\Result;
 use Duyler\ActionBus\Enum\ResultStatus;
 use Duyler\ActionBus\Exception\ActionReturnValueExistsException;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Test\Functional\Result;
 
+use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\BusBuilder;
 use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Dto\Action;
 use Duyler\ActionBus\Enum\ResultStatus;
 use Duyler\ActionBus\Exception\ActionNotAllowExternalAccessException;
 use Duyler\ActionBus\Exception\ResultNotExistsException;
@@ -90,7 +90,7 @@ class GetResultTest extends TestCase
         $bus->run();
 
         $this->expectException(ResultNotExistsException::class);
-        $this->expectExceptionMessage('Action or trigger result for Test_Not_Found does not exist');
+        $this->expectExceptionMessage('Action or event result for Test_Not_Found does not exist');
 
         $bus->getResult('Test_Not_Found');
     }

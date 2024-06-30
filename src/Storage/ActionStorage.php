@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Storage;
 
-use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Build\Action;
 
 use function array_key_exists;
 
@@ -27,8 +27,8 @@ class ActionStorage
             $this->byContract[$action->contract][$action->id] = $action;
         }
 
-        if (null !== $action->triggeredOn) {
-            $this->byTrigger[$action->triggeredOn][$action->id] = $action;
+        if (null !== $action->listen) {
+            $this->byTrigger[$action->listen][$action->id] = $action;
         }
 
         $this->data[$action->id] = $action;
@@ -62,8 +62,8 @@ class ActionStorage
     }
 
     /** @return array<string, Action> */
-    public function getByTrigger(string $triggerId): array
+    public function getByEvent(string $eventId): array
     {
-        return $this->byTrigger[$triggerId] ?? [];
+        return $this->byTrigger[$eventId] ?? [];
     }
 }

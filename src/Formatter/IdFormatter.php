@@ -6,7 +6,7 @@ namespace Duyler\ActionBus\Formatter;
 
 use UnitEnum;
 
-final class ActionIdFormatter
+final class IdFormatter
 {
     public const string DELIMITER = '::';
 

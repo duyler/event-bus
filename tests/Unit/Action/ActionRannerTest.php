@@ -8,7 +8,7 @@ use Duyler\ActionBus\Action\ActionContainerProvider;
 use Duyler\ActionBus\Action\ActionHandlerArgumentBuilder;
 use Duyler\ActionBus\Action\ActionHandlerBuilder;
 use Duyler\ActionBus\Action\ActionRunnerProvider;
-use Duyler\ActionBus\Dto\Action;
+use Duyler\ActionBus\Build\Action;
 use Exception;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

@@ -6,10 +6,10 @@ namespace Duyler\ActionBus;
 
 use Duyler\ActionBus\Dto\Log;
 use Duyler\ActionBus\Dto\Result;
-use Duyler\ActionBus\Dto\Trigger;
-use Duyler\ActionBus\Formatter\ActionIdFormatter;
+use Duyler\ActionBus\Dto\Event;
+use Duyler\ActionBus\Formatter\IdFormatter;
 use Duyler\ActionBus\Internal\Event\BusCompletedEvent;
-use Duyler\ActionBus\Internal\Event\TriggerPushedEvent;
+use Duyler\ActionBus\Internal\Event\EventDispatchedEvent;
 use Duyler\ActionBus\Service\ResultService;
 use Override;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -36,19 +36,19 @@ class Bus implements BusInterface
     #[Override]
     public function getResult(string|UnitEnum $actionId): Result
     {
-        return $this->resultService->getResult(ActionIdFormatter::toString($actionId));
+        return $this->resultService->getResult(IdFormatter::toString($actionId));
     }
 
     #[Override]
     public function resultIsExists(string|UnitEnum $actionId): bool
     {
-        return $this->resultService->resultIsExists(ActionIdFormatter::toString($actionId));
+        return $this->resultService->resultIsExists(IdFormatter::toString($actionId));
     }
 
     #[Override]
-    public function dispatchTrigger(Trigger $trigger): BusInterface
+    public function dispatchEvent(Event $event): BusInterface
     {
-        $this->eventDispatcher->dispatch(new TriggerPushedEvent($trigger));
+        $this->eventDispatcher->dispatch(new EventDispatchedEvent($event));
 
         return $this;
     }

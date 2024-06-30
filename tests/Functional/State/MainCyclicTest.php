@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Test\Functional\State;
 
+use Duyler\ActionBus\Build\Action;
+use Duyler\ActionBus\Build\Context;
 use Duyler\ActionBus\BusBuilder;
 use Duyler\ActionBus\BusConfig;
 use Duyler\ActionBus\Contract\State\MainCyclicStateHandlerInterface;
-use Duyler\ActionBus\Dto\Action;
-use Duyler\ActionBus\Dto\Context;
-use Duyler\ActionBus\Dto\Trigger;
+use Duyler\ActionBus\Dto\Event;
 use Duyler\ActionBus\Exception\CircularCallActionException;
 use Duyler\ActionBus\State\Service\StateMainCyclicService;
 use Duyler\ActionBus\State\StateContext;
@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
 class MainCyclicTest extends TestCase
 {
     #[Test]
-    public function cyclic_with_trigger(): void
+    public function cyclic_with_event(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainCyclicStateHandlerWithTrigger());
@@ -36,6 +36,8 @@ class MainCyclicTest extends TestCase
             ),
         );
 
+        $busBuilder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'EventFromHandler'));
+
         $bus = $busBuilder->build();
         $bus->run();
         $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
@@ -46,10 +48,12 @@ class MainCyclicTest extends TestCase
     public function cyclic_with_lock_action(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->addStateHandler(new MainCyclicStateHandlerWithRepeatableTrigger());
+        $busBuilder->addStateHandler(new MainCyclicStateHandlerWithRepeatableEvent());
         $busBuilder->addStateContext(new Context(
-            [MainCyclicStateHandlerWithRepeatableTrigger::class],
+            [MainCyclicStateHandlerWithRepeatableEvent::class],
         ));
+
+        $busBuilder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'EventFromHandler'));
 
         $bus = $busBuilder->build();
 
@@ -69,14 +73,14 @@ class MainCyclicStateHandlerWithTrigger implements MainCyclicStateHandlerInterfa
             new Action(
                 id: 'ActionFromHandler',
                 handler: function (): void {},
-                triggeredOn: 'TriggerFromHandler',
+                listen: 'EventFromHandler',
                 externalAccess: true,
             ),
         );
 
-        $stateService->doTrigger(
-            new Trigger(
-                id: 'TriggerFromHandler',
+        $stateService->dispatchEvent(
+            new Event(
+                id: 'EventFromHandler',
             ),
         );
 
@@ -87,7 +91,7 @@ class MainCyclicStateHandlerWithTrigger implements MainCyclicStateHandlerInterfa
     }
 }
 
-class MainCyclicStateHandlerWithRepeatableTrigger implements MainCyclicStateHandlerInterface
+class MainCyclicStateHandlerWithRepeatableEvent implements MainCyclicStateHandlerInterface
 {
     #[Override]
     public function handle(StateMainCyclicService $stateService, StateContext $context): void
@@ -98,16 +102,16 @@ class MainCyclicStateHandlerWithRepeatableTrigger implements MainCyclicStateHand
                 handler: function (): void {
                     Fiber::suspend();
                 },
-                triggeredOn: 'TriggerFromHandler',
+                listen: 'EventFromHandler',
                 externalAccess: true,
                 repeatable: true,
                 lock: true,
             ),
         );
 
-        $stateService->doTrigger(
-            new Trigger(
-                id: 'TriggerFromHandler',
+        $stateService->dispatchEvent(
+            new Event(
+                id: 'EventFromHandler',
             ),
         );
     }

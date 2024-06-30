@@ -6,13 +6,14 @@ namespace Duyler\ActionBus\Action;
 
 use Closure;
 use Duyler\ActionBus\Action\Exception\InvalidArgumentFactoryException;
+use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\Bus\ActionContainer;
 use Duyler\ActionBus\Bus\CompleteAction;
+use Duyler\ActionBus\Enum\ResultStatus;
 use Duyler\ActionBus\Storage\ActionArgumentStorage;
 use Duyler\ActionBus\Storage\CompleteActionStorage;
-use Duyler\ActionBus\Storage\TriggerRelationStorage;
-use Duyler\ActionBus\Dto\Action;
-use Duyler\ActionBus\Enum\ResultStatus;
+use Duyler\ActionBus\Storage\EventRelationStorage;
+use Duyler\ActionBus\Storage\EventStorage;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
@@ -26,8 +27,9 @@ class ActionHandlerArgumentBuilder
     public function __construct(
         private CompleteActionStorage $completeActionStorage,
         private ActionSubstitution $actionSubstitution,
-        private TriggerRelationStorage $triggerRelationStorage,
+        private EventRelationStorage $eventRelationStorage,
         private ActionArgumentStorage $actionArgumentStorage,
+        private EventStorage $eventStorage,
     ) {}
 
     public function build(Action $action, ActionContainer $container): object|null
@@ -39,10 +41,11 @@ class ActionHandlerArgumentBuilder
         /** @var array<string, object> $results */
         $results = [];
 
-        if ($this->triggerRelationStorage->has($action->id)) {
-            $trigger = $this->triggerRelationStorage->shift($action->id)->trigger;
-            if (null !== $trigger->data && null !== $trigger->contract) {
-                $results[$trigger->contract] = $trigger->data;
+        if ($this->eventRelationStorage->has($action->id)) {
+            $eventDto = $this->eventRelationStorage->shift($action->id)->event;
+            $event = $this->eventStorage->get($eventDto->id);
+            if (null !== $eventDto->data && null !== $event && null !== $event->contract) {
+                $results[$event->contract] = $eventDto->data;
             }
         }
 

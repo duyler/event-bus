@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Test\Functional\Run;
 
+use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\BusBuilder;
 use Duyler\ActionBus\BusConfig;
 use Duyler\ActionBus\Contract\RollbackActionInterface;
-use Duyler\ActionBus\Dto\Action;
 use Duyler\ActionBus\Dto\Result;
 use Override;
 use PHPUnit\Framework\Attributes\Test;

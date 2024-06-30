@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Contract;
 
-use Duyler\ActionBus\Dto\ActionHandlerSubstitution;
-use Duyler\ActionBus\Dto\ActionResultSubstitution;
+use Duyler\ActionBus\Build\ActionHandlerSubstitution;
+use Duyler\ActionBus\Build\ActionResultSubstitution;
 
 interface ActionSubstitutionInterface
 {

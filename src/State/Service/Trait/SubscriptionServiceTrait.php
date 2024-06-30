@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\State\Service\Trait;
 
-use Duyler\ActionBus\Dto\Subscription;
+use Duyler\ActionBus\Build\Subscription;
 use Duyler\ActionBus\Service\SubscriptionService;
 
 /**

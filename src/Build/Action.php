@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Dto;
+namespace Duyler\ActionBus\Build;
 
-use UnitEnum;
 use Closure;
-use Duyler\ActionBus\Formatter\ActionIdFormatter;
+use Duyler\ActionBus\Formatter\IdFormatter;
 use RecursiveArrayIterator;
+use UnitEnum;
 
-readonly class Action
+final readonly class Action
 {
     public string $id;
     /** @var RecursiveArrayIterator<array-key, string> */
     public RecursiveArrayIterator $required;
-    public ?string $triggeredOn;
+    public ?string $listen;
     /** @var string[] */
     public array $sealed;
     /** @var string[] */
@@ -25,7 +25,7 @@ readonly class Action
         public string|Closure $handler,
         /** @param array<array-key, string|UnitEnum> $required  */
         array $required = [],
-        null|string|UnitEnum $triggeredOn = null,
+        null|string|UnitEnum $listen = null,
         /** @var array<string, string> */
         public array $bind = [],
         /** @var array<string, string> */
@@ -47,20 +47,20 @@ readonly class Action
         /** @var array<string|int, mixed> */
         public array $labels = [],
     ) {
-        $this->id = ActionIdFormatter::toString($id);
+        $this->id = IdFormatter::toString($id);
 
         $this->required = new RecursiveArrayIterator();
 
         /** @var string|UnitEnum $actionId */
         foreach ($required as $actionId) {
-            $this->required->append(ActionIdFormatter::toString($actionId));
+            $this->required->append(IdFormatter::toString($actionId));
         }
 
         $alternatesActions = [];
 
         /** @var string|UnitEnum $actionId */
         foreach ($alternates as $actionId) {
-            $alternatesActions[] = ActionIdFormatter::toString($actionId);
+            $alternatesActions[] = IdFormatter::toString($actionId);
         }
 
         $this->alternates = $alternatesActions;
@@ -69,11 +69,11 @@ readonly class Action
 
         /** @var string|UnitEnum $actionId */
         foreach ($sealed as $actionId) {
-            $allowActions[] = ActionIdFormatter::toString($actionId);
+            $allowActions[] = IdFormatter::toString($actionId);
         }
 
         $this->sealed = $allowActions;
 
-        $this->triggeredOn = $triggeredOn === null ? null : ActionIdFormatter::toString($triggeredOn);
+        $this->listen = $listen === null ? null : IdFormatter::toString($listen);
     }
 }

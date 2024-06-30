@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\State;
 
-use Duyler\ActionBus\Dto\Context;
+use Duyler\ActionBus\Build\Context;
 
 class StateContextScope
 {

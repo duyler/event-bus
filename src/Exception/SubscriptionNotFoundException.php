@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Exception;
 
-use Duyler\ActionBus\Dto\Subscription;
+use Duyler\ActionBus\Build\Subscription;
 use Exception;
 
 class SubscriptionNotFoundException extends Exception

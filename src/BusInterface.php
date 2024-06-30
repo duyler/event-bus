@@ -6,7 +6,7 @@ namespace Duyler\ActionBus;
 
 use Duyler\ActionBus\Dto\Log;
 use Duyler\ActionBus\Dto\Result;
-use Duyler\ActionBus\Dto\Trigger;
+use Duyler\ActionBus\Dto\Event;
 use Throwable;
 use UnitEnum;
 
@@ -21,7 +21,7 @@ interface BusInterface
 
     public function resultIsExists(string|UnitEnum $actionId): bool;
 
-    public function dispatchTrigger(Trigger $trigger): BusInterface;
+    public function dispatchEvent(Event $event): BusInterface;
 
     public function reset(): BusInterface;
 
