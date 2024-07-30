@@ -222,7 +222,9 @@ class MainAfterStateHandlerWithRemoveAction implements MainAfterStateHandlerInte
             $stateService->removeAction('RemovedActionFromBuilder');
         }
 
-        $stateService->addSharedService($action);
+        $stateService->addSharedService(
+            new \Duyler\ActionBus\Build\SharedService(class: $action::class, service: $action),
+        );
     }
 
     #[Override]

@@ -7,6 +7,7 @@ namespace Duyler\ActionBus;
 use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\Build\Context;
 use Duyler\ActionBus\Build\Event;
+use Duyler\ActionBus\Build\SharedService;
 use Duyler\ActionBus\Build\Subscription;
 use Duyler\ActionBus\Contract\State\StateHandlerInterface;
 use Duyler\ActionBus\Exception\ActionAlreadyDefinedException;
@@ -34,7 +35,7 @@ class BusBuilder
     /** @var StateHandlerInterface[] */
     private array $stateHandlers = [];
 
-    /** @var object[] */
+    /** @var SharedService[] */
     private array $sharedServices = [];
 
     /** @var array<string, string> */
@@ -79,11 +80,11 @@ class BusBuilder
 
         $eventService->collect($this->events);
 
-        $actionService->collect($this->actions);
-
         foreach ($this->sharedServices as $sharedService) {
-            $actionService->addSharedService($sharedService, $this->bind);
+            $actionService->addSharedService($sharedService);
         }
+
+        $actionService->collect($this->actions);
 
         foreach ($this->doActions as $action) {
             $actionService->doExistsAction($action->id);
@@ -166,11 +167,9 @@ class BusBuilder
         return $this;
     }
 
-    /** @param array<string, string> $bind */
-    public function addSharedService(object $service, array $bind = []): static
+    public function addSharedService(SharedService $sharedService): static
     {
-        $this->sharedServices[] = $service;
-        $this->bind = $bind + $this->bind;
+        $this->sharedServices[] = $sharedService;
 
         return $this;
     }

@@ -17,10 +17,13 @@ class AddSharedServiceTest extends TestCase
     {
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addSharedService(
-            new SharedService('Test service'),
-            [
-                SharedInterface::class => SharedService::class,
-            ],
+            new \Duyler\ActionBus\Build\SharedService(
+                class: TestSharedService::class,
+                service: new TestSharedService('Test service'),
+                bind: [
+                    SharedInterface::class => TestSharedService::class,
+                ],
+            ),
         );
 
         $busBuilder->doAction(
@@ -39,7 +42,7 @@ class AddSharedServiceTest extends TestCase
     }
 }
 
-readonly class SharedService implements SharedInterface
+readonly class TestSharedService implements SharedInterface
 {
     public function __construct(public string $foo) {}
 }
