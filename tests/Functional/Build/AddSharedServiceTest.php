@@ -9,6 +9,8 @@ use Duyler\ActionBus\BusBuilder;
 use Duyler\ActionBus\BusConfig;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use InvalidArgumentException;
+use stdClass;
 
 class AddSharedServiceTest extends TestCase
 {
@@ -39,6 +41,34 @@ class AddSharedServiceTest extends TestCase
 
         $this->assertTrue($bus->resultIsExists('Test'));
         $this->assertEquals('Test service', $bus->getResult('Test')->data->foo);
+    }
+
+    #[Test]
+    public function addSharedService_with_invalid_class(): void
+    {
+        $busBuilder = new BusBuilder(new BusConfig());
+        $busBuilder->addSharedService(
+            new \Duyler\ActionBus\Build\SharedService(
+                class: stdClass::class,
+                service: new TestSharedService('Test service'),
+                bind: [
+                    SharedInterface::class => TestSharedService::class,
+                ],
+            ),
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $busBuilder->doAction(
+            new Action(
+                id: 'Test',
+                handler: Handler::class,
+                contract: SharedInterface::class,
+                externalAccess: true,
+            ),
+        );
+
+        $busBuilder->build();
     }
 }
 

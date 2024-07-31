@@ -13,6 +13,7 @@ use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerInterface;
 use Duyler\DependencyInjection\Definition;
 use Duyler\DependencyInjection\Provider\ProviderInterface;
+use InvalidArgumentException;
 
 class ActionContainerProvider
 {
@@ -126,6 +127,10 @@ class ActionContainerProvider
 
     public function addSharedService(SharedService $sharedService): void
     {
+        if (null !== $sharedService->service && false === $sharedService->service instanceof $sharedService->class) {
+            throw new InvalidArgumentException('Service must be an instance of ' . $sharedService->class);
+        }
+
         $this->sharedServices[$sharedService->class] = $sharedService;
     }
 }
