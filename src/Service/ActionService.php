@@ -8,6 +8,7 @@ use Duyler\ActionBus\Action\ActionContainerProvider;
 use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\Build\ActionHandlerSubstitution;
 use Duyler\ActionBus\Build\ActionResultSubstitution;
+use Duyler\ActionBus\Build\SharedService;
 use Duyler\ActionBus\Bus\ActionRequiredIterator;
 use Duyler\ActionBus\Bus\Bus;
 use Duyler\ActionBus\Contract\ActionSubstitutionInterface;
@@ -130,6 +131,8 @@ readonly class ActionService
                 }
             }
 
+            $this->actionContainerProvider->buildContainer($action);
+
             $this->actionStorage->save($action);
         }
     }
@@ -155,10 +158,9 @@ readonly class ActionService
         throw new EventNotDefinedException($eventId, $actionId);
     }
 
-    /** @param array<string, string> $bind  */
-    public function addSharedService(object $service, array $bind = []): void
+    public function addSharedService(SharedService $sharedService): void
     {
-        $this->actionContainerProvider->addSharedService($service, $bind);
+        $this->actionContainerProvider->addSharedService($sharedService);
     }
 
     public function addResultSubstitutions(ActionResultSubstitution $actionResultSubstitution): void

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duyler\ActionBus\State\Service\Trait;
 
 use Duyler\ActionBus\Build\Action;
+use Duyler\ActionBus\Build\SharedService;
 use Duyler\ActionBus\Formatter\IdFormatter;
 use Duyler\ActionBus\Service\ActionService;
 use UnitEnum;
@@ -52,9 +53,8 @@ trait ActionServiceTrait
         return $this->actionService->getById(IdFormatter::toString($actionId));
     }
 
-    /** @param array<string, string> $bind */
-    public function addSharedService(object $service, array $bind = []): void
+    public function addSharedService(SharedService $sharedService): void
     {
-        $this->actionService->addSharedService($service, $bind);
+        $this->actionService->addSharedService($sharedService);
     }
 }

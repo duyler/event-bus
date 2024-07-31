@@ -67,7 +67,6 @@ class BusConfig
 
         /** @var Definition[] */
         public readonly array $definitions = [],
-        public readonly bool $saveStateActionContainer = true,
         public readonly bool $allowSkipUnresolvedActions = true,
         public readonly bool $autoreset = false,
         public readonly bool $allowCircularCall = false,

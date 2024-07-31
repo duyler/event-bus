@@ -26,10 +26,8 @@ final readonly class Action
         /** @param array<array-key, string|UnitEnum> $required  */
         array $required = [],
         null|string|UnitEnum $listen = null,
-        /** @var array<string, string> */
-        public array $bind = [],
-        /** @var array<string, string> */
-        public array $providers = [],
+        /** @var array<string, string|array<string, string>|object> */
+        public array $config = [],
         public ?string $argument = null,
         public string|Closure|null $argumentFactory = null,
         public ?string $contract = null,
