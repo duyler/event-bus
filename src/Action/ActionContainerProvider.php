@@ -31,14 +31,14 @@ class ActionContainerProvider
 
     public function get(Action $action): ActionContainer
     {
-        if ($this->containerStorage->isExists($action->id)) {
-            return $this->containerStorage->get($action->id);
+        if (false === $this->containerStorage->isExists($action->id)) {
+            $this->buildContainer($action);
         }
 
-        return $this->buildContainer($action);
+        return $this->containerStorage->get($action->id);
     }
 
-    public function buildContainer(Action $action): ActionContainer
+    public function buildContainer(Action $action): void
     {
         $externalConfigDefinitions = [];
 
@@ -110,7 +110,7 @@ class ActionContainerProvider
             if (null === $sharedService->service) {
                 $this->sharedContainer->bind($sharedService->bind);
                 $this->sharedContainer->addProviders($sharedService->providers);
-                $actionContainer->set((object) $this->sharedContainer->get($sharedService->class));
+                $actionContainer->set($this->sharedContainer->get($sharedService->class));
             } else {
                 $actionContainer->set($sharedService->service);
             }
@@ -121,8 +121,6 @@ class ActionContainerProvider
         }
 
         $this->containerStorage->save($actionContainer);
-
-        return $actionContainer;
     }
 
     public function addSharedService(SharedService $sharedService): void
