@@ -16,6 +16,7 @@ class Termination
     public function __construct(
         private ContainerInterface $container,
     ) {
+        /** @var Log */
         $this->log = $this->container->get(Log::class);
     }
 
