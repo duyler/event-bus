@@ -8,7 +8,7 @@ use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\BusBuilder;
 use Duyler\ActionBus\BusConfig;
 use Duyler\ActionBus\Contract\RollbackActionInterface;
-use Duyler\ActionBus\Dto\Result;
+use Duyler\ActionBus\Dto\Rollback as RollbackDto;
 use Override;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -60,5 +60,5 @@ class RollbackTest extends TestCase
 class Rollback implements RollbackActionInterface
 {
     #[Override]
-    public function run(Result|null $result, object|null $argument): void {}
+    public function run(RollbackDto $rollback): void {}
 }

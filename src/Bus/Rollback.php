@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Duyler\ActionBus\Bus;
 
 use Duyler\ActionBus\Build\Action;
+use Duyler\ActionBus\Dto\Rollback as RollbackDto;
 use Duyler\ActionBus\Storage\ActionArgumentStorage;
 use Duyler\ActionBus\Storage\ActionContainerStorage;
 use Duyler\ActionBus\Storage\CompleteActionStorage;
 use Duyler\ActionBus\Contract\RollbackActionInterface;
-use Duyler\ActionBus\Dto\Result;
 
 use function is_callable;
 
@@ -32,26 +32,33 @@ final class Rollback
                 continue;
             }
 
+            $actionContainer = $this->containerStorage->get($completeAction->action->id);
+
             $argument = $this->actionArgumentStorage->isExists($completeAction->action->id)
                 ? $this->actionArgumentStorage->get($completeAction->action->id)
                 : null;
 
+            $rollbackDto = new RollbackDto(
+                container: $actionContainer,
+                action: $completeAction->action,
+                argument: $argument,
+                result: $completeAction->result,
+            );
+
             if (is_callable($completeAction->action->rollback)) {
-                ($completeAction->action->rollback)($completeAction->result, $argument);
+                ($completeAction->action->rollback)($rollbackDto);
                 continue;
             }
 
-            $actionContainer = $this->containerStorage->get($completeAction->action->id);
-
             /** @var RollbackActionInterface $rollback */
             $rollback = $actionContainer->get($completeAction->action->rollback);
-            $this->rollback($rollback, $completeAction->result, $argument);
+            $this->rollback($rollback, $rollbackDto);
         }
     }
 
-    private function rollback(RollbackActionInterface $rollback, Result|null $result, object|null $argument): void
+    private function rollback(RollbackActionInterface $rollback, RollbackDto $rollbackService): void
     {
-        $rollback->run($result, $argument);
+        $rollback->run($rollbackService);
     }
 
     public function rollbackSingleAction(Action $action): void
@@ -60,19 +67,25 @@ final class Rollback
             return;
         }
 
+        $actionContainer = $this->containerStorage->get($action->id);
+
         $argument = $this->actionArgumentStorage->isExists($action->id)
             ? $this->actionArgumentStorage->get($action->id)
             : null;
 
+        $rollbackDto = new RollbackDto(
+            container: $actionContainer,
+            action: $action,
+            argument: $argument,
+        );
+
         if (is_callable($action->rollback)) {
-            ($action->rollback)(null, $argument);
+            ($action->rollback)($rollbackDto);
             return;
         }
 
-        $actionContainer = $this->containerStorage->get($action->id);
-
         /** @var RollbackActionInterface $rollback */
         $rollback = $actionContainer->get($action->rollback);
-        $this->rollback($rollback, null, $argument);
+        $this->rollback($rollback, $rollbackDto);
     }
 }

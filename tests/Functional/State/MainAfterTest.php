@@ -11,7 +11,7 @@ use Duyler\ActionBus\BusBuilder;
 use Duyler\ActionBus\BusConfig;
 use Duyler\ActionBus\Contract\RollbackActionInterface;
 use Duyler\ActionBus\Contract\State\MainAfterStateHandlerInterface;
-use Duyler\ActionBus\Dto\Result;
+use Duyler\ActionBus\Dto\Rollback as RollbackDto;
 use Duyler\ActionBus\Enum\ResultStatus;
 use Duyler\ActionBus\State\Service\StateMainAfterService;
 use Duyler\ActionBus\State\StateContext;
@@ -169,7 +169,7 @@ class MainAfterTest extends TestCase
                     'ActionWithContract',
                 ],
                 argument: stdClass::class,
-                rollback: function (Result $result, stdClass $argument): void {},
+                rollback: function (RollbackDto $rollbackService): void {},
                 externalAccess: true,
             ),
         );
@@ -311,8 +311,8 @@ class MainAfterStateHandlerWithAction implements MainAfterStateHandlerInterface
 class Rollback implements RollbackActionInterface
 {
     #[Override]
-    public function run(Result|null $result, object|null $argument): void
+    public function run(RollbackDto $rollback): void
     {
-        ResultStatus::Success === $result->status;
+        ResultStatus::Success === $rollback->result->status;
     }
 }
