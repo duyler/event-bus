@@ -311,7 +311,7 @@ class MainAfterStateHandlerWithAction implements MainAfterStateHandlerInterface
 class Rollback implements RollbackActionInterface
 {
     #[Override]
-    public function run(Result $result, object|null $argument): void
+    public function run(Result|null $result, object|null $argument): void
     {
         ResultStatus::Success === $result->status;
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Bus;
 
+use Duyler\ActionBus\Build\Action;
 use Duyler\ActionBus\Storage\ActionArgumentStorage;
 use Duyler\ActionBus\Storage\ActionContainerStorage;
 use Duyler\ActionBus\Storage\CompleteActionStorage;
@@ -48,8 +49,30 @@ final class Rollback
         }
     }
 
-    private function rollback(RollbackActionInterface $rollback, Result $result, object|null $argument): void
+    private function rollback(RollbackActionInterface $rollback, Result|null $result, object|null $argument): void
     {
         $rollback->run($result, $argument);
+    }
+
+    public function rollbackSingleAction(Action $action): void
+    {
+        if (null === $action->rollback) {
+            return;
+        }
+
+        $argument = $this->actionArgumentStorage->isExists($action->id)
+            ? $this->actionArgumentStorage->get($action->id)
+            : null;
+
+        if (is_callable($action->rollback)) {
+            ($action->rollback)(null, $argument);
+            return;
+        }
+
+        $actionContainer = $this->containerStorage->get($action->id);
+
+        /** @var RollbackActionInterface $rollback */
+        $rollback = $actionContainer->get($action->rollback);
+        $this->rollback($rollback, null, $argument);
     }
 }

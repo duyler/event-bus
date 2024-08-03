@@ -9,7 +9,9 @@ use Duyler\ActionBus\Termination;
 
 class TerminateAfterExceptionEventListener
 {
-    public function __construct(private Termination $termination) {}
+    public function __construct(
+        private Termination $termination,
+    ) {}
 
     public function __invoke(ThrowExceptionEvent $event)
     {

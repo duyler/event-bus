@@ -14,7 +14,6 @@ use Duyler\ActionBus\Contract\ActionSubstitutionInterface;
 use Duyler\ActionBus\Contract\StateActionInterface;
 use Duyler\ActionBus\Contract\StateMainInterface;
 use Duyler\ActionBus\Enum\Mode;
-use Duyler\ActionBus\Enum\ResetMode;
 use Duyler\ActionBus\Internal\Event\ActionAfterRunEvent;
 use Duyler\ActionBus\Internal\Event\ActionBeforeRunEvent;
 use Duyler\ActionBus\Internal\Event\ActionThrownExceptionEvent;
@@ -72,7 +71,7 @@ class BusConfig
         public readonly bool $allowCircularCall = false,
         public readonly int $logMaxSize = 50,
         public readonly Mode $mode = Mode::Queue,
-        public readonly ResetMode $resetMode = ResetMode::Selective,
+        public readonly bool $continueAfterException = false,
     ) {
         $this->bind = $this->getBind() + $bind;
     }

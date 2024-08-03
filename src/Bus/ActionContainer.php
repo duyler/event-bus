@@ -7,7 +7,6 @@ namespace Duyler\ActionBus\Bus;
 use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerConfig;
 use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Enum\ResetMode;
 
 class ActionContainer extends Container
 {
@@ -24,14 +23,5 @@ class ActionContainer extends Container
         }
 
         parent::__construct($containerConfig);
-    }
-
-    public function runReset(): void
-    {
-        if ($this->config->resetMode === ResetMode::Full) {
-            $this->reset();
-        } else {
-            $this->finalize();
-        }
     }
 }
