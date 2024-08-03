@@ -35,7 +35,9 @@ class ActionContainerProvider
             $this->buildContainer($action);
         }
 
-        return $this->containerStorage->get($action->id);
+        $actionContainer = $this->containerStorage->get($action->id);
+        $actionContainer->finalize();
+        return $actionContainer;
     }
 
     public function buildContainer(Action $action): void
