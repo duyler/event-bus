@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\ActionBus\Contract;
 
-use Duyler\ActionBus\Dto\Result;
+use Duyler\ActionBus\Dto\Rollback as RollbackDto;
 
 interface RollbackActionInterface
 {
-    public function run(Result $result, object|null $argument): void;
+    public function run(RollbackDto $rollback): void;
 }

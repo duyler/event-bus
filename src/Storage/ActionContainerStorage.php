@@ -34,7 +34,7 @@ class ActionContainerStorage
     public function reset(): void
     {
         foreach ($this->data as $container) {
-            $container->runReset();
+            $container->finalize();
         }
     }
 
