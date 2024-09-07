@@ -84,7 +84,7 @@ class ActionResultTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'TestAction',
-                handler: fn() => new class () {},
+                handler: fn() => new class {},
                 contract: stdClass::class,
             ),
         );

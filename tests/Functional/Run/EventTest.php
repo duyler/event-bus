@@ -244,7 +244,7 @@ class EventTest extends TestCase
         $bus->dispatchEvent(
             new Event(
                 id: 'TestEvent',
-                data: new class () {},
+                data: new class {},
             ),
         );
     }

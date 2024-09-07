@@ -30,7 +30,7 @@ class MainBeforeTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: TestActionEnum::ActionFromBuilder_1,
-                handler: fn(): ResultInterface => new class () implements ResultInterface {},
+                handler: fn(): ResultInterface => new class implements ResultInterface {},
                 contract: ResultInterface::class,
                 externalAccess: true,
             ),
@@ -39,7 +39,7 @@ class MainBeforeTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: TestActionEnum::ActionFromBuilder_2,
-                handler: fn(): ResultInterface => new class () implements ResultInterface {},
+                handler: fn(): ResultInterface => new class implements ResultInterface {},
                 contract: ResultInterface::class,
                 externalAccess: true,
             ),
@@ -71,7 +71,7 @@ class MainBeforeTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'RequiredAction',
-                handler: fn(): ResultInterface => new class () implements ResultInterface {},
+                handler: fn(): ResultInterface => new class implements ResultInterface {},
                 contract: ResultInterface::class,
                 externalAccess: true,
             ),
