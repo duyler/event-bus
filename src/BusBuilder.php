@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus;
+namespace Duyler\EventBus;
 
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\Build\Context;
-use Duyler\ActionBus\Build\Event;
-use Duyler\ActionBus\Build\SharedService;
-use Duyler\ActionBus\Build\Subscription;
-use Duyler\ActionBus\Contract\State\StateHandlerInterface;
-use Duyler\ActionBus\Exception\ActionAlreadyDefinedException;
-use Duyler\ActionBus\Exception\SubscriptionAlreadyDefinedException;
-use Duyler\ActionBus\Internal\ListenerProvider;
-use Duyler\ActionBus\Service\ActionService;
-use Duyler\ActionBus\Service\EventService;
-use Duyler\ActionBus\Service\StateService;
-use Duyler\ActionBus\Service\SubscriptionService;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\Context;
+use Duyler\EventBus\Build\Event;
+use Duyler\EventBus\Build\SharedService;
+use Duyler\EventBus\Build\Subscription;
+use Duyler\EventBus\Contract\State\StateHandlerInterface;
+use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
+use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
+use Duyler\EventBus\Internal\ListenerProvider;
+use Duyler\EventBus\Service\ActionService;
+use Duyler\EventBus\Service\EventService;
+use Duyler\EventBus\Service\StateService;
+use Duyler\EventBus\Service\SubscriptionService;
 use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerConfig;
 use Psr\EventDispatcher\ListenerProviderInterface;

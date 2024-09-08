@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Build;
+namespace Duyler\EventBus\Build;
 
-use Duyler\ActionBus\Enum\ResultStatus;
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Formatter\IdFormatter;
 use UnitEnum;
 
 final readonly class Subscription

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Test\Functional\Build;
+namespace Duyler\EventBus\Test\Functional\Build;
 
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\BusBuilder;
-use Duyler\ActionBus\BusConfig;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\BusBuilder;
+use Duyler\EventBus\BusConfig;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use InvalidArgumentException;
@@ -19,7 +19,7 @@ class AddSharedServiceTest extends TestCase
     {
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addSharedService(
-            new \Duyler\ActionBus\Build\SharedService(
+            new \Duyler\EventBus\Build\SharedService(
                 class: TestSharedService::class,
                 service: new TestSharedService('Test service'),
                 bind: [
@@ -48,7 +48,7 @@ class AddSharedServiceTest extends TestCase
     {
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addSharedService(
-            new \Duyler\ActionBus\Build\SharedService(
+            new \Duyler\EventBus\Build\SharedService(
                 class: stdClass::class,
                 service: new TestSharedService('Test service'),
                 bind: [

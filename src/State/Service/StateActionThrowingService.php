@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\State\Service;
+namespace Duyler\EventBus\State\Service;
 
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\Bus\ActionContainer;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Bus\ActionContainer;
 use Throwable;
 
 class StateActionThrowingService

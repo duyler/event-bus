@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Internal\Event;
+namespace Duyler\EventBus\Internal\Event;
 
-use Duyler\ActionBus\Dto\Event;
+use Duyler\EventBus\Dto\Event;
 
 readonly class EventDispatchedEvent
 {

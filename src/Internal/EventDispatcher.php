@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Internal;
+namespace Duyler\EventBus\Internal;
 
 use Override;
 use Psr\EventDispatcher\EventDispatcherInterface;

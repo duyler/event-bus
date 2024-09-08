@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Test\Unit\Storage;
+namespace Duyler\EventBus\Test\Unit\Storage;
 
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\Bus\CompleteAction;
-use Duyler\ActionBus\Dto\Result;
-use Duyler\ActionBus\Enum\ResultStatus;
-use Duyler\ActionBus\Storage\CompleteActionStorage;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Bus\CompleteAction;
+use Duyler\EventBus\Dto\Result;
+use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Storage\CompleteActionStorage;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

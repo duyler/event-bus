@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Test\Functional\Run;
+namespace Duyler\EventBus\Test\Functional\Run;
 
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\BusBuilder;
-use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Contract\RollbackActionInterface;
-use Duyler\ActionBus\Dto\Rollback as RollbackDto;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\BusBuilder;
+use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Contract\RollbackActionInterface;
+use Duyler\EventBus\Dto\Rollback as RollbackDto;
 use Override;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Bus;
+namespace Duyler\EventBus\Bus;
 
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\Dto\Event;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Dto\Event;
 
 final readonly class EventRelation
 {

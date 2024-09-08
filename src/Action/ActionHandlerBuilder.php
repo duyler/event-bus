@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Action;
+namespace Duyler\EventBus\Action;
 
 use Closure;
-use Duyler\ActionBus\Action\Exception\ActionHandlerMustBeCallableException;
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\Bus\ActionContainer;
+use Duyler\EventBus\Action\Exception\ActionHandlerMustBeCallableException;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Bus\ActionContainer;
 
 class ActionHandlerBuilder
 {

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Test\Unit\Action;
+namespace Duyler\EventBus\Test\Unit\Action;
 
-use Duyler\ActionBus\Action\ActionHandlerArgumentBuilder;
-use Duyler\ActionBus\Action\ActionSubstitution;
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\Bus\ActionContainer;
-use Duyler\ActionBus\Storage\ActionArgumentStorage;
-use Duyler\ActionBus\Storage\CompleteActionStorage;
-use Duyler\ActionBus\Storage\EventRelationStorage;
-use Duyler\ActionBus\Storage\EventStorage;
+use Duyler\EventBus\Action\ActionHandlerArgumentBuilder;
+use Duyler\EventBus\Action\ActionSubstitution;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Bus\ActionContainer;
+use Duyler\EventBus\Storage\ActionArgumentStorage;
+use Duyler\EventBus\Storage\CompleteActionStorage;
+use Duyler\EventBus\Storage\EventRelationStorage;
+use Duyler\EventBus\Storage\EventStorage;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;

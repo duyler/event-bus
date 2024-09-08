@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Storage;
+namespace Duyler\EventBus\Storage;
 
 use Duyler\DependencyInjection\Attribute\Finalize;
 

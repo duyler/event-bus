@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Internal\Listener\State;
+namespace Duyler\EventBus\Internal\Listener\State;
 
-use Duyler\ActionBus\Contract\StateMainInterface;
-use Duyler\ActionBus\Internal\Event\TaskSuspendedEvent;
+use Duyler\EventBus\Contract\StateMainInterface;
+use Duyler\EventBus\Internal\Event\TaskSuspendedEvent;
 
 class StateMainSuspendEventListener
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Service;
+namespace Duyler\EventBus\Service;
 
-use Duyler\ActionBus\Bus\TaskQueue;
+use Duyler\EventBus\Bus\TaskQueue;
 
 class QueueService
 {

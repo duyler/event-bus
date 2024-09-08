@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Action;
+namespace Duyler\EventBus\Action;
 
 use Closure;
-use Duyler\ActionBus\Action\Exception\InvalidArgumentFactoryException;
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\Bus\ActionContainer;
-use Duyler\ActionBus\Bus\CompleteAction;
-use Duyler\ActionBus\Enum\ResultStatus;
-use Duyler\ActionBus\Storage\ActionArgumentStorage;
-use Duyler\ActionBus\Storage\CompleteActionStorage;
-use Duyler\ActionBus\Storage\EventRelationStorage;
-use Duyler\ActionBus\Storage\EventStorage;
+use Duyler\EventBus\Action\Exception\InvalidArgumentFactoryException;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Bus\ActionContainer;
+use Duyler\EventBus\Bus\CompleteAction;
+use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Storage\ActionArgumentStorage;
+use Duyler\EventBus\Storage\CompleteActionStorage;
+use Duyler\EventBus\Storage\EventRelationStorage;
+use Duyler\EventBus\Storage\EventStorage;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Internal\Listener\Bus;
+namespace Duyler\EventBus\Internal\Listener\Bus;
 
-use Duyler\ActionBus\Bus\Log;
-use Duyler\ActionBus\Internal\Event\EventDispatchedEvent;
-use Duyler\ActionBus\Service\EventService;
+use Duyler\EventBus\Bus\Log;
+use Duyler\EventBus\Internal\Event\EventDispatchedEvent;
+use Duyler\EventBus\Service\EventService;
 
 class DispatchEventEventListener
 {

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Service;
+namespace Duyler\EventBus\Service;
 
-use Duyler\ActionBus\Storage\CompleteActionStorage;
-use Duyler\ActionBus\Storage\EventRelationStorage;
-use Duyler\ActionBus\Dto\Result;
-use Duyler\ActionBus\Enum\ResultStatus;
-use Duyler\ActionBus\Exception\ActionNotAllowExternalAccessException;
-use Duyler\ActionBus\Exception\ResultNotExistsException;
+use Duyler\EventBus\Storage\CompleteActionStorage;
+use Duyler\EventBus\Storage\EventRelationStorage;
+use Duyler\EventBus\Dto\Result;
+use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Exception\ActionNotAllowExternalAccessException;
+use Duyler\EventBus\Exception\ResultNotExistsException;
 
 class ResultService
 {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Bus;
+namespace Duyler\EventBus\Bus;
 
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Dto\Log as LogDto;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Dto\Log as LogDto;
 use Duyler\DependencyInjection\Attribute\Finalize;
 
 #[Finalize(method: 'reset')]

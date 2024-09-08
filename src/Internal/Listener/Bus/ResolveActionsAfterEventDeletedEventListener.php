@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Internal\Listener\Bus;
+namespace Duyler\EventBus\Internal\Listener\Bus;
 
-use Duyler\ActionBus\Internal\Event\EventRemovedEvent;
-use Duyler\ActionBus\Service\ActionService;
-use Duyler\ActionBus\Storage\ActionStorage;
+use Duyler\EventBus\Internal\Event\EventRemovedEvent;
+use Duyler\EventBus\Service\ActionService;
+use Duyler\EventBus\Storage\ActionStorage;
 
 class ResolveActionsAfterEventDeletedEventListener
 {

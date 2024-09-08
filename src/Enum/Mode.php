@@ -1,6 +1,6 @@
 <?php
 
-namespace Duyler\ActionBus\Enum;
+namespace Duyler\EventBus\Enum;
 
 enum Mode
 {

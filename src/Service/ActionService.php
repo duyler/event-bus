@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Service;
+namespace Duyler\EventBus\Service;
 
-use Duyler\ActionBus\Action\ActionContainerProvider;
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\Build\ActionHandlerSubstitution;
-use Duyler\ActionBus\Build\ActionResultSubstitution;
-use Duyler\ActionBus\Build\SharedService;
-use Duyler\ActionBus\Bus\ActionRequiredIterator;
-use Duyler\ActionBus\Bus\Bus;
-use Duyler\ActionBus\Contract\ActionSubstitutionInterface;
-use Duyler\ActionBus\Exception\ActionAlreadyDefinedException;
-use Duyler\ActionBus\Exception\ActionNotDefinedException;
-use Duyler\ActionBus\Exception\CannotRequirePrivateActionException;
-use Duyler\ActionBus\Exception\EventNotDefinedException;
-use Duyler\ActionBus\Exception\NotAllowedSealedActionException;
-use Duyler\ActionBus\Storage\ActionStorage;
-use Duyler\ActionBus\Storage\EventStorage;
-use Duyler\ActionBus\Storage\SubscriptionStorage;
+use Duyler\EventBus\Action\ActionContainerProvider;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\ActionHandlerSubstitution;
+use Duyler\EventBus\Build\ActionResultSubstitution;
+use Duyler\EventBus\Build\SharedService;
+use Duyler\EventBus\Bus\ActionRequiredIterator;
+use Duyler\EventBus\Bus\Bus;
+use Duyler\EventBus\Contract\ActionSubstitutionInterface;
+use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
+use Duyler\EventBus\Exception\ActionNotDefinedException;
+use Duyler\EventBus\Exception\CannotRequirePrivateActionException;
+use Duyler\EventBus\Exception\EventNotDefinedException;
+use Duyler\EventBus\Exception\NotAllowedSealedActionException;
+use Duyler\EventBus\Storage\ActionStorage;
+use Duyler\EventBus\Storage\EventStorage;
+use Duyler\EventBus\Storage\SubscriptionStorage;
 
 readonly class ActionService
 {

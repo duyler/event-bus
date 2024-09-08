@@ -2,6 +2,6 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Internal\Event;
+namespace Duyler\EventBus\Internal\Event;
 
 class DoWhileEndEvent {}

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Internal\Listener\Bus;
+namespace Duyler\EventBus\Internal\Listener\Bus;
 
-use Duyler\ActionBus\Bus\Bus;
-use Duyler\ActionBus\Bus\CompleteAction;
-use Duyler\ActionBus\Storage\ActionContainerStorage;
-use Duyler\ActionBus\Storage\CompleteActionStorage;
-use Duyler\ActionBus\Internal\Event\TaskAfterRunEvent;
+use Duyler\EventBus\Bus\Bus;
+use Duyler\EventBus\Bus\CompleteAction;
+use Duyler\EventBus\Storage\ActionContainerStorage;
+use Duyler\EventBus\Storage\CompleteActionStorage;
+use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
 
 class CompleteActionEventListener
 {

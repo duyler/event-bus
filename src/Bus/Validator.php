@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Bus;
+namespace Duyler\EventBus\Bus;
 
-use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Exception\CircularCallActionException;
-use Duyler\ActionBus\Exception\ConsecutiveRepeatedActionException;
+use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Exception\CircularCallActionException;
+use Duyler\EventBus\Exception\ConsecutiveRepeatedActionException;
 
 final class Validator
 {

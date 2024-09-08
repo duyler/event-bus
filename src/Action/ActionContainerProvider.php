@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Action;
+namespace Duyler\EventBus\Action;
 
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\Build\SharedService;
-use Duyler\ActionBus\Bus\ActionContainer;
-use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Storage\ActionContainerStorage;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\SharedService;
+use Duyler\EventBus\Bus\ActionContainer;
+use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Storage\ActionContainerStorage;
 use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerInterface;
 use Duyler\DependencyInjection\Definition;

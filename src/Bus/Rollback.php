@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Bus;
+namespace Duyler\EventBus\Bus;
 
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\Dto\Rollback as RollbackDto;
-use Duyler\ActionBus\Storage\ActionArgumentStorage;
-use Duyler\ActionBus\Storage\ActionContainerStorage;
-use Duyler\ActionBus\Storage\CompleteActionStorage;
-use Duyler\ActionBus\Contract\RollbackActionInterface;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Dto\Rollback as RollbackDto;
+use Duyler\EventBus\Storage\ActionArgumentStorage;
+use Duyler\EventBus\Storage\ActionContainerStorage;
+use Duyler\EventBus\Storage\CompleteActionStorage;
+use Duyler\EventBus\Contract\RollbackActionInterface;
 
 use function is_callable;
 

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Exception;
+namespace Duyler\EventBus\Exception;
 
-use Duyler\ActionBus\Build\Subscription;
+use Duyler\EventBus\Build\Subscription;
 use Exception;
 
 class SubscriptionOnNotDefinedActionException extends Exception

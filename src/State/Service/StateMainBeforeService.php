@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\State\Service;
+namespace Duyler\EventBus\State\Service;
 
-use Duyler\ActionBus\Build\ActionHandlerSubstitution;
-use Duyler\ActionBus\Build\ActionResultSubstitution;
-use Duyler\ActionBus\Formatter\IdFormatter;
-use Duyler\ActionBus\Service\ActionService;
-use Duyler\ActionBus\Service\LogService;
-use Duyler\ActionBus\State\Service\Trait\LogServiceTrait;
+use Duyler\EventBus\Build\ActionHandlerSubstitution;
+use Duyler\EventBus\Build\ActionResultSubstitution;
+use Duyler\EventBus\Formatter\IdFormatter;
+use Duyler\EventBus\Service\ActionService;
+use Duyler\EventBus\Service\LogService;
+use Duyler\EventBus\State\Service\Trait\LogServiceTrait;
 use UnitEnum;
 
 class StateMainBeforeService

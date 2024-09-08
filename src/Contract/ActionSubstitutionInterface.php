@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Contract;
+namespace Duyler\EventBus\Contract;
 
-use Duyler\ActionBus\Build\ActionHandlerSubstitution;
-use Duyler\ActionBus\Build\ActionResultSubstitution;
+use Duyler\EventBus\Build\ActionHandlerSubstitution;
+use Duyler\EventBus\Build\ActionResultSubstitution;
 
 interface ActionSubstitutionInterface
 {

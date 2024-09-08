@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Test\Functional\Run;
+namespace Duyler\EventBus\Test\Functional\Run;
 
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\BusBuilder;
-use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Exception\CannotRequirePrivateActionException;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\BusBuilder;
+use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Exception\CannotRequirePrivateActionException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

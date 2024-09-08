@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Bus;
+namespace Duyler\EventBus\Bus;
 
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Enum\ResultStatus;
-use Duyler\ActionBus\Exception\UnableToContinueWithFailActionException;
-use Duyler\ActionBus\Storage\ActionStorage;
-use Duyler\ActionBus\Storage\CompleteActionStorage;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Exception\UnableToContinueWithFailActionException;
+use Duyler\EventBus\Storage\ActionStorage;
+use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\DependencyInjection\Attribute\Finalize;
 
 use function count;

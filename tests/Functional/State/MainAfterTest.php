@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Test\Functional\State;
+namespace Duyler\EventBus\Test\Functional\State;
 
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\Build\Context;
-use Duyler\ActionBus\Build\Subscription;
-use Duyler\ActionBus\BusBuilder;
-use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Contract\RollbackActionInterface;
-use Duyler\ActionBus\Contract\State\MainAfterStateHandlerInterface;
-use Duyler\ActionBus\Dto\Rollback as RollbackDto;
-use Duyler\ActionBus\Enum\ResultStatus;
-use Duyler\ActionBus\State\Service\StateMainAfterService;
-use Duyler\ActionBus\State\StateContext;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\Context;
+use Duyler\EventBus\Build\Subscription;
+use Duyler\EventBus\BusBuilder;
+use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Contract\RollbackActionInterface;
+use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
+use Duyler\EventBus\Dto\Rollback as RollbackDto;
+use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\State\Service\StateMainAfterService;
+use Duyler\EventBus\State\StateContext;
 use Override;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -223,7 +223,7 @@ class MainAfterStateHandlerWithRemoveAction implements MainAfterStateHandlerInte
         }
 
         $stateService->addSharedService(
-            new \Duyler\ActionBus\Build\SharedService(class: $action::class, service: $action),
+            new \Duyler\EventBus\Build\SharedService(class: $action::class, service: $action),
         );
     }
 

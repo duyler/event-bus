@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Test\Unit\Storage;
+namespace Duyler\EventBus\Test\Unit\Storage;
 
-use Duyler\ActionBus\Bus\ActionContainer;
-use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Storage\ActionContainerStorage;
+use Duyler\EventBus\Bus\ActionContainer;
+use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Storage\ActionContainerStorage;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

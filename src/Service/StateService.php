@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Service;
+namespace Duyler\EventBus\Service;
 
-use Duyler\ActionBus\Build\Context;
-use Duyler\ActionBus\Contract\State\StateHandlerInterface;
-use Duyler\ActionBus\State\StateContextScope;
-use Duyler\ActionBus\State\StateHandlerStorage;
+use Duyler\EventBus\Build\Context;
+use Duyler\EventBus\Contract\State\StateHandlerInterface;
+use Duyler\EventBus\State\StateContextScope;
+use Duyler\EventBus\State\StateHandlerStorage;
 
 readonly class StateService
 {

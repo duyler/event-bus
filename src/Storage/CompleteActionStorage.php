@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Storage;
+namespace Duyler\EventBus\Storage;
 
 use Duyler\DependencyInjection\Attribute\Finalize;
-use Duyler\ActionBus\Bus\CompleteAction;
-use Duyler\ActionBus\Dto\Result;
+use Duyler\EventBus\Bus\CompleteAction;
+use Duyler\EventBus\Dto\Result;
 
 #[Finalize(method: 'reset')]
 class CompleteActionStorage

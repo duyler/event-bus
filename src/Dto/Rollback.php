@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Dto;
+namespace Duyler\EventBus\Dto;
 
 use Duyler\DependencyInjection\ContainerInterface;
-use Duyler\ActionBus\Build\Action;
+use Duyler\EventBus\Build\Action;
 
 readonly class Rollback
 {
