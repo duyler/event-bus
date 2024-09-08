@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Contract;
+namespace Duyler\EventBus\Contract;
 
-use Duyler\ActionBus\Build\Action;
+use Duyler\EventBus\Build\Action;
 use Throwable;
 
 interface StateActionInterface

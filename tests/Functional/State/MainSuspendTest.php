@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Test\Functional\State;
+namespace Duyler\EventBus\Test\Functional\State;
 
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\Build\Context;
-use Duyler\ActionBus\BusBuilder;
-use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Contract\State\MainResumeStateHandlerInterface;
-use Duyler\ActionBus\Contract\State\MainSuspendStateHandlerInterface;
-use Duyler\ActionBus\State\Service\StateMainResumeService;
-use Duyler\ActionBus\State\Service\StateMainSuspendService;
-use Duyler\ActionBus\State\StateContext;
-use Duyler\ActionBus\State\Suspend;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\Context;
+use Duyler\EventBus\BusBuilder;
+use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Contract\State\MainResumeStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainSuspendStateHandlerInterface;
+use Duyler\EventBus\State\Service\StateMainResumeService;
+use Duyler\EventBus\State\Service\StateMainSuspendService;
+use Duyler\EventBus\State\StateContext;
+use Duyler\EventBus\State\Suspend;
 use Fiber;
 use Override;
 use PHPUnit\Framework\Attributes\Test;

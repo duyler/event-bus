@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Test\Unit\Bus;
+namespace Duyler\EventBus\Test\Unit\Bus;
 
-use Duyler\ActionBus\Bus\TaskQueue;
+use Duyler\EventBus\Bus\TaskQueue;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;

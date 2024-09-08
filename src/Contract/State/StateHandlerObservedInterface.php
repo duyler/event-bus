@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Contract\State;
+namespace Duyler\EventBus\Contract\State;
 
-use Duyler\ActionBus\State\StateContext;
+use Duyler\EventBus\State\StateContext;
 
 interface StateHandlerObservedInterface
 {

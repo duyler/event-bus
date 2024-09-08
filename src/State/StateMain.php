@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\State;
+namespace Duyler\EventBus\State;
 
-use Duyler\ActionBus\Bus\Task;
-use Duyler\ActionBus\Storage\ActionContainerStorage;
-use Duyler\ActionBus\Contract\State\StateHandlerObservedInterface;
-use Duyler\ActionBus\Contract\StateMainInterface;
-use Duyler\ActionBus\Formatter\IdFormatter;
-use Duyler\ActionBus\Service\ActionService;
-use Duyler\ActionBus\Service\LogService;
-use Duyler\ActionBus\Service\QueueService;
-use Duyler\ActionBus\Service\ResultService;
-use Duyler\ActionBus\Service\RollbackService;
-use Duyler\ActionBus\Service\SubscriptionService;
-use Duyler\ActionBus\Service\EventService;
-use Duyler\ActionBus\State\Service\StateMainAfterService;
-use Duyler\ActionBus\State\Service\StateMainBeforeService;
-use Duyler\ActionBus\State\Service\StateMainBeginService;
-use Duyler\ActionBus\State\Service\StateMainCyclicService;
-use Duyler\ActionBus\State\Service\StateMainEndService;
-use Duyler\ActionBus\State\Service\StateMainResumeService;
-use Duyler\ActionBus\State\Service\StateMainSuspendService;
+use Duyler\EventBus\Bus\Task;
+use Duyler\EventBus\Storage\ActionContainerStorage;
+use Duyler\EventBus\Contract\State\StateHandlerObservedInterface;
+use Duyler\EventBus\Contract\StateMainInterface;
+use Duyler\EventBus\Formatter\IdFormatter;
+use Duyler\EventBus\Service\ActionService;
+use Duyler\EventBus\Service\LogService;
+use Duyler\EventBus\Service\QueueService;
+use Duyler\EventBus\Service\ResultService;
+use Duyler\EventBus\Service\RollbackService;
+use Duyler\EventBus\Service\SubscriptionService;
+use Duyler\EventBus\Service\EventService;
+use Duyler\EventBus\State\Service\StateMainAfterService;
+use Duyler\EventBus\State\Service\StateMainBeforeService;
+use Duyler\EventBus\State\Service\StateMainBeginService;
+use Duyler\EventBus\State\Service\StateMainCyclicService;
+use Duyler\EventBus\State\Service\StateMainEndService;
+use Duyler\EventBus\State\Service\StateMainResumeService;
+use Duyler\EventBus\State\Service\StateMainSuspendService;
 use Override;
 use UnitEnum;
 

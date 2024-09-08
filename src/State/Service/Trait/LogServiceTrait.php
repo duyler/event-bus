@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\State\Service\Trait;
+namespace Duyler\EventBus\State\Service\Trait;
 
-use Duyler\ActionBus\Service\LogService;
+use Duyler\EventBus\Service\LogService;
 
 /**
  * @property LogService $logService

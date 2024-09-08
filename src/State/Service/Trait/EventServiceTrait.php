@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\State\Service\Trait;
+namespace Duyler\EventBus\State\Service\Trait;
 
-use Duyler\ActionBus\Build\Event;
-use Duyler\ActionBus\Dto\Event as EventDto;
-use Duyler\ActionBus\Service\EventService;
+use Duyler\EventBus\Build\Event;
+use Duyler\EventBus\Dto\Event as EventDto;
+use Duyler\EventBus\Service\EventService;
 
 /**
  * @property EventService $eventService

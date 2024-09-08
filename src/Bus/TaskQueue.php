@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Bus;
+namespace Duyler\EventBus\Bus;
 
 use Duyler\DependencyInjection\Attribute\Finalize;
 use RuntimeException;

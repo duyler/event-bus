@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\State\Service;
+namespace Duyler\EventBus\State\Service;
 
-use Duyler\ActionBus\Bus\ActionContainer;
-use Duyler\ActionBus\Service\ActionService;
-use Duyler\ActionBus\Service\ResultService;
-use Duyler\ActionBus\Service\SubscriptionService;
-use Duyler\ActionBus\Service\EventService;
-use Duyler\ActionBus\State\Service\Trait\ActionServiceTrait;
-use Duyler\ActionBus\State\Service\Trait\ResultServiceTrait;
-use Duyler\ActionBus\State\Service\Trait\SubscriptionServiceTrait;
-use Duyler\ActionBus\State\Service\Trait\TaskSuspendResumeServiceTrait;
-use Duyler\ActionBus\State\Service\Trait\EventServiceTrait;
-use Duyler\ActionBus\State\Suspend;
+use Duyler\EventBus\Bus\ActionContainer;
+use Duyler\EventBus\Service\ActionService;
+use Duyler\EventBus\Service\ResultService;
+use Duyler\EventBus\Service\SubscriptionService;
+use Duyler\EventBus\Service\EventService;
+use Duyler\EventBus\State\Service\Trait\ActionServiceTrait;
+use Duyler\EventBus\State\Service\Trait\ResultServiceTrait;
+use Duyler\EventBus\State\Service\Trait\SubscriptionServiceTrait;
+use Duyler\EventBus\State\Service\Trait\TaskSuspendResumeServiceTrait;
+use Duyler\EventBus\State\Service\Trait\EventServiceTrait;
+use Duyler\EventBus\State\Suspend;
 
 class StateMainSuspendService
 {

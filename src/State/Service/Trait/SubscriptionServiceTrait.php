@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\State\Service\Trait;
+namespace Duyler\EventBus\State\Service\Trait;
 
-use Duyler\ActionBus\Build\Subscription;
-use Duyler\ActionBus\Service\SubscriptionService;
+use Duyler\EventBus\Build\Subscription;
+use Duyler\EventBus\Service\SubscriptionService;
 
 /**
  * @property SubscriptionService $subscriptionService

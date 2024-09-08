@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Dto;
+namespace Duyler\EventBus\Dto;
 
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\EventBus\Formatter\IdFormatter;
 use UnitEnum;
 
 final readonly class Event

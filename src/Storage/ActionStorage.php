@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Storage;
+namespace Duyler\EventBus\Storage;
 
-use Duyler\ActionBus\Build\Action;
+use Duyler\EventBus\Build\Action;
 
 use function array_key_exists;
 

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Action;
+namespace Duyler\EventBus\Action;
 
 use Closure;
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\Contract\ActionRunnerProviderInterface;
-use Duyler\ActionBus\Internal\Event\ActionAfterRunEvent;
-use Duyler\ActionBus\Internal\Event\ActionBeforeRunEvent;
-use Duyler\ActionBus\Internal\Event\ActionThrownExceptionEvent;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
+use Duyler\EventBus\Internal\Event\ActionAfterRunEvent;
+use Duyler\EventBus\Internal\Event\ActionBeforeRunEvent;
+use Duyler\EventBus\Internal\Event\ActionThrownExceptionEvent;
 use Override;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Throwable;

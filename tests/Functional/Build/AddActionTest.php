@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Test\Functional\Build;
+namespace Duyler\EventBus\Test\Functional\Build;
 
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\BusBuilder;
-use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Exception\ActionAlreadyDefinedException;
-use Duyler\ActionBus\Exception\ActionNotDefinedException;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\BusBuilder;
+use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
+use Duyler\EventBus\Exception\ActionNotDefinedException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

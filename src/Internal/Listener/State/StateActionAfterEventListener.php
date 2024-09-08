@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Internal\Listener\State;
+namespace Duyler\EventBus\Internal\Listener\State;
 
-use Duyler\ActionBus\Contract\StateActionInterface;
-use Duyler\ActionBus\Internal\Event\ActionAfterRunEvent;
+use Duyler\EventBus\Contract\StateActionInterface;
+use Duyler\EventBus\Internal\Event\ActionAfterRunEvent;
 
 class StateActionAfterEventListener
 {

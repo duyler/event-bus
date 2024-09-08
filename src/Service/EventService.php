@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Service;
+namespace Duyler\EventBus\Service;
 
-use Duyler\ActionBus\Build\Event;
-use Duyler\ActionBus\Bus\Bus;
-use Duyler\ActionBus\Bus\EventRelation;
-use Duyler\ActionBus\Exception\DispatchedEventNotDefinedException;
-use Duyler\ActionBus\Internal\Event\EventRemovedEvent;
-use Duyler\ActionBus\Storage\ActionStorage;
-use Duyler\ActionBus\Storage\EventRelationStorage;
-use Duyler\ActionBus\Dto\Event as EventDto;
-use Duyler\ActionBus\Exception\ContractForDataNotReceivedException;
-use Duyler\ActionBus\Exception\DataForContractNotReceivedException;
-use Duyler\ActionBus\Exception\DataMustBeCompatibleWithContractException;
-use Duyler\ActionBus\Exception\EventHandlersNotFoundException;
-use Duyler\ActionBus\Storage\EventStorage;
+use Duyler\EventBus\Build\Event;
+use Duyler\EventBus\Bus\Bus;
+use Duyler\EventBus\Bus\EventRelation;
+use Duyler\EventBus\Exception\DispatchedEventNotDefinedException;
+use Duyler\EventBus\Internal\Event\EventRemovedEvent;
+use Duyler\EventBus\Storage\ActionStorage;
+use Duyler\EventBus\Storage\EventRelationStorage;
+use Duyler\EventBus\Dto\Event as EventDto;
+use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
+use Duyler\EventBus\Exception\DataForContractNotReceivedException;
+use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
+use Duyler\EventBus\Exception\EventHandlersNotFoundException;
+use Duyler\EventBus\Storage\EventStorage;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 class EventService

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\State\Service\Trait;
+namespace Duyler\EventBus\State\Service\Trait;
 
-use Duyler\ActionBus\Dto\Result;
-use Duyler\ActionBus\Formatter\IdFormatter;
-use Duyler\ActionBus\Service\ResultService;
+use Duyler\EventBus\Dto\Result;
+use Duyler\EventBus\Formatter\IdFormatter;
+use Duyler\EventBus\Service\ResultService;
 use UnitEnum;
 
 /**

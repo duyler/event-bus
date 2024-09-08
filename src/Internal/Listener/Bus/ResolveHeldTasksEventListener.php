@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Internal\Listener\Bus;
+namespace Duyler\EventBus\Internal\Listener\Bus;
 
-use Duyler\ActionBus\Bus\Bus;
-use Duyler\ActionBus\Internal\Event\TaskAfterRunEvent;
+use Duyler\EventBus\Bus\Bus;
+use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
 
 class ResolveHeldTasksEventListener
 {

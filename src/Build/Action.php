@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Build;
+namespace Duyler\EventBus\Build;
 
 use Closure;
-use Duyler\ActionBus\Formatter\IdFormatter;
+use Duyler\EventBus\Formatter\IdFormatter;
 use RecursiveArrayIterator;
 use UnitEnum;
 

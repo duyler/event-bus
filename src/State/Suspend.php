@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\State;
+namespace Duyler\EventBus\State;
 
 use UnitEnum;
 

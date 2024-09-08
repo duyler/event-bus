@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Contract\State;
+namespace Duyler\EventBus\Contract\State;
 
-use Duyler\ActionBus\State\Service\StateActionAfterService;
-use Duyler\ActionBus\State\StateContext;
+use Duyler\EventBus\State\Service\StateActionAfterService;
+use Duyler\EventBus\State\StateContext;
 
 interface ActionAfterStateHandlerInterface extends StateHandlerObservedInterface, StateHandlerInterface
 {

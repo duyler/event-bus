@@ -1,9 +1,9 @@
 <?php
 
-namespace Duyler\ActionBus\Storage;
+namespace Duyler\EventBus\Storage;
 
 use Duyler\DependencyInjection\Attribute\Finalize;
-use Duyler\ActionBus\Bus\ActionContainer;
+use Duyler\EventBus\Bus\ActionContainer;
 
 #[Finalize(method: 'reset')]
 class ActionContainerStorage

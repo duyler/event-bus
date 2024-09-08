@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Test\Functional\Run;
+namespace Duyler\EventBus\Test\Functional\Run;
 
-use Duyler\ActionBus\Build\Action;
-use Duyler\ActionBus\BusBuilder;
-use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Dto\Event;
-use Duyler\ActionBus\Exception\ContractForDataNotReceivedException;
-use Duyler\ActionBus\Exception\DataForContractNotReceivedException;
-use Duyler\ActionBus\Exception\DataMustBeCompatibleWithContractException;
-use Duyler\ActionBus\Exception\EventHandlersNotFoundException;
+use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\BusBuilder;
+use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Dto\Event;
+use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
+use Duyler\EventBus\Exception\DataForContractNotReceivedException;
+use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
+use Duyler\EventBus\Exception\EventHandlersNotFoundException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -31,7 +31,7 @@ class EventTest extends TestCase
             ),
         );
 
-        $builder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'TestEvent'));
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent'));
 
         $bus = $builder->build();
         $bus->dispatchEvent(
@@ -60,7 +60,7 @@ class EventTest extends TestCase
             ),
         );
 
-        $builder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
 
         $bus = $builder->build();
         $bus->dispatchEvent(
@@ -102,7 +102,7 @@ class EventTest extends TestCase
             ),
         );
 
-        $builder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
 
         $bus = $builder->build();
         $bus->dispatchEvent(
@@ -155,7 +155,7 @@ class EventTest extends TestCase
             ),
         );
 
-        $builder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
 
         $bus = $builder->build();
 
@@ -180,7 +180,7 @@ class EventTest extends TestCase
             ),
         );
 
-        $builder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
 
         $bus = $builder->build();
 
@@ -207,7 +207,7 @@ class EventTest extends TestCase
             ),
         );
 
-        $builder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'TestEvent'));
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent'));
 
         $bus = $builder->build();
 
@@ -235,7 +235,7 @@ class EventTest extends TestCase
             ),
         );
 
-        $builder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
 
         $bus = $builder->build();
 
@@ -254,7 +254,7 @@ class EventTest extends TestCase
     {
         $builder = new BusBuilder(new BusConfig());
 
-        $builder->addEvent(new \Duyler\ActionBus\Build\Event(id: 'TestEvent'));
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent'));
 
         $bus = $builder->build();
 

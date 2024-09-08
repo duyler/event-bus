@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\State\Service;
+namespace Duyler\EventBus\State\Service;
 
-use Duyler\ActionBus\Service\LogService;
-use Duyler\ActionBus\Service\ResultService;
-use Duyler\ActionBus\Service\RollbackService;
-use Duyler\ActionBus\State\Service\Trait\LogServiceTrait;
-use Duyler\ActionBus\State\Service\Trait\ResultServiceTrait;
-use Duyler\ActionBus\State\Service\Trait\RollbackServiceTrait;
+use Duyler\EventBus\Service\LogService;
+use Duyler\EventBus\Service\ResultService;
+use Duyler\EventBus\Service\RollbackService;
+use Duyler\EventBus\State\Service\Trait\LogServiceTrait;
+use Duyler\EventBus\State\Service\Trait\ResultServiceTrait;
+use Duyler\EventBus\State\Service\Trait\RollbackServiceTrait;
 
 class StateMainEndService
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Action\Exception;
+namespace Duyler\EventBus\Action\Exception;
 
 use Exception;
 

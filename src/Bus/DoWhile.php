@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Bus;
+namespace Duyler\EventBus\Bus;
 
-use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Contract\ActionRunnerProviderInterface;
-use Duyler\ActionBus\Enum\Mode;
-use Duyler\ActionBus\Internal\Event\DoCyclicEvent;
-use Duyler\ActionBus\Internal\Event\DoWhileBeginEvent;
-use Duyler\ActionBus\Internal\Event\DoWhileEndEvent;
-use Duyler\ActionBus\Internal\Event\TaskAfterRunEvent;
-use Duyler\ActionBus\Internal\Event\TaskBeforeRunEvent;
-use Duyler\ActionBus\Internal\Event\TaskResumeEvent;
-use Duyler\ActionBus\Internal\Event\TaskSuspendedEvent;
+use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
+use Duyler\EventBus\Enum\Mode;
+use Duyler\EventBus\Internal\Event\DoCyclicEvent;
+use Duyler\EventBus\Internal\Event\DoWhileBeginEvent;
+use Duyler\EventBus\Internal\Event\DoWhileEndEvent;
+use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
+use Duyler\EventBus\Internal\Event\TaskBeforeRunEvent;
+use Duyler\EventBus\Internal\Event\TaskResumeEvent;
+use Duyler\EventBus\Internal\Event\TaskSuspendedEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class DoWhile

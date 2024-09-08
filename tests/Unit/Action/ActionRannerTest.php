@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Test\Unit\Action;
+namespace Duyler\EventBus\Test\Unit\Action;
 
-use Duyler\ActionBus\Action\ActionContainerProvider;
-use Duyler\ActionBus\Action\ActionHandlerArgumentBuilder;
-use Duyler\ActionBus\Action\ActionHandlerBuilder;
-use Duyler\ActionBus\Action\ActionRunnerProvider;
-use Duyler\ActionBus\Build\Action;
+use Duyler\EventBus\Action\ActionContainerProvider;
+use Duyler\EventBus\Action\ActionHandlerArgumentBuilder;
+use Duyler\EventBus\Action\ActionHandlerBuilder;
+use Duyler\EventBus\Action\ActionRunnerProvider;
+use Duyler\EventBus\Build\Action;
 use Exception;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

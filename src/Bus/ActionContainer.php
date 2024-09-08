@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Bus;
+namespace Duyler\EventBus\Bus;
 
 use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerConfig;
-use Duyler\ActionBus\BusConfig;
+use Duyler\EventBus\BusConfig;
 
 class ActionContainer extends Container
 {

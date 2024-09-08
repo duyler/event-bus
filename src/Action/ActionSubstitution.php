@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Action;
+namespace Duyler\EventBus\Action;
 
-use Duyler\ActionBus\Build\ActionHandlerSubstitution;
-use Duyler\ActionBus\Build\ActionResultSubstitution;
-use Duyler\ActionBus\Contract\ActionSubstitutionInterface;
+use Duyler\EventBus\Build\ActionHandlerSubstitution;
+use Duyler\EventBus\Build\ActionResultSubstitution;
+use Duyler\EventBus\Contract\ActionSubstitutionInterface;
 use Duyler\DependencyInjection\Attribute\Finalize;
 use Override;
 

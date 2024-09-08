@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Test\Unit\Storage;
+namespace Duyler\EventBus\Test\Unit\Storage;
 
-use Duyler\ActionBus\Build\Subscription;
-use Duyler\ActionBus\Enum\ResultStatus;
-use Duyler\ActionBus\Formatter\IdFormatter;
-use Duyler\ActionBus\Storage\SubscriptionStorage;
+use Duyler\EventBus\Build\Subscription;
+use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Formatter\IdFormatter;
+use Duyler\EventBus\Storage\SubscriptionStorage;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Internal\Listener\State;
+namespace Duyler\EventBus\Internal\Listener\State;
 
-use Duyler\ActionBus\Bus\Rollback;
-use Duyler\ActionBus\BusConfig;
-use Duyler\ActionBus\Contract\StateActionInterface;
-use Duyler\ActionBus\Internal\Event\ActionThrownExceptionEvent;
-use Duyler\ActionBus\Storage\ActionContainerStorage;
+use Duyler\EventBus\Bus\Rollback;
+use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Contract\StateActionInterface;
+use Duyler\EventBus\Internal\Event\ActionThrownExceptionEvent;
+use Duyler\EventBus\Storage\ActionContainerStorage;
 
 class StateActionThrowingEventListener
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Dto;
+namespace Duyler\EventBus\Dto;
 
 final readonly class Log
 {

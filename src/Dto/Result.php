@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duyler\ActionBus\Dto;
+namespace Duyler\EventBus\Dto;
 
-use Duyler\ActionBus\Enum\ResultStatus;
+use Duyler\EventBus\Enum\ResultStatus;
 
 final readonly class Result
 {
