@@ -23,7 +23,7 @@ final readonly class Action
     public function __construct(
         string|UnitEnum $id,
         public string|Closure $handler,
-        /** @param array<array-key, string|UnitEnum> $required  */
+        /** @var array<array-key, string|UnitEnum> */
         array $required = [],
         null|string|UnitEnum $listen = null,
         /** @var array<string, string> */
@@ -40,10 +40,10 @@ final readonly class Action
         public bool $repeatable = false,
         public bool $lock = true,
         public bool $private = false,
-        /** @param array<array-key, string|UnitEnum> $sealed */
+        /** @var array<array-key, string|UnitEnum> */
         array $sealed = [],
         public bool $silent = false,
-        /** @param array<array-key, string|UnitEnum> $alternates */
+        /** @var array<array-key, string|UnitEnum> */
         array $alternates = [],
         public int $retries = 0,
         /** @var array<string|int, mixed> */
