@@ -22,7 +22,7 @@ class ActionConfigTest extends TestCase
             new Action(
                 id: 'TestAction',
                 handler: TestHandler::class,
-                config: [
+                bind: [
                     TestInterface::class => NeedleClass::class,
                 ],
                 contract: TestInterface::class,
@@ -44,7 +44,7 @@ class ActionConfigTest extends TestCase
             new Action(
                 id: 'TestAction',
                 handler: TestHandler::class,
-                config: [
+                providers: [
                     TestInterface::class => TestProvider::class,
                 ],
                 contract: TestInterface::class,
@@ -66,8 +66,10 @@ class ActionConfigTest extends TestCase
             new Action(
                 id: 'TestAction',
                 handler: TestHandler::class,
-                config: [
+                providers: [
                     TestInterface::class => TestProvider::class,
+                ],
+                definitions: [
                     NeedleClass::class => [
                         'key' => 'DefKey',
                         'value' => 'DefValue',
@@ -94,8 +96,10 @@ class ActionConfigTest extends TestCase
             new Action(
                 id: 'TestAction',
                 handler: TestHandler::class,
-                config: [
+                providers: [
                     TestInterface::class => TestProvider::class,
+                ],
+                definitions: [
                     NeedleClass::class => [
                         'key' => 'DefKey',
                         'value' => 'DefValue',

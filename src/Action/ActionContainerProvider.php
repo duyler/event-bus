@@ -12,7 +12,6 @@ use Duyler\EventBus\Storage\ActionContainerStorage;
 use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerInterface;
 use Duyler\DependencyInjection\Definition;
-use Duyler\DependencyInjection\Provider\ProviderInterface;
 use InvalidArgumentException;
 
 class ActionContainerProvider
@@ -46,34 +45,11 @@ class ActionContainerProvider
             $externalConfigDefinitions[$definition->id] = $definition;
         }
 
-        $actionProviders = [];
-        $actionBind = [];
         $actionDefinitions = [];
 
-        foreach ($action->config as $key => $value) {
-            if (class_exists($key) || interface_exists($key)) {
-                if (is_string($value)) {
-                    $implements = class_implements($value);
-
-                    if (is_array($implements) && in_array(ProviderInterface::class, $implements)) {
-                        $actionProviders[$key] = $value;
-                        continue;
-                    }
-
-                    if (interface_exists($key) && class_exists($value)) {
-                        $actionBind[$key] = $value;
-                        continue;
-                    }
-                }
-
-                if (is_array($value)) {
-                    $actionDefinitions[$key] = new Definition(id: $key, arguments: $value);
-                    continue;
-                }
-
-                if (is_object($value) && is_a($value, Definition::class)) {
-                    $actionDefinitions[$key] = $value;
-                }
+        foreach ($action->definitions as $key => $value) {
+            if (class_exists($key)) {
+                $actionDefinitions[$key] = new Definition(id: $key, arguments: $value);
             }
         }
 
@@ -82,8 +58,8 @@ class ActionContainerProvider
             $this->config,
         );
 
-        $actionContainer->bind($actionBind);
-        $actionContainer->addProviders($actionProviders);
+        $actionContainer->bind($action->bind);
+        $actionContainer->addProviders($action->providers);
         $actionClassMap = $actionContainer->getClassMap();
 
         foreach ($this->sharedServices as $sharedService) {
@@ -93,14 +69,14 @@ class ActionContainerProvider
             $sharedClassMap = $container->getClassMap();
 
             if (0 < count(array_intersect_key($sharedClassMap, $actionClassMap))
-                || 0 < count(array_intersect_key($sharedService->providers, $actionProviders))
+                || 0 < count(array_intersect_key($sharedService->providers, $action->providers))
                 || 0 < count(array_intersect_key(array_flip($sharedClassMap), $actionDefinitions))
                 || 0 < count(array_intersect_key($actionDefinitions, $externalConfigDefinitions))
             ) {
                 $actionContainer->bind($sharedService->bind);
                 $actionContainer->addProviders($sharedService->providers);
-                $actionContainer->bind($actionBind);
-                $actionContainer->addProviders($actionProviders);
+                $actionContainer->bind($action->bind);
+                $actionContainer->addProviders($action->providers);
                 continue;
             }
 
