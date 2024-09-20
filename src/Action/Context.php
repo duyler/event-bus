@@ -17,7 +17,7 @@ final readonly class Context
         private string $actionId,
         private ActionContainer $actionContainer,
         /** @var array<string, object> */
-        private array  $context = [],
+        private array $context = [],
     ) {}
 
     public function contract(string $contract): object
