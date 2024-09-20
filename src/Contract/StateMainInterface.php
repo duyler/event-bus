@@ -20,5 +20,7 @@ interface StateMainInterface
 
     public function after(Task $task): void;
 
+    public function empty(): void;
+
     public function end(): void;
 }

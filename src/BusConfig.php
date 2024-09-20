@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus;
 
 use Duyler\EventBus\Internal\Event\EventRemovedEvent;
+use Duyler\EventBus\Internal\Event\TaskQueueIsEmptyEvent;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveActionsAfterEventDeletedEventListener;
 use Duyler\DependencyInjection\Definition;
 use Duyler\EventBus\Action\ActionRunnerProvider;
@@ -43,6 +44,7 @@ use Duyler\EventBus\Internal\Listener\State\StateMainAfterEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainBeforeEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainBeginEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainCyclicEventListener;
+use Duyler\EventBus\Internal\Listener\State\StateMainEmptyListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainEndEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainResumeEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainSuspendEventListener;
@@ -118,6 +120,9 @@ class BusConfig
                 LogCompleteActionEventListener::class,
                 ValidateCompleteActionEventListener::class,
                 ResolveHeldTasksEventListener::class,
+            ],
+            TaskQueueIsEmptyEvent::class => [
+                StateMainEmptyListener::class,
             ],
             ActionBeforeRunEvent::class => [
                 StateActionBeforeEventListener::class,
