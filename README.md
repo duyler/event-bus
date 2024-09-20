@@ -1,4 +1,5 @@
 [![Build status](https://github.com/duyler/event-bus/workflows/build/badge.svg)](https://github.com/duyler/event-bus/actions?query=workflow%3Aci)
+[![PHP Version Require](http://poser.pugx.org/duyler/event-bus/require/php)](https://packagist.org/packages/duyler/event-bus)
 [![type-coverage](https://shepherd.dev/github/duyler/event-bus/coverage.svg)](https://shepherd.dev/github/duyler/event-bus)
 [![psalm-level](https://shepherd.dev/github/duyler/event-bus/level.svg)](https://shepherd.dev/github/duyler/event-bus)
 [![codecov](https://codecov.io/gh/duyler/event-bus/graph/badge.svg?token=Z60T9EMXD6)](https://codecov.io/gh/duyler/event-bus)
