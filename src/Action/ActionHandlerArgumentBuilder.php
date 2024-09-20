@@ -34,10 +34,6 @@ class ActionHandlerArgumentBuilder
 
     public function build(Action $action, ActionContainer $container): object|null
     {
-        if (null === $action->argument) {
-            return null;
-        }
-
         /** @var array<string, object> $results */
         $results = [];
 
@@ -61,6 +57,13 @@ class ActionHandlerArgumentBuilder
                 $actionResultSubstitution->requiredContract => $actionResultSubstitution->substitution,
             ];
             $results = $substitution + $results;
+        }
+
+        if (null === $action->argument) {
+            if (is_callable($action->handler)) {
+                return new Context($action->id, $container, $results);
+            }
+            return null;
         }
 
         if (null === $action->argumentFactory) {
