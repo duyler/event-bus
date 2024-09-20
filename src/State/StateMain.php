@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\State;
 
 use Duyler\EventBus\Bus\Task;
+use Duyler\EventBus\State\Service\StateMainEmptyService;
 use Duyler\EventBus\Storage\ActionContainerStorage;
 use Duyler\EventBus\Contract\State\StateHandlerObservedInterface;
 use Duyler\EventBus\Contract\StateMainInterface;
@@ -165,6 +166,23 @@ readonly class StateMain implements StateMainInterface
             if ($this->isObserved($handler, $task, $context)) {
                 $handler->handle($stateService, $context);
             }
+        }
+    }
+
+    #[Override]
+    public function empty(): void
+    {
+        $stateService = new StateMainEmptyService(
+            $this->actionService,
+            $this->resultService,
+            $this->logService,
+            $this->eventService,
+            $this->rollbackService,
+            $this->subscriptionService,
+        );
+
+        foreach ($this->stateHandlerStorage->getMainEmpty() as $handler) {
+            $handler->handle($stateService, $this->contextScope->getContext($handler::class));
         }
     }
 

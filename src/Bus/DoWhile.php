@@ -8,6 +8,7 @@ use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
 use Duyler\EventBus\Enum\Mode;
 use Duyler\EventBus\Internal\Event\DoCyclicEvent;
+use Duyler\EventBus\Internal\Event\TaskQueueIsEmptyEvent;
 use Duyler\EventBus\Internal\Event\DoWhileBeginEvent;
 use Duyler\EventBus\Internal\Event\DoWhileEndEvent;
 use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
@@ -59,6 +60,9 @@ final class DoWhile
             $this->eventDispatcher->dispatch(new TaskSuspendedEvent($task));
         } else {
             $this->eventDispatcher->dispatch(new TaskAfterRunEvent($task));
+            if ($this->taskQueue->isEmpty()) {
+                $this->eventDispatcher->dispatch(new TaskQueueIsEmptyEvent());
+            }
         }
     }
 }
