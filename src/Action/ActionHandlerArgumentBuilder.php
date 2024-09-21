@@ -38,10 +38,12 @@ class ActionHandlerArgumentBuilder
         $results = [];
 
         if ($this->eventRelationStorage->has($action->id)) {
-            $eventDto = $this->eventRelationStorage->shift($action->id)->event;
-            $event = $this->eventStorage->get($eventDto->id);
-            if (null !== $eventDto->data && null !== $event && null !== $event->contract) {
-                $results[$event->contract] = $eventDto->data;
+            foreach ($action->listen as $eventId) {
+                $eventDto = $this->eventRelationStorage->shift($action->id, $eventId)->event;
+                $event = $this->eventStorage->get($eventDto->id);
+                if (null !== $eventDto->data && null !== $event && null !== $event->contract) {
+                    $results[$event->contract] = $eventDto->data;
+                }
             }
         }
 

@@ -12,8 +12,10 @@ use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
 use Duyler\EventBus\Exception\EventHandlersNotFoundException;
+use Duyler\EventBus\Exception\EventNotDefinedException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use stdClass;
 
 class EventTest extends TestCase
@@ -26,7 +28,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: function () {},
-                listen: 'TestEvent',
+                listen: ['TestEvent'],
                 externalAccess: true,
             ),
         );
@@ -47,6 +49,59 @@ class EventTest extends TestCase
     }
 
     #[Test]
+    public function run_without_dispatch_event(): void
+    {
+        $builder = new BusBuilder(new BusConfig());
+        $builder->doAction(
+            new Action(
+                id: 'ForEventAction',
+                handler: function () {},
+                listen: ['TestEvent'],
+                externalAccess: true,
+            ),
+        );
+
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent'));
+
+        $bus = $builder->build();
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('TaskQueue is empty');
+
+        $bus->run();
+    }
+
+    #[Test]
+    public function run_with_not_all_condition(): void
+    {
+        $builder = new BusBuilder(new BusConfig());
+        $builder->doAction(
+            new Action(
+                id: 'ForEventAction',
+                handler: function () {},
+                listen: ['TestEvent1', 'TestEvent2'],
+                externalAccess: true,
+            ),
+        );
+
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent1'));
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent2'));
+
+        $bus = $builder->build();
+
+        $bus->dispatchEvent(
+            new Event(
+                id: 'TestEvent1',
+            ),
+        );
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('TaskQueue is empty');
+
+        $bus->run();
+    }
+
+    #[Test]
     public function run_with_contract(): void
     {
         $builder = new BusBuilder(new BusConfig());
@@ -54,7 +109,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: function (stdClass $data) {},
-                listen: 'TestEvent',
+                listen: ['TestEvent'],
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -85,7 +140,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: fn(stdClass $data) => $data,
-                listen: 'TestEvent',
+                listen: ['TestEvent'],
                 argument: stdClass::class,
                 contract: stdClass::class,
                 externalAccess: true,
@@ -130,7 +185,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: fn(stdClass $data) => $data,
-                listen: 'TestEvent',
+                listen: ['TestEvent'],
                 argument: stdClass::class,
                 contract: stdClass::class,
                 externalAccess: true,
@@ -174,7 +229,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: function () {},
-                listen: 'TestEvent',
+                listen: ['TestEvent'],
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -201,7 +256,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: function () {},
-                listen: 'TestEvent',
+                listen: ['TestEvent'],
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -229,7 +284,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: function () {},
-                listen: 'TestEvent',
+                listen: ['TestEvent'],
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -265,5 +320,25 @@ class EventTest extends TestCase
                 id: 'TestEvent',
             ),
         );
+    }
+
+    #[Test]
+    public function run_with_event_not_defined(): void
+    {
+        $builder = new BusBuilder(new BusConfig());
+
+        $builder->doAction(
+            new Action(
+                id: 'ForEventAction',
+                handler: function () {},
+                listen: ['TestEvent'],
+                argument: stdClass::class,
+                externalAccess: true,
+            ),
+        );
+
+        $this->expectException(EventNotDefinedException::class);
+
+        $builder->build();
     }
 }

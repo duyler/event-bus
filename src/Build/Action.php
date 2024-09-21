@@ -14,7 +14,8 @@ final readonly class Action
     public string $id;
     /** @var RecursiveArrayIterator<array-key, string> */
     public RecursiveArrayIterator $required;
-    public ?string $listen;
+    /** @var string[] */
+    public array $listen;
     /** @var string[] */
     public array $sealed;
     /** @var string[] */
@@ -25,7 +26,8 @@ final readonly class Action
         public string|Closure $handler,
         /** @var array<array-key, string|UnitEnum> */
         array $required = [],
-        null|string|UnitEnum $listen = null,
+        /** @var array<array-key, string|UnitEnum> */
+        array $listen = [],
         /** @var array<string, string> */
         public array $bind = [],
         /** @var array<string, string> */
@@ -76,6 +78,13 @@ final readonly class Action
 
         $this->sealed = $allowActions;
 
-        $this->listen = $listen === null ? null : IdFormatter::toString($listen);
+        $listenEvents = [];
+
+        /** @var string|UnitEnum $eventId */
+        foreach ($listen as $eventId) {
+            $listenEvents[] = IdFormatter::toString($eventId);
+        }
+
+        $this->listen = $listenEvents;
     }
 }

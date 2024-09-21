@@ -19,7 +19,7 @@ class ActionStorage
     private array $byContract = [];
 
     /** @var array<string, array<string, Action>> */
-    private array $byTrigger = [];
+    private array $byEvent = [];
 
     public function save(Action $action): void
     {
@@ -27,8 +27,8 @@ class ActionStorage
             $this->byContract[$action->contract][$action->id] = $action;
         }
 
-        if (null !== $action->listen) {
-            $this->byTrigger[$action->listen][$action->id] = $action;
+        foreach ($action->listen as $eventId) {
+            $this->byEvent[$eventId][$action->id] = $action;
         }
 
         $this->data[$action->id] = $action;
@@ -64,6 +64,6 @@ class ActionStorage
     /** @return array<string, Action> */
     public function getByEvent(string $eventId): array
     {
-        return $this->byTrigger[$eventId] ?? [];
+        return $this->byEvent[$eventId] ?? [];
     }
 }

@@ -11,6 +11,7 @@ use Duyler\EventBus\Exception\UnableToContinueWithFailActionException;
 use Duyler\EventBus\Storage\ActionStorage;
 use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\DependencyInjection\Attribute\Finalize;
+use Duyler\EventBus\Storage\EventRelationStorage;
 
 use function count;
 
@@ -34,10 +35,15 @@ final class Bus
         private readonly ActionStorage $actionStorage,
         private readonly CompleteActionStorage $completeActionStorage,
         private readonly BusConfig $config,
+        private readonly EventRelationStorage $eventRelationStorage,
     ) {}
 
     public function doAction(Action $action): void
     {
+        if (false === $this->isSatisfiedEvents($action)) {
+            return;
+        }
+
         if ($this->isRepeat($action->id) && false === $action->repeatable) {
             return;
         }
@@ -52,7 +58,7 @@ final class Bus
                 continue;
             }
 
-            if (null !== $requiredAction->listen) {
+            if (0 < count($requiredAction->listen)) {
                 continue;
             }
 
@@ -97,6 +103,16 @@ final class Bus
                 unset($this->heldTasks[$key]);
             }
         }
+    }
+
+    private function isSatisfiedEvents(Action $action): bool
+    {
+        foreach ($action->listen as $eventId) {
+            if (false === $this->eventRelationStorage->isExists($eventId)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private function isSatisfiedConditions(Task $task): bool

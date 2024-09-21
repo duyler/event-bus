@@ -12,7 +12,7 @@ use RuntimeException;
 class EventRelationStorage
 {
     /**
-     * @var array<string, array<array-key, EventRelation>>
+     * @var array<string, array<string, array<array-key, EventRelation>>>
      */
     private array $data = [];
 
@@ -21,7 +21,7 @@ class EventRelationStorage
 
     public function save(EventRelation $eventRelation): void
     {
-        $this->data[$eventRelation->action->id][] = $eventRelation;
+        $this->data[$eventRelation->action->id][$eventRelation->event->id][] = $eventRelation;
         $this->lastById[$eventRelation->event->id] = $eventRelation;
     }
 
@@ -30,11 +30,11 @@ class EventRelationStorage
         return isset($this->data[$actionId]);
     }
 
-    public function shift(string $actionId): EventRelation
+    public function shift(string $actionId, string $eventId): EventRelation
     {
-        $this->data[$actionId] ?? throw new RuntimeException('Event relation for action ' . $actionId . ' not found');
+        $this->data[$actionId][$eventId] ?? throw new RuntimeException('Event relation for action ' . $actionId . ' not found');
 
-        return array_shift($this->data[$actionId]);
+        return array_shift($this->data[$actionId][$eventId]);
     }
 
     public function getLast(string $eventId): EventRelation
