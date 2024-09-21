@@ -55,9 +55,9 @@ readonly class ActionService
             }
         }
 
-        if (null !== $action->listen) {
-            if (false === $this->eventStorage->has($action->listen)) {
-                $this->throwEventNotDefined($action->listen, $action->id);
+        foreach ($action->listen as $eventId) {
+            if (false === $this->eventStorage->has($eventId)) {
+                $this->throwEventNotDefined($eventId, $action->id);
             }
         }
 
@@ -125,9 +125,9 @@ readonly class ActionService
                 }
             }
 
-            if (null !== $action->listen) {
-                if (false === $this->eventStorage->has($action->listen)) {
-                    $this->throwEventNotDefined($action->listen, $action->id);
+            foreach ($action->listen as $eventId) {
+                if (false === $this->eventStorage->has($eventId)) {
+                    $this->throwEventNotDefined($eventId, $action->id);
                 }
             }
 

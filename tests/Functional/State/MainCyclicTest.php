@@ -73,7 +73,7 @@ class MainCyclicStateHandlerWithTrigger implements MainCyclicStateHandlerInterfa
             new Action(
                 id: 'ActionFromHandler',
                 handler: function (): void {},
-                listen: 'EventFromHandler',
+                listen: ['EventFromHandler'],
                 externalAccess: true,
             ),
         );
@@ -102,7 +102,7 @@ class MainCyclicStateHandlerWithRepeatableEvent implements MainCyclicStateHandle
                 handler: function (): void {
                     Fiber::suspend();
                 },
-                listen: 'EventFromHandler',
+                listen: ['EventFromHandler'],
                 externalAccess: true,
                 repeatable: true,
                 lock: true,
