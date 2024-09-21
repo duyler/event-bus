@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
-use Duyler\EventBus\Action\Context;
+use Duyler\EventBus\Action\Context\ActionContext;
 use Duyler\EventBus\Action\Exception\ActionHandlerMustBeCallableException;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusBuilder;
@@ -64,7 +64,7 @@ class ActionHandlerTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'TestDep',
-                handler: function (Context $context) {
+                handler: function (ActionContext $context) {
                     return $context->call(fn(TestContract $testContract) => $testContract);
                 },
                 contract: TestContract::class,
@@ -74,7 +74,7 @@ class ActionHandlerTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function (Context $context): stdClass {
+                handler: function (ActionContext $context): stdClass {
                     $contract = $context->argument();
                     $hello = $context->call(
                         fn(HandlerDependencyClass $dependencyClass) => $dependencyClass->get(),
@@ -107,7 +107,7 @@ class ActionHandlerTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function (Context $context): void {
+                handler: function (ActionContext $context): void {
                     $context->argument();
                 },
             ),
@@ -129,7 +129,7 @@ class ActionHandlerTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function (Context $context): void {
+                handler: function (ActionContext $context): void {
                     $context->call(
                         fn($dependencyClass) => $dependencyClass->get(),
                     );

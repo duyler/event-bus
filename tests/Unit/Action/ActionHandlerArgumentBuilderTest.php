@@ -6,7 +6,7 @@ namespace Duyler\EventBus\Test\Unit\Action;
 
 use Duyler\EventBus\Action\ActionHandlerArgumentBuilder;
 use Duyler\EventBus\Action\ActionSubstitution;
-use Duyler\EventBus\Action\Context;
+use Duyler\EventBus\Action\Context\ActionContext;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Bus\ActionContainer;
 use Duyler\EventBus\Storage\ActionArgumentStorage;
@@ -31,7 +31,7 @@ class ActionHandlerArgumentBuilderTest extends TestCase
     public function build_with_empty_action_required(): void
     {
         $action = new Action(id: 'Empty.Required.Action', handler: fn() => '', required: []);
-        $this->assertInstanceOf(Context::class, $this->argumentBuilder->build($action, $this->actionContainer));
+        $this->assertInstanceOf(ActionContext::class, $this->argumentBuilder->build($action, $this->actionContainer));
     }
 
     /**

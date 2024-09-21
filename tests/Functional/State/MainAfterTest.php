@@ -164,7 +164,7 @@ class MainAfterTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'ActionFromBuilder',
-                handler: function (\Duyler\EventBus\Action\Context $context): void {},
+                handler: function (\Duyler\EventBus\Action\Context\ActionContext $context): void {},
                 required: [
                     'ActionWithContract',
                 ],

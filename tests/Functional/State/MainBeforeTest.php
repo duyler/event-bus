@@ -79,7 +79,7 @@ class MainBeforeTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'ActionWithRequired',
-                handler: fn(\Duyler\EventBus\Action\Context $context): ResultInterface => $context->argument(),
+                handler: fn(\Duyler\EventBus\Action\Context\ActionContext $context): ResultInterface => $context->argument(),
                 required: [
                     'RequiredAction',
                 ],
