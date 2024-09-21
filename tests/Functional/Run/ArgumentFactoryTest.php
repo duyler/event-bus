@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
+use Duyler\EventBus\Action\Context;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
@@ -31,7 +32,7 @@ class ArgumentFactoryTest extends TestCase
             ->doAction(
                 new Action(
                     id: 'TestArgument',
-                    handler: fn(TestArgument $argument) => $argument,
+                    handler: fn(Context $context) => $context->argument(),
                     required: ['TestArgumentFactoryAction'],
                     argument: TestArgument::class,
                     argumentFactory: fn(TestArgumentContract $contract) => new TestArgument($contract->seyHello . ' Duyler! With callback factory'),
@@ -63,7 +64,7 @@ class ArgumentFactoryTest extends TestCase
             ->doAction(
                 new Action(
                     id: 'TestArgument',
-                    handler: fn(TestArgument $argument) => $argument,
+                    handler: fn(Context $context) => $context->argument(),
                     required: ['TestArgumentFactoryAction'],
                     argument: TestArgument::class,
                     argumentFactory: ArgumentFactory::class,

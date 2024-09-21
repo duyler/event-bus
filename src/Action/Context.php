@@ -7,31 +7,21 @@ namespace Duyler\EventBus\Action;
 use Closure;
 use Duyler\EventBus\Bus\ActionContainer;
 use InvalidArgumentException;
+use LogicException;
 use ReflectionFunction;
 use ReflectionNamedType;
-use RuntimeException;
 
 final readonly class Context
 {
     public function __construct(
         private string $actionId,
         private ActionContainer $actionContainer,
-        /** @var array<string, object> */
-        private array $context = [],
+        private null|object $argument,
     ) {}
 
-    public function contract(string $contract): object
+    public function argument(): object
     {
-        if (false === array_key_exists($contract, $this->context)) {
-            throw new RuntimeException('Addressing an invalid context from ' . $this->actionId);
-        }
-
-        return $this->context[$contract];
-    }
-
-    public function definition(string $id): object
-    {
-        return $this->actionContainer->get($id);
+        return $this->argument ?? throw new LogicException('Argument not defined for action ' . $this->actionId);
     }
 
     public function call(Closure $callback): mixed
@@ -54,7 +44,6 @@ final readonly class Context
 
             $arguments[$param->getName()] = $this->actionContainer->get($className);
         }
-
 
         return $callback(...$arguments);
     }

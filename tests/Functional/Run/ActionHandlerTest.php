@@ -10,10 +10,10 @@ use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use InvalidArgumentException;
+use LogicException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
-use RuntimeException;
 use stdClass;
 
 class ActionHandlerTest extends TestCase
@@ -64,7 +64,9 @@ class ActionHandlerTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'TestDep',
-                handler: fn(Context $context) => $context->definition(TestContract::class),
+                handler: function (Context $context) {
+                    return $context->call(fn(TestContract $testContract) => $testContract);
+                },
                 contract: TestContract::class,
             ),
         );
@@ -73,7 +75,7 @@ class ActionHandlerTest extends TestCase
             new Action(
                 id: 'Test',
                 handler: function (Context $context): stdClass {
-                    $contract = $context->contract(TestContract::class);
+                    $contract = $context->argument();
                     $hello = $context->call(
                         fn(HandlerDependencyClass $dependencyClass) => $dependencyClass->get(),
                     );
@@ -85,6 +87,7 @@ class ActionHandlerTest extends TestCase
                 required: [
                     'TestDep',
                 ],
+                argument: TestContract::class,
                 contract: stdClass::class,
             ),
         );
@@ -105,15 +108,15 @@ class ActionHandlerTest extends TestCase
             new Action(
                 id: 'Test',
                 handler: function (Context $context): void {
-                    $context->contract(TestContract::class);
+                    $context->argument();
                 },
             ),
         );
 
         $bus = $busBuilder->build();
 
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Addressing an invalid context from Test');
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Argument not defined for action Test');
 
         $bus->run();
     }

@@ -63,7 +63,11 @@ class ActionHandlerArgumentBuilder
 
         if (null === $action->argument) {
             if (is_callable($action->handler)) {
-                return new Context($action->id, $container, $results);
+                return new Context(
+                    $action->id,
+                    $container,
+                    null,
+                );
             }
             return null;
         }
@@ -72,6 +76,13 @@ class ActionHandlerArgumentBuilder
             foreach ($results as $definition) {
                 if ($definition instanceof $action->argument) {
                     $this->actionArgumentStorage->set($action->id, $definition);
+                    if (is_callable($action->handler)) {
+                        return new Context(
+                            $action->id,
+                            $container,
+                            $definition,
+                        );
+                    }
                     return $definition;
                 }
             }
@@ -95,6 +106,15 @@ class ActionHandlerArgumentBuilder
         /** @var object $argument */
         $argument = $factory(...$factoryArguments);
         $this->actionArgumentStorage->set($action->id, $argument);
+
+        if (is_callable($action->handler)) {
+            return new Context(
+                $action->id,
+                $container,
+                $argument,
+            );
+        }
+
         return $argument;
     }
 
