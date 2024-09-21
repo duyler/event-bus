@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
-use Duyler\EventBus\Action\Context;
+use Duyler\EventBus\Action\Context\ActionContext;
 use Duyler\EventBus\Action\Exception\ActionHandlerMustBeCallableException;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use InvalidArgumentException;
+use LogicException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
-use RuntimeException;
 use stdClass;
 
 class ActionHandlerTest extends TestCase
@@ -64,7 +64,9 @@ class ActionHandlerTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'TestDep',
-                handler: fn(Context $context) => $context->definition(TestContract::class),
+                handler: function (ActionContext $context) {
+                    return $context->call(fn(TestContract $testContract) => $testContract);
+                },
                 contract: TestContract::class,
             ),
         );
@@ -72,8 +74,8 @@ class ActionHandlerTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function (Context $context): stdClass {
-                    $contract = $context->contract(TestContract::class);
+                handler: function (ActionContext $context): stdClass {
+                    $contract = $context->argument();
                     $hello = $context->call(
                         fn(HandlerDependencyClass $dependencyClass) => $dependencyClass->get(),
                     );
@@ -85,6 +87,7 @@ class ActionHandlerTest extends TestCase
                 required: [
                     'TestDep',
                 ],
+                argument: TestContract::class,
                 contract: stdClass::class,
             ),
         );
@@ -104,16 +107,16 @@ class ActionHandlerTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function (Context $context): void {
-                    $context->contract(TestContract::class);
+                handler: function (ActionContext $context): void {
+                    $context->argument();
                 },
             ),
         );
 
         $bus = $busBuilder->build();
 
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Addressing an invalid context from Test');
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Argument not defined for action Test');
 
         $bus->run();
     }
@@ -126,7 +129,7 @@ class ActionHandlerTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function (Context $context): void {
+                handler: function (ActionContext $context): void {
                     $context->call(
                         fn($dependencyClass) => $dependencyClass->get(),
                     );

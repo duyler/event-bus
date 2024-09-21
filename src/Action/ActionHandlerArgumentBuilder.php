@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-use Closure;
+use Duyler\EventBus\Action\Context\ActionContext;
+use Duyler\EventBus\Action\Context\FactoryContext;
 use Duyler\EventBus\Action\Exception\InvalidArgumentFactoryException;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Bus\ActionContainer;
@@ -18,7 +19,6 @@ use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
 use ReflectionException;
-use ReflectionFunction;
 use ReflectionFunctionAbstract;
 use ReflectionNamedType;
 
@@ -63,7 +63,11 @@ class ActionHandlerArgumentBuilder
 
         if (null === $action->argument) {
             if (is_callable($action->handler)) {
-                return new Context($action->id, $container, $results);
+                return new ActionContext(
+                    $action->id,
+                    $container,
+                    null,
+                );
             }
             return null;
         }
@@ -72,6 +76,13 @@ class ActionHandlerArgumentBuilder
             foreach ($results as $definition) {
                 if ($definition instanceof $action->argument) {
                     $this->actionArgumentStorage->set($action->id, $definition);
+                    if (is_callable($action->handler)) {
+                        return new ActionContext(
+                            $action->id,
+                            $container,
+                            $definition,
+                        );
+                    }
                     return $definition;
                 }
             }
@@ -80,21 +91,37 @@ class ActionHandlerArgumentBuilder
             );
         }
 
-        $factoryArguments = $this->buildFactoryArguments($action->argumentFactory, $results);
-
         $factory = $action->argumentFactory;
 
-        if (is_string($factory)) {
+        if (is_callable($factory)) {
+            /** @var object $argument */
+            $argument = $factory(new FactoryContext(
+                $action->id,
+                $container,
+                $results,
+            ));
+        } else {
+            /** @var class-string $factoryClass */
+            $factoryClass = $action->argumentFactory;
+            $factoryArguments = $this->buildFactoryArguments($factoryClass, $results);
             $factory = $container->get($factory);
+            if (!is_callable($factory)) {
+                throw new InvalidArgumentFactoryException($action->argument);
+            }
+            /** @var object $argument */
+            $argument = $factory(...$factoryArguments);
         }
 
-        if (!is_callable($factory)) {
-            throw new InvalidArgumentFactoryException($action->argument);
-        }
-
-        /** @var object $argument */
-        $argument = $factory(...$factoryArguments);
         $this->actionArgumentStorage->set($action->id, $argument);
+
+        if (is_callable($action->handler)) {
+            return new ActionContext(
+                $action->id,
+                $container,
+                $argument,
+            );
+        }
+
         return $argument;
     }
 
@@ -128,32 +155,25 @@ class ActionHandlerArgumentBuilder
 
     /**
      * @param array<string, object> $arguments
-     *
+     * @param class-string $factory
      * @throws ReflectionException
      */
-    private function buildFactoryArguments(string|Closure $factory, array $arguments = []): array
+    private function buildFactoryArguments(string $factory, array $arguments = []): array
     {
-        if (is_string($factory)) {
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
-            $reflection = new ReflectionClass($factory);
-            $methodReflection = null;
-            foreach ($reflection->getMethods() as $method) {
-                if ('__invoke' === $method->getName()) {
-                    $methodReflection = $method;
-                    break;
-                }
+        $reflection = new ReflectionClass($factory);
+        $methodReflection = null;
+        foreach ($reflection->getMethods() as $method) {
+            if ('__invoke' === $method->getName()) {
+                $methodReflection = $method;
+                break;
             }
-
-            if (null === $methodReflection) {
-                throw new InvalidArgumentException('Method __invoke not found in ' . $factory);
-            }
-
-            return $this->matchArguments($methodReflection, $arguments);
         }
 
-        return $this->matchArguments(new ReflectionFunction($factory), $arguments);
+        if (null === $methodReflection) {
+            throw new InvalidArgumentException('Method __invoke not found in ' . $factory);
+        }
+
+        return $this->matchArguments($methodReflection, $arguments);
     }
 
     /** @param array<string, object> $arguments */

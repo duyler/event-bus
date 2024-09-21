@@ -47,7 +47,7 @@ class ActionBeforeTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: TestAction::TestArgument,
-                handler: function (stdClass $argument) {},
+                handler: function (\Duyler\EventBus\Action\Context\ActionContext $argument) {},
                 required: [TestAction::TestArgumentReturn],
                 argument: stdClass::class,
                 externalAccess: true,

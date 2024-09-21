@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
+use Duyler\EventBus\Action\Context\ActionContext;
+use Duyler\EventBus\Action\Context\FactoryContext;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use InvalidArgumentException;
+use LogicException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -31,10 +34,18 @@ class ArgumentFactoryTest extends TestCase
             ->doAction(
                 new Action(
                     id: 'TestArgument',
-                    handler: fn(TestArgument $argument) => $argument,
+                    handler: fn(ActionContext $context) => $context->argument(),
                     required: ['TestArgumentFactoryAction'],
                     argument: TestArgument::class,
-                    argumentFactory: fn(TestArgumentContract $contract) => new TestArgument($contract->seyHello . ' Duyler! With callback factory'),
+                    argumentFactory: function (FactoryContext $context) {
+                        $text = $context->call(
+                            function (stdClass $text) {
+                                $text->name = ' Duyler!';
+                                return $text;
+                            },
+                        );
+                        return new TestArgument($context->contract(TestArgumentContract::class)->seyHello . $text->name);
+                    },
                     contract: TestArgument::class,
                     externalAccess: true,
                 ),
@@ -43,7 +54,39 @@ class ArgumentFactoryTest extends TestCase
         $bus = $builder->build()->run();
 
         $this->assertInstanceOf(TestArgument::class, $bus->getResult('TestArgument')->data);
-        $this->assertEquals('Hello Duyler! With callback factory', $bus->getResult('TestArgument')->data->seyHelloWithName);
+        $this->assertEquals('Hello Duyler!', $bus->getResult('TestArgument')->data->seyHelloWithName);
+    }
+
+    #[Test]
+    public function run_action_with_callback_factory_with_invalid_contract(): void
+    {
+        $builder = new BusBuilder(new BusConfig());
+
+        $builder
+            ->doAction(
+                new Action(
+                    id: 'TestArgument',
+                    handler: fn(ActionContext $context) => $context->argument(),
+                    argument: TestArgument::class,
+                    argumentFactory: function (FactoryContext $context) {
+                        $contract = $context->contract(TestArgumentContract::class);
+                        $text = $context->call(
+                            function (stdClass $text) {
+                                $text->name = ' Duyler!';
+                                return $text;
+                            },
+                        );
+                        return new TestArgument('Hello, ' . $text->name);
+                    },
+                    contract: TestArgument::class,
+                    externalAccess: true,
+                ),
+            );
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Addressing an invalid context from TestArgument');
+
+        $builder->build()->run();
     }
 
     #[Test]
@@ -63,7 +106,7 @@ class ArgumentFactoryTest extends TestCase
             ->doAction(
                 new Action(
                     id: 'TestArgument',
-                    handler: fn(TestArgument $argument) => $argument,
+                    handler: fn(ActionContext $context) => $context->argument(),
                     required: ['TestArgumentFactoryAction'],
                     argument: TestArgument::class,
                     argumentFactory: ArgumentFactory::class,

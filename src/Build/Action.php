@@ -35,6 +35,7 @@ final readonly class Action
         /** @var array<string, array<string, mixed>> */
         public array $definitions = [],
         public ?string $argument = null,
+        /** @var class-string|Closure|null */
         public string|Closure|null $argumentFactory = null,
         public ?string $contract = null,
         public string|Closure|null $rollback = null,

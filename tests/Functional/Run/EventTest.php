@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
+use Duyler\EventBus\Action\Context\ActionContext;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
@@ -108,7 +109,7 @@ class EventTest extends TestCase
         $builder->addAction(
             new Action(
                 id: 'ForEventAction',
-                handler: function (stdClass $data) {},
+                handler: function (ActionContext $context) {},
                 listen: ['TestEvent'],
                 argument: stdClass::class,
                 externalAccess: true,
@@ -139,7 +140,7 @@ class EventTest extends TestCase
         $builder->addAction(
             new Action(
                 id: 'ForEventAction',
-                handler: fn(stdClass $data) => $data,
+                handler: fn(ActionContext $context) => $context->argument(),
                 listen: ['TestEvent'],
                 argument: stdClass::class,
                 contract: stdClass::class,
@@ -150,7 +151,7 @@ class EventTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'RequiredListening',
-                handler: function (stdClass $data) {},
+                handler: function () {},
                 required: ['ForEventAction'],
                 argument: stdClass::class,
                 externalAccess: true,
