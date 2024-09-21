@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Storage;
 
-use Duyler\EventBus\Build\Subscription;
+use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Formatter\IdFormatter;
 
@@ -15,35 +15,35 @@ use function array_keys;
 use function preg_grep;
 use function preg_quote;
 
-class SubscriptionStorage
+class TriggerStorage
 {
     /**
-     * @var array<string, Subscription>
+     * @var array<string, Trigger>
      */
     private array $data = [];
 
-    /** @var array<string, array<array-key, Subscription>> */
+    /** @var array<string, array<array-key, Trigger>> */
     private array $byActionId = [];
 
-    public function save(Subscription $subscription): void
+    public function save(Trigger $trigger): void
     {
-        $id = $this->makeSubscriptionId($subscription);
+        $id = $this->makeTriggerId($trigger);
 
-        $this->data[$id] = $subscription;
-        $this->byActionId[$subscription->actionId][] = $subscription;
+        $this->data[$id] = $trigger;
+        $this->byActionId[$trigger->actionId][] = $trigger;
     }
 
-    public function isExists(Subscription $subscription): bool
+    public function isExists(Trigger $trigger): bool
     {
-        $id = $this->makeSubscriptionId($subscription);
+        $id = $this->makeTriggerId($trigger);
 
         return array_key_exists($id, $this->data);
     }
 
     /**
-     * @return Subscription[]
+     * @return Trigger[]
      */
-    public function getSubscriptions(string $actionId, ResultStatus $status): array
+    public function getTriggers(string $actionId, ResultStatus $status): array
     {
         $pattern = '/^' . preg_quote($this->makeActionIdWithStatus($actionId, $status) . '@') . '/';
 
@@ -57,20 +57,20 @@ class SubscriptionStorage
 
     public function removeByActionId(string $actionId): void
     {
-        $subscriptions = $this->byActionId[$actionId] ?? [];
+        $triggers = $this->byActionId[$actionId] ?? [];
 
-        foreach ($subscriptions as $subscription) {
-            unset($this->data[$this->makeSubscriptionId($subscription)]);
+        foreach ($triggers as $trigger) {
+            unset($this->data[$this->makeTriggerId($trigger)]);
         }
 
         unset($this->byActionId[$actionId]);
     }
 
-    public function remove(Subscription $subscription): void
+    public function remove(Trigger $trigger): void
     {
-        $id = $this->makeSubscriptionId($subscription);
+        $id = $this->makeTriggerId($trigger);
         unset($this->data[$id]);
-        unset($this->byActionId[$subscription->actionId]);
+        unset($this->byActionId[$trigger->actionId]);
     }
 
     private function makeActionIdWithStatus(string $actionId, ResultStatus $status): string
@@ -78,11 +78,11 @@ class SubscriptionStorage
         return $actionId . IdFormatter::DELIMITER . $status->value;
     }
 
-    private function makeSubscriptionId(Subscription $subscription): string
+    private function makeTriggerId(Trigger $trigger): string
     {
-        return $subscription->subjectId
-            . IdFormatter::DELIMITER . $subscription->status->value
-            . '@' . $subscription->actionId;
+        return $trigger->subjectId
+            . IdFormatter::DELIMITER . $trigger->status->value
+            . '@' . $trigger->actionId;
     }
 
     public function getAll(): array

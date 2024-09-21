@@ -33,7 +33,7 @@ use Duyler\EventBus\Internal\Listener\Bus\CompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\DispatchEventEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\LogCompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveHeldTasksEventListener;
-use Duyler\EventBus\Internal\Listener\Bus\ResolveSubscriptionsEventListener;
+use Duyler\EventBus\Internal\Listener\Bus\ResolveTriggersEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\TerminateAfterExceptionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\TerminateBusEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ValidateCompleteActionEventListener;
@@ -116,7 +116,7 @@ class BusConfig
             TaskAfterRunEvent::class => [
                 CompleteActionEventListener::class,
                 StateMainAfterEventListener::class,
-                ResolveSubscriptionsEventListener::class,
+                ResolveTriggersEventListener::class,
                 LogCompleteActionEventListener::class,
                 ValidateCompleteActionEventListener::class,
                 ResolveHeldTasksEventListener::class,

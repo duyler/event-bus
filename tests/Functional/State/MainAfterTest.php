@@ -6,7 +6,7 @@ namespace Duyler\EventBus\Test\Functional\State;
 
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Build\Context;
-use Duyler\EventBus\Build\Subscription;
+use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\RollbackActionInterface;
@@ -57,15 +57,15 @@ class MainAfterTest extends TestCase
             ),
         );
 
-        $busBuilder->addSubscription(
-            new Subscription(
+        $busBuilder->addTrigger(
+            new Trigger(
                 subjectId: 'ActionFromBuilder',
                 actionId: 'RemovedActionFromBuilder',
             ),
         );
 
-        $busBuilder->addSubscription(
-            new Subscription(
+        $busBuilder->addTrigger(
+            new Trigger(
                 subjectId: 'RemovedActionFromBuilder',
                 actionId: 'SubscribedActionFromBuilder',
             ),
@@ -80,12 +80,12 @@ class MainAfterTest extends TestCase
     }
 
     #[Test]
-    public function remove_subscription_from_state_handler(): void
+    public function remove_trigger_from_state_handler(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->addStateHandler(new MainAfterStateHandlerWithSubscription());
+        $busBuilder->addStateHandler(new MainAfterStateHandlerWithTrigger());
         $busBuilder->addStateContext(new Context(
-            [MainAfterStateHandlerWithSubscription::class],
+            [MainAfterStateHandlerWithTrigger::class],
         ));
         $busBuilder->doAction(
             new Action(
@@ -259,27 +259,27 @@ class MainAfterStateHandlerWithRollback implements MainAfterStateHandlerInterfac
     }
 }
 
-class MainAfterStateHandlerWithSubscription implements MainAfterStateHandlerInterface
+class MainAfterStateHandlerWithTrigger implements MainAfterStateHandlerInterface
 {
     #[Override]
     public function handle(StateMainAfterService $stateService, StateContext $context): void
     {
-        $stateService->addSubscription(
-            new Subscription(
+        $stateService->addTrigger(
+            new Trigger(
                 subjectId: 'ActionFromTest',
                 actionId: 'SubscribedActionFromTest',
             ),
         );
 
-        $stateService->subscriptionIsExists(
-            new Subscription(
+        $stateService->triggerIsExists(
+            new Trigger(
                 subjectId: 'ActionFromTest',
                 actionId: 'SubscribedActionFromTest',
             ),
         );
 
-        $stateService->removeSubscription(
-            new Subscription(
+        $stateService->removeTrigger(
+            new Trigger(
                 subjectId: 'ActionFromTest',
                 actionId: 'SubscribedActionFromTest',
             ),

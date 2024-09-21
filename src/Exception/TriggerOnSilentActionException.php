@@ -6,10 +6,10 @@ namespace Duyler\EventBus\Exception;
 
 use Exception;
 
-class SubscriptionOnSilentActionException extends Exception
+class TriggerOnSilentActionException extends Exception
 {
     public function __construct(string $actionId, string $silentActionId)
     {
-        parent::__construct('Action ' . $actionId . 'can not be subscribed on silent action ' . $silentActionId);
+        parent::__construct('Action ' . $actionId . 'can not be triggered on silent action ' . $silentActionId);
     }
 }

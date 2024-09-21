@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Test\Functional\Run;
 
 use Duyler\EventBus\Build\Action;
-use Duyler\EventBus\Build\Subscription;
+use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use PHPUnit\Framework\Attributes\Test;
@@ -58,8 +58,8 @@ class LogTest extends TestCase
         $busBuilder->doAction(new Action(id: 'Test3', handler: function () {}, repeatable: true));
         $busBuilder->doAction(new Action(id: 'Test4', handler: function () {}));
 
-        $busBuilder->addSubscription(
-            new Subscription(
+        $busBuilder->addTrigger(
+            new Trigger(
                 subjectId: 'Test4',
                 actionId: 'Test3',
             ),

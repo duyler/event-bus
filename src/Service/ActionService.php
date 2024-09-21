@@ -19,7 +19,7 @@ use Duyler\EventBus\Exception\EventNotDefinedException;
 use Duyler\EventBus\Exception\NotAllowedSealedActionException;
 use Duyler\EventBus\Storage\ActionStorage;
 use Duyler\EventBus\Storage\EventStorage;
-use Duyler\EventBus\Storage\SubscriptionStorage;
+use Duyler\EventBus\Storage\TriggerStorage;
 
 readonly class ActionService
 {
@@ -27,7 +27,7 @@ readonly class ActionService
         private ActionStorage $actionStorage,
         private ActionContainerProvider $actionContainerProvider,
         private ActionSubstitutionInterface $actionSubstitution,
-        private SubscriptionStorage $subscriptionStorage,
+        private TriggerStorage $triggerStorage,
         private EventStorage $eventStorage,
         private Bus $bus,
     ) {}
@@ -184,6 +184,6 @@ readonly class ActionService
         }
 
         $this->actionStorage->remove($actionId);
-        $this->subscriptionStorage->removeByActionId($actionId);
+        $this->triggerStorage->removeByActionId($actionId);
     }
 }
