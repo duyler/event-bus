@@ -49,9 +49,6 @@ class BusBuilder
 
     public function __construct(private BusConfig $config) {}
 
-    /**
-     * @psalm-suppress MoreSpecificReturnType, LessSpecificReturnStatement
-     */
     public function build(): BusInterface
     {
         $containerConfig = new ContainerConfig();
@@ -114,7 +111,10 @@ class BusBuilder
             }
         }
 
-        return $container->get(Bus::class);
+        /** @var BusInterface $bus */
+        $bus = $container->get(Bus::class);
+
+        return $bus;
     }
 
     public function addAction(Action $action): static
