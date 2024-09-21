@@ -15,7 +15,7 @@ use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\QueueService;
 use Duyler\EventBus\Service\ResultService;
 use Duyler\EventBus\Service\RollbackService;
-use Duyler\EventBus\Service\SubscriptionService;
+use Duyler\EventBus\Service\TriggerService;
 use Duyler\EventBus\Service\EventService;
 use Duyler\EventBus\State\Service\StateMainAfterService;
 use Duyler\EventBus\State\Service\StateMainBeforeService;
@@ -36,7 +36,7 @@ readonly class StateMain implements StateMainInterface
         private LogService $logService,
         private ResultService $resultService,
         private RollbackService $rollbackService,
-        private SubscriptionService $subscriptionService,
+        private TriggerService $triggerService,
         private StateSuspendContext $context,
         private EventService $eventService,
         private StateContextScope $contextScope,
@@ -48,7 +48,7 @@ readonly class StateMain implements StateMainInterface
     {
         $stateService = new StateMainBeginService(
             $this->actionService,
-            $this->subscriptionService,
+            $this->triggerService,
             $this->eventService,
         );
 
@@ -101,7 +101,7 @@ readonly class StateMain implements StateMainInterface
             $this->actionContainerStorage->get($task->action->id),
             $this->actionService,
             $this->eventService,
-            $this->subscriptionService,
+            $this->triggerService,
         );
 
         $this->context->addSuspend($task->action->id, $suspend);
@@ -127,7 +127,7 @@ readonly class StateMain implements StateMainInterface
             $this->actionContainerStorage->get($task->action->id),
             $this->actionService,
             $this->eventService,
-            $this->subscriptionService,
+            $this->triggerService,
         );
 
         foreach ($handlers as $handler) {
@@ -158,7 +158,7 @@ readonly class StateMain implements StateMainInterface
             $this->logService,
             $this->eventService,
             $this->rollbackService,
-            $this->subscriptionService,
+            $this->triggerService,
         );
 
         foreach ($this->stateHandlerStorage->getMainAfter() as $handler) {
@@ -178,7 +178,7 @@ readonly class StateMain implements StateMainInterface
             $this->logService,
             $this->eventService,
             $this->rollbackService,
-            $this->subscriptionService,
+            $this->triggerService,
         );
 
         foreach ($this->stateHandlerStorage->getMainEmpty() as $handler) {

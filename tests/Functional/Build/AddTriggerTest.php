@@ -5,34 +5,34 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Test\Functional\Build;
 
 use Duyler\EventBus\Build\Action;
-use Duyler\EventBus\Build\Subscription;
+use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Exception\SubscribedActionNotDefinedException;
-use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
-use Duyler\EventBus\Exception\SubscriptionOnNotDefinedActionException;
-use Duyler\EventBus\Exception\SubscriptionOnSilentActionException;
+use Duyler\EventBus\Exception\TriggerAlreadyDefinedException;
+use Duyler\EventBus\Exception\TriggerOnNotDefinedActionException;
+use Duyler\EventBus\Exception\TriggerOnSilentActionException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
-class AddSubscriptionTest extends TestCase
+class AddTriggerTest extends TestCase
 {
     #[Test]
-    public function addSubscription_with_redefine()
+    public function addTrigger_with_redefine()
     {
         $builder = new BusBuilder(new BusConfig());
 
-        $builder->addSubscription(
-            new Subscription(
+        $builder->addTrigger(
+            new Trigger(
                 subjectId: 'Action',
                 actionId: 'Subscriber',
             ),
         );
 
-        $this->expectException(SubscriptionAlreadyDefinedException::class);
+        $this->expectException(TriggerAlreadyDefinedException::class);
 
-        $builder->addSubscription(
-            new Subscription(
+        $builder->addTrigger(
+            new Trigger(
                 subjectId: 'Action',
                 actionId: 'Subscriber',
             ),
@@ -40,7 +40,7 @@ class AddSubscriptionTest extends TestCase
     }
 
     #[Test]
-    public function AddSubscription_on_silent_action()
+    public function AddTrigger_on_silent_action()
     {
         $builder = new BusBuilder(new BusConfig());
 
@@ -59,10 +59,10 @@ class AddSubscriptionTest extends TestCase
             ),
         );
 
-        $this->expectException(SubscriptionOnSilentActionException::class);
+        $this->expectException(TriggerOnSilentActionException::class);
 
-        $builder->addSubscription(
-            new Subscription(
+        $builder->addTrigger(
+            new Trigger(
                 subjectId: 'Action',
                 actionId: 'Subscriber',
             ),
@@ -72,7 +72,7 @@ class AddSubscriptionTest extends TestCase
     }
 
     #[Test]
-    public function AddSubscription_on_not_defined_subject_action()
+    public function AddTrigger_on_not_defined_subject_action()
     {
         $builder = new BusBuilder(new BusConfig());
 
@@ -83,10 +83,10 @@ class AddSubscriptionTest extends TestCase
             ),
         );
 
-        $this->expectException(SubscriptionOnNotDefinedActionException::class);
+        $this->expectException(TriggerOnNotDefinedActionException::class);
 
-        $builder->addSubscription(
-            new Subscription(
+        $builder->addTrigger(
+            new Trigger(
                 subjectId: 'Action',
                 actionId: 'Subscriber',
             ),
@@ -96,7 +96,7 @@ class AddSubscriptionTest extends TestCase
     }
 
     #[Test]
-    public function AddSubscription_with_undefined_target_action()
+    public function AddTrigger_with_undefined_target_action()
     {
         $builder = new BusBuilder(new BusConfig());
 
@@ -109,8 +109,8 @@ class AddSubscriptionTest extends TestCase
 
         $this->expectException(SubscribedActionNotDefinedException::class);
 
-        $builder->addSubscription(
-            new Subscription(
+        $builder->addTrigger(
+            new Trigger(
                 subjectId: 'Action',
                 actionId: 'Subscriber',
             ),

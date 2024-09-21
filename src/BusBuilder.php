@@ -8,15 +8,15 @@ use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Build\Context;
 use Duyler\EventBus\Build\Event;
 use Duyler\EventBus\Build\SharedService;
-use Duyler\EventBus\Build\Subscription;
+use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
-use Duyler\EventBus\Exception\SubscriptionAlreadyDefinedException;
+use Duyler\EventBus\Exception\TriggerAlreadyDefinedException;
 use Duyler\EventBus\Internal\ListenerProvider;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\EventService;
 use Duyler\EventBus\Service\StateService;
-use Duyler\EventBus\Service\SubscriptionService;
+use Duyler\EventBus\Service\TriggerService;
 use Duyler\DependencyInjection\Container;
 use Duyler\DependencyInjection\ContainerConfig;
 use Psr\EventDispatcher\ListenerProviderInterface;
@@ -26,8 +26,8 @@ class BusBuilder
     /** @var array<string, Action> */
     private array $actions = [];
 
-    /** @var Subscription[] */
-    private array $subscriptions = [];
+    /** @var Trigger[] */
+    private array $triggers = [];
 
     /** @var array<string, Action> */
     private array $doActions = [];
@@ -72,8 +72,8 @@ class BusBuilder
         /** @var EventService $eventService */
         $eventService = $container->get(EventService::class);
 
-        /** @var SubscriptionService $subscriptionService */
-        $subscriptionService = $container->get(SubscriptionService::class);
+        /** @var TriggerService $triggerService */
+        $triggerService = $container->get(TriggerService::class);
 
         /** @var StateService $stateService */
         $stateService = $container->get(StateService::class);
@@ -90,8 +90,8 @@ class BusBuilder
             $actionService->doExistsAction($action->id);
         }
 
-        foreach ($this->subscriptions as $subscription) {
-            $subscriptionService->addSubscription($subscription);
+        foreach ($this->triggers as $trigger) {
+            $triggerService->addTrigger($trigger);
         }
 
         foreach ($this->stateHandlers as $stateHandler) {
@@ -128,15 +128,15 @@ class BusBuilder
         return $this;
     }
 
-    public function addSubscription(Subscription $subscription): static
+    public function addTrigger(Trigger $trigger): static
     {
-        $id = $subscription->subjectId . '@' . $subscription->status->value . '@' . $subscription->actionId;
+        $id = $trigger->subjectId . '@' . $trigger->status->value . '@' . $trigger->actionId;
 
-        if (array_key_exists($id, $this->subscriptions)) {
-            throw new SubscriptionAlreadyDefinedException($subscription);
+        if (array_key_exists($id, $this->triggers)) {
+            throw new TriggerAlreadyDefinedException($trigger);
         }
 
-        $this->subscriptions[$id] = $subscription;
+        $this->triggers[$id] = $trigger;
 
         return $this;
     }

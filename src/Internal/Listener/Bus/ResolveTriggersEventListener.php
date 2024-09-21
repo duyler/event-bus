@@ -6,18 +6,18 @@ namespace Duyler\EventBus\Internal\Listener\Bus;
 
 use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
-use Duyler\EventBus\Service\SubscriptionService;
+use Duyler\EventBus\Service\TriggerService;
 
-class ResolveSubscriptionsEventListener
+class ResolveTriggersEventListener
 {
     public function __construct(
-        private SubscriptionService $subscriptionService,
+        private TriggerService $triggerService,
         private CompleteActionStorage $completeActionStorage,
     ) {}
 
     public function __invoke(TaskAfterRunEvent $event): void
     {
         $completeAction = $this->completeActionStorage->get($event->task->action->id);
-        $this->subscriptionService->resolveSubscriptions($completeAction);
+        $this->triggerService->resolveTriggers($completeAction);
     }
 }

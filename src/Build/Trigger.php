@@ -8,7 +8,7 @@ use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Formatter\IdFormatter;
 use UnitEnum;
 
-final readonly class Subscription
+final readonly class Trigger
 {
     public string $subjectId;
     public string $actionId;

@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Test\Functional\Run;
 
 use Duyler\EventBus\Build\Action;
-use Duyler\EventBus\Build\Subscription;
+use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
-class SubscriptionTest extends TestCase
+class TriggerTest extends TestCase
 {
     #[Test]
-    public function run_action_with_subscription(): void
+    public function run_action_with_trigger(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->doAction(
@@ -33,8 +33,8 @@ class SubscriptionTest extends TestCase
             ),
         );
 
-        $busBuilder->addSubscription(
-            new Subscription(
+        $busBuilder->addTrigger(
+            new Trigger(
                 subjectId: 'ActionFromBuilder',
                 actionId: 'SubscribedActionFromBuilder',
             ),

@@ -6,7 +6,7 @@ namespace Duyler\EventBus\Test\Functional\State;
 
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Build\Context;
-use Duyler\EventBus\Build\Subscription;
+use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\MainBeginStateHandlerInterface;
@@ -78,8 +78,8 @@ class MainBeginStateHandler implements MainBeginStateHandlerInterface
             ),
         );
 
-        $stateService->addSubscription(
-            new Subscription(
+        $stateService->addTrigger(
+            new Trigger(
                 subjectId: 'ActionFromBuilder',
                 actionId: 'ActionFromStateMainBegin',
             ),
