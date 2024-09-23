@@ -19,14 +19,14 @@ final class Rollback
         private CompleteActionStorage $completeActionStorage,
         private ActionContainerStorage $containerStorage,
         private ActionArgumentStorage $actionArgumentStorage,
+        private Log $log,
     ) {}
 
-    public function run(array $slice = []): void
+    public function run(): void
     {
-        $completeActions = empty($slice)
-            ? $this->completeActionStorage->getAll()
-            : $this->completeActionStorage->getAllByArray($slice);
+        $successLog = $this->log->getSuccessLog();
 
+        $completeActions = $this->completeActionStorage->getAllByArray($successLog);
         foreach ($completeActions as $completeAction) {
             if (null === $completeAction->action->rollback) {
                 continue;

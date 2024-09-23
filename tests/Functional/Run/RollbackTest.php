@@ -55,6 +55,38 @@ class RollbackTest extends TestCase
         $this->expectExceptionMessage('Test error with class');
         $bud->run();
     }
+
+    #[Test]
+    public function run_with_rollback_after_action_flush()
+    {
+        $busBuilder = new BusBuilder(new BusConfig());
+
+        $busBuilder->addAction(
+            new Action(
+                id: 'Test',
+                handler: function () {},
+                rollback: function () {},
+                externalAccess: true,
+                flush: true,
+            ),
+        );
+
+        $busBuilder->doAction(
+            new Action(
+                id: 'TestWithFlush',
+                handler: function () {throw new RuntimeException('Test error with closure'); },
+                required: ['Test'],
+                rollback: function () {},
+                externalAccess: true,
+            ),
+        );
+
+        $bud = $busBuilder->build();
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Test error with closure');
+        $bud->run();
+    }
 }
 
 class Rollback implements RollbackActionInterface
