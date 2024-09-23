@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Service;
 
-use Duyler\EventBus\Bus\Log;
 use Duyler\EventBus\Bus\Rollback;
 
 readonly class RollbackService
 {
-    public function __construct(private Rollback $rollback, private Log $log) {}
+    public function __construct(
+        private Rollback $rollback,
+    ) {}
 
-    public function rollbackWithoutException(int $step = 0): void
+    public function rollbackWithoutException(): void
     {
-        $this->rollback->run($step > 0 ? array_slice($this->log->getActionLog(), -1, $step) : []);
+        $this->rollback->run();
     }
 }

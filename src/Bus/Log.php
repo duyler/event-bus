@@ -8,6 +8,7 @@ use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Log as LogDto;
 use Duyler\DependencyInjection\Attribute\Finalize;
+use Duyler\EventBus\Enum\ResultStatus;
 
 #[Finalize(method: 'reset')]
 final class Log
@@ -27,6 +28,9 @@ final class Log
     /** @var string[] */
     private array $retriesLog = [];
 
+    /** @var string[] */
+    private array $successLog = [];
+
     public function __construct(private BusConfig $config) {}
 
     public function pushCompleteAction(CompleteAction $completeAction): void
@@ -38,6 +42,9 @@ final class Log
             $this->pushRetriesLog($actionId);
         } else {
             $this->pushMainLog($actionId);
+            if (ResultStatus::Success === $completeAction->result->status) {
+                $this->successLog[] = $actionId;
+            }
         }
 
         $this->pushActionLog($completeAction->action);
@@ -96,6 +103,16 @@ final class Log
             array_shift($this->eventLog);
         }
         $this->eventLog[] = $eventId;
+    }
+
+    public function getSuccessLog(): array
+    {
+        return $this->successLog;
+    }
+
+    public function flushSuccessLog(): void
+    {
+        $this->successLog = [];
     }
 
     public function getLog(): LogDto
