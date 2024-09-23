@@ -13,7 +13,7 @@ use RecursiveIteratorIterator;
 final class ActionRequiredIterator extends RecursiveIteratorIterator
 {
     /** @var array<string, Action> */
-    private iterable $actions;
+    private array $actions;
 
     /** @param array<string, Action> $actions */
     public function __construct(RecursiveIterator $iterator, array $actions)
@@ -31,7 +31,7 @@ final class ActionRequiredIterator extends RecursiveIteratorIterator
             $this->throwNotFoundAction($current);
         }
 
-        return $this->actions[$current]->required->valid();
+        return 0 < $this->actions[$current]->required->count();
     }
 
     public function callGetChildren(): ?RecursiveIterator
