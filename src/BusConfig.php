@@ -8,7 +8,7 @@ use Duyler\EventBus\Internal\Event\EventRemovedEvent;
 use Duyler\EventBus\Internal\Event\TaskQueueIsEmptyEvent;
 use Duyler\EventBus\Internal\Listener\Bus\FlushActionSuccessLogEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveActionsAfterEventDeletedEventListener;
-use Duyler\DependencyInjection\Definition;
+use Duyler\DI\Definition;
 use Duyler\EventBus\Action\ActionRunnerProvider;
 use Duyler\EventBus\Action\ActionSubstitution;
 use Duyler\EventBus\Contract\ActionRunnerProviderInterface;

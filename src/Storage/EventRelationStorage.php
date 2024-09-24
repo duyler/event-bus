@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Storage;
 
-use Duyler\DependencyInjection\Attribute\Finalize;
+use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\Bus\EventRelation;
 use RuntimeException;
 

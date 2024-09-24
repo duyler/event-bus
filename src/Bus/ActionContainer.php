@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use Duyler\DependencyInjection\Container;
-use Duyler\DependencyInjection\ContainerConfig;
+use Duyler\DI\Container;
+use Duyler\DI\ContainerConfig;
 use Duyler\EventBus\BusConfig;
 
 class ActionContainer extends Container

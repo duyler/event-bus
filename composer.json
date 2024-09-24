@@ -17,7 +17,7 @@
     },
     "require": {
         "php": "^8.3",
-        "duyler/dependency-injection": "dev-main",
+        "duyler/di": "dev-main",
         "psr/event-dispatcher": "^1.0.0"
     },
     "require-dev": {

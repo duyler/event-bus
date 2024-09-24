@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use Duyler\DependencyInjection\Attribute\Finalize;
+use Duyler\DI\Attribute\Finalize;
 use RuntimeException;
 use SplQueue;
 

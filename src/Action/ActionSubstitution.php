@@ -7,7 +7,7 @@ namespace Duyler\EventBus\Action;
 use Duyler\EventBus\Build\ActionHandlerSubstitution;
 use Duyler\EventBus\Build\ActionResultSubstitution;
 use Duyler\EventBus\Contract\ActionSubstitutionInterface;
-use Duyler\DependencyInjection\Attribute\Finalize;
+use Duyler\DI\Attribute\Finalize;
 use Override;
 
 #[Finalize(method: 'reset')]

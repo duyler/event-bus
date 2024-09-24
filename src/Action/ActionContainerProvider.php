@@ -9,9 +9,9 @@ use Duyler\EventBus\Build\SharedService;
 use Duyler\EventBus\Bus\ActionContainer;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Storage\ActionContainerStorage;
-use Duyler\DependencyInjection\Container;
-use Duyler\DependencyInjection\ContainerInterface;
-use Duyler\DependencyInjection\Definition;
+use Duyler\DI\Container;
+use Duyler\DI\ContainerInterface;
+use Duyler\DI\Definition;
 use InvalidArgumentException;
 
 class ActionContainerProvider

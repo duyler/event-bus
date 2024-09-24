@@ -10,7 +10,7 @@ use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\UnableToContinueWithFailActionException;
 use Duyler\EventBus\Storage\ActionStorage;
 use Duyler\EventBus\Storage\CompleteActionStorage;
-use Duyler\DependencyInjection\Attribute\Finalize;
+use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\Storage\EventRelationStorage;
 
 use function count;
