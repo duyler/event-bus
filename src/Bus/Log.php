@@ -43,7 +43,7 @@ final class Log
         } else {
             $this->pushMainLog($actionId);
             if (ResultStatus::Success === $completeAction->result->status) {
-                $this->successLog[] = $actionId;
+                $this->successLog[] = $completeAction->action->id;
             }
         }
 
