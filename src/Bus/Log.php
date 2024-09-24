@@ -7,7 +7,7 @@ namespace Duyler\EventBus\Bus;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Log as LogDto;
-use Duyler\DependencyInjection\Attribute\Finalize;
+use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\Enum\ResultStatus;
 
 #[Finalize(method: 'reset')]

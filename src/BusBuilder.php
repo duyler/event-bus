@@ -17,8 +17,8 @@ use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\EventService;
 use Duyler\EventBus\Service\StateService;
 use Duyler\EventBus\Service\TriggerService;
-use Duyler\DependencyInjection\Container;
-use Duyler\DependencyInjection\ContainerConfig;
+use Duyler\DI\Container;
+use Duyler\DI\ContainerConfig;
 use Psr\EventDispatcher\ListenerProviderInterface;
 
 class BusBuilder

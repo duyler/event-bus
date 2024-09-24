@@ -8,7 +8,7 @@ use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Build\SharedService;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
-use Duyler\DependencyInjection\Provider\AbstractProvider;
+use Duyler\DI\Provider\AbstractProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

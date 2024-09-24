@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Dto;
 
-use Duyler\DependencyInjection\ContainerInterface;
+use Duyler\DI\ContainerInterface;
 use Duyler\EventBus\Build\Action;
 
 readonly class Rollback

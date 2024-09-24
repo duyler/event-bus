@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
-use Duyler\DependencyInjection\ContainerInterface;
+use Duyler\DI\ContainerInterface;
 use Duyler\EventBus\Bus\Log;
 use Duyler\EventBus\Dto\Log as LogDto;
 
