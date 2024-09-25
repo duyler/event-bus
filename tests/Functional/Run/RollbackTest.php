@@ -40,12 +40,19 @@ class RollbackTest extends TestCase
     public function run_with_rollback_class()
     {
         $busBuilder = new BusBuilder(new BusConfig());
+        $busBuilder->addAction(
+            new Action(
+                id: 'TestRollback',
+                handler: function () {},
+                rollback: Rollback::class,
+            ),
+        );
+
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
                 handler: function () {throw new RuntimeException('Test error with class'); },
-                rollback: Rollback::class,
-                externalAccess: true,
+                required: ['TestRollback'],
             ),
         );
 
@@ -66,6 +73,12 @@ class RollbackTest extends TestCase
                 id: 'Test1',
                 handler: function () {},
                 required: ['Test2'],
+                rollback: function (RollbackDto $rollback) {
+                    $rollback->action;
+                    $rollback->container;
+                    $rollback->argument;
+                    $rollback->result;
+                },
             ),
         );
 
@@ -98,5 +111,11 @@ class RollbackTest extends TestCase
 class Rollback implements RollbackActionInterface
 {
     #[Override]
-    public function run(RollbackDto $rollback): void {}
+    public function run(RollbackDto $rollback): void
+    {
+        $rollback->action;
+        $rollback->container;
+        $rollback->argument;
+        $rollback->result;
+    }
 }
