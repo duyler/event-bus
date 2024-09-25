@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Dto\Rollback as RollbackDto;
 use Duyler\EventBus\Storage\ActionArgumentStorage;
 use Duyler\EventBus\Storage\ActionContainerStorage;
@@ -59,33 +58,5 @@ final class Rollback
     private function rollback(RollbackActionInterface $rollback, RollbackDto $rollbackService): void
     {
         $rollback->run($rollbackService);
-    }
-
-    public function rollbackSingleAction(Action $action): void
-    {
-        if (null === $action->rollback) {
-            return;
-        }
-
-        $actionContainer = $this->containerStorage->get($action->id);
-
-        $argument = $this->actionArgumentStorage->isExists($action->id)
-            ? $this->actionArgumentStorage->get($action->id)
-            : null;
-
-        $rollbackDto = new RollbackDto(
-            container: $actionContainer,
-            action: $action,
-            argument: $argument,
-        );
-
-        if (is_callable($action->rollback)) {
-            ($action->rollback)($rollbackDto);
-            return;
-        }
-
-        /** @var RollbackActionInterface $rollback */
-        $rollback = $actionContainer->get($action->rollback);
-        $this->rollback($rollback, $rollbackDto);
     }
 }
