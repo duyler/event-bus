@@ -7,7 +7,6 @@ namespace Duyler\EventBus\Service;
 use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\ActionNotAllowExternalAccessException;
 use Duyler\EventBus\Exception\ResultNotExistsException;
 
@@ -36,8 +35,7 @@ class ResultService
 
         $eventRelation = $this->eventRelationStorage->getLast($actionId);
 
-        return new Result(
-            ResultStatus::Success,
+        return Result::success(
             $eventRelation->event->data,
         );
     }

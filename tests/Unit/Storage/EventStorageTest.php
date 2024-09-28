@@ -7,7 +7,6 @@ namespace Duyler\EventBus\Test\Unit\Storage;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Storage\CompleteActionStorage;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +21,7 @@ class EventStorageTest extends TestCase
         $action = new Action(id: 'test', handler: 'test');
         $event = new CompleteAction(
             action: $action,
-            result: new Result(status: ResultStatus::Success),
+            result: Result::success(),
         );
 
         $this->eventStorage->save($event);
