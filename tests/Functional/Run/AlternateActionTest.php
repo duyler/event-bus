@@ -8,7 +8,6 @@ use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\UnableToContinueWithFailActionException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -33,7 +32,7 @@ class AlternateActionTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'RequiredAction',
-                handler: fn() => new Result(ResultStatus::Fail, null),
+                handler: fn() => Result::fail(),
                 required: [],
                 contract: stdClass::class,
                 externalAccess: true,
@@ -75,7 +74,7 @@ class AlternateActionTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'RequiredAction',
-                handler: fn() => new Result(ResultStatus::Fail, null),
+                handler: fn() => Result::fail(),
                 required: [],
                 contract: stdClass::class,
                 externalAccess: true,
@@ -88,7 +87,7 @@ class AlternateActionTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'AlternateRequiredAction',
-                handler: fn() => new Result(ResultStatus::Fail, new stdClass()),
+                handler: fn() => Result::fail(),
                 contract: stdClass::class,
                 externalAccess: true,
             ),
@@ -119,7 +118,7 @@ class AlternateActionTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'RequiredAction',
-                handler: fn() => new Result(ResultStatus::Fail, null),
+                handler: fn() => Result::fail(),
                 required: [],
                 contract: stdClass::class,
                 externalAccess: true,
@@ -132,7 +131,7 @@ class AlternateActionTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'AlternateRequiredAction',
-                handler: fn() => new Result(ResultStatus::Fail, new stdClass()),
+                handler: fn() => Result::fail(),
                 contract: stdClass::class,
                 externalAccess: true,
                 retries: 3,
@@ -162,7 +161,7 @@ class AlternateActionTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'RequiredAction',
-                handler: fn() => new Result(ResultStatus::Fail, new stdClass()),
+                handler: fn() => Result::fail(),
                 contract: stdClass::class,
                 externalAccess: true,
                 alternates: [

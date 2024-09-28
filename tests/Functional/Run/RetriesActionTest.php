@@ -21,7 +21,7 @@ class RetriesActionTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'RetryAction',
-                handler: fn(): Result => new Result(status: ResultStatus::Fail),
+                handler: fn(): Result => Result::fail(),
                 repeatable: false,
                 retries: 3,
             ),

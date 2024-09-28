@@ -77,14 +77,14 @@ final class Task
                 throw new DataMustBeCompatibleWithContractException($this->action->id, $this->action->contract);
             }
 
-            return new Result(ResultStatus::Success, $resultData);
+            return Result::success($resultData);
         }
 
         if (null !== $this->action->contract) {
             throw new DataForContractNotReceivedException($this->action->id, $this->action->contract);
         }
 
-        return new Result(ResultStatus::Success);
+        return Result::success();
     }
 
     public function getValue(): mixed

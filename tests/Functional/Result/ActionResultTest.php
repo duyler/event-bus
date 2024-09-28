@@ -8,7 +8,6 @@ use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\ActionReturnValueExistsException;
 use Duyler\EventBus\Exception\ActionReturnValueMustBeTypeObjectException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
@@ -44,7 +43,7 @@ class ActionResultTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'Test',
-                handler: fn() => new Result(ResultStatus::Success),
+                handler: fn() => Result::success(),
                 contract: stdClass::class,
                 externalAccess: true,
             ),
