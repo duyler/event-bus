@@ -17,7 +17,7 @@ class DispatchEventEventListener
 
     public function __invoke(EventDispatchedEvent $event): void
     {
-        $this->log->dispatchEventLog($event->event->id);
+        $this->log->pushEventLog($event->event->id);
         $this->eventService->dispatch($event->event);
     }
 }
