@@ -8,6 +8,7 @@ use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Log as LogDto;
 use Duyler\DI\Attribute\Finalize;
+use Duyler\EventBus\Enum\Mode;
 use Duyler\EventBus\Enum\ResultStatus;
 
 #[Finalize(method: 'reset')]
@@ -43,7 +44,7 @@ final class Log
         } else {
             $this->pushMainLog($actionId);
             if (ResultStatus::Success === $completeAction->result->status) {
-                $this->successLog[] = $completeAction->action->id;
+                $this->pushSuccessLog($completeAction->action->id);
             }
         }
 
@@ -52,10 +53,18 @@ final class Log
 
     private function pushActionLog(Action $action): void
     {
-        if ($this->config->allowCircularCall && count($this->actionLog) === $this->config->logMaxSize) {
+        if ($this->isLooped() && count($this->actionLog) === $this->config->logMaxSize) {
             array_shift($this->actionLog);
         }
         $this->actionLog[] = $action->id;
+    }
+
+    private function pushSuccessLog(string $actionId): void
+    {
+        if ($this->isLooped() && count($this->successLog) === $this->config->logMaxSize) {
+            array_shift($this->successLog);
+        }
+        $this->successLog[] = $actionId;
     }
 
     public function getActionLog(): array
@@ -65,7 +74,7 @@ final class Log
 
     private function pushMainLog(string $actionIdWithStatus): void
     {
-        if ($this->config->allowCircularCall && count($this->mainLog) === $this->config->logMaxSize) {
+        if ($this->isLooped() && count($this->mainLog) === $this->config->logMaxSize) {
             array_shift($this->mainLog);
         }
         $this->mainLog[] = $actionIdWithStatus;
@@ -78,7 +87,7 @@ final class Log
 
     private function pushRepeatedLog(string $actionIdWithStatus): void
     {
-        if ($this->config->allowCircularCall && count($this->repeatedLog) === $this->config->logMaxSize) {
+        if ($this->isLooped() && count($this->repeatedLog) === $this->config->logMaxSize) {
             array_shift($this->repeatedLog);
         }
         $this->repeatedLog[] = $actionIdWithStatus;
@@ -86,7 +95,7 @@ final class Log
 
     private function pushRetriesLog(string $actionIdWithStatus): void
     {
-        if ($this->config->allowCircularCall && count($this->retriesLog) === $this->config->logMaxSize) {
+        if ($this->isLooped() && count($this->retriesLog) === $this->config->logMaxSize) {
             array_shift($this->retriesLog);
         }
         $this->retriesLog[] = $actionIdWithStatus;
@@ -97,9 +106,9 @@ final class Log
         return $this->repeatedLog;
     }
 
-    public function dispatchEventLog(string $eventId): void
+    public function pushEventLog(string $eventId): void
     {
-        if ($this->config->allowCircularCall && count($this->eventLog) === $this->config->logMaxSize) {
+        if ($this->isLooped() && count($this->eventLog) === $this->config->logMaxSize) {
             array_shift($this->eventLog);
         }
         $this->eventLog[] = $eventId;
@@ -123,7 +132,13 @@ final class Log
             $this->repeatedLog,
             $this->eventLog,
             $this->retriesLog,
+            $this->successLog,
         );
+    }
+
+    private function isLooped(): bool
+    {
+        return Mode::Loop === $this->config->mode || $this->config->allowCircularCall;
     }
 
     public function reset(): void
@@ -133,5 +148,6 @@ final class Log
         $this->repeatedLog = [];
         $this->eventLog = [];
         $this->retriesLog = [];
+        $this->successLog = [];
     }
 }

@@ -21,6 +21,9 @@ final readonly class Log
 
         /** @var string[] */
         private array $retriesLog,
+
+        /** @var string[] */
+        private array $successLog,
     ) {}
 
     public function getActionLog(): array
@@ -46,5 +49,10 @@ final readonly class Log
     public function getRetriesLog(): array
     {
         return $this->retriesLog;
+    }
+
+    public function getSuccessLog(): array
+    {
+        return $this->successLog;
     }
 }
