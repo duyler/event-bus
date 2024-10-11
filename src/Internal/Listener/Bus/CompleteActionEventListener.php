@@ -26,7 +26,7 @@ class CompleteActionEventListener
         );
 
         $this->completeActionStorage->save($completeAction);
-        $this->bus->finalizeCompleteAction($completeAction);
+        $this->bus->afterCompleteAction($completeAction);
 
         $actionContainer = $this->containerStorage->get($event->task->action->id);
         $actionContainer->finalize();

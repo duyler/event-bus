@@ -125,9 +125,9 @@ final class Bus
             return true;
         }
 
-        $completeActions = $this->completeActionStorage->getAllByArray($task->action->required->getArrayCopy());
+        $completeRequiredActions = $this->completeActionStorage->getAllByArray($task->action->required->getArrayCopy());
 
-        if (count($completeActions) < $task->action->required->count()) {
+        if (count($completeRequiredActions) < $task->action->required->count()) {
             return false;
         }
 
@@ -136,17 +136,17 @@ final class Bus
         /** @var CompleteAction[] $replacedActions */
         $replacedActions = [];
 
-        foreach ($completeActions as $completeAction) {
-            if (ResultStatus::Fail === $completeAction->result->status) {
-                if ($this->retries[$completeAction->action->id] < $completeAction->action->retries) {
+        foreach ($completeRequiredActions as $completeRequiredAction) {
+            if (ResultStatus::Fail === $completeRequiredAction->result->status) {
+                if ($this->retries[$completeRequiredAction->action->id] < $completeRequiredAction->action->retries) {
                     return false;
                 }
 
-                if (false === $this->finalized[$completeAction->action->id]) {
+                if (false === $this->finalized[$completeRequiredAction->action->id]) {
                     return false;
                 }
 
-                $failActions[] = $completeAction;
+                $failActions[] = $completeRequiredAction;
             }
         }
 
@@ -193,7 +193,7 @@ final class Bus
         return false;
     }
 
-    public function finalizeCompleteAction(CompleteAction $completeAction): void
+    public function afterCompleteAction(CompleteAction $completeAction): void
     {
         if (ResultStatus::Success === $completeAction->result->status) {
             $this->finalized[$completeAction->action->id] = true;
