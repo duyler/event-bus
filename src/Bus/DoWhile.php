@@ -7,6 +7,7 @@ namespace Duyler\EventBus\Bus;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
 use Duyler\EventBus\Enum\Mode;
+use Duyler\EventBus\Enum\TaskStatus;
 use Duyler\EventBus\Internal\Event\DoCyclicEvent;
 use Duyler\EventBus\Internal\Event\TaskQueueIsEmptyEvent;
 use Duyler\EventBus\Internal\Event\DoWhileBeginEvent;
@@ -46,7 +47,13 @@ final class DoWhile
             }
 
             $this->eventDispatcher->dispatch(new TaskBeforeRunEvent($task));
-            $task->run($this->actionRunnerProvider->getRunner($task->action));
+
+            if (TaskStatus::Primary === $task->getStatus()) {
+                $task->run($this->actionRunnerProvider->getRunner($task->action));
+            } else {
+                $task->retry();
+            }
+
             $this->process($task);
         } while (Mode::Loop === $this->busConfig->mode || $this->taskQueue->isNotEmpty());
 

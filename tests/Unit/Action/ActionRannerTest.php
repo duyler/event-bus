@@ -35,7 +35,7 @@ class ActionRannerTest extends TestCase
             handler: fn() => '',
         );
 
-        $runner = $actionRunner->getRunner($action);
+        $runner = $actionRunner->getPrimaryRunner($action);
 
         $runner->run($action);
     }

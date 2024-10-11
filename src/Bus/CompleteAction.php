@@ -12,5 +12,6 @@ final readonly class CompleteAction
     public function __construct(
         public Action $action,
         public Result $result,
+        public string $taskId,
     ) {}
 }

@@ -7,6 +7,7 @@ namespace Duyler\EventBus\Bus;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Enum\TaskStatus;
 use Duyler\EventBus\Exception\UnableToContinueWithFailActionException;
 use Duyler\EventBus\Storage\ActionStorage;
 use Duyler\EventBus\Storage\CompleteActionStorage;
@@ -29,6 +30,9 @@ final class Bus
 
     /** @var array<string, bool> */
     private array $finalized = [];
+
+    /** @var array<string, Task> */
+    private array $currentTasks = [];
 
     public function __construct(
         private readonly TaskQueue $taskQueue,
@@ -62,10 +66,10 @@ final class Bus
                 continue;
             }
 
-            $this->pushTask($this->createTask($requiredAction));
+            $this->pushTask($this->createPrimaryTask($requiredAction));
         }
 
-        $this->pushTask($this->createTask($action));
+        $this->pushTask($this->createPrimaryTask($action));
     }
 
     private function isRepeat(string $actionId): bool
@@ -79,9 +83,12 @@ final class Bus
         return $this->taskQueue->inQueue($actionId) || $this->completeActionStorage->isExists($actionId);
     }
 
-    private function createTask(Action $action): Task
+    private function createPrimaryTask(Action $action): Task
     {
-        return new Task($action);
+        $task = new Task($action);
+        $task->setStatus(TaskStatus::Primary);
+        $this->currentTasks[$task->getId()] = $task;
+        return $task;
     }
 
     private function pushTask(Task $task): void
@@ -197,15 +204,24 @@ final class Bus
     {
         if (ResultStatus::Success === $completeAction->result->status) {
             $this->finalized[$completeAction->action->id] = true;
+            unset($this->currentTasks[$completeAction->taskId]);
             return;
         }
 
         if ($this->retries[$completeAction->action->id] < $completeAction->action->retries) {
-            $this->taskQueue->push($this->createTask($completeAction->action));
+            $this->taskQueue->push($this->createRetryTask($completeAction));
             ++$this->retries[$completeAction->action->id];
         } else {
+            unset($this->currentTasks[$completeAction->taskId]);
             $this->finalized[$completeAction->action->id] = true;
         }
+    }
+
+    private function createRetryTask(CompleteAction $completeAction): Task
+    {
+        $task = $this->currentTasks[$completeAction->taskId];
+        $task->setStatus(TaskStatus::Repeat);
+        return $task;
     }
 
     public function reset(): void
@@ -214,5 +230,6 @@ final class Bus
         $this->retries = [];
         $this->alternates = [];
         $this->finalized = [];
+        $this->currentTasks = [];
     }
 }

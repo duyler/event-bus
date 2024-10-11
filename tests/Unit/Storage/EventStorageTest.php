@@ -22,6 +22,7 @@ class EventStorageTest extends TestCase
         $event = new CompleteAction(
             action: $action,
             result: Result::success(),
+            taskId: 'taskId',
         );
 
         $this->eventStorage->save($event);

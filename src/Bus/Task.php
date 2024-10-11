@@ -8,26 +8,33 @@ use Closure;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Enum\TaskStatus;
 use Duyler\EventBus\Exception\ActionReturnValueExistsException;
 use Duyler\EventBus\Exception\ActionReturnValueMustBeTypeObjectException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
 use Fiber;
+use LogicException;
 
 final class Task
 {
-    public readonly Action $action;
     private mixed $value = null;
     private ?Fiber $fiber = null;
+    private TaskStatus $status = TaskStatus::Primary;
+    private ?Closure $runner = null;
 
-    public function __construct(Action $action)
-    {
-        $this->action = $action;
-    }
+    public function __construct(public readonly Action $action) {}
 
     public function run(Closure $actionHandler): void
     {
+        $this->runner = $actionHandler;
         $this->fiber = new Fiber($actionHandler);
+        $this->value = $this->fiber->start();
+    }
+
+    public function retry(): void
+    {
+        $this->fiber = new Fiber($this->runner ?? throw new LogicException('Runner is not initialized'));
         $this->value = $this->fiber->start();
     }
 
@@ -90,5 +97,20 @@ final class Task
     public function getValue(): mixed
     {
         return $this->value;
+    }
+
+    public function getStatus(): TaskStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(TaskStatus $status): void
+    {
+        $this->status = $status;
+    }
+
+    public function getId(): string
+    {
+        return spl_object_hash($this);
     }
 }

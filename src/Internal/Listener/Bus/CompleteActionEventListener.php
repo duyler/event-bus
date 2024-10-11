@@ -23,6 +23,7 @@ class CompleteActionEventListener
         $completeAction = new CompleteAction(
             action: $event->task->action,
             result: $event->task->getResult(),
+            taskId: $event->task->getId(),
         );
 
         $this->completeActionStorage->save($completeAction);
