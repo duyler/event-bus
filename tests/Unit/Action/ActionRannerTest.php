@@ -37,7 +37,7 @@ class ActionRannerTest extends TestCase
 
         $runner = $actionRunner->getRunner($action);
 
-        $runner->run($action);
+        $runner->getCallback()();
     }
 
     /**

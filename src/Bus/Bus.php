@@ -6,12 +6,15 @@ namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Enum\Mode;
 use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Enum\TaskStatus;
 use Duyler\EventBus\Exception\UnableToContinueWithFailActionException;
 use Duyler\EventBus\Storage\ActionStorage;
 use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\Storage\EventRelationStorage;
+use Duyler\EventBus\Storage\TaskStorage;
 
 use function count;
 
@@ -36,6 +39,7 @@ final class Bus
         private readonly CompleteActionStorage $completeActionStorage,
         private readonly BusConfig $config,
         private readonly EventRelationStorage $eventRelationStorage,
+        private readonly TaskStorage $taskStorage,
     ) {}
 
     public function doAction(Action $action): void
@@ -62,10 +66,10 @@ final class Bus
                 continue;
             }
 
-            $this->pushTask($this->createTask($requiredAction));
+            $this->pushTask($this->createPrimaryTask($requiredAction));
         }
 
-        $this->pushTask($this->createTask($action));
+        $this->pushTask($this->createPrimaryTask($action));
     }
 
     private function isRepeat(string $actionId): bool
@@ -79,9 +83,12 @@ final class Bus
         return $this->taskQueue->inQueue($actionId) || $this->completeActionStorage->isExists($actionId);
     }
 
-    private function createTask(Action $action): Task
+    private function createPrimaryTask(Action $action): Task
     {
-        return new Task($action);
+        $task = new Task($action);
+        $task->setStatus(TaskStatus::Primary);
+        $this->taskStorage->add($task);
+        return $task;
     }
 
     private function pushTask(Task $task): void
@@ -125,9 +132,9 @@ final class Bus
             return true;
         }
 
-        $completeActions = $this->completeActionStorage->getAllByArray($task->action->required->getArrayCopy());
+        $completeRequiredActions = $this->completeActionStorage->getAllByArray($task->action->required->getArrayCopy());
 
-        if (count($completeActions) < $task->action->required->count()) {
+        if (count($completeRequiredActions) < $task->action->required->count()) {
             return false;
         }
 
@@ -136,17 +143,17 @@ final class Bus
         /** @var CompleteAction[] $replacedActions */
         $replacedActions = [];
 
-        foreach ($completeActions as $completeAction) {
-            if (ResultStatus::Fail === $completeAction->result->status) {
-                if ($this->retries[$completeAction->action->id] < $completeAction->action->retries) {
+        foreach ($completeRequiredActions as $completeRequiredAction) {
+            if (ResultStatus::Fail === $completeRequiredAction->result->status) {
+                if ($this->retries[$completeRequiredAction->action->id] < $completeRequiredAction->action->retries) {
                     return false;
                 }
 
-                if (false === $this->finalized[$completeAction->action->id]) {
+                if (false === $this->finalized[$completeRequiredAction->action->id]) {
                     return false;
                 }
 
-                $failActions[] = $completeAction;
+                $failActions[] = $completeRequiredAction;
             }
         }
 
@@ -193,19 +200,35 @@ final class Bus
         return false;
     }
 
-    public function finalizeCompleteAction(CompleteAction $completeAction): void
+    public function afterCompleteAction(CompleteAction $completeAction): void
     {
         if (ResultStatus::Success === $completeAction->result->status) {
             $this->finalized[$completeAction->action->id] = true;
+            $this->removeTask($completeAction);
             return;
         }
 
         if ($this->retries[$completeAction->action->id] < $completeAction->action->retries) {
-            $this->taskQueue->push($this->createTask($completeAction->action));
+            $this->taskQueue->push($this->createRetryTask($completeAction));
             ++$this->retries[$completeAction->action->id];
         } else {
             $this->finalized[$completeAction->action->id] = true;
+            $this->removeTask($completeAction);
         }
+    }
+
+    private function removeTask(CompleteAction $completeAction): void
+    {
+        if (Mode::Loop === $this->config->mode || $this->config->allowCircularCall) {
+            $this->taskStorage->remove($completeAction->action->id, $completeAction->taskId);
+        }
+    }
+
+    private function createRetryTask(CompleteAction $completeAction): Task
+    {
+        $task = $this->taskStorage->get($completeAction->action->id, $completeAction->taskId);
+        $task->setStatus(TaskStatus::Repeat);
+        return $task;
     }
 
     public function reset(): void

@@ -11,7 +11,6 @@ use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Bus\ActionContainer;
 use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Enum\ResultStatus;
-use Duyler\EventBus\Storage\ActionArgumentStorage;
 use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\EventStorage;
@@ -28,7 +27,6 @@ class ActionHandlerArgumentBuilder
         private CompleteActionStorage $completeActionStorage,
         private ActionSubstitution $actionSubstitution,
         private EventRelationStorage $eventRelationStorage,
-        private ActionArgumentStorage $actionArgumentStorage,
         private EventStorage $eventStorage,
     ) {}
 
@@ -75,7 +73,6 @@ class ActionHandlerArgumentBuilder
         if (null === $action->argumentFactory) {
             foreach ($results as $definition) {
                 if ($definition instanceof $action->argument) {
-                    $this->actionArgumentStorage->set($action->id, $definition);
                     if (is_callable($action->handler)) {
                         return new ActionContext(
                             $action->id,
@@ -111,8 +108,6 @@ class ActionHandlerArgumentBuilder
             /** @var object $argument */
             $argument = $factory(...$factoryArguments);
         }
-
-        $this->actionArgumentStorage->set($action->id, $argument);
 
         if (is_callable($action->handler)) {
             return new ActionContext(

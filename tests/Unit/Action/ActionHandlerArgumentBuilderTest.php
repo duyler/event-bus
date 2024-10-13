@@ -9,7 +9,6 @@ use Duyler\EventBus\Action\ActionSubstitution;
 use Duyler\EventBus\Action\Context\ActionContext;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Bus\ActionContainer;
-use Duyler\EventBus\Storage\ActionArgumentStorage;
 use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\EventStorage;
@@ -21,7 +20,6 @@ class ActionHandlerArgumentBuilderTest extends TestCase
 {
     private CompleteActionStorage $completeStorage;
     private ActionSubstitution $actionSubstitution;
-    private ActionArgumentStorage $actionArgumentStorage;
     private ActionHandlerArgumentBuilder $argumentBuilder;
     private ActionContainer $actionContainer;
     private EventRelationStorage $eventRelationStorage;
@@ -41,7 +39,6 @@ class ActionHandlerArgumentBuilderTest extends TestCase
     {
         $this->completeStorage = $this->createMock(CompleteActionStorage::class);
         $this->actionSubstitution = $this->createMock(ActionSubstitution::class);
-        $this->actionArgumentStorage = $this->createMock(ActionArgumentStorage::class);
         $this->actionContainer = $this->createMock(ActionContainer::class);
         $this->eventRelationStorage = $this->createMock(EventRelationStorage::class);
         $this->eventStorage = $this->createMock(EventStorage::class);
@@ -49,7 +46,6 @@ class ActionHandlerArgumentBuilderTest extends TestCase
             completeActionStorage: $this->completeStorage,
             actionSubstitution: $this->actionSubstitution,
             eventRelationStorage: $this->eventRelationStorage,
-            actionArgumentStorage: $this->actionArgumentStorage,
             eventStorage: $this->eventStorage,
         );
     }

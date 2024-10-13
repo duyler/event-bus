@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-use Closure;
 use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Contract\ActionRunnerInterface;
 use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
 use Duyler\EventBus\Internal\Event\ActionAfterRunEvent;
 use Duyler\EventBus\Internal\Event\ActionBeforeRunEvent;
@@ -24,13 +24,13 @@ class ActionRunnerProvider implements ActionRunnerProviderInterface
     ) {}
 
     #[Override]
-    public function getRunner(Action $action): Closure
+    public function getRunner(Action $action): ActionRunnerInterface
     {
         $container = $this->actionContainerProvider->get($action);
         $handler = $this->handlerBuilder->build($action, $container);
         $argument = $this->argumentBuilder->build($action, $container);
 
-        return function () use ($action, $handler, $argument): mixed {
+        $runner = function () use ($action, $handler, $argument): mixed {
             $this->eventDispatcher->dispatch(new ActionBeforeRunEvent($action, $argument));
 
             try {
@@ -44,5 +44,7 @@ class ActionRunnerProvider implements ActionRunnerProviderInterface
 
             return $resultData;
         };
+
+        return new ActionRunner($runner, $argument);
     }
 }
