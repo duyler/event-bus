@@ -6,6 +6,7 @@ namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Enum\Mode;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Enum\TaskStatus;
 use Duyler\EventBus\Exception\UnableToContinueWithFailActionException;
@@ -13,6 +14,7 @@ use Duyler\EventBus\Storage\ActionStorage;
 use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\Storage\EventRelationStorage;
+use Duyler\EventBus\Storage\TaskStorage;
 
 use function count;
 
@@ -31,15 +33,13 @@ final class Bus
     /** @var array<string, bool> */
     private array $finalized = [];
 
-    /** @var array<string, Task> */
-    private array $currentTasks = [];
-
     public function __construct(
         private readonly TaskQueue $taskQueue,
         private readonly ActionStorage $actionStorage,
         private readonly CompleteActionStorage $completeActionStorage,
         private readonly BusConfig $config,
         private readonly EventRelationStorage $eventRelationStorage,
+        private readonly TaskStorage $taskStorage,
     ) {}
 
     public function doAction(Action $action): void
@@ -87,7 +87,7 @@ final class Bus
     {
         $task = new Task($action);
         $task->setStatus(TaskStatus::Primary);
-        $this->currentTasks[$task->getId()] = $task;
+        $this->taskStorage->add($task);
         return $task;
     }
 
@@ -204,7 +204,7 @@ final class Bus
     {
         if (ResultStatus::Success === $completeAction->result->status) {
             $this->finalized[$completeAction->action->id] = true;
-            unset($this->currentTasks[$completeAction->taskId]);
+            $this->removeTask($completeAction);
             return;
         }
 
@@ -212,14 +212,21 @@ final class Bus
             $this->taskQueue->push($this->createRetryTask($completeAction));
             ++$this->retries[$completeAction->action->id];
         } else {
-            unset($this->currentTasks[$completeAction->taskId]);
             $this->finalized[$completeAction->action->id] = true;
+            $this->removeTask($completeAction);
+        }
+    }
+
+    private function removeTask(CompleteAction $completeAction): void
+    {
+        if (Mode::Loop === $this->config->mode || $this->config->allowCircularCall) {
+            $this->taskStorage->remove($completeAction->action->id, $completeAction->taskId);
         }
     }
 
     private function createRetryTask(CompleteAction $completeAction): Task
     {
-        $task = $this->currentTasks[$completeAction->taskId];
+        $task = $this->taskStorage->get($completeAction->action->id, $completeAction->taskId);
         $task->setStatus(TaskStatus::Repeat);
         return $task;
     }
@@ -230,6 +237,5 @@ final class Bus
         $this->retries = [];
         $this->alternates = [];
         $this->finalized = [];
-        $this->currentTasks = [];
     }
 }

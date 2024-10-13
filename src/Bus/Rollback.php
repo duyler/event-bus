@@ -5,19 +5,17 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\Dto\Rollback as RollbackDto;
-use Duyler\EventBus\Storage\ActionArgumentStorage;
 use Duyler\EventBus\Storage\ActionContainerStorage;
-use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\EventBus\Contract\RollbackActionInterface;
+use Duyler\EventBus\Storage\TaskStorage;
 
 use function is_callable;
 
 final class Rollback
 {
     public function __construct(
-        private CompleteActionStorage $completeActionStorage,
         private ActionContainerStorage $containerStorage,
-        private ActionArgumentStorage $actionArgumentStorage,
+        private TaskStorage $taskStorage,
         private Log $log,
     ) {}
 
@@ -25,33 +23,31 @@ final class Rollback
     {
         $successLog = $this->log->getSuccessLog();
 
-        $completeActions = $this->completeActionStorage->getAllByArray($successLog);
-        foreach ($completeActions as $completeAction) {
-            if (null === $completeAction->action->rollback) {
-                continue;
+        foreach ($successLog as $actionId) {
+            $tasks = $this->taskStorage->getAllByActionId($actionId);
+            foreach ($tasks as $task) {
+                if (null === $task->action->rollback) {
+                    continue;
+                }
+
+                $actionContainer = $this->containerStorage->get($task->action->id);
+
+                $rollbackDto = new RollbackDto(
+                    container: $actionContainer,
+                    action: $task->action,
+                    argument: $task->getRunner()?->getArgument(),
+                    result: $task->getResult(),
+                );
+
+                if (is_callable($task->action->rollback)) {
+                    ($task->action->rollback)($rollbackDto);
+                    continue;
+                }
+
+                /** @var RollbackActionInterface $rollback */
+                $rollback = $actionContainer->get($task->action->rollback);
+                $this->rollback($rollback, $rollbackDto);
             }
-
-            $actionContainer = $this->containerStorage->get($completeAction->action->id);
-
-            $argument = $this->actionArgumentStorage->isExists($completeAction->action->id)
-                ? $this->actionArgumentStorage->get($completeAction->action->id)
-                : null;
-
-            $rollbackDto = new RollbackDto(
-                container: $actionContainer,
-                action: $completeAction->action,
-                argument: $argument,
-                result: $completeAction->result,
-            );
-
-            if (is_callable($completeAction->action->rollback)) {
-                ($completeAction->action->rollback)($rollbackDto);
-                continue;
-            }
-
-            /** @var RollbackActionInterface $rollback */
-            $rollback = $actionContainer->get($completeAction->action->rollback);
-            $this->rollback($rollback, $rollbackDto);
         }
     }
 

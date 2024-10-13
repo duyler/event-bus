@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use Closure;
 use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Contract\ActionRunnerInterface;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Enum\TaskStatus;
@@ -21,20 +21,21 @@ final class Task
     private mixed $value = null;
     private ?Fiber $fiber = null;
     private TaskStatus $status = TaskStatus::Primary;
-    private ?Closure $runner = null;
+    private ?ActionRunnerInterface $runner = null;
+    private ?Result $result = null;
 
     public function __construct(public readonly Action $action) {}
 
-    public function run(Closure $actionHandler): void
+    public function run(ActionRunnerInterface $actionRunner): void
     {
-        $this->runner = $actionHandler;
-        $this->fiber = new Fiber($actionHandler);
+        $this->runner = $actionRunner;
+        $this->fiber = new Fiber($actionRunner->getCallback());
         $this->value = $this->fiber->start();
     }
 
     public function retry(): void
     {
-        $this->fiber = new Fiber($this->runner ?? throw new LogicException('Runner is not initialized'));
+        $this->fiber = new Fiber($this->runner?->getCallback() ?? throw new LogicException('Runner is not initialized'));
         $this->value = $this->fiber->start();
     }
 
@@ -48,8 +49,13 @@ final class Task
         $this->value = $this->fiber?->resume($data);
     }
 
-    // TODO Refactor
     public function getResult(): Result
+    {
+        return $this->result ?? $this->result = $this->prepareResult();
+    }
+
+    // TODO Refactor
+    public function prepareResult(): Result
     {
         $resultData = $this->fiber?->getReturn();
 
@@ -112,5 +118,10 @@ final class Task
     public function getId(): string
     {
         return spl_object_hash($this);
+    }
+
+    public function getRunner(): ?ActionRunnerInterface
+    {
+        return $this->runner;
     }
 }

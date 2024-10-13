@@ -114,6 +114,7 @@ final class Log
         $this->eventLog[] = $eventId;
     }
 
+    /** @return string[] */
     public function getSuccessLog(): array
     {
         return $this->successLog;
