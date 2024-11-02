@@ -31,4 +31,9 @@ readonly class LogService
 
         return (string) end($actionLog);
     }
+
+    public function flushSuccessLog(): void
+    {
+        $this->log->flushSuccessLog();
+    }
 }

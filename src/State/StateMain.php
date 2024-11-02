@@ -25,6 +25,7 @@ use Duyler\EventBus\State\Service\StateMainEndService;
 use Duyler\EventBus\State\Service\StateMainResumeService;
 use Duyler\EventBus\State\Service\StateMainSuspendService;
 use Override;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use UnitEnum;
 
 readonly class StateMain implements StateMainInterface
@@ -41,6 +42,7 @@ readonly class StateMain implements StateMainInterface
         private EventService $eventService,
         private StateContextScope $contextScope,
         private QueueService $queueService,
+        private EventDispatcherInterface $eventDispatcher,
     ) {}
 
     #[Override]
@@ -64,6 +66,7 @@ readonly class StateMain implements StateMainInterface
             $this->queueService,
             $this->actionService,
             $this->eventService,
+            $this->eventDispatcher,
         );
 
         foreach ($this->stateHandlerStorage->getMainCyclic() as $handler) {
@@ -75,9 +78,10 @@ readonly class StateMain implements StateMainInterface
     public function before(Task $task): void
     {
         $stateService = new StateMainBeforeService(
-            $task->action->id,
+            $task,
             $this->logService,
             $this->actionService,
+            $this->queueService,
         );
 
         foreach ($this->stateHandlerStorage->getMainBefore() as $handler) {
@@ -179,6 +183,7 @@ readonly class StateMain implements StateMainInterface
             $this->eventService,
             $this->rollbackService,
             $this->triggerService,
+            $this->eventDispatcher,
         );
 
         foreach ($this->stateHandlerStorage->getMainEmpty() as $handler) {
@@ -193,6 +198,7 @@ readonly class StateMain implements StateMainInterface
             $this->resultService,
             $this->logService,
             $this->rollbackService,
+            $this->eventDispatcher,
         );
 
         foreach ($this->stateHandlerStorage->getMainEnd() as $handler) {

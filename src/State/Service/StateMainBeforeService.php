@@ -6,20 +6,25 @@ namespace Duyler\EventBus\State\Service;
 
 use Duyler\EventBus\Build\ActionHandlerSubstitution;
 use Duyler\EventBus\Build\ActionResultSubstitution;
+use Duyler\EventBus\Bus\Task;
 use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\LogService;
+use Duyler\EventBus\Service\QueueService;
 use Duyler\EventBus\State\Service\Trait\LogServiceTrait;
+use Duyler\EventBus\State\Service\Trait\QueueServiceTrait;
 use UnitEnum;
 
 class StateMainBeforeService
 {
     use LogServiceTrait;
+    use QueueServiceTrait;
 
     public function __construct(
-        private readonly string $actionId,
+        private readonly Task $task,
         private readonly LogService $logService,
         private readonly ActionService $actionService,
+        private readonly QueueService $queueService,
     ) {}
 
     public function substituteResult(ActionResultSubstitution $actionResultSubstitution): void
@@ -34,6 +39,11 @@ class StateMainBeforeService
 
     public function getActionId(): string|UnitEnum
     {
-        return IdFormatter::reverse($this->actionId);
+        return IdFormatter::reverse($this->task->action->id);
+    }
+
+    public function reject(): void
+    {
+        $this->task->reject();
     }
 }

@@ -23,6 +23,7 @@ final class Task
     private TaskStatus $status = TaskStatus::Primary;
     private ?ActionRunnerInterface $runner = null;
     private ?Result $result = null;
+    private bool $isRejected = false;
 
     public function __construct(public readonly Action $action) {}
 
@@ -31,6 +32,16 @@ final class Task
         $this->runner = $actionRunner;
         $this->fiber = new Fiber($actionRunner->getCallback());
         $this->value = $this->fiber->start();
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->isRejected;
+    }
+
+    public function reject(): void
+    {
+        $this->isRejected = true;
     }
 
     public function retry(): void

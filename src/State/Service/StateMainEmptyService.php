@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service;
 
+use Duyler\EventBus\Internal\Event\BusIsResetEvent;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\ResultService;
@@ -16,6 +17,7 @@ use Duyler\EventBus\State\Service\Trait\ResultServiceTrait;
 use Duyler\EventBus\State\Service\Trait\RollbackServiceTrait;
 use Duyler\EventBus\State\Service\Trait\TriggerServiceTrait;
 use Duyler\EventBus\State\Service\Trait\EventServiceTrait;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 class StateMainEmptyService
 {
@@ -33,5 +35,11 @@ class StateMainEmptyService
         private readonly EventService $eventService,
         private readonly RollbackService $rollbackService,
         private readonly TriggerService $triggerService,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
+
+    public function reset(): void
+    {
+        $this->eventDispatcher->dispatch(new BusIsResetEvent());
+    }
 }

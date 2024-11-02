@@ -20,4 +20,9 @@ trait LogServiceTrait
     {
         return $this->logService->getLastAction();
     }
+
+    public function flushSuccessLog(): void
+    {
+        $this->logService->flushSuccessLog();
+    }
 }

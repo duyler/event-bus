@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
+use Duyler\EventBus\Internal\Event\BusIsResetEvent;
 use Duyler\EventBus\Internal\Event\EventRemovedEvent;
 use Duyler\EventBus\Internal\Event\TaskQueueIsEmptyEvent;
-use Duyler\EventBus\Internal\Listener\Bus\FlushActionSuccessLogEventListener;
+use Duyler\EventBus\Internal\Listener\Bus\ResetBusEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveActionsAfterEventDeletedEventListener;
 use Duyler\DI\Definition;
 use Duyler\EventBus\Action\ActionRunnerProvider;
@@ -121,7 +122,6 @@ class BusConfig
                 LogCompleteActionEventListener::class,
                 ValidateCompleteActionEventListener::class,
                 ResolveHeldTasksEventListener::class,
-                FlushActionSuccessLogEventListener::class,
             ],
             TaskQueueIsEmptyEvent::class => [
                 StateMainEmptyListener::class,
@@ -146,6 +146,9 @@ class BusConfig
             ],
             EventRemovedEvent::class => [
                 ResolveActionsAfterEventDeletedEventListener::class,
+            ],
+            BusIsResetEvent::class => [
+                ResetBusEventListener::class,
             ],
         ];
     }
