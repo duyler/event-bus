@@ -13,7 +13,7 @@ class ResetBusEventListener
         private Termination $termination,
     ) {}
 
-    public function __invoke(BusIsResetEvent $event)
+    public function __invoke(BusIsResetEvent $event): void
     {
         $this->termination->run();
     }

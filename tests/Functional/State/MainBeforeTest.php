@@ -13,12 +13,60 @@ use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\MainBeforeStateHandlerInterface;
 use Duyler\EventBus\State\Service\StateMainBeforeService;
 use Duyler\EventBus\State\StateContext;
+use Duyler\EventBus\Test\Functional\State\Support\FlushSuccessLogStateHandler;
+use Duyler\EventBus\Test\Functional\State\Support\RejectActionStateHandler;
 use Override;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class MainBeforeTest extends TestCase
 {
+    #[Test]
+    public function flushSuccessLog_from_state_handler(): void
+    {
+        $flushSuccessLogStateHandler = new FlushSuccessLogStateHandler('TestAction');
+        $busBuilder = new BusBuilder(new BusConfig());
+        $busBuilder->addStateHandler($flushSuccessLogStateHandler);
+        $busBuilder->doAction(
+            new Action(
+                id: 'TestAction',
+                handler: function () {},
+            ),
+        );
+
+        $bus = $busBuilder->build();
+        $bus->run();
+
+        $this->assertTrue($bus->resultIsExists('TestAction'));
+    }
+
+    #[Test]
+    public function reject_action()
+    {
+        $rejectStateHandler = new RejectActionStateHandler('RejectAction');
+        $busBuilder = new BusBuilder(new BusConfig());
+        $busBuilder->addStateHandler($rejectStateHandler);
+        $busBuilder->doAction(
+            new Action(
+                id: 'RejectAction',
+                handler: function () {},
+            ),
+        );
+
+        $busBuilder->doAction(
+            new Action(
+                id: 'NotRejectAction',
+                handler: function () {},
+            ),
+        );
+
+        $bus = $busBuilder->build();
+        $bus->run();
+
+        $this->assertTrue($bus->resultIsExists('NotRejectAction'));
+        $this->assertFalse($bus->resultIsExists('RejectAction'));
+    }
+
     #[Test]
     public function run_with_substitute_handler_from_state_handler(): void
     {

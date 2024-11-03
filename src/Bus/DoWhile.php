@@ -48,12 +48,14 @@ final class DoWhile
 
             $this->eventDispatcher->dispatch(new TaskBeforeRunEvent($task));
 
-            if (false === $task->isRejected()) {
-                if (TaskStatus::Primary === $task->getStatus()) {
-                    $task->run($this->actionRunnerProvider->getRunner($task->action));
-                } else {
-                    $task->retry();
-                }
+            if ($task->isRejected()) {
+                continue;
+            }
+
+            if (TaskStatus::Primary === $task->getStatus()) {
+                $task->run($this->actionRunnerProvider->getRunner($task->action));
+            } else {
+                $task->retry();
             }
 
             $this->process($task);
