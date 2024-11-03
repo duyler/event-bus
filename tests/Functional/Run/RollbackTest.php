@@ -87,7 +87,6 @@ class RollbackTest extends TestCase
                 id: 'Test2',
                 handler: function () {},
                 rollback: function () {},
-                flush: true,
             ),
         );
 

@@ -51,7 +51,6 @@ final readonly class Action
         public int $retries = 0,
         /** @var array<string|int, mixed> */
         public array $labels = [],
-        public bool $flush = false,
     ) {
         $this->id = IdFormatter::toString($id);
 

@@ -13,6 +13,7 @@ use Duyler\EventBus\Dto\Event;
 use Duyler\EventBus\Exception\CircularCallActionException;
 use Duyler\EventBus\State\Service\StateMainCyclicService;
 use Duyler\EventBus\State\StateContext;
+use Duyler\EventBus\Test\Functional\State\Support\ResetBusStateHandler;
 use Fiber;
 use Override;
 use PHPUnit\Framework\Attributes\Test;
@@ -20,6 +21,26 @@ use PHPUnit\Framework\TestCase;
 
 class MainCyclicTest extends TestCase
 {
+    #[Test]
+    public function reset_from_state_handler(): void
+    {
+        $resetBusStateHandler = new ResetBusStateHandler();
+        $busBuilder = new BusBuilder(new BusConfig());
+        $busBuilder->addStateHandler($resetBusStateHandler);
+        $busBuilder->doAction(
+            new Action(
+                id: 'TestAction',
+                handler: function () {},
+            ),
+        );
+
+        $bus = $busBuilder->build();
+
+        $this->expectExceptionMessage('TaskQueue is empty');
+
+        $bus->run();
+    }
+
     #[Test]
     public function cyclic_with_event(): void
     {
