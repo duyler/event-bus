@@ -16,12 +16,12 @@ final class Rollback
     public function __construct(
         private ActionContainerStorage $containerStorage,
         private TaskStorage $taskStorage,
-        private Log $log,
+        private State $state,
     ) {}
 
     public function run(): void
     {
-        $successLog = $this->log->getSuccessLog();
+        $successLog = $this->state->getSuccessLog();
 
         foreach ($successLog as $actionId) {
             $tasks = $this->taskStorage->getAllByActionId($actionId);

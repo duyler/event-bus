@@ -11,7 +11,7 @@ use Duyler\EventBus\Exception\ConsecutiveRepeatedActionException;
 final class Validator
 {
     public function __construct(
-        private Log $log,
+        private State $state,
         private BusConfig $config,
     ) {}
 
@@ -23,8 +23,8 @@ final class Validator
     {
         $actionId = $completeAction->action->id . '.' . $completeAction->result->status->value;
 
-        $mainEventLog = $this->log->getMainLog();
-        $repeatedEventLog = $this->log->getRepeatedLog();
+        $mainEventLog = $this->state->getMainLog();
+        $repeatedEventLog = $this->state->getRepeatedLog();
 
         if (false === $this->config->allowCircularCall) {
             if (end($repeatedEventLog) === $actionId && false === $completeAction->action->repeatable) {

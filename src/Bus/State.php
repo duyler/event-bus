@@ -12,7 +12,7 @@ use Duyler\EventBus\Enum\Mode;
 use Duyler\EventBus\Enum\ResultStatus;
 
 #[Finalize(method: 'reset')]
-final class Log
+final class State
 {
     /** @var string[] */
     private array $actionLog = [];
@@ -32,6 +32,16 @@ final class Log
     /** @var string[] */
     private array $successLog = [];
 
+    /** @var string[] */
+    private array $failLog = [];
+
+    /** @var string[] */
+    private array $suspendedLog = [];
+
+    private ?string $beginAction = null;
+
+    private ?string $errorAction = null;
+
     public function __construct(private BusConfig $config) {}
 
     public function pushCompleteAction(CompleteAction $completeAction): void
@@ -45,6 +55,8 @@ final class Log
             $this->pushMainLog($actionId);
             if (ResultStatus::Success === $completeAction->result->status) {
                 $this->pushSuccessLog($completeAction->action->id);
+            } else {
+                $this->pushFailLog($completeAction->action->id);
             }
         }
 
@@ -65,6 +77,29 @@ final class Log
             array_shift($this->successLog);
         }
         $this->successLog[] = $actionId;
+    }
+
+    public function pushSuspendedLog(string $actionId): void
+    {
+        if ($this->isLooped() && count($this->actionLog) === $this->config->logMaxSize) {
+            array_shift($this->suspendedLog);
+        }
+        $this->suspendedLog[] = $actionId;
+    }
+
+    public function resolveResumeAction(string $actionId): void
+    {
+        if (in_array($actionId, $this->suspendedLog)) {
+            unset($this->suspendedLog[array_search($actionId, $this->suspendedLog)]);
+        }
+    }
+
+    private function pushFailLog(string $actionId): void
+    {
+        if ($this->isLooped() && count($this->successLog) === $this->config->logMaxSize) {
+            array_shift($this->failLog);
+        }
+        $this->failLog[] = $actionId;
     }
 
     public function getActionLog(): array
@@ -134,12 +169,26 @@ final class Log
             $this->eventLog,
             $this->retriesLog,
             $this->successLog,
+            $this->failLog,
+            $this->suspendedLog,
+            $this->beginAction,
+            $this->errorAction,
         );
     }
 
     private function isLooped(): bool
     {
         return Mode::Loop === $this->config->mode || $this->config->allowCircularCall;
+    }
+
+    public function setBeginAction(string $actionId): void
+    {
+        $this->beginAction = $actionId;
+    }
+
+    public function setErrorAction(string $actionId): void
+    {
+        $this->errorAction = $actionId;
     }
 
     public function reset(): void
@@ -150,5 +199,9 @@ final class Log
         $this->eventLog = [];
         $this->retriesLog = [];
         $this->successLog = [];
+        $this->failLog = [];
+        $this->suspendedLog = [];
+        $this->beginAction = null;
+        $this->errorAction = null;
     }
 }
