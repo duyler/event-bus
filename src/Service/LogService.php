@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Service;
 
-use Duyler\EventBus\Bus\Log;
+use Duyler\EventBus\Bus\State;
 
 readonly class LogService
 {
-    public function __construct(private Log $log) {}
+    public function __construct(
+        private State $state,
+    ) {}
 
     public function getFirstAction(): ?string
     {
-        $actionLog = $this->log->getActionLog();
+        $actionLog = $this->state->getActionLog();
 
         if (empty($actionLog)) {
             return null;
@@ -23,7 +25,7 @@ readonly class LogService
 
     public function getLastAction(): ?string
     {
-        $actionLog = $this->log->getActionLog();
+        $actionLog = $this->state->getActionLog();
 
         if (empty($actionLog)) {
             return null;
@@ -34,6 +36,6 @@ readonly class LogService
 
     public function flushSuccessLog(): void
     {
-        $this->log->flushSuccessLog();
+        $this->state->flushSuccessLog();
     }
 }

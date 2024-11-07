@@ -8,51 +8,29 @@ final readonly class Log
 {
     public function __construct(
         /** @var string[] */
-        private array $actionLog,
+        public array $actionLog,
 
         /** @var string[] */
-        private array $mainEventLog,
+        public array $mainEventLog,
 
         /** @var string[] */
-        private array $repeatedEventLog,
+        public array $repeatedEventLog,
 
         /** @var string[] */
-        private array $eventLog,
+        public array $eventLog,
 
         /** @var string[] */
-        private array $retriesLog,
+        public array $retriesLog,
 
         /** @var string[] */
-        private array $successLog,
+        public array $successLog,
+
+        /** @var string[] */
+        public array $suspendedLog,
+
+        /** @var string[] */
+        public array $failLog,
+        public ?string $beginAction,
+        public ?string $errorAction,
     ) {}
-
-    public function getActionLog(): array
-    {
-        return $this->actionLog;
-    }
-
-    public function getMainActionLog(): array
-    {
-        return $this->mainEventLog;
-    }
-
-    public function getRepeatedActionLog(): array
-    {
-        return $this->repeatedEventLog;
-    }
-
-    public function getEventLog(): array
-    {
-        return $this->eventLog;
-    }
-
-    public function getRetriesLog(): array
-    {
-        return $this->retriesLog;
-    }
-
-    public function getSuccessLog(): array
-    {
-        return $this->successLog;
-    }
 }

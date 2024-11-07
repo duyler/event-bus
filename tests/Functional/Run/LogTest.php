@@ -22,10 +22,10 @@ class LogTest extends TestCase
         $bus->reset();
         $log = $bus->getLog();
 
-        $this->assertSame($log->getActionLog(), ['Test']);
-        $this->assertSame($log->getMainActionLog(), ['Test.Success']);
-        $this->assertSame($log->getEventLog(), []);
-        $this->assertSame($log->getRepeatedActionLog(), []);
+        $this->assertSame($log->actionLog, ['Test']);
+        $this->assertSame($log->mainEventLog, ['Test.Success']);
+        $this->assertSame($log->eventLog, []);
+        $this->assertSame($log->repeatedEventLog, []);
     }
 
     #[Test]
@@ -36,12 +36,16 @@ class LogTest extends TestCase
         $bus = $busBuilder->build()->run();
         $log = $bus->getLog();
 
-        $this->assertSame($log->getActionLog(), ['Test']);
-        $this->assertSame($log->getMainActionLog(), ['Test.Success']);
-        $this->assertSame($log->getEventLog(), []);
-        $this->assertSame($log->getRepeatedActionLog(), []);
-        $this->assertSame($log->getRetriesLog(), []);
-        $this->assertSame($log->getSuccessLog(), ['Test']);
+        $this->assertSame($log->actionLog, ['Test']);
+        $this->assertSame($log->mainEventLog, ['Test.Success']);
+        $this->assertSame($log->eventLog, []);
+        $this->assertSame($log->repeatedEventLog, []);
+        $this->assertSame($log->retriesLog, []);
+        $this->assertSame($log->successLog, ['Test']);
+        $this->assertSame($log->failLog, []);
+        $this->assertSame($log->suspendedLog, []);
+        $this->assertEquals($log->beginAction, 'Test');
+        $this->assertEquals($log->errorAction, null);
     }
 
     #[Test]
@@ -69,7 +73,7 @@ class LogTest extends TestCase
         $bus = $busBuilder->build()->run();
         $log = $bus->getLog();
 
-        $this->asserttrue(3 === count($log->getActionLog()));
-        $this->asserttrue(1 === count($log->getRepeatedActionLog()));
+        $this->asserttrue(3 === count($log->mainEventLog));
+        $this->asserttrue(1 === count($log->repeatedEventLog));
     }
 }
