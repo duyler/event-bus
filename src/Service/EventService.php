@@ -15,7 +15,6 @@ use Duyler\EventBus\Dto\Event as EventDto;
 use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
-use Duyler\EventBus\Exception\EventHandlersNotFoundException;
 use Duyler\EventBus\Storage\EventStorage;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -52,10 +51,6 @@ class EventService
         }
 
         $actions = $this->actionStorage->getByEvent($eventDto->id);
-
-        if (count($actions) === 0) {
-            throw new EventHandlersNotFoundException($eventDto->id);
-        }
 
         foreach ($actions as $action) {
             $this->eventRelationStorage->save(new EventRelation($action, $eventDto));

@@ -12,7 +12,6 @@ use Duyler\EventBus\Dto\Event;
 use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
-use Duyler\EventBus\Exception\EventHandlersNotFoundException;
 use Duyler\EventBus\Exception\EventNotDefinedException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -301,24 +300,6 @@ class EventTest extends TestCase
             new Event(
                 id: 'TestEvent',
                 data: new class {},
-            ),
-        );
-    }
-
-    #[Test]
-    public function run_with_not_found_event_handler(): void
-    {
-        $builder = new BusBuilder(new BusConfig());
-
-        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent'));
-
-        $bus = $builder->build();
-
-        $this->expectException(EventHandlersNotFoundException::class);
-
-        $bus->dispatchEvent(
-            new Event(
-                id: 'TestEvent',
             ),
         );
     }
