@@ -7,6 +7,7 @@ namespace Duyler\EventBus\Service;
 use Duyler\EventBus\Build\Event;
 use Duyler\EventBus\Bus\Bus;
 use Duyler\EventBus\Bus\EventRelation;
+use Duyler\EventBus\Bus\State;
 use Duyler\EventBus\Exception\DispatchedEventNotDefinedException;
 use Duyler\EventBus\Internal\Event\EventRemovedEvent;
 use Duyler\EventBus\Storage\ActionStorage;
@@ -26,6 +27,7 @@ class EventService
         private EventStorage $eventStorage,
         private EventDispatcherInterface $eventDispatcher,
         private Bus $bus,
+        private State $state,
     ) {}
 
     public function dispatch(EventDto $eventDto): void
@@ -56,6 +58,8 @@ class EventService
             $this->eventRelationStorage->save(new EventRelation($action, $eventDto));
             $this->bus->doAction($action);
         }
+
+        $this->state->pushEventLog($eventDto->id);
     }
 
     /**
