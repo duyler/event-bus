@@ -59,7 +59,9 @@ class EventService
             $this->bus->doAction($action);
         }
 
-        $this->state->pushEventLog($eventDto->id);
+        if ($this->eventRelationStorage->isExists($eventDto->id)) {
+            $this->state->pushEventLog($eventDto->id);
+        }
     }
 
     /**
