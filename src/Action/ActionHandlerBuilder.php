@@ -15,7 +15,7 @@ class ActionHandlerBuilder
         private ActionSubstitution $actionSubstitution,
     ) {}
 
-    public function build(Action $action, ActionContainer $container): callable
+    public function build(Action $action, ActionContainer $container): Closure
     {
         if ($this->actionSubstitution->isSubstituteHandler($action->id)) {
             $handlerSubstitution = $this->actionSubstitution->getSubstituteHandler($action->id);
@@ -24,19 +24,22 @@ class ActionHandlerBuilder
             }
             $container->addProviders($handlerSubstitution->providers);
             $container->bind($handlerSubstitution->bind);
-            return $container->get($handlerSubstitution->handler);
+            return $this->getCallableHandler($container, $handlerSubstitution->handler);
         }
 
         if ($action->handler instanceof Closure) {
             return $action->handler;
         }
 
-        $handler = $container->get($action->handler);
+        return $this->getCallableHandler($container, $action->handler);
+    }
 
-        if (!is_callable($handler)) {
+    private function getCallableHandler(ActionContainer $container, string $handler): Closure
+    {
+        $resolvedHandler = $container->get($handler);
+        if (!is_callable($resolvedHandler)) {
             throw new ActionHandlerMustBeCallableException();
         }
-
-        return $handler;
+        return $resolvedHandler(...);
     }
 }
