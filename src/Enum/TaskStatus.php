@@ -6,4 +6,5 @@ enum TaskStatus
 {
     case Primary;
     case Retry;
+    case Held;
 }
