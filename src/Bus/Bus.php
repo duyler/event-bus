@@ -95,10 +95,10 @@ final class Bus
     {
         if ($this->isSatisfiedConditions($task)) {
             $this->taskQueue->push($task);
-            $this->retries[$task->action->id] = 0;
+            $this->retries[$task->getId()] = 0;
             $this->finalized[$task->action->id] = false;
         } else {
-            $this->heldTasks[] = $task;
+            $this->heldTasks[$task->getId()] = $task;
         }
     }
 
@@ -124,7 +124,7 @@ final class Bus
 
     private function isSatisfiedConditions(Task $task): bool
     {
-        if ($task->action->lock && $this->taskQueue->inQueue($task->action->id)) {
+        if ($task->action->lock && $this->taskQueue->inQueue($task->action->id)) { // Нужно добавить доп проверки
             return false;
         }
 
@@ -145,7 +145,7 @@ final class Bus
 
         foreach ($completeRequiredActions as $completeRequiredAction) {
             if (ResultStatus::Fail === $completeRequiredAction->result->status) {
-                if ($this->retries[$completeRequiredAction->action->id] < $completeRequiredAction->action->retries) {
+                if ($this->retries[$completeRequiredAction->taskId] < $completeRequiredAction->action->retries) {
                     return false;
                 }
 
@@ -166,14 +166,22 @@ final class Bus
         }
 
         if (count($failActions) > count($replacedActions)) {
-            if ($this->taskQueue->isEmpty()) {
-                if ($this->config->allowSkipUnresolvedActions) {
-                    return false;
+
+            foreach ($failActions as $failAction) {
+                foreach ($this->alternates[$failAction->action->id] as $alternate) {
+                    if ($this->taskQueue->inQueue($alternate)) {
+                        return false;
+                    }
                 }
-                throw new UnableToContinueWithFailActionException($task->action->id);
             }
 
-            return false;
+            if ($this->config->allowSkipUnresolvedActions) {
+                unset($this->heldTasks[$task->getId()]);
+                return false;
+
+            }
+
+            throw new UnableToContinueWithFailActionException($task->action->id);
         }
 
         return true;
@@ -208,9 +216,9 @@ final class Bus
             return;
         }
 
-        if ($this->retries[$completeAction->action->id] < $completeAction->action->retries) {
+        if ($this->retries[$completeAction->taskId] < $completeAction->action->retries) {
             $this->taskQueue->push($this->createRetryTask($completeAction));
-            ++$this->retries[$completeAction->action->id];
+            ++$this->retries[$completeAction->taskId];
         } else {
             $this->finalized[$completeAction->action->id] = true;
             $this->removeTask($completeAction);
@@ -221,13 +229,14 @@ final class Bus
     {
         if (Mode::Loop === $this->config->mode || $this->config->allowCircularCall) {
             $this->taskStorage->remove($completeAction->action->id, $completeAction->taskId);
+            unset($this->retries[$completeAction->taskId]);
         }
     }
 
     private function createRetryTask(CompleteAction $completeAction): Task
     {
         $task = $this->taskStorage->get($completeAction->action->id, $completeAction->taskId);
-        $task->setStatus(TaskStatus::Repeat);
+        $task->setStatus(TaskStatus::Retry);
         return $task;
     }
 
