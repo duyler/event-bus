@@ -229,6 +229,7 @@ final class Bus
     {
         if (Mode::Loop === $this->config->mode || $this->config->allowCircularCall) {
             $this->taskStorage->remove($completeAction->action->id, $completeAction->taskId);
+            unset($this->retries[$completeAction->taskId]);
         }
     }
 
