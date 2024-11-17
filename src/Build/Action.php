@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Build;
 
 use Closure;
+use DateInterval;
 use Duyler\EventBus\Formatter\IdFormatter;
 use RecursiveArrayIterator;
 use UnitEnum;
@@ -49,6 +50,7 @@ final readonly class Action
         /** @var array<array-key, string|UnitEnum> */
         array $alternates = [],
         public int $retries = 0,
+        public null|DateInterval $retryDelay = null,
         /** @var array<string|int, mixed> */
         public array $labels = [],
     ) {

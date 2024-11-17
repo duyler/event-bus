@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
+use DateInterval;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
@@ -24,6 +25,26 @@ class RetriesActionTest extends TestCase
                 handler: fn(): Result => Result::fail(),
                 repeatable: false,
                 retries: 3,
+            ),
+        );
+
+        $bus = $busBuilder->build();
+        $bus->run();
+        $this->assertTrue($bus->resultIsExists('RetryAction'));
+        $this->assertEquals(ResultStatus::Fail, $bus->getResult('RetryAction')->status);
+    }
+
+    #[Test]
+    public function retries_with_delay(): void
+    {
+        $busBuilder = new BusBuilder(new BusConfig());
+        $busBuilder->doAction(
+            new Action(
+                id: 'RetryAction',
+                handler: fn(): Result => Result::fail(),
+                repeatable: false,
+                retries: 1,
+                retryDelay: DateInterval::createFromDateString('100 millisecond'),
             ),
         );
 

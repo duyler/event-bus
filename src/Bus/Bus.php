@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
+use DateTimeImmutable;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Enum\Mode;
@@ -266,6 +267,12 @@ final class Bus
     private function createRetryTask(CompleteAction $completeAction): Task
     {
         $task = $this->taskStorage->get($completeAction->action->id, $completeAction->taskId);
+
+        $now = new DateTimeImmutable();
+
+        $retryTimestamp = $completeAction->action->retryDelay ? $now->add($completeAction->action->retryDelay) : $now;
+
+        $task->setRetryTimestamp($retryTimestamp);
         $task->setStatus(TaskStatus::Retry);
         return $task;
     }

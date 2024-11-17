@@ -54,7 +54,11 @@ final class DoWhile
 
             if (TaskStatus::Primary === $task->getStatus()) {
                 $task->run($this->actionRunnerProvider->getRunner($task->action));
-            } else {
+            } elseif (TaskStatus::Retry === $task->getStatus()) {
+                if (false === $task->isReady()) {
+                    $this->taskQueue->push($task);
+                    continue;
+                }
                 $task->retry();
             }
 

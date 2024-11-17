@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
+use DateTimeImmutable;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Contract\ActionRunnerInterface;
 use Duyler\EventBus\Dto\Result;
@@ -24,8 +25,15 @@ final class Task
     private ?ActionRunnerInterface $runner = null;
     private ?Result $result = null;
     private bool $isRejected = false;
+    private DateTimeImmutable $retryTimestamp;
+    private string $taskId;
 
-    public function __construct(public readonly Action $action) {}
+    public function __construct(
+        public readonly Action $action,
+    ) {
+        $this->taskId = spl_object_hash($this);
+        $this->retryTimestamp = new DateTimeImmutable();
+    }
 
     public function run(ActionRunnerInterface $actionRunner): void
     {
@@ -126,13 +134,23 @@ final class Task
         $this->status = $status;
     }
 
+    public function setRetryTimestamp(DateTimeImmutable $retryTimestamp): void
+    {
+        $this->retryTimestamp = $retryTimestamp;
+    }
+
     public function getId(): string
     {
-        return spl_object_hash($this);
+        return $this->taskId;
     }
 
     public function getRunner(): ?ActionRunnerInterface
     {
         return $this->runner;
+    }
+
+    public function isReady(): bool
+    {
+        return $this->retryTimestamp->format('Y-m-d H:i:s:u') <= (new DateTimeImmutable())->format('Y-m-d H:i:s:u');
     }
 }
