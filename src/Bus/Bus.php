@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
+use DateTimeImmutable;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Enum\Mode;
@@ -98,6 +99,7 @@ final class Bus
             $this->retries[$task->getId()] = 0;
             $this->finalized[$task->action->id] = false;
         } else {
+            $task->setStatus(TaskStatus::Held);
             $this->heldTasks[$task->getId()] = $task;
         }
     }
@@ -106,6 +108,7 @@ final class Bus
     {
         foreach ($this->heldTasks as $key => $task) {
             if ($this->isSatisfiedConditions($task)) {
+                $task->setStatus(TaskStatus::Primary);
                 $this->taskQueue->push($task);
                 unset($this->heldTasks[$key]);
             }
@@ -124,7 +127,7 @@ final class Bus
 
     private function isSatisfiedConditions(Task $task): bool
     {
-        if ($task->action->lock && $this->taskQueue->inQueue($task->action->id)) { // Нужно добавить доп проверки
+        if ($this->isLock($task)) {
             return false;
         }
 
@@ -178,13 +181,41 @@ final class Bus
             if ($this->config->allowSkipUnresolvedActions) {
                 unset($this->heldTasks[$task->getId()]);
                 return false;
-
             }
 
             throw new UnableToContinueWithFailActionException($task->action->id);
         }
 
         return true;
+    }
+
+    private function isLock(Task $task): bool
+    {
+        if (false === $task->action->lock) {
+            return false;
+        }
+
+        if ($this->taskQueue->inQueue($task->action->id)) {
+            return true;
+        }
+
+        $tasks = $this->taskStorage->getAllByActionId($task->action->id);
+
+        unset($tasks[$task->getId()]);
+
+        foreach ($tasks as $currentTask) {
+            if (TaskStatus::Primary === $task->getStatus()) {
+                if (array_key_exists($currentTask->getId(), $this->heldTasks)) {
+                    return true;
+                }
+            }
+
+            if (($this->retries[$currentTask->action->id] ?? 0) < $task->action->retries) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function tryReplacedFailAction(string $failActionId): bool
@@ -236,6 +267,12 @@ final class Bus
     private function createRetryTask(CompleteAction $completeAction): Task
     {
         $task = $this->taskStorage->get($completeAction->action->id, $completeAction->taskId);
+
+        $now = new DateTimeImmutable();
+
+        $retryTimestamp = $completeAction->action->retryDelay ? $now->add($completeAction->action->retryDelay) : $now;
+
+        $task->setRetryTimestamp($retryTimestamp);
         $task->setStatus(TaskStatus::Retry);
         return $task;
     }
