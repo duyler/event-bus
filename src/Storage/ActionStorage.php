@@ -42,6 +42,7 @@ class ActionStorage
     public function saveDynamic(Action $action): void
     {
         $this->dynamic[$action->id] = $action;
+        $this->data[$action->id] = $action;
     }
 
     public function get(string $actionId): Action
@@ -57,8 +58,7 @@ class ActionStorage
     public function removeDynamic(string $actionId): void
     {
         if (array_key_exists($actionId, $this->dynamic)) {
-            $external = $this->dynamic[$actionId];
-            unset($this->data[$external->id]);
+            unset($this->data[$actionId]);
             unset($this->dynamic[$actionId]);
         }
     }

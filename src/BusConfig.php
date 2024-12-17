@@ -79,6 +79,7 @@ class BusConfig
         public readonly Mode $mode = Mode::Queue,
         public readonly bool $continueAfterException = false,
         public readonly int $maxCountCompleteActions = 0,
+        public readonly int $maxCountEvents = 0,
     ) {
         $this->bind = $this->getBind() + $bind;
     }
