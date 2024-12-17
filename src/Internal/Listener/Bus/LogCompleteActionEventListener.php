@@ -17,7 +17,9 @@ class LogCompleteActionEventListener
 
     public function __invoke(TaskAfterRunEvent $event): void
     {
-        $completeAction = $this->completeActionStorage->get($event->task->action->id);
-        $this->state->pushCompleteAction($completeAction);
+        if ($this->completeActionStorage->isExists($event->task->action->id)) {
+            $completeAction = $this->completeActionStorage->get($event->task->action->id);
+            $this->state->pushCompleteAction($completeAction);
+        }
     }
 }

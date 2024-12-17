@@ -18,13 +18,13 @@ trait ActionServiceTrait
     public function addAction(Action $action): void
     {
         if (false === $this->actionService->actionIsExists($action->id)) {
-            $this->actionService->addAction($action);
+            $this->actionService->addExternalAction($action);
         }
     }
 
     public function doAction(Action $action): void
     {
-        $this->actionService->doAction($action);
+        $this->actionService->doExternalAction($action);
     }
 
     public function doExistsAction(string|UnitEnum $actionId): void

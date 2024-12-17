@@ -277,6 +277,11 @@ final class Bus
         return $task;
     }
 
+    public function removeHeldTask(string $taskId): void
+    {
+        unset($this->heldTasks[$taskId]);
+    }
+
     public function reset(): void
     {
         $this->heldTasks = [];

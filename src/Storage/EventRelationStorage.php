@@ -57,4 +57,18 @@ class EventRelationStorage
         $this->data = [];
         $this->lastById = [];
     }
+
+    // @toto Need refactor to remove from lastById without foreach
+    public function removeByActionId(string $actionId): void
+    {
+        if (isset($this->data[$actionId])) {
+            unset($this->data[$actionId]);
+        }
+
+        foreach ($this->lastById as $relation) {
+            if ($relation->action->id === $actionId) {
+                unset($this->lastById[$relation->event->id]);
+            }
+        }
+    }
 }

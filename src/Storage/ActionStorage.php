@@ -15,6 +15,11 @@ class ActionStorage
      */
     private array $data = [];
 
+    /**
+     * @var array<string, Action>
+     */
+    private array $dynamic = [];
+
     /** @var array<string, array<string, Action>> */
     private array $byContract = [];
 
@@ -34,6 +39,11 @@ class ActionStorage
         $this->data[$action->id] = $action;
     }
 
+    public function saveDynamic(Action $action): void
+    {
+        $this->dynamic[$action->id] = $action;
+    }
+
     public function get(string $actionId): Action
     {
         return $this->data[$actionId];
@@ -44,9 +54,13 @@ class ActionStorage
         return array_key_exists($actionId, $this->data);
     }
 
-    public function remove(string $actionId): void
+    public function removeDynamic(string $actionId): void
     {
-        unset($this->data[$actionId]);
+        if (array_key_exists($actionId, $this->dynamic)) {
+            $external = $this->dynamic[$actionId];
+            unset($this->data[$external->id]);
+            unset($this->dynamic[$actionId]);
+        }
     }
 
     /** @return array<string, Action> */

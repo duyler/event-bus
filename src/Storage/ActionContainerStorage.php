@@ -47,4 +47,9 @@ class ActionContainerStorage
     {
         return isset($this->data[$actionId]);
     }
+
+    public function remove(string $actionId): void
+    {
+        unset($this->data[$actionId]);
+    }
 }
