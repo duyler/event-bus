@@ -56,4 +56,16 @@ class CompleteActionStorage
     {
         $this->data = [];
     }
+
+    public function remove(string $actionId): void
+    {
+        unset($this->data[$actionId]);
+    }
+
+    public function first(): CompleteAction
+    {
+        /** @var string $key */
+        $key = array_key_first($this->data);
+        return $this->data[$key];
+    }
 }

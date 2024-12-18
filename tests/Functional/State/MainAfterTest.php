@@ -74,9 +74,9 @@ class MainAfterTest extends TestCase
         $bus = $busBuilder->build();
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
-        $this->assertTrue($bus->resultIsExists('RemovedActionFromBuilder'));
-        $this->assertTrue($bus->resultIsExists('SubscribedActionFromBuilder'));
+        $this->assertFalse($bus->resultIsExists('ActionFromBuilder'));
+        $this->assertFalse($bus->resultIsExists('RemovedActionFromBuilder'));
+        $this->assertFalse($bus->resultIsExists('SubscribedActionFromBuilder'));
     }
 
     #[Test]

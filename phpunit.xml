@@ -13,6 +13,11 @@
          stopOnError="false"
          stopOnFailure="false"
          stopOnIncomplete="false"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnTestsThatTriggerErrors="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnPhpunitDeprecations="true"
          stopOnSkipped="false">
     <testsuites>
         <testsuite name="default">

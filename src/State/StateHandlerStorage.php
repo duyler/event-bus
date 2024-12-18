@@ -15,6 +15,7 @@ use Duyler\EventBus\Contract\State\MainEmptyStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainEndStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainResumeStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainSuspendStateHandlerInterface;
+use Duyler\EventBus\Contract\State\MainUnresolvedStateHandlerInterface;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use InvalidArgumentException;
 
@@ -44,6 +45,9 @@ class StateHandlerStorage
     /** @var MainEndStateHandlerInterface[] */
     private array $mainEnd = [];
 
+    /** @var MainUnresolvedStateHandlerInterface[] */
+    private array $mainUnresolved = [];
+
     /** @var ActionBeforeStateHandlerInterface[] */
     private array $actionBefore = [];
 
@@ -64,6 +68,7 @@ class StateHandlerStorage
             $stateHandler instanceof MainAfterStateHandlerInterface => $this->mainAfter[] = $stateHandler,
             $stateHandler instanceof MainEmptyStateHandlerInterface => $this->mainEmpty[] = $stateHandler,
             $stateHandler instanceof MainEndStateHandlerInterface => $this->mainEnd[] = $stateHandler,
+            $stateHandler instanceof MainUnresolvedStateHandlerInterface => $this->mainUnresolved[] = $stateHandler,
             $stateHandler instanceof ActionBeforeStateHandlerInterface => $this->actionBefore[] = $stateHandler,
             $stateHandler instanceof ActionThrowingStateHandlerInterface => $this->actionThrowing[] = $stateHandler,
             $stateHandler instanceof ActionAfterStateHandlerInterface => $this->actionAfter[] = $stateHandler,
@@ -124,6 +129,12 @@ class StateHandlerStorage
     public function getMainEnd(): array
     {
         return $this->mainEnd;
+    }
+
+    /** @return MainUnresolvedStateHandlerInterface[] */
+    public function getMainUnresolved(): array
+    {
+        return $this->mainUnresolved;
     }
 
     /** @return ActionBeforeStateHandlerInterface[] */
