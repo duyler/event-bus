@@ -7,6 +7,7 @@ namespace Duyler\EventBus;
 use Duyler\EventBus\Internal\Event\BusIsResetEvent;
 use Duyler\EventBus\Internal\Event\EventRemovedEvent;
 use Duyler\EventBus\Internal\Event\TaskQueueIsEmptyEvent;
+use Duyler\EventBus\Internal\Event\TaskUnresolvedEvent;
 use Duyler\EventBus\Internal\Listener\Bus\CleanByLimitEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResetBusEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveActionsAfterEventDeletedEventListener;
@@ -52,6 +53,7 @@ use Duyler\EventBus\Internal\Listener\State\StateMainEmptyListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainEndEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainResumeEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainSuspendEventListener;
+use Duyler\EventBus\Internal\Listener\State\StateMainUnresolvedEventListener;
 use Duyler\EventBus\Internal\ListenerProvider;
 use Duyler\EventBus\State\StateAction;
 use Duyler\EventBus\State\StateMain;
@@ -131,6 +133,9 @@ class BusConfig
             ],
             TaskQueueIsEmptyEvent::class => [
                 StateMainEmptyListener::class,
+            ],
+            TaskUnresolvedEvent::class => [
+                StateMainUnresolvedEventListener::class,
             ],
             ActionBeforeRunEvent::class => [
                 StateActionBeforeEventListener::class,

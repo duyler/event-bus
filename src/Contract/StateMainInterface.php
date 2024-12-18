@@ -23,4 +23,6 @@ interface StateMainInterface
     public function empty(): void;
 
     public function end(): void;
+
+    public function unresolved(Task $task): void;
 }
