@@ -189,13 +189,13 @@ readonly class ActionService
         $this->actionSubstitution->addHandlerSubstitution($handlerSubstitution);
     }
 
-    public function addExternalAction(Action $action): void
+    public function addDynamicAction(Action $action): void
     {
         $this->addAction($action);
         $this->actionStorage->saveDynamic($action);
     }
 
-    public function doExternalAction(Action $action): void
+    public function doDynamicAction(Action $action): void
     {
         $this->addAction($action);
 
