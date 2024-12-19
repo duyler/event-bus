@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
+use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\Build\Action;
 
+#[Finalize]
 final class ActionRequiredMap
 {
     /** @var array<string, Action[]> */
@@ -27,5 +29,10 @@ final class ActionRequiredMap
     public function remove(string $actionId): void
     {
         unset($this->map[$actionId]);
+    }
+
+    public function finalize(): void
+    {
+        $this->map = [];
     }
 }
