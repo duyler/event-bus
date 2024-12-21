@@ -21,6 +21,8 @@ class HandleUnresolvedTaskStateHandler implements MainUnresolvedStateHandlerInte
                 handler: function () {},
             ),
         );
+
+        $stateService->getActionId();
     }
 
     #[Override]
