@@ -42,7 +42,6 @@ class ActionStorage
     public function saveDynamic(Action $action): void
     {
         $this->dynamic[$action->id] = $action;
-        $this->data[$action->id] = $action;
     }
 
     public function get(string $actionId): Action
@@ -53,6 +52,11 @@ class ActionStorage
     public function isExists(string $actionId): bool
     {
         return array_key_exists($actionId, $this->data);
+    }
+
+    public function isExistsDynamic(string $actionId): bool
+    {
+        return array_key_exists($actionId, $this->dynamic);
     }
 
     public function removeDynamic(string $actionId): void

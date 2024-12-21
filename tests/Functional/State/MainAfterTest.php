@@ -26,16 +26,20 @@ class MainAfterTest extends TestCase
     public function remove_action_from_state_handler(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
+        $busBuilder->addStateHandler(new MainAfterStateHandlerWithAddDynamicAction());
         $busBuilder->addStateHandler(new MainAfterStateHandlerWithRemoveAction());
         $busBuilder->addStateContext(new Context(
-            [MainAfterStateHandlerWithRemoveAction::class],
+            [
+                MainAfterStateHandlerWithRemoveAction::class,
+                MainAfterStateHandlerWithAddDynamicAction::class,
+            ],
         ));
         $busBuilder->doAction(
             new Action(
                 id: 'ActionFromBuilder',
                 handler: function (): void {},
                 required: [
-                    'RemovedActionFromBuilder',
+                    'NotRemovedActionFromBuilder',
                 ],
                 externalAccess: true,
             ),
@@ -43,7 +47,7 @@ class MainAfterTest extends TestCase
 
         $busBuilder->addAction(
             new Action(
-                id: 'RemovedActionFromBuilder',
+                id: 'NotRemovedActionFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
             ),
@@ -51,7 +55,7 @@ class MainAfterTest extends TestCase
 
         $busBuilder->addAction(
             new Action(
-                id: 'SubscribedActionFromBuilder',
+                id: 'TriggeredActionFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
             ),
@@ -60,23 +64,25 @@ class MainAfterTest extends TestCase
         $busBuilder->addTrigger(
             new Trigger(
                 subjectId: 'ActionFromBuilder',
-                actionId: 'RemovedActionFromBuilder',
+                actionId: 'NotRemovedActionFromBuilder',
             ),
         );
 
         $busBuilder->addTrigger(
             new Trigger(
-                subjectId: 'RemovedActionFromBuilder',
-                actionId: 'SubscribedActionFromBuilder',
+                subjectId: 'NotRemovedActionFromBuilder',
+                actionId: 'TriggeredActionFromBuilder',
             ),
         );
 
         $bus = $busBuilder->build();
         $bus->run();
 
-        $this->assertFalse($bus->resultIsExists('ActionFromBuilder'));
-        $this->assertFalse($bus->resultIsExists('RemovedActionFromBuilder'));
-        $this->assertFalse($bus->resultIsExists('SubscribedActionFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('NotRemovedActionFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('TriggeredActionFromBuilder'));
+        $this->assertFalse($bus->resultIsExists('RemovableAction'));
+        $this->assertFalse($bus->resultIsExists('RemovableHeldAction'));
     }
 
     #[Test]
@@ -217,13 +223,51 @@ class MainAfterStateHandlerWithRemoveAction implements MainAfterStateHandlerInte
     #[Override]
     public function handle(StateMainAfterService $stateService, StateContext $context): void
     {
-        $action = $stateService->getById('RemovedActionFromBuilder');
+        $action = $stateService->getById('NotRemovedActionFromBuilder');
         if ($stateService->resultIsExists($action->id)) {
-            $stateService->removeAction('RemovedActionFromBuilder');
+            $stateService->removeAction('NotRemovedActionFromBuilder');
         }
+
+        $stateService->removeAction('RemovableAction');
+        $stateService->removeAction('RemovableHeldAction');
 
         $stateService->addSharedService(
             new \Duyler\EventBus\Build\SharedService(class: $action::class, service: $action),
+        );
+    }
+
+    #[Override]
+    public function observed(StateContext $context): array
+    {
+        return ['ActionFromBuilder'];
+    }
+}
+
+class MainAfterStateHandlerWithAddDynamicAction implements MainAfterStateHandlerInterface
+{
+    #[Override]
+    public function handle(StateMainAfterService $stateService, StateContext $context): void
+    {
+        $stateService->addAction(
+            new Action(
+                id: 'RemovableAction',
+                handler: function () {},
+            ),
+        );
+
+        $stateService->doAction(
+            new Action(
+                id: 'RemovableHeldAction',
+                handler: function () {},
+                required: ['RemovableAction'],
+            ),
+        );
+
+        $stateService->addTrigger(
+            new Trigger(
+                subjectId: 'ActionFromBuilder',
+                actionId: 'RemovableAction',
+            ),
         );
     }
 

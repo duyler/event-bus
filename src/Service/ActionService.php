@@ -48,6 +48,14 @@ readonly class ActionService
 
     public function addAction(Action $action): void
     {
+        $this->validateAction($action);
+
+        $this->actionRequiredMap->create($action);
+        $this->actionStorage->save($action);
+    }
+
+    private function validateAction(Action $action): void
+    {
         if ($this->actionStorage->isExists($action->id)) {
             throw new ActionAlreadyDefinedException($action->id);
         }
@@ -74,14 +82,13 @@ readonly class ActionService
                 $this->throwEventNotDefined($eventId, $action->id);
             }
         }
-
-        $this->actionRequiredMap->create($action);
-        $this->actionStorage->save($action);
     }
 
     public function doAction(Action $action): void
     {
-        $this->addAction($action);
+        $this->validateAction($action);
+        $this->actionRequiredMap->create($action);
+        $this->actionStorage->save($action);
 
         $this->bus->doAction($action);
     }
@@ -191,14 +198,19 @@ readonly class ActionService
 
     public function addDynamicAction(Action $action): void
     {
-        $this->addAction($action);
+        $this->validateAction($action);
+
+        $this->actionRequiredMap->create($action);
+        $this->actionStorage->save($action);
         $this->actionStorage->saveDynamic($action);
     }
 
     public function doDynamicAction(Action $action): void
     {
-        $this->addAction($action);
+        $this->validateAction($action);
 
+        $this->actionRequiredMap->create($action);
+        $this->actionStorage->save($action);
         $this->actionStorage->saveDynamic($action);
 
         $this->bus->doAction($action);
@@ -206,7 +218,12 @@ readonly class ActionService
 
     public function removeAction(string $actionId): void
     {
+        if (false === $this->actionStorage->isExistsDynamic($actionId)) {
+            return;
+        }
+
         $requiredMap = $this->actionRequiredMap->get($actionId);
+        $this->actionRequiredMap->remove($actionId);
 
         $tasks = $this->taskStorage->getAllByActionId($actionId);
 
@@ -239,16 +256,12 @@ readonly class ActionService
 
         foreach ($successTriggers as $successTrigger) {
             $this->triggerStorage->remove($successTrigger);
-            $this->removeAction($successTrigger->actionId);
-            $this->removeAction($successTrigger->subjectId);
         }
 
         $failTriggers = $this->triggerStorage->getTriggers($actionId, ResultStatus::Fail);
 
         foreach ($failTriggers as $failTrigger) {
             $this->triggerStorage->remove($failTrigger);
-            $this->removeAction($failTrigger->actionId);
-            $this->removeAction($failTrigger->subjectId);
         }
     }
 }
