@@ -46,14 +46,6 @@ readonly class ActionService
         private TaskQueue $taskQueue,
     ) {}
 
-    public function addAction(Action $action): void
-    {
-        $this->validateAction($action);
-
-        $this->actionRequiredMap->create($action);
-        $this->actionStorage->save($action);
-    }
-
     private function validateAction(Action $action): void
     {
         if ($this->actionStorage->isExists($action->id)) {
@@ -82,15 +74,6 @@ readonly class ActionService
                 $this->throwEventNotDefined($eventId, $action->id);
             }
         }
-    }
-
-    public function doAction(Action $action): void
-    {
-        $this->validateAction($action);
-        $this->actionRequiredMap->create($action);
-        $this->actionStorage->save($action);
-
-        $this->bus->doAction($action);
     }
 
     public function doExistsAction(string $actionId): void
