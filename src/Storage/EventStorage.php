@@ -11,8 +11,17 @@ class EventStorage
     /** @var array<string, Event> */
     private array $events = [];
 
+    /** @var array<string, Event> */
+    private array $dynamic = [];
+
     public function save(Event $event): void
     {
+        $this->events[$event->id] = $event;
+    }
+
+    public function saveDynamic(Event $event): void
+    {
+        $this->dynamic[$event->id] = $event;
         $this->events[$event->id] = $event;
     }
 
@@ -29,5 +38,18 @@ class EventStorage
     public function has(string $eventId): bool
     {
         return isset($this->events[$eventId]);
+    }
+
+    public function removeDynamic(string $eventId): void
+    {
+        if (array_key_exists($eventId, $this->dynamic)) {
+            unset($this->events[$eventId]);
+            unset($this->dynamic[$eventId]);
+        }
+    }
+
+    public function getAllDynamic(): array
+    {
+        return $this->dynamic;
     }
 }

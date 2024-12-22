@@ -7,6 +7,8 @@ namespace Duyler\EventBus;
 use Duyler\EventBus\Internal\Event\BusIsResetEvent;
 use Duyler\EventBus\Internal\Event\EventRemovedEvent;
 use Duyler\EventBus\Internal\Event\TaskQueueIsEmptyEvent;
+use Duyler\EventBus\Internal\Event\TaskUnresolvedEvent;
+use Duyler\EventBus\Internal\Listener\Bus\CleanByLimitEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResetBusEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveActionsAfterEventDeletedEventListener;
 use Duyler\DI\Definition;
@@ -31,11 +33,12 @@ use Duyler\EventBus\Internal\Event\TaskSuspendedEvent;
 use Duyler\EventBus\Internal\Event\ThrowExceptionEvent;
 use Duyler\EventBus\Internal\Event\EventDispatchedEvent;
 use Duyler\EventBus\Internal\EventDispatcher;
-use Duyler\EventBus\Internal\Listener\Bus\CompleteActionEventListener;
+use Duyler\EventBus\Internal\Listener\Bus\AfterCompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\DispatchEventEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\LogCompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveHeldTasksEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveTriggersEventListener;
+use Duyler\EventBus\Internal\Listener\Bus\SaveCompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\TerminateAfterExceptionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\TerminateBusEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ValidateCompleteActionEventListener;
@@ -50,6 +53,7 @@ use Duyler\EventBus\Internal\Listener\State\StateMainEmptyListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainEndEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainResumeEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateMainSuspendEventListener;
+use Duyler\EventBus\Internal\Listener\State\StateMainUnresolvedEventListener;
 use Duyler\EventBus\Internal\ListenerProvider;
 use Duyler\EventBus\State\StateAction;
 use Duyler\EventBus\State\StateMain;
@@ -76,6 +80,8 @@ class BusConfig
         public readonly int $logMaxSize = 50,
         public readonly Mode $mode = Mode::Queue,
         public readonly bool $continueAfterException = false,
+        public readonly int $maxCountCompleteActions = 0,
+        public readonly int $maxCountEvents = 0,
     ) {
         $this->bind = $this->getBind() + $bind;
     }
@@ -116,7 +122,9 @@ class BusConfig
                 StateMainSuspendEventListener::class,
             ],
             TaskAfterRunEvent::class => [
-                CompleteActionEventListener::class,
+                SaveCompleteActionEventListener::class,
+                CleanByLimitEventListener::class,
+                AfterCompleteActionEventListener::class,
                 StateMainAfterEventListener::class,
                 ResolveTriggersEventListener::class,
                 LogCompleteActionEventListener::class,
@@ -125,6 +133,9 @@ class BusConfig
             ],
             TaskQueueIsEmptyEvent::class => [
                 StateMainEmptyListener::class,
+            ],
+            TaskUnresolvedEvent::class => [
+                StateMainUnresolvedEventListener::class,
             ],
             ActionBeforeRunEvent::class => [
                 StateActionBeforeEventListener::class,

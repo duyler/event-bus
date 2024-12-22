@@ -6,7 +6,6 @@ namespace Duyler\EventBus\Test\Functional\State;
 
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Build\Context;
-use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\ActionBeforeStateHandlerInterface;
@@ -73,24 +72,6 @@ class ActionBeforeStateHandler implements ActionBeforeStateHandlerInterface
     public function observed(StateContext $context): array
     {
         return ['Test', TestAction::TestArgumentReturn];
-    }
-}
-
-class ActionBeforeThrowsStateHandler implements ActionBeforeStateHandlerInterface
-{
-    #[Override]
-    public function handle(StateActionBeforeService $stateService, StateContext $context): void
-    {
-        $stateService->removeTrigger(new Trigger(
-            subjectId: 'TestNotExists',
-            actionId: 'Test',
-        ));
-    }
-
-    #[Override]
-    public function observed(StateContext $context): array
-    {
-        return [];
     }
 }
 

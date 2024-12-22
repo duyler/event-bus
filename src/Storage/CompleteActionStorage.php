@@ -56,4 +56,9 @@ class CompleteActionStorage
     {
         $this->data = [];
     }
+
+    public function remove(string $actionId): void
+    {
+        unset($this->data[$actionId]);
+    }
 }

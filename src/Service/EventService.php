@@ -76,12 +76,12 @@ class EventService
 
     public function addEvent(Event $event): void
     {
-        $this->eventStorage->save($event);
+        $this->eventStorage->saveDynamic($event);
     }
 
     public function removeEvent(string $eventId): void
     {
-        $this->eventStorage->remove($eventId);
+        $this->eventStorage->removeDynamic($eventId);
         $this->eventDispatcher->dispatch(
             new EventRemovedEvent($eventId),
         );

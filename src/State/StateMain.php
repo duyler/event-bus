@@ -6,6 +6,7 @@ namespace Duyler\EventBus\State;
 
 use Duyler\EventBus\Bus\Task;
 use Duyler\EventBus\State\Service\StateMainEmptyService;
+use Duyler\EventBus\State\Service\StateMainUnresolvedService;
 use Duyler\EventBus\Storage\ActionContainerStorage;
 use Duyler\EventBus\Contract\State\StateHandlerObservedInterface;
 use Duyler\EventBus\Contract\StateMainInterface;
@@ -206,6 +207,26 @@ readonly class StateMain implements StateMainInterface
         }
 
         $this->contextScope->cleanUp();
+    }
+
+    #[Override]
+    public function unresolved(Task $task): void
+    {
+        $stateService = new StateMainUnresolvedService(
+            $this->resultService,
+            $this->logService,
+            $this->rollbackService,
+            $this->actionService,
+            $this->queueService,
+            $task,
+        );
+
+        foreach ($this->stateHandlerStorage->getMainUnresolved() as $handler) {
+            $context = $this->contextScope->getContext($handler::class);
+            if ($this->isObserved($handler, $task, $context)) {
+                $handler->handle($stateService, $context);
+            }
+        }
     }
 
     private function isObserved(StateHandlerObservedInterface $handler, Task $task, StateContext $context): bool

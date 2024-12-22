@@ -11,11 +11,13 @@ use Duyler\EventBus\Enum\Mode;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Enum\TaskStatus;
 use Duyler\EventBus\Exception\UnableToContinueWithFailActionException;
+use Duyler\EventBus\Internal\Event\TaskUnresolvedEvent;
 use Duyler\EventBus\Storage\ActionStorage;
 use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\TaskStorage;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 use function count;
 
@@ -41,6 +43,7 @@ final class Bus
         private readonly BusConfig $config,
         private readonly EventRelationStorage $eventRelationStorage,
         private readonly TaskStorage $taskStorage,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 
     public function doAction(Action $action): void
@@ -178,6 +181,8 @@ final class Bus
                 }
             }
 
+            $this->eventDispatcher->dispatch(new TaskUnresolvedEvent($task));
+
             if ($this->config->allowSkipUnresolvedActions) {
                 unset($this->heldTasks[$task->getId()]);
                 return false;
@@ -275,6 +280,11 @@ final class Bus
         $task->setRetryTimestamp($retryTimestamp);
         $task->setStatus(TaskStatus::Retry);
         return $task;
+    }
+
+    public function removeHeldTask(string $taskId): void
+    {
+        unset($this->heldTasks[$taskId]);
     }
 
     public function reset(): void
