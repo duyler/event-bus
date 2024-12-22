@@ -42,8 +42,6 @@ final readonly class CleanByLimitEventListener
             $firstCompleteActionId = array_key_first($completeActions);
             $firstCompleteAction = $completeActions[$firstCompleteActionId];
             $this->actionService->removeAction($firstCompleteAction->action->id);
-            $this->completeActionStorage->remove($firstCompleteAction->action->id);
-            $this->eventRelationStorage->removeByActionId($firstCompleteAction->action->id);
         }
     }
 

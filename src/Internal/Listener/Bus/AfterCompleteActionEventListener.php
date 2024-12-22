@@ -19,6 +19,10 @@ final class AfterCompleteActionEventListener
 
     public function __invoke(TaskAfterRunEvent $event): void
     {
+        if (false === $this->completeActionStorage->isExists(($event->task->action->id))) {
+            return;
+        }
+
         $completeAction = $this->completeActionStorage->get($event->task->action->id);
 
         $this->bus->afterCompleteAction($completeAction);
