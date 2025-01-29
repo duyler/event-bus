@@ -21,6 +21,7 @@ use Duyler\EventBus\Exception\ActionNotDefinedException;
 use Duyler\EventBus\Exception\CannotRequirePrivateActionException;
 use Duyler\EventBus\Exception\EventNotDefinedException;
 use Duyler\EventBus\Exception\NotAllowedSealedActionException;
+use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Storage\ActionContainerStorage;
 use Duyler\EventBus\Storage\ActionStorage;
 use Duyler\EventBus\Storage\CompleteActionStorage;
@@ -221,6 +222,8 @@ readonly class ActionService
                 $this->bus->removeHeldTask($task->getId());
             }
         }
+
+        IdFormatter::remove($actionId);
 
         foreach ($requiredMap as $subject) {
             $this->removeAction($subject->id);

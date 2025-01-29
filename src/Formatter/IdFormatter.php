@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Formatter;
 
+use Duyler\DI\Attribute\Finalize;
 use UnitEnum;
 
+#[Finalize]
 final class IdFormatter
 {
     public const string DELIMITER = '::';
@@ -33,5 +35,15 @@ final class IdFormatter
     public static function reverse(string $id): string|UnitEnum
     {
         return self::$idMap[$id] ?? $id;
+    }
+
+    public static function remove(string $id): void
+    {
+        unset(self::$idMap[$id]);
+    }
+
+    public function finalize(): void
+    {
+        self::$idMap = [];
     }
 }
