@@ -9,6 +9,7 @@ use Duyler\EventBus\Build\Context;
 use Duyler\EventBus\Build\Event;
 use Duyler\EventBus\Build\SharedService;
 use Duyler\EventBus\Build\Trigger;
+use Duyler\EventBus\Bus\State;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
 use Duyler\EventBus\Exception\TriggerAlreadyDefinedException;
@@ -102,7 +103,9 @@ class BusBuilder
             $stateService->addStateContext($context);
         }
 
-        $termination = new Termination($container);
+        /** @var State $state */
+        $state = $container->get(State::class);
+        $termination = new Termination($container, $state);
         $container->set($termination);
 
         /** @var ListenerProvider $listenerProvider */
