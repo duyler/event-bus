@@ -8,17 +8,14 @@ use Duyler\DI\ContainerInterface;
 use Duyler\EventBus\Bus\State;
 use Duyler\EventBus\Dto\Log as LogDto;
 
-class Termination
+final class Termination
 {
-    private State $state;
     private ?LogDto $logDto = null;
 
     public function __construct(
         private ContainerInterface $container,
-    ) {
-        /** @var State */
-        $this->state = $this->container->get(State::class);
-    }
+        private State $state,
+    ) {}
 
     public function run(): void
     {
