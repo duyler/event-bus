@@ -12,6 +12,7 @@ use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
 use Duyler\EventBus\Exception\TriggerAlreadyDefinedException;
+use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Internal\ListenerProvider;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\EventService;
@@ -62,6 +63,8 @@ class BusBuilder
         $container = new Container($containerConfig);
         $container->set($this->config);
         $container->bind($this->config->bind);
+
+        $container->get(IdFormatter::class);
 
         /** @var ActionService $actionService */
         $actionService = $container->get(ActionService::class);
