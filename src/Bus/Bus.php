@@ -172,7 +172,6 @@ final class Bus
         }
 
         if (count($failActions) > count($replacedActions)) {
-
             foreach ($failActions as $failAction) {
                 foreach ($this->alternates[$failAction->action->id] as $alternate) {
                     if ($this->taskQueue->inQueue($alternate)) {
