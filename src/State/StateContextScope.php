@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State;
 
+use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\Build\Context;
 
+#[Finalize]
 class StateContextScope
 {
     private StateContext $commonContext;
@@ -32,7 +34,7 @@ class StateContextScope
         }
     }
 
-    public function cleanUp(): void
+    public function finalize(): void
     {
         $this->contexts = [];
         $this->commonContext = new StateContext();
