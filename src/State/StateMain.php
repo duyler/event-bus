@@ -206,7 +206,7 @@ readonly class StateMain implements StateMainInterface
             $handler->handle($stateService, $this->contextScope->getContext($handler::class));
         }
 
-        $this->contextScope->cleanUp();
+        $this->contextScope->finalize();
     }
 
     #[Override]
