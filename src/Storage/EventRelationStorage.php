@@ -34,7 +34,10 @@ class EventRelationStorage
     {
         $this->data[$actionId][$eventId] ?? throw new RuntimeException('Event relation for action ' . $actionId . ' not found');
 
-        return array_shift($this->data[$actionId][$eventId]);
+        /** @var EventRelation $eventRelation */
+        $eventRelation = array_shift($this->data[$actionId][$eventId]);
+
+        return $eventRelation;
     }
 
     public function getLast(string $eventId): EventRelation

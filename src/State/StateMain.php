@@ -39,7 +39,7 @@ readonly class StateMain implements StateMainInterface
         private ResultService $resultService,
         private RollbackService $rollbackService,
         private TriggerService $triggerService,
-        private StateSuspendContext $context,
+        private StateSuspendContext $suspendContext,
         private EventService $eventService,
         private StateContextScope $contextScope,
         private QueueService $queueService,
@@ -109,7 +109,7 @@ readonly class StateMain implements StateMainInterface
             $this->triggerService,
         );
 
-        $this->context->addSuspend($task->action->id, $suspend);
+        $this->suspendContext->addSuspend($task->action->id, $suspend);
 
         foreach ($handlers as $handler) {
             $context = $this->contextScope->getContext($handler::class);
@@ -124,7 +124,7 @@ readonly class StateMain implements StateMainInterface
     {
         $handlers = $this->stateHandlerStorage->getMainResume();
 
-        $suspend = $this->context->getSuspend($task->action->id);
+        $suspend = $this->suspendContext->getSuspend($task->action->id);
 
         $stateService = new StateMainResumeService(
             $suspend,

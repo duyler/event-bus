@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State;
 
-class StateSuspendContext
+use Duyler\DI\Attribute\Finalize;
+
+#[Finalize]
+final class StateSuspendContext
 {
     /** @var array<string, Suspend[]> */
     private array $suspend = [];
@@ -16,6 +19,14 @@ class StateSuspendContext
 
     public function getSuspend(string $actionId): Suspend
     {
-        return array_shift($this->suspend[$actionId]);
+        /** @var Suspend $suspend */
+        $suspend = array_shift($this->suspend[$actionId]);
+
+        return $suspend;
+    }
+
+    public function finalize(): void
+    {
+        $this->suspend = [];
     }
 }
