@@ -8,6 +8,7 @@ use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Exception\ActionNotDefinedException;
 use RecursiveIterator;
 use RecursiveIteratorIterator;
+use Override;
 
 /** @extends RecursiveIteratorIterator<RecursiveIterator> */
 final class ActionRequiredIterator extends RecursiveIteratorIterator
@@ -22,6 +23,7 @@ final class ActionRequiredIterator extends RecursiveIteratorIterator
         parent::__construct($iterator, self::CHILD_FIRST);
     }
 
+    #[Override]
     public function callHasChildren(): bool
     {
         /** @var string $current */
@@ -34,6 +36,7 @@ final class ActionRequiredIterator extends RecursiveIteratorIterator
         return 0 < $this->actions[$current]->required->count();
     }
 
+    #[Override]
     public function callGetChildren(): ?RecursiveIterator
     {
         /** @var string $current */

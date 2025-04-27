@@ -40,7 +40,8 @@ final readonly class Action
         public ?string $argument = null,
         /** @var class-string|Closure|null */
         public string|Closure|null $argumentFactory = null,
-        public ?string $contract = null,
+        /** @var class-string|null */
+        public string|null $contract = null,
         public bool $immutable = false,
         public string|Closure|null $rollback = null,
         public bool $externalAccess = true,
@@ -63,7 +64,8 @@ final readonly class Action
                     throw new InvalidArgumentException('Type of ' . $this->contract . ' it should not be an interface');
                 }
 
-                $reflectionContract = new ReflectionClass($this->contract);
+                /** @var class-string $contract */
+                $reflectionContract = new ReflectionClass($contract);
                 if (false === $reflectionContract->isReadOnly()) {
                     throw new InvalidArgumentException('Type ' . $this->contract . ' must be read only class');
                 }
