@@ -79,17 +79,17 @@ final class Task
         $resultData = $this->fiber?->getReturn();
 
         if ($resultData instanceof Result) {
-            if (null === $this->action->contract && null !== $resultData->data) {
+            if (null === $this->action->type && null !== $resultData->data) {
                 throw new ActionReturnValueExistsException($this->action->id);
             }
 
-            if (null !== $resultData->data && false === $resultData->data instanceof $this->action->contract) {
-                throw new DataMustBeCompatibleWithContractException($this->action->id, $this->action->contract);
+            if (null !== $resultData->data && false === $resultData->data instanceof $this->action->type) {
+                throw new DataMustBeCompatibleWithContractException($this->action->id, $this->action->type);
             }
 
-            if (null !== $this->action->contract && null === $resultData->data) {
+            if (null !== $this->action->type && null === $resultData->data) {
                 if (ResultStatus::Success === $resultData->status) {
-                    throw new DataForContractNotReceivedException($this->action->id, $this->action->contract);
+                    throw new DataForContractNotReceivedException($this->action->id, $this->action->type);
                 }
             }
 
@@ -101,19 +101,19 @@ final class Task
                 throw new ActionReturnValueMustBeTypeObjectException($this->action->id, $resultData);
             }
 
-            if (null === $this->action->contract) {
+            if (null === $this->action->type) {
                 throw new ActionReturnValueExistsException($this->action->id);
             }
 
-            if (false === $resultData instanceof $this->action->contract) {
-                throw new DataMustBeCompatibleWithContractException($this->action->id, $this->action->contract);
+            if (false === $resultData instanceof $this->action->type) {
+                throw new DataMustBeCompatibleWithContractException($this->action->id, $this->action->type);
             }
 
             return Result::success($resultData);
         }
 
-        if (null !== $this->action->contract) {
-            throw new DataForContractNotReceivedException($this->action->id, $this->action->contract);
+        if (null !== $this->action->type) {
+            throw new DataForContractNotReceivedException($this->action->id, $this->action->type);
         }
 
         return Result::success();

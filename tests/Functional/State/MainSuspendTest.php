@@ -36,7 +36,8 @@ class MainSuspendTest extends TestCase
 
                     return $data;
                 },
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );
@@ -71,7 +72,8 @@ class MainSuspendTest extends TestCase
 
                     return $data;
                 },
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );
@@ -88,7 +90,8 @@ class MainSuspendTest extends TestCase
                     return $data;
                 },
                 required: ['TestSuspend1'],
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );

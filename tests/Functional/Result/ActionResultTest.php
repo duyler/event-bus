@@ -44,7 +44,8 @@ class ActionResultTest extends TestCase
             new Action(
                 id: 'Test',
                 handler: fn() => Result::success(),
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );
@@ -84,7 +85,8 @@ class ActionResultTest extends TestCase
             new Action(
                 id: 'TestAction',
                 handler: fn() => new class {},
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
             ),
         );
 

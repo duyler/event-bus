@@ -12,18 +12,18 @@ final class FactoryContext extends BaseContext
     public function __construct(
         private string $actionId,
         private ActionContainer $actionContainer,
-        /** @var array<string, object> */
+        /** @var array<string, mixed> */
         private array $context = [],
     ) {
         parent::__construct($this->actionContainer);
     }
 
-    public function contract(string $contract): object
+    public function type(string $type): mixed
     {
-        if (false === array_key_exists($contract, $this->context)) {
+        if (false === array_key_exists($type, $this->context)) {
             throw new LogicException('Addressing an invalid context from ' . $this->actionId);
         }
 
-        return $this->context[$contract];
+        return $this->context[$type];
     }
 }

@@ -41,8 +41,8 @@ final readonly class Action
         /** @var class-string|Closure|null */
         public string|Closure|null $argumentFactory = null,
         /** @var class-string|null */
-        public string|null $contract = null,
-        public bool $immutable = false,
+        public string|null $type = null,
+        public bool $immutable = true,
         public string|Closure|null $rollback = null,
         public bool $externalAccess = true,
         public bool $repeatable = false,
@@ -59,15 +59,15 @@ final readonly class Action
         public array $labels = [],
     ) {
         if ($this->immutable) {
-            if (null !== $this->contract) {
-                if (interface_exists($this->contract)) {
-                    throw new InvalidArgumentException('Type of ' . $this->contract . ' it should not be an interface');
+            if (null !== $this->type) {
+                if (interface_exists($this->type)) {
+                    throw new InvalidArgumentException('Type of ' . $this->type . ' it should not be an interface');
                 }
 
-                /** @var class-string $contract */
-                $reflectionContract = new ReflectionClass($contract);
+                /** @var class-string $type */
+                $reflectionContract = new ReflectionClass($type);
                 if (false === $reflectionContract->isReadOnly()) {
-                    throw new InvalidArgumentException('Type ' . $this->contract . ' must be read only class');
+                    throw new InvalidArgumentException('Type ' . $this->type . ' must be read only class');
                 }
             }
         }

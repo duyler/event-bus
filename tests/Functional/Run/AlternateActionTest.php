@@ -34,7 +34,8 @@ class AlternateActionTest extends TestCase
                 id: 'RequiredAction',
                 handler: fn() => Result::fail(),
                 required: [],
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
                 alternates: [
                     'AlternateRequiredAction',
@@ -46,7 +47,8 @@ class AlternateActionTest extends TestCase
             new Action(
                 id: 'AlternateRequiredAction',
                 handler: fn() => new stdClass(),
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );
@@ -76,7 +78,8 @@ class AlternateActionTest extends TestCase
                 id: 'RequiredAction',
                 handler: fn() => Result::fail(),
                 required: [],
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
                 alternates: [
                     'AlternateRequiredAction',
@@ -88,7 +91,8 @@ class AlternateActionTest extends TestCase
             new Action(
                 id: 'AlternateRequiredAction',
                 handler: fn() => Result::fail(),
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );
@@ -120,7 +124,8 @@ class AlternateActionTest extends TestCase
                 id: 'RequiredAction',
                 handler: fn() => Result::fail(),
                 required: [],
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
                 alternates: [
                     'AlternateRequiredAction',
@@ -132,7 +137,8 @@ class AlternateActionTest extends TestCase
             new Action(
                 id: 'AlternateRequiredAction',
                 handler: fn() => Result::fail(),
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
                 retries: 3,
             ),
@@ -162,7 +168,8 @@ class AlternateActionTest extends TestCase
             new Action(
                 id: 'RequiredAction',
                 handler: fn() => Result::fail(),
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
                 alternates: [
                     'AlternateRequiredAction',
@@ -175,7 +182,8 @@ class AlternateActionTest extends TestCase
             new Action(
                 id: 'AlternateRequiredAction',
                 handler: fn() => new stdClass(),
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );

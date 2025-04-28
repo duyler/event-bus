@@ -39,8 +39,8 @@ class ActionHandlerArgumentBuilder
             foreach ($action->listen as $eventId) {
                 $eventDto = $this->eventRelationStorage->shift($action->id, $eventId)->event;
                 $event = $this->eventStorage->get($eventDto->id);
-                if (null !== $eventDto->data && null !== $event && null !== $event->contract) {
-                    $results[$event->contract] = $eventDto->data;
+                if (null !== $eventDto->data && null !== $event && null !== $event->type) {
+                    $results[$event->type] = $eventDto->data;
                 }
             }
         }
@@ -125,7 +125,7 @@ class ActionHandlerArgumentBuilder
     {
         $results = [];
 
-        if (ResultStatus::Fail === $completeAction->result->status && null !== $completeAction->action->contract) {
+        if (ResultStatus::Fail === $completeAction->result->status && null !== $completeAction->action->type) {
             $alternatesActions = $this->completeActionStorage->getAllByArray($completeAction->action->alternates);
 
             foreach ($alternatesActions as $alternateAction) {
@@ -134,15 +134,15 @@ class ActionHandlerArgumentBuilder
                         continue;
                     }
 
-                    $results[$completeAction->action->contract] = $alternateAction->result->data;
+                    $results[$completeAction->action->type] = $alternateAction->result->data;
 
                     return $results;
                 }
             }
         }
 
-        if (null !== $completeAction->result->data && null !== $completeAction->action->contract) {
-            $results[$completeAction->action->contract] = $completeAction->result->data;
+        if (null !== $completeAction->result->data && null !== $completeAction->action->type) {
+            $results[$completeAction->action->type] = $completeAction->result->data;
         }
 
         return $results;

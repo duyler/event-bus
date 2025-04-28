@@ -39,16 +39,16 @@ class EventService
         }
 
         if (null !== $eventDto->data) {
-            if (null === $event->contract) {
+            if (null === $event->type) {
                 throw new ContractForDataNotReceivedException($eventDto->id);
             }
 
-            if (false === $eventDto->data instanceof $event->contract) {
-                throw new DataMustBeCompatibleWithContractException($eventDto->id, $event->contract);
+            if (false === $eventDto->data instanceof $event->type) {
+                throw new DataMustBeCompatibleWithContractException($eventDto->id, $event->type);
             }
         } else {
-            if (null !== $event->contract) {
-                throw new DataForContractNotReceivedException($eventDto->id, $event->contract);
+            if (null !== $event->type) {
+                throw new DataForContractNotReceivedException($eventDto->id, $event->type);
             }
         }
 

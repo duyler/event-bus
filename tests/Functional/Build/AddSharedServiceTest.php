@@ -32,7 +32,8 @@ class AddSharedServiceTest extends TestCase
             new Action(
                 id: 'Test',
                 handler: Handler::class,
-                contract: SharedInterface::class,
+                type: SharedInterface::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );
@@ -63,7 +64,7 @@ class AddSharedServiceTest extends TestCase
             new Action(
                 id: 'Test',
                 handler: Handler::class,
-                contract: SharedInterface::class,
+                type: SharedInterface::class,
                 externalAccess: true,
             ),
         );

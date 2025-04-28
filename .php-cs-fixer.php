@@ -6,7 +6,7 @@ $finder = (new PhpCsFixer\Finder())
 
 return (new PhpCsFixer\Config())
     ->setRules([
-        '@PER' => true,
+        '@PER-CS' => true,
         'no_unused_imports' => true,
         'type_declaration_spaces' => true,
         'array_syntax' => ['syntax' => 'short'],

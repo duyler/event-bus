@@ -115,7 +115,7 @@ class EventTest extends TestCase
             ),
         );
 
-        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent', type: stdClass::class, immutable: false));
 
         $bus = $builder->build();
         $bus->dispatchEvent(
@@ -142,7 +142,8 @@ class EventTest extends TestCase
                 handler: fn(ActionContext $context) => $context->argument(),
                 listen: ['TestEvent'],
                 argument: stdClass::class,
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );
@@ -157,7 +158,7 @@ class EventTest extends TestCase
             ),
         );
 
-        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent', type: stdClass::class, immutable: false));
 
         $bus = $builder->build();
         $bus->dispatchEvent(
@@ -187,7 +188,8 @@ class EventTest extends TestCase
                 handler: fn(stdClass $data) => $data,
                 listen: ['TestEvent'],
                 argument: stdClass::class,
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );
@@ -210,7 +212,7 @@ class EventTest extends TestCase
             ),
         );
 
-        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent', type: stdClass::class, immutable: false));
 
         $bus = $builder->build();
 
@@ -235,7 +237,7 @@ class EventTest extends TestCase
             ),
         );
 
-        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent', type: stdClass::class, immutable: false));
 
         $bus = $builder->build();
 
@@ -290,7 +292,7 @@ class EventTest extends TestCase
             ),
         );
 
-        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent', contract: stdClass::class));
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent', type: stdClass::class, immutable: false));
 
         $bus = $builder->build();
 

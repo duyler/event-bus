@@ -45,7 +45,8 @@ class GetResultTest extends TestCase
             new Action(
                 id: 'Test',
                 handler: fn() => new stdClass(),
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );
