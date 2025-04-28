@@ -19,7 +19,8 @@ class ActionStorageTest extends TestCase
         $action = new Action(
             id: 'test',
             handler: 'test',
-            contract: 'test',
+            type: 'test',
+            immutable: false,
         );
         $this->actionStorage->save($action);
 

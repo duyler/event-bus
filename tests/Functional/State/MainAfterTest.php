@@ -184,7 +184,8 @@ class MainAfterTest extends TestCase
             new Action(
                 id: 'ActionWithContract',
                 handler: fn(): stdClass =>  new stdClass(),
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );
@@ -207,7 +208,8 @@ class MainAfterTest extends TestCase
             new Action(
                 id: 'ActionFromBuilder',
                 handler: fn(): stdClass => new stdClass(),
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );

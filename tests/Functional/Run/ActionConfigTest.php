@@ -25,7 +25,8 @@ class ActionConfigTest extends TestCase
                 bind: [
                     TestInterface::class => NeedleClass::class,
                 ],
-                contract: TestInterface::class,
+                type: TestInterface::class,
+                immutable: false,
             ),
         );
 
@@ -47,7 +48,8 @@ class ActionConfigTest extends TestCase
                 providers: [
                     TestInterface::class => TestProvider::class,
                 ],
-                contract: TestInterface::class,
+                type: TestInterface::class,
+                immutable: false,
             ),
         );
 
@@ -75,7 +77,8 @@ class ActionConfigTest extends TestCase
                         'value' => 'DefValue',
                     ],
                 ],
-                contract: TestInterface::class,
+                type: TestInterface::class,
+                immutable: false,
             ),
         );
 
@@ -105,7 +108,8 @@ class ActionConfigTest extends TestCase
                         'value' => 'DefValue',
                     ],
                 ],
-                contract: TestInterface::class,
+                type: TestInterface::class,
+                immutable: false,
             ),
         );
 

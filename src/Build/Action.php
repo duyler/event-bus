@@ -7,7 +7,9 @@ namespace Duyler\EventBus\Build;
 use Closure;
 use DateInterval;
 use Duyler\EventBus\Formatter\IdFormatter;
+use InvalidArgumentException;
 use RecursiveArrayIterator;
+use ReflectionClass;
 use UnitEnum;
 
 final readonly class Action
@@ -38,7 +40,9 @@ final readonly class Action
         public ?string $argument = null,
         /** @var class-string|Closure|null */
         public string|Closure|null $argumentFactory = null,
-        public ?string $contract = null,
+        /** @var class-string|null */
+        public string|null $type = null,
+        public bool $immutable = true,
         public string|Closure|null $rollback = null,
         public bool $externalAccess = true,
         public bool $repeatable = false,
@@ -54,6 +58,20 @@ final readonly class Action
         /** @var array<string|int, mixed> */
         public array $labels = [],
     ) {
+        if ($this->immutable) {
+            if (null !== $this->type) {
+                if (interface_exists($this->type)) {
+                    throw new InvalidArgumentException('Type of ' . $this->type . ' it should not be an interface');
+                }
+
+                /** @var class-string $type */
+                $reflectionContract = new ReflectionClass($type);
+                if (false === $reflectionContract->isReadOnly()) {
+                    throw new InvalidArgumentException('Type ' . $this->type . ' must be read only class');
+                }
+            }
+        }
+
         $this->id = IdFormatter::toString($id);
 
         $this->required = new RecursiveArrayIterator();

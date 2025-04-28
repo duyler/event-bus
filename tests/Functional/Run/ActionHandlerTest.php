@@ -67,7 +67,7 @@ class ActionHandlerTest extends TestCase
                 handler: function (ActionContext $context) {
                     return $context->call(fn(TestContract $testContract) => $testContract);
                 },
-                contract: TestContract::class,
+                type: TestContract::class,
             ),
         );
 
@@ -88,7 +88,8 @@ class ActionHandlerTest extends TestCase
                     'TestDep',
                 ],
                 argument: TestContract::class,
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
             ),
         );
 

@@ -28,8 +28,8 @@ class ActionStorage
 
     public function save(Action $action): void
     {
-        if (null !== $action->contract) {
-            $this->byContract[$action->contract][$action->id] = $action;
+        if (null !== $action->type) {
+            $this->byContract[$action->type][$action->id] = $action;
         }
 
         foreach ($action->listen as $eventId) {

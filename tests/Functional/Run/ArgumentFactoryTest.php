@@ -27,7 +27,7 @@ class ArgumentFactoryTest extends TestCase
                 new Action(
                     id: 'TestArgumentFactoryAction',
                     handler: fn() => new TestArgumentContract('Hello'),
-                    contract: TestArgumentContract::class,
+                    type: TestArgumentContract::class,
                     externalAccess: true,
                 ),
             )
@@ -44,9 +44,9 @@ class ArgumentFactoryTest extends TestCase
                                 return $text;
                             },
                         );
-                        return new TestArgument($context->contract(TestArgumentContract::class)->seyHello . $text->name);
+                        return new TestArgument($context->type(TestArgumentContract::class)->seyHello . $text->name);
                     },
-                    contract: TestArgument::class,
+                    type: TestArgument::class,
                     externalAccess: true,
                 ),
             );
@@ -69,7 +69,7 @@ class ArgumentFactoryTest extends TestCase
                     handler: fn(ActionContext $context) => $context->argument(),
                     argument: TestArgument::class,
                     argumentFactory: function (FactoryContext $context) {
-                        $contract = $context->contract(TestArgumentContract::class);
+                        $contract = $context->type(TestArgumentContract::class);
                         $text = $context->call(
                             function (stdClass $text) {
                                 $text->name = ' Duyler!';
@@ -78,7 +78,7 @@ class ArgumentFactoryTest extends TestCase
                         );
                         return new TestArgument('Hello, ' . $text->name);
                     },
-                    contract: TestArgument::class,
+                    type: TestArgument::class,
                     externalAccess: true,
                 ),
             );
@@ -99,7 +99,7 @@ class ArgumentFactoryTest extends TestCase
                 new Action(
                     id: 'TestArgumentFactoryAction',
                     handler: fn() => new TestArgumentContract('Hello'),
-                    contract: TestArgumentContract::class,
+                    type: TestArgumentContract::class,
                     externalAccess: true,
                 ),
             )
@@ -110,7 +110,7 @@ class ArgumentFactoryTest extends TestCase
                     required: ['TestArgumentFactoryAction'],
                     argument: TestArgument::class,
                     argumentFactory: ArgumentFactory::class,
-                    contract: TestArgument::class,
+                    type: TestArgument::class,
                     externalAccess: true,
                 ),
             );
@@ -131,7 +131,7 @@ class ArgumentFactoryTest extends TestCase
                 new Action(
                     id: 'TestArgumentFactoryAction',
                     handler: fn() => new TestArgumentContract('Hello'),
-                    contract: TestArgumentContract::class,
+                    type: TestArgumentContract::class,
                     externalAccess: true,
                 ),
             )
@@ -142,7 +142,7 @@ class ArgumentFactoryTest extends TestCase
                     required: ['TestArgumentFactoryAction'],
                     argument: TestArgument::class,
                     argumentFactory: stdClass::class,
-                    contract: TestArgument::class,
+                    type: TestArgument::class,
                     externalAccess: true,
                 ),
             );

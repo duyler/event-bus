@@ -38,7 +38,8 @@ class ActionBeforeTest extends TestCase
             new Action(
                 id: TestAction::TestArgumentReturn,
                 handler: fn(): stdClass => new stdClass(),
-                contract: stdClass::class,
+                type: stdClass::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );

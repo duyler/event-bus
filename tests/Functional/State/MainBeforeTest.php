@@ -79,7 +79,8 @@ class MainBeforeTest extends TestCase
             new Action(
                 id: TestActionEnum::ActionFromBuilder_1,
                 handler: fn(): ResultInterface => new class implements ResultInterface {},
-                contract: ResultInterface::class,
+                type: ResultInterface::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );
@@ -88,7 +89,8 @@ class MainBeforeTest extends TestCase
             new Action(
                 id: TestActionEnum::ActionFromBuilder_2,
                 handler: fn(): ResultInterface => new class implements ResultInterface {},
-                contract: ResultInterface::class,
+                type: ResultInterface::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );
@@ -120,7 +122,8 @@ class MainBeforeTest extends TestCase
             new Action(
                 id: 'RequiredAction',
                 handler: fn(): ResultInterface => new class implements ResultInterface {},
-                contract: ResultInterface::class,
+                type: ResultInterface::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );
@@ -132,7 +135,8 @@ class MainBeforeTest extends TestCase
                     'RequiredAction',
                 ],
                 argument: ResultInterface::class,
-                contract: ResultInterface::class,
+                type: ResultInterface::class,
+                immutable: false,
                 externalAccess: true,
             ),
         );
