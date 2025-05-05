@@ -66,3 +66,8 @@ jobs:
 
       - name: Run Psalm
         run: vendor/bin/psalm --shepherd
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
