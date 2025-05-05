@@ -30,7 +30,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           ini-values: date.timezone='UTC'
-          coverage: pcov
+          coverage: xdebug
           tools: composer:v2
 
       - name: Determine composer cache directory
@@ -69,20 +69,5 @@ jobs:
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-          files: ./coverage.xml
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-
-#      name: SonarQube
-#      runs-on: ubuntu-latest
-#      steps:
-#        - uses: actions/checkout@v4
-#          with:
-#            fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-#        - name: SonarQube Scan
-#          uses: SonarSource/sonarqube-scan-action@v5
-#          env:
-#            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
