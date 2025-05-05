@@ -36,4 +36,4 @@ class ResultTest extends TestCase
         $this->assertEquals(ResultStatus::Fail, $result->status);
         $this->assertNull($result->data);
     }
-} 
+}
