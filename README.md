@@ -1,5 +1,6 @@
 # Event Bus
 
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=duyler_event-bus&metric=coverage)](https://sonarcloud.io/summary/new_code?id=duyler_event-bus)
 [![type-coverage](https://shepherd.dev/github/duyler/event-bus/coverage.svg)](https://shepherd.dev/github/duyler/event-bus)
 [![psalm-level](https://shepherd.dev/github/duyler/event-bus/level.svg)](https://shepherd.dev/github/duyler/event-bus)
 [![codecov](https://codecov.io/gh/duyler/event-bus/graph/badge.svg?token=Z60T9EMXD6)](https://codecov.io/gh/duyler/event-bus)
