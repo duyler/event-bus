@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Test\Unit;
 
 use Duyler\EventBus\Build\Trigger;
-use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Exception\ActionNotAllowExternalAccessException;
 use Duyler\EventBus\Exception\ActionNotDefinedException;
 use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
@@ -131,4 +130,4 @@ class ExceptionTest extends TestCase
         $this->expectExceptionMessage('Action A cannot be sealed to B');
         throw new NotAllowedSealedActionException('A', 'B');
     }
-} 
+}
