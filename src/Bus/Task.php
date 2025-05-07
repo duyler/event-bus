@@ -127,14 +127,15 @@ final class Task
         }
 
         if (null !== $resultData) {
-            $this->assertObjectContract($resultData);
-            return Result::success($resultData);
+            return Result::success($this->assertObjectContract($resultData));
         }
 
         if (null !== $this->action->type || null !== $this->action->typeCollection) {
+            /** @var string $contract */
+            $contract = $this->action->typeCollection ?? $this->action->type;
             throw new DataForContractNotReceivedException(
                 $this->action->id,
-                    $this->action->typeCollection ?? $this->action->type,
+                $contract,
             );
         }
 
@@ -152,10 +153,9 @@ final class Task
             || null !== $this->action->typeCollection
             && false === $result->data instanceof $this->action->typeCollection
         ) {
-            throw new DataMustBeCompatibleWithContractException(
-                $this->action->id,
-                $this->action->typeCollection ?? $this->action->type,
-            );
+            /** @var string $contract */
+            $contract = $this->action->typeCollection ?? $this->action->type;
+            $this->throwDataMustBeCompatibleWithContractException($this->action->id, $contract);
         }
 
         if (null !== $this->action->type && null === $result->data && ResultStatus::Success === $result->status) {
@@ -163,7 +163,7 @@ final class Task
         }
     }
 
-    private function assertObjectContract(mixed $resultData): void
+    private function assertObjectContract(mixed $resultData): object
     {
         if (false === is_object($resultData)) {
             throw new ActionReturnValueMustBeTypeObjectException($this->action->id, $resultData);
@@ -177,10 +177,16 @@ final class Task
             || null !== $this->action->typeCollection
             && false === $resultData instanceof $this->action->typeCollection
         ) {
-            throw new DataMustBeCompatibleWithContractException(
-                $this->action->id,
-                $this->action->typeCollection ?? $this->action->type,
-            );
+            /** @var string $contract */
+            $contract = $this->action->typeCollection ?? $this->action->type;
+            $this->throwDataMustBeCompatibleWithContractException($this->action->id, $contract);
         }
+
+        return $resultData;
+    }
+
+    private function throwDataMustBeCompatibleWithContractException(string $actionId, string $contract): never
+    {
+        throw new DataMustBeCompatibleWithContractException($actionId, $contract);
     }
 }
