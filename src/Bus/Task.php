@@ -38,13 +38,7 @@ final class Task
     public function run(ActionRunnerInterface $actionRunner): void
     {
         $this->runner = $actionRunner;
-        $this->fiber = new Fiber($actionRunner->getCallback());
-        $this->value = $this->fiber->start();
-    }
-
-    public function isRejected(): bool
-    {
-        return $this->isRejected;
+        $this->startFiber($actionRunner->getCallback());
     }
 
     public function reject(): void
@@ -54,69 +48,27 @@ final class Task
 
     public function retry(): void
     {
-        $this->fiber = new Fiber($this->runner?->getCallback() ?? throw new LogicException('Runner is not initialized'));
-        $this->value = $this->fiber->start();
+        if (!$this->runner) {
+            throw new LogicException('Runner is not initialized');
+        }
+        $this->startFiber($this->runner->getCallback());
     }
 
     public function isRunning(): bool
     {
-        return $this->fiber && $this->fiber->isSuspended();
+        return $this->fiber?->isSuspended() ?? false;
     }
 
     public function resume(mixed $data = null): void
     {
-        $this->value = $this->fiber?->resume($data);
+        if ($this->fiber) {
+            $this->value = $this->fiber->resume($data);
+        }
     }
 
     public function getResult(): Result
     {
-        return $this->result ?? $this->result = $this->prepareResult();
-    }
-
-    // TODO Refactor
-    public function prepareResult(): Result
-    {
-        $resultData = $this->fiber?->getReturn();
-
-        if ($resultData instanceof Result) {
-            if (null === $this->action->type && null !== $resultData->data) {
-                throw new ActionReturnValueExistsException($this->action->id);
-            }
-
-            if (null !== $resultData->data && false === $resultData->data instanceof $this->action->type) {
-                throw new DataMustBeCompatibleWithContractException($this->action->id, $this->action->type);
-            }
-
-            if (null !== $this->action->type && null === $resultData->data) {
-                if (ResultStatus::Success === $resultData->status) {
-                    throw new DataForContractNotReceivedException($this->action->id, $this->action->type);
-                }
-            }
-
-            return $resultData;
-        }
-
-        if (null !== $resultData) {
-            if (false === is_object($resultData)) {
-                throw new ActionReturnValueMustBeTypeObjectException($this->action->id, $resultData);
-            }
-
-            if (null === $this->action->type) {
-                throw new ActionReturnValueExistsException($this->action->id);
-            }
-
-            if (false === $resultData instanceof $this->action->type) {
-                throw new DataMustBeCompatibleWithContractException($this->action->id, $this->action->type);
-            }
-
-            return Result::success($resultData);
-        }
-
-        if (null !== $this->action->type) {
-            throw new DataForContractNotReceivedException($this->action->id, $this->action->type);
-        }
-
-        return Result::success();
+        return $this->result ??= $this->prepareResult();
     }
 
     public function getValue(): mixed
@@ -149,8 +101,86 @@ final class Task
         return $this->runner;
     }
 
+    public function isRejected(): bool
+    {
+        return $this->isRejected;
+    }
+
     public function isReady(): bool
     {
-        return $this->retryTimestamp->format('Y-m-d H:i:s:u') <= (new DateTimeImmutable())->format('Y-m-d H:i:s:u');
+        return $this->retryTimestamp <= new DateTimeImmutable();
+    }
+
+    private function startFiber(callable $callback): void
+    {
+        $this->fiber = new Fiber($callback);
+        $this->value = $this->fiber->start();
+    }
+
+    private function prepareResult(): Result
+    {
+        $resultData = $this->fiber?->getReturn();
+
+        if ($resultData instanceof Result) {
+            $this->assertResultContract($resultData);
+            return $resultData;
+        }
+
+        if (null !== $resultData) {
+            $this->assertObjectContract($resultData);
+            return Result::success($resultData);
+        }
+
+        if (null !== $this->action->type || null !== $this->action->typeCollection) {
+            throw new DataForContractNotReceivedException(
+                $this->action->id,
+                    $this->action->typeCollection ?? $this->action->type,
+            );
+        }
+
+        return Result::success();
+    }
+
+    private function assertResultContract(Result $result): void
+    {
+        if (null === $this->action->type && null !== $result->data) {
+            throw new ActionReturnValueExistsException($this->action->id);
+        }
+
+        if (null !== $result->data
+            && false === $result->data instanceof $this->action->type
+            || null !== $this->action->typeCollection
+            && false === $result->data instanceof $this->action->typeCollection
+        ) {
+            throw new DataMustBeCompatibleWithContractException(
+                $this->action->id,
+                $this->action->typeCollection ?? $this->action->type,
+            );
+        }
+
+        if (null !== $this->action->type && null === $result->data && ResultStatus::Success === $result->status) {
+            throw new DataForContractNotReceivedException($this->action->id, $this->action->type);
+        }
+    }
+
+    private function assertObjectContract(mixed $resultData): void
+    {
+        if (false === is_object($resultData)) {
+            throw new ActionReturnValueMustBeTypeObjectException($this->action->id, $resultData);
+        }
+
+        if (null === $this->action->type) {
+            throw new ActionReturnValueExistsException($this->action->id);
+        }
+
+        if (false === $resultData instanceof $this->action->type
+            || null !== $this->action->typeCollection
+            && false === $resultData instanceof $this->action->typeCollection
+        ) {
+            throw new DataMustBeCompatibleWithContractException(
+                $this->action->id,
+                $this->action->typeCollection ?? $this->action->type,
+            );
+        }
     }
 }

@@ -42,6 +42,8 @@ final readonly class Action
         public string|Closure|null $argumentFactory = null,
         /** @var class-string|null */
         public string|null $type = null,
+        /** @var class-string|null */
+        public string|null $typeCollection = null,
         public bool $immutable = true,
         public string|Closure|null $rollback = null,
         public bool $externalAccess = true,
@@ -70,6 +72,10 @@ final readonly class Action
                     throw new InvalidArgumentException('Type ' . $this->type . ' must be read only class');
                 }
             }
+        }
+
+        if (null === $this->type && null !== $this->typeCollection) {
+            throw new InvalidArgumentException('Type not set for collection ' . $this->typeCollection);
         }
 
         $this->id = IdFormatter::toString($id);
