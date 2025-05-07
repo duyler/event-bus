@@ -133,10 +133,7 @@ final class Task
         if (null !== $this->action->type || null !== $this->action->typeCollection) {
             /** @var string $contract */
             $contract = $this->action->typeCollection ?? $this->action->type;
-            throw new DataForContractNotReceivedException(
-                $this->action->id,
-                $contract,
-            );
+            throw new DataForContractNotReceivedException($this->action->id, $contract);
         }
 
         return Result::success();
