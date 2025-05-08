@@ -188,7 +188,7 @@ class MainBeforeStateHandlerWithSubstituteActionRequiredResult implements MainBe
         $stateService->substituteResult(
             new ActionResultSubstitution(
                 actionId: $stateService->getActionId(),
-                requiredContract: ResultInterface::class,
+                requiredActionId: 'RequiredAction',
                 substitution: new NewResult('Value from substitute result'),
             ),
         );

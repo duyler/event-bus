@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Action\Context;
 
 use Duyler\EventBus\Bus\ActionContainer;
+use Duyler\EventBus\Formatter\IdFormatter;
 use LogicException;
+use UnitEnum;
 
 final class FactoryContext extends BaseContext
 {
@@ -18,12 +20,13 @@ final class FactoryContext extends BaseContext
         parent::__construct($this->actionContainer);
     }
 
-    public function type(string $type): mixed
+    public function getType(string|UnitEnum $actionId): mixed
     {
-        if (false === array_key_exists($type, $this->context)) {
+        $id = IdFormatter::toString($actionId);
+        if (false === array_key_exists($id, $this->context)) {
             throw new LogicException('Addressing an invalid context from ' . $this->actionId);
         }
 
-        return $this->context[$type];
+        return $this->context[$id];
     }
 }
