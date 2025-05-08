@@ -147,8 +147,10 @@ final class Task
 
         $contract = $this->action->typeCollection ?? $this->action->type;
 
-        if (null !== $result->data && false === $result->data instanceof $contract) {
-            $this->throwDataMustBeCompatibleWithContractException($this->action->id, $contract);
+        if (null !== $contract) {
+            if (null !== $result->data && false === $result->data instanceof $contract) {
+                $this->throwDataMustBeCompatibleWithContractException($this->action->id, $contract);
+            }
         }
 
         if (null !== $this->action->type && null === $result->data && ResultStatus::Success === $result->status) {
