@@ -145,14 +145,12 @@ final class Task
             throw new ActionReturnValueExistsException($this->action->id);
         }
 
-        if (null !== $result->data
-            && false === $result->data instanceof $this->action->type
-            || null !== $this->action->typeCollection
-            && false === $result->data instanceof $this->action->typeCollection
-        ) {
-            /** @var string $contract */
-            $contract = $this->action->typeCollection ?? $this->action->type;
-            $this->throwDataMustBeCompatibleWithContractException($this->action->id, $contract);
+        $contract = $this->action->typeCollection ?? $this->action->type;
+
+        if (null !== $contract) {
+            if (null !== $result->data && false === $result->data instanceof $contract) {
+                $this->throwDataMustBeCompatibleWithContractException($this->action->id, $contract);
+            }
         }
 
         if (null !== $this->action->type && null === $result->data && ResultStatus::Success === $result->status) {
@@ -170,12 +168,9 @@ final class Task
             throw new ActionReturnValueExistsException($this->action->id);
         }
 
-        if (false === $resultData instanceof $this->action->type
-            || null !== $this->action->typeCollection
-            && false === $resultData instanceof $this->action->typeCollection
-        ) {
-            /** @var string $contract */
-            $contract = $this->action->typeCollection ?? $this->action->type;
+        $contract = $this->action->typeCollection ?? $this->action->type;
+
+        if (false === $resultData instanceof $contract) {
             $this->throwDataMustBeCompatibleWithContractException($this->action->id, $contract);
         }
 

@@ -10,12 +10,14 @@ use UnitEnum;
 final readonly class ActionResultSubstitution
 {
     public string $actionId;
+    public string $requiredActionId;
 
     public function __construct(
         string|UnitEnum $actionId,
-        public string $requiredContract,
+        string|UnitEnum $requiredActionId,
         public object $substitution,
     ) {
         $this->actionId = IdFormatter::toString($actionId);
+        $this->requiredActionId = IdFormatter::toString($requiredActionId);
     }
 }

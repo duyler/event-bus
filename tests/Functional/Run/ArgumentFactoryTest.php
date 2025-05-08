@@ -6,10 +6,10 @@ namespace Duyler\EventBus\Test\Functional\Run;
 
 use Duyler\EventBus\Action\Context\ActionContext;
 use Duyler\EventBus\Action\Context\FactoryContext;
+use Duyler\EventBus\Action\Exception\InvalidArgumentFactoryException;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
-use InvalidArgumentException;
 use LogicException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -44,7 +44,7 @@ class ArgumentFactoryTest extends TestCase
                                 return $text;
                             },
                         );
-                        return new TestArgument($context->type(TestArgumentContract::class)->seyHello . $text->name);
+                        return new TestArgument($context->getType('TestArgumentFactoryAction')->seyHello . $text->name);
                     },
                     type: TestArgument::class,
                     externalAccess: true,
@@ -69,7 +69,7 @@ class ArgumentFactoryTest extends TestCase
                     handler: fn(ActionContext $context) => $context->argument(),
                     argument: TestArgument::class,
                     argumentFactory: function (FactoryContext $context) {
-                        $contract = $context->type(TestArgumentContract::class);
+                        $contract = $context->getType(TestArgumentContract::class);
                         $text = $context->call(
                             function (stdClass $text) {
                                 $text->name = ' Duyler!';
@@ -147,7 +147,7 @@ class ArgumentFactoryTest extends TestCase
                 ),
             );
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentFactoryException::class);
 
         $bus = $builder->build()->run();
     }
@@ -165,8 +165,9 @@ readonly class TestArgumentContract
 
 class ArgumentFactory
 {
-    public function __invoke(TestArgumentContract $contract)
+    public function __invoke(FactoryContext $context): TestArgument
     {
+        $contract = $context->getType('TestArgumentFactoryAction');
         return new TestArgument($contract->seyHello . ' Duyler! With class factory');
     }
 }

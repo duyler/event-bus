@@ -14,12 +14,7 @@ use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\EventStorage;
-use InvalidArgumentException;
 use LogicException;
-use ReflectionClass;
-use ReflectionException;
-use ReflectionFunctionAbstract;
-use ReflectionNamedType;
 
 class ActionHandlerArgumentBuilder
 {
@@ -40,7 +35,7 @@ class ActionHandlerArgumentBuilder
                 $eventDto = $this->eventRelationStorage->shift($action->id, $eventId)->event;
                 $event = $this->eventStorage->get($eventDto->id);
                 if (null !== $eventDto->data && null !== $event && null !== $event->type) {
-                    $results[$event->type] = $eventDto->data;
+                    $results[$event->id] = $eventDto->data;
                 }
             }
         }
@@ -53,10 +48,7 @@ class ActionHandlerArgumentBuilder
 
         if ($this->actionSubstitution->isSubstituteResult($action->id)) {
             $actionResultSubstitution = $this->actionSubstitution->getSubstituteResult($action->id);
-            $substitution = [
-                $actionResultSubstitution->requiredContract => $actionResultSubstitution->substitution,
-            ];
-            $results = $substitution + $results;
+            $results[$actionResultSubstitution->requiredActionId] = $actionResultSubstitution->substitution;
         }
 
         if (null === $action->argument) {
@@ -90,23 +82,23 @@ class ActionHandlerArgumentBuilder
 
         $factory = $action->argumentFactory;
 
+        $factoryContext = new FactoryContext(
+            $action->id,
+            $container,
+            $results,
+        );
+
         if (is_callable($factory)) {
             /** @var object $argument */
-            $argument = $factory(new FactoryContext(
-                $action->id,
-                $container,
-                $results,
-            ));
+            $argument = $factory($factoryContext);
         } else {
-            /** @var class-string $factoryClass */
-            $factoryClass = $action->argumentFactory;
-            $factoryArguments = $this->buildFactoryArguments($factoryClass, $results);
             $factory = $container->get($factory);
+
             if (!is_callable($factory)) {
                 throw new InvalidArgumentFactoryException($action->argument);
             }
             /** @var object $argument */
-            $argument = $factory(...$factoryArguments);
+            $argument = $factory($factoryContext);
         }
 
         if (is_callable($action->handler)) {
@@ -134,7 +126,7 @@ class ActionHandlerArgumentBuilder
                         continue;
                     }
 
-                    $results[$completeAction->action->type] = $alternateAction->result->data;
+                    $results[$completeAction->action->id] = $alternateAction->result->data;
 
                     return $results;
                 }
@@ -142,60 +134,9 @@ class ActionHandlerArgumentBuilder
         }
 
         if (null !== $completeAction->result->data && null !== $completeAction->action->type) {
-            $results[$completeAction->action->type] = $completeAction->result->data;
+            $results[$completeAction->action->id] = $completeAction->result->data;
         }
 
         return $results;
-    }
-
-    /**
-     * @param array<string, object> $arguments
-     * @param class-string $factory
-     * @throws ReflectionException
-     */
-    private function buildFactoryArguments(string $factory, array $arguments = []): array
-    {
-        $reflection = new ReflectionClass($factory);
-        $methodReflection = null;
-        foreach ($reflection->getMethods() as $method) {
-            if ('__invoke' === $method->getName()) {
-                $methodReflection = $method;
-                break;
-            }
-        }
-
-        if (null === $methodReflection) {
-            throw new InvalidArgumentException('Method __invoke not found in ' . $factory);
-        }
-
-        return $this->matchArguments($methodReflection, $arguments);
-    }
-
-    /** @param array<string, object> $arguments */
-    private function matchArguments(ReflectionFunctionAbstract $reflection, array $arguments = []): array
-    {
-        $params = $reflection->getParameters();
-
-        if (empty($params)) {
-            return [];
-        }
-
-        $result = [];
-
-        foreach ($params as $param) {
-            /** @var ReflectionNamedType|null $paramType */
-            $paramType = $param->getType();
-
-            if (null === $paramType) {
-                throw new InvalidArgumentException('Type hint not set for ' . $param->getName());
-            }
-
-            $className = $paramType->getName();
-
-            $result[$param->getName()] = $arguments[$className]
-                ?? throw new InvalidArgumentException('Contract not found for ' . $className);
-        }
-
-        return $result;
     }
 }
