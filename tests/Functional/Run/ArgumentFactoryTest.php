@@ -10,7 +10,6 @@ use Duyler\EventBus\Action\Exception\InvalidArgumentFactoryException;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
-use InvalidArgumentException;
 use LogicException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
