@@ -14,7 +14,6 @@ use Duyler\EventBus\Exception\CircularCallActionException;
 use Duyler\EventBus\State\Service\StateMainCyclicService;
 use Duyler\EventBus\State\StateContext;
 use Duyler\EventBus\Test\Functional\State\Support\ResetBusStateHandler;
-use Fiber;
 use Override;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -120,8 +119,8 @@ class MainCyclicStateHandlerWithRepeatableEvent implements MainCyclicStateHandle
         $stateService->addAction(
             new Action(
                 id: 'ActionFromHandler',
-                handler: function (): void {
-                    Fiber::suspend();
+                handler: function (): mixed {
+                    yield;
                 },
                 listen: ['EventFromHandler'],
                 externalAccess: true,

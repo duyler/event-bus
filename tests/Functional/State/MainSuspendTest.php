@@ -14,7 +14,6 @@ use Duyler\EventBus\State\Service\StateMainResumeService;
 use Duyler\EventBus\State\Service\StateMainSuspendService;
 use Duyler\EventBus\State\StateContext;
 use Duyler\EventBus\State\Suspend;
-use Fiber;
 use Override;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -32,7 +31,8 @@ class MainSuspendTest extends TestCase
                 id: 'TestSuspend',
                 handler: function () {
                     $data = new stdClass();
-                    $data->hello = Fiber::suspend(fn() => 'Hello') . ', World!';
+                    $data->hello = yield fn() => 'Hello';
+                    $data->hello = $data->hello . ', World!';
 
                     return $data;
                 },
@@ -65,7 +65,7 @@ class MainSuspendTest extends TestCase
             new Action(
                 id: 'TestSuspend1',
                 handler: function () {
-                    $callback = Fiber::suspend(fn() => 'Hello');
+                    $callback = yield fn() => 'Hello';
                     $result = $callback();
                     $data = new stdClass();
                     $data->hello = $result;
@@ -82,7 +82,7 @@ class MainSuspendTest extends TestCase
             new Action(
                 id: 'TestSuspend2',
                 handler: function () {
-                    $callback = Fiber::suspend(fn() => 'Hello');
+                    $callback = yield fn() => 'Hello';
                     $result = $callback();
                     $data = new stdClass();
                     $data->hello = $result;
