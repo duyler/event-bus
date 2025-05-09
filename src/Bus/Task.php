@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
+use Closure;
 use DateTimeImmutable;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Contract\ActionRunnerInterface;
@@ -14,13 +15,13 @@ use Duyler\EventBus\Exception\ActionReturnValueExistsException;
 use Duyler\EventBus\Exception\ActionReturnValueMustBeTypeObjectException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
-use Fiber;
+use Generator;
 use LogicException;
 
 final class Task
 {
     private mixed $value = null;
-    private ?Fiber $fiber = null;
+    private ?Generator $generator = null;
     private TaskStatus $status = TaskStatus::Primary;
     private ?ActionRunnerInterface $runner = null;
     private ?Result $result = null;
@@ -38,7 +39,7 @@ final class Task
     public function run(ActionRunnerInterface $actionRunner): void
     {
         $this->runner = $actionRunner;
-        $this->startFiber($actionRunner->getCallback());
+        $this->startGenerator($actionRunner->getCallback());
     }
 
     public function reject(): void
@@ -51,18 +52,18 @@ final class Task
         if (!$this->runner) {
             throw new LogicException('Runner is not initialized');
         }
-        $this->startFiber($this->runner->getCallback());
+        $this->startGenerator($this->runner->getCallback());
     }
 
     public function isRunning(): bool
     {
-        return $this->fiber?->isSuspended() ?? false;
+        return $this->generator?->valid() ?? false;
     }
 
     public function resume(mixed $data = null): void
     {
-        if ($this->fiber) {
-            $this->value = $this->fiber->resume($data);
+        if ($this->generator) {
+            $this->value = $this->generator->send($data);
         }
     }
 
@@ -111,15 +112,28 @@ final class Task
         return $this->retryTimestamp <= new DateTimeImmutable();
     }
 
-    private function startFiber(callable $callback): void
+    private function startGenerator(Closure $callback): void
     {
-        $this->fiber = new Fiber($callback);
-        $this->value = $this->fiber->start();
+        $generator = function (Closure $callback): mixed {
+            yield;
+
+            $result = $callback();
+
+            if ($result instanceof Generator) {
+                $this->generator = $result;
+                $this->value = $result->current();
+            }
+
+            return $result;
+        };
+
+        $this->generator = $generator($callback);
+        $this->generator->next();
     }
 
     private function prepareResult(): Result
     {
-        $resultData = $this->fiber?->getReturn();
+        $resultData = $this->generator?->getReturn();
 
         if ($resultData instanceof Result) {
             $this->assertResultContract($resultData);
