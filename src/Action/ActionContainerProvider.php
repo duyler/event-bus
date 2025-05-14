@@ -110,6 +110,18 @@ class ActionContainerProvider
             throw new InvalidArgumentException('Service must be an instance of ' . $sharedService->class);
         }
 
+        /** @var ActionContainer $actionContainer */
+        foreach ($this->containerStorage->getAll() as $actionContainer) {
+            if (false === $actionContainer->has($sharedService->class)) {
+                $actionContainer->bind($sharedService->bind);
+                $actionContainer->addProviders($sharedService->providers);
+
+                /** @var object $service */
+                $service = $sharedService->service ?? $actionContainer->get($sharedService->class);
+                $actionContainer->set($service);
+            }
+        }
+
         $this->sharedServices[$sharedService->class] = $sharedService;
     }
 }
