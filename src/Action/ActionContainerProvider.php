@@ -14,6 +14,7 @@ use Duyler\DI\ContainerInterface;
 use Duyler\DI\Definition;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Container\ContainerInterface as PsrContainerInterface;
 
 class ActionContainerProvider
 {
@@ -63,6 +64,11 @@ class ActionContainerProvider
         $actionContainer->bind($action->bind);
         $actionContainer->addProviders($action->providers);
         $actionClassMap = $actionContainer->getClassMap();
+
+        $actionContainer->set($actionContainer);
+        $actionContainer->bind([
+            PsrContainerInterface::class => ActionContainer::class,
+        ]);
 
         foreach ($this->sharedServices as $sharedService) {
             $container = new Container();
