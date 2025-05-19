@@ -12,6 +12,7 @@ use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\Bus\State;
 use Duyler\EventBus\Channel\Channel;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
+use Duyler\EventBus\Dispatcher\Dispatcher;
 use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
 use Duyler\EventBus\Exception\TriggerAlreadyDefinedException;
 use Duyler\EventBus\Formatter\IdFormatter;
@@ -119,6 +120,7 @@ class BusBuilder
         }
 
         $container->get(Channel::class);
+        $container->get(Dispatcher::class);
 
         /** @var BusInterface $bus */
         $bus = $container->get(Bus::class);

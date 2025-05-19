@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Unit\Action;
 
-use Duyler\EventBus\Action\ActionEventDispatcher;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Duyler\EventBus\Action\ActionContainerProvider;
@@ -21,18 +20,15 @@ class ActionContainerProviderTest extends TestCase
     private BusConfig $config;
     private ActionContainerStorage $containerStorage;
     private ActionContainerProvider $provider;
-    private ActionEventDispatcher $dispatcher;
 
     protected function setUp(): void
     {
         $this->config = new BusConfig();
 
         $this->containerStorage = $this->createMock(ActionContainerStorage::class);
-        $this->dispatcher = $this->createMock(ActionEventDispatcher::class);
         $this->provider = new ActionContainerProvider(
             $this->config,
             $this->containerStorage,
-            $this->dispatcher,
         );
     }
 
