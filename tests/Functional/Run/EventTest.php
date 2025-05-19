@@ -8,6 +8,7 @@ use Duyler\EventBus\Action\Context\ActionContext;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Dispatcher\Dispatcher;
 use Duyler\EventBus\Dto\Event;
 use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
@@ -324,5 +325,39 @@ class EventTest extends TestCase
         $this->expectException(EventNotDefinedException::class);
 
         $builder->build();
+    }
+
+    #[Test]
+    public function run_with_dispatch_event_from_action(): void
+    {
+        $builder = new BusBuilder(new BusConfig());
+        $builder->doAction(
+            new Action(
+                id: 'ForEventAction',
+                handler: function () {
+                    Dispatcher::dispatch(new Event(
+                        id: 'TestEvent',
+                    ));
+                },
+            ),
+        );
+
+        $builder->addAction(
+            new Action(
+                id: 'ForEventListenAction',
+                handler: function () {},
+                listen: ['TestEvent'],
+            ),
+        );
+
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent'));
+
+        $bus = $builder->build();
+
+        $bus->run();
+
+        $this->assertTrue($bus->resultIsExists('ForEventAction'));
+        $this->assertTrue($bus->resultIsExists('TestEvent'));
+        $this->assertTrue($bus->resultIsExists('ForEventListenAction'));
     }
 }
