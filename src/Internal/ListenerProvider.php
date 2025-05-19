@@ -13,7 +13,7 @@ class ListenerProvider implements ListenerProviderInterface
     private array $listeners = [];
 
     #[Override]
-    public function getListenersForEvent(object $event): iterable
+    public function getListenersForEvent(object $event): array
     {
         return $this->listeners[$event::class] ?? [];
     }
