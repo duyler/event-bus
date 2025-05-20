@@ -160,6 +160,11 @@ readonly class StateMain implements StateMainInterface
             return;
         }
 
+        if (null === $suspend->value) {
+            $task->resume();
+            return;
+        }
+
         if (is_callable($suspend->value)) {
             $task->resume(($suspend->value)());
         } else {

@@ -247,4 +247,44 @@ class ChannelTest extends TestCase
         $this->assertEquals(null, $bus->getResult('ListenChannel')->data->messageOne);
         $this->assertEquals(null, $bus->getResult('ListenChannel')->data->messageTwo);
     }
+
+    #[Test]
+    public function with_null_suspend_value(): void
+    {
+        $busBuilder = new BusBuilder(new BusConfig());
+        $busBuilder->doAction(
+            new Action(
+                id: 'ListenChannel',
+                handler: function () {
+
+                    $type = new stdClass();
+                    $type->message = Channel::read()
+                        ->listen('SendToChannel');
+
+                    return $type;
+                },
+                required: [
+                    'SendToChannel',
+                ],
+                type: stdClass::class,
+                immutable: false,
+            ),
+        );
+
+        $busBuilder->addAction(
+            new Action(
+                id: 'SendToChannel',
+                handler: function () {
+                    Fiber::suspend();
+                },
+            ),
+        );
+
+        $bus = $busBuilder->build();
+        $bus->run();
+
+        $this->assertTrue($bus->resultIsExists('ListenChannel'));
+        $this->assertTrue($bus->resultIsExists('SendToChannel'));
+        $this->assertEquals(null, $bus->getResult('ListenChannel')->data->message);
+    }
 }
