@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Action;
 
 use Duyler\EventBus\Action\Context\ActionContext;
+use Duyler\EventBus\Action\Context\CustomContextInterface;
 use Duyler\EventBus\Action\Context\FactoryContext;
 use Duyler\EventBus\Action\Exception\InvalidArgumentFactoryException;
 use Duyler\EventBus\Build\Action;
@@ -14,7 +15,9 @@ use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\EventStorage;
+use InvalidArgumentException;
 use LogicException;
+use ReflectionClass;
 
 class ActionHandlerArgumentBuilder
 {
@@ -53,8 +56,8 @@ class ActionHandlerArgumentBuilder
 
         if (null === $action->argument) {
             if (is_callable($action->handler)) {
-                return new ActionContext(
-                    $action->id,
+                return $this->createContext(
+                    $action,
                     $container,
                     null,
                 );
@@ -66,8 +69,8 @@ class ActionHandlerArgumentBuilder
             foreach ($results as $definition) {
                 if ($definition instanceof $action->argument) {
                     if (is_callable($action->handler)) {
-                        return new ActionContext(
-                            $action->id,
+                        return $this->createContext(
+                            $action,
                             $container,
                             $definition,
                         );
@@ -102,8 +105,8 @@ class ActionHandlerArgumentBuilder
         }
 
         if (is_callable($action->handler)) {
-            return new ActionContext(
-                $action->id,
+            return $this->createContext(
+                $action,
                 $container,
                 $argument,
             );
@@ -138,5 +141,31 @@ class ActionHandlerArgumentBuilder
         }
 
         return $results;
+    }
+
+    private function createContext(
+        Action $action,
+        ActionContainer $container,
+        mixed $argument,
+    ): object {
+
+        $context = new ActionContext(
+            $action->id,
+            $container,
+            $argument,
+        );
+
+        if (null === $action->context) {
+            return $context;
+        }
+
+        $reflectionClass = new ReflectionClass($action->context);
+        $customContext = $reflectionClass->newInstance($context);
+
+        if (false === $customContext instanceof CustomContextInterface) {
+            throw new InvalidArgumentException('Custom context class must implement ' . CustomContextInterface::class);
+        }
+
+        return $customContext;
     }
 }
