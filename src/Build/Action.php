@@ -41,6 +41,8 @@ final readonly class Action
         /** @var class-string|Closure|null */
         public string|Closure|null $argumentFactory = null,
         /** @var class-string|null */
+        public string|Closure|null $context = null,
+        /** @var class-string|null */
         public string|null $type = null,
         /** @var class-string|null */
         public string|null $typeCollection = null,
