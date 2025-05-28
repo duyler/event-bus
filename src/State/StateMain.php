@@ -80,6 +80,7 @@ readonly class StateMain implements StateMainInterface
             $this->queueService,
             $this->actionService,
             $this->eventService,
+            $this->resultService,
             $this->eventDispatcher,
         );
 
