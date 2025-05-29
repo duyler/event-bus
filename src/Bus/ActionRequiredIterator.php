@@ -20,7 +20,7 @@ final class ActionRequiredIterator extends RecursiveIteratorIterator
     public function __construct(RecursiveIterator $iterator, array $actions)
     {
         $this->actions = $actions;
-        parent::__construct($iterator, self::CHILD_FIRST);
+        parent::__construct($iterator, self::SELF_FIRST);
     }
 
     #[Override]
