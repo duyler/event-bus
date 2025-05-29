@@ -19,6 +19,7 @@ use Duyler\EventBus\Enum\TaskStatus;
 use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
 use Duyler\EventBus\Exception\ActionNotDefinedException;
 use Duyler\EventBus\Exception\CannotRequirePrivateActionException;
+use Duyler\EventBus\Exception\CircularCallActionException;
 use Duyler\EventBus\Exception\EventNotDefinedException;
 use Duyler\EventBus\Exception\NotAllowedSealedActionException;
 use Duyler\EventBus\Formatter\IdFormatter;
@@ -146,6 +147,10 @@ readonly class ActionService
 
     private function checkRequiredAction(string $subject, Action $requiredAction): void
     {
+        if (in_array($subject, $requiredAction->required->getArrayCopy())) {
+            throw new CircularCallActionException($subject, $requiredAction->id);
+        }
+
         if ($requiredAction->private) {
             throw new CannotRequirePrivateActionException($subject, $requiredAction->id);
         }
