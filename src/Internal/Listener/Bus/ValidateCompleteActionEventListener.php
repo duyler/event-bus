@@ -11,8 +11,8 @@ use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
 class ValidateCompleteActionEventListener
 {
     public function __construct(
-        private Validator $validateService,
-        private CompleteActionStorage $completeActionStorage,
+        private readonly Validator $validateService,
+        private readonly CompleteActionStorage $completeActionStorage,
     ) {}
 
     public function __invoke(TaskAfterRunEvent $event): void

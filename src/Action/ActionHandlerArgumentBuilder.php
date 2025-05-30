@@ -22,10 +22,10 @@ use ReflectionClass;
 class ActionHandlerArgumentBuilder
 {
     public function __construct(
-        private CompleteActionStorage $completeActionStorage,
-        private ActionSubstitution $actionSubstitution,
-        private EventRelationStorage $eventRelationStorage,
-        private EventStorage $eventStorage,
+        private readonly CompleteActionStorage $completeActionStorage,
+        private readonly ActionSubstitution $actionSubstitution,
+        private readonly EventRelationStorage $eventRelationStorage,
+        private readonly EventStorage $eventStorage,
     ) {}
 
     public function build(Action $action, ActionContainer $container): object|null

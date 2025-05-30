@@ -12,8 +12,8 @@ use UnitEnum;
 final class FactoryContext extends BaseContext
 {
     public function __construct(
-        private string $actionId,
-        private ActionContainer $actionContainer,
+        private readonly string $actionId,
+        private readonly ActionContainer $actionContainer,
         /** @var array<string, mixed> */
         private array $context = [],
     ) {

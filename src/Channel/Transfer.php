@@ -7,7 +7,7 @@ namespace Duyler\EventBus\Channel;
 use Duyler\EventBus\Service\QueueService;
 use Duyler\EventBus\Storage\MessageStorage;
 
-final class Transfer
+final readonly class Transfer
 {
     public function __construct(
         private MessageStorage $messageStorage,

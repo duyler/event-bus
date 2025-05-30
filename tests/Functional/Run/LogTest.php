@@ -17,7 +17,7 @@ class LogTest extends TestCase
     public function getLog_without_autoreset()
     {
         $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->doAction(new Action(id: 'Test', handler: function () {}));
+        $busBuilder->doAction(new Action(id: 'Test', handler: function (): void {}));
         $bus = $busBuilder->build()->run();
         $bus->reset();
         $log = $bus->getLog();
@@ -32,7 +32,7 @@ class LogTest extends TestCase
     public function getLog_with_autoreset()
     {
         $busBuilder = new BusBuilder(new BusConfig(autoreset: true));
-        $busBuilder->doAction(new Action(id: 'Test', handler: function () {}));
+        $busBuilder->doAction(new Action(id: 'Test', handler: function (): void {}));
         $bus = $busBuilder->build()->run();
         $log = $bus->getLog();
 
@@ -58,10 +58,10 @@ class LogTest extends TestCase
                 logMaxSize: 3,
             ),
         );
-        $busBuilder->doAction(new Action(id: 'Test1', handler: function () {}));
-        $busBuilder->doAction(new Action(id: 'Test2', handler: function () {}));
-        $busBuilder->doAction(new Action(id: 'Test3', handler: function () {}, repeatable: true));
-        $busBuilder->doAction(new Action(id: 'Test4', handler: function () {}));
+        $busBuilder->doAction(new Action(id: 'Test1', handler: function (): void {}));
+        $busBuilder->doAction(new Action(id: 'Test2', handler: function (): void {}));
+        $busBuilder->doAction(new Action(id: 'Test3', handler: function (): void {}, repeatable: true));
+        $busBuilder->doAction(new Action(id: 'Test4', handler: function (): void {}));
 
         $busBuilder->addTrigger(
             new Trigger(

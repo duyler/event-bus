@@ -36,7 +36,7 @@ class CleanUpTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'ActionFromBuilder',
-                handler: function () {},
+                handler: function (): void {},
             ),
         );
 
@@ -70,7 +70,7 @@ class AddDynamicEventsAndActionsStateHandler implements MainBeginStateHandlerInt
         $stateService->addAction(
             new Action(
                 id: 'RemovableActionOne',
-                handler: function () {},
+                handler: function (): void {},
                 listen: [
                     'RemovableEventOne',
                 ],
@@ -80,7 +80,7 @@ class AddDynamicEventsAndActionsStateHandler implements MainBeginStateHandlerInt
         $stateService->addAction(
             new Action(
                 id: 'RemovableActionTwo',
-                handler: function () {},
+                handler: function (): void {},
                 required: [
                     'RemovableActionOne',
                 ],

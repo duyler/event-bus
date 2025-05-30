@@ -20,7 +20,7 @@ class CircularRequiredActionTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'StartAction',
-                handler: function () {},
+                handler: function (): void {},
                 required: ['RequiredChildren'],
             ),
         );
@@ -28,7 +28,7 @@ class CircularRequiredActionTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'RequiredChildren',
-                handler: function () {},
+                handler: function (): void {},
                 required: ['RequiredCircular'],
             ),
         );
@@ -36,7 +36,7 @@ class CircularRequiredActionTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'RequiredCircular',
-                handler: function () {},
+                handler: function (): void {},
                 required: ['StartAction'],
             ),
         );

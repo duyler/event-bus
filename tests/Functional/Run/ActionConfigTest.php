@@ -11,6 +11,7 @@ use Duyler\EventBus\BusConfig;
 use Duyler\DI\Provider\AbstractProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Override;
 
 class ActionConfigTest extends TestCase
 {
@@ -148,6 +149,7 @@ interface TestInterface {}
 
 class TestProvider extends AbstractProvider
 {
+    #[Override]
     public function bind(): array
     {
         return [TestInterface::class => NeedleClass::class];

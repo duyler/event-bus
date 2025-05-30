@@ -76,7 +76,7 @@ class StateHandlerStorage
             default => throw new InvalidArgumentException(
                 sprintf(
                     'State handler %s must be compatibility with %s',
-                    get_class($stateHandler),
+                    $stateHandler::class,
                     StateHandlerInterface::class,
                 ),
             ),

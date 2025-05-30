@@ -11,8 +11,8 @@ use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
 class LogCompleteActionEventListener
 {
     public function __construct(
-        private State $state,
-        private CompleteActionStorage $completeActionStorage,
+        private readonly State $state,
+        private readonly CompleteActionStorage $completeActionStorage,
     ) {}
 
     public function __invoke(TaskAfterRunEvent $event): void

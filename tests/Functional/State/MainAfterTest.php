@@ -253,14 +253,14 @@ class MainAfterStateHandlerWithAddDynamicAction implements MainAfterStateHandler
         $stateService->addAction(
             new Action(
                 id: 'RemovableAction',
-                handler: function () {},
+                handler: function (): void {},
             ),
         );
 
         $stateService->doAction(
             new Action(
                 id: 'RemovableHeldAction',
-                handler: function () {},
+                handler: function (): void {},
                 required: ['RemovableAction'],
             ),
         );
@@ -290,7 +290,7 @@ class MainAfterStateHandlerWithRollback implements MainAfterStateHandlerInterfac
         }
 
         if ($stateService->resultIsExists('ActionFromBuilder')) {
-            $stateService->rollbackWithoutException(1);
+            $stateService->rollbackWithoutException();
         }
 
         if ($stateService->resultIsExists('ActionWithContract')) {

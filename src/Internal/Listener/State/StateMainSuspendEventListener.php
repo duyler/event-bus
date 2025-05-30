@@ -11,8 +11,8 @@ use Duyler\EventBus\Internal\Event\TaskSuspendedEvent;
 class StateMainSuspendEventListener
 {
     public function __construct(
-        private StateMainInterface $stateMain,
-        private State $state,
+        private readonly StateMainInterface $stateMain,
+        private readonly State $state,
     ) {}
 
     public function __invoke(TaskSuspendedEvent $event): void

@@ -18,7 +18,7 @@ use Duyler\EventBus\Internal\Event\TaskResumeEvent;
 use Duyler\EventBus\Internal\Event\TaskSuspendedEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
-final class DoWhile
+final readonly class DoWhile
 {
     public function __construct(
         private ActionRunnerProviderInterface $actionRunnerProvider,

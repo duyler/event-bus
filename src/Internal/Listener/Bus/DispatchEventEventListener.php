@@ -10,7 +10,7 @@ use Duyler\EventBus\Service\EventService;
 class DispatchEventEventListener
 {
     public function __construct(
-        private EventService $eventService,
+        private readonly EventService $eventService,
     ) {}
 
     public function __invoke(EventDispatchedEvent $event): void

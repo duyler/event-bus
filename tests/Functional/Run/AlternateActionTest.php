@@ -22,7 +22,7 @@ class AlternateActionTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function () {},
+                handler: function (): void {},
                 required: ['RequiredAction'],
                 argument: stdClass::class,
                 externalAccess: true,
@@ -67,7 +67,7 @@ class AlternateActionTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function () {},
+                handler: function (): void {},
                 required: ['RequiredAction'],
                 externalAccess: true,
             ),
@@ -113,7 +113,7 @@ class AlternateActionTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function () {},
+                handler: function (): void {},
                 required: ['RequiredAction'],
                 externalAccess: true,
             ),
@@ -158,7 +158,7 @@ class AlternateActionTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function () {},
+                handler: function (): void {},
                 required: ['RequiredAction'],
                 externalAccess: true,
             ),

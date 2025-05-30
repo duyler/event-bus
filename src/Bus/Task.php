@@ -26,7 +26,7 @@ final class Task
     private ?Result $result = null;
     private bool $isRejected = false;
     private DateTimeImmutable $retryTimestamp;
-    private string $taskId;
+    private readonly string $taskId;
 
     public function __construct(
         public readonly Action $action,

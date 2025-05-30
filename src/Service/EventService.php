@@ -22,12 +22,12 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 class EventService
 {
     public function __construct(
-        private EventRelationStorage $eventRelationStorage,
-        private ActionStorage $actionStorage,
-        private EventStorage $eventStorage,
-        private EventDispatcherInterface $eventDispatcher,
-        private Bus $bus,
-        private State $state,
+        private readonly EventRelationStorage $eventRelationStorage,
+        private readonly ActionStorage $actionStorage,
+        private readonly EventStorage $eventStorage,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly Bus $bus,
+        private readonly State $state,
     ) {}
 
     public function dispatch(EventDto $eventDto): void

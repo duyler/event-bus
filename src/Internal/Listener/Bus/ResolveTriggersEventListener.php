@@ -11,8 +11,8 @@ use Duyler\EventBus\Service\TriggerService;
 class ResolveTriggersEventListener
 {
     public function __construct(
-        private TriggerService $triggerService,
-        private CompleteActionStorage $completeActionStorage,
+        private readonly TriggerService $triggerService,
+        private readonly CompleteActionStorage $completeActionStorage,
     ) {}
 
     public function __invoke(TaskAfterRunEvent $event): void

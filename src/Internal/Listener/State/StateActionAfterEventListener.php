@@ -10,7 +10,7 @@ use Duyler\EventBus\Internal\Event\ActionAfterRunEvent;
 class StateActionAfterEventListener
 {
     public function __construct(
-        private StateActionInterface $stateAction,
+        private readonly StateActionInterface $stateAction,
     ) {}
 
     public function __invoke(ActionAfterRunEvent $event): void

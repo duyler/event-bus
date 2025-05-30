@@ -29,7 +29,7 @@ class ActionBeforeTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function () {},
+                handler: function (): void {},
                 externalAccess: true,
             ),
         );
@@ -47,7 +47,7 @@ class ActionBeforeTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: TestAction::TestArgument,
-                handler: function (\Duyler\EventBus\Action\Context\ActionContext $argument) {},
+                handler: function (\Duyler\EventBus\Action\Context\ActionContext $argument): void {},
                 required: [TestAction::TestArgumentReturn],
                 argument: stdClass::class,
                 externalAccess: true,

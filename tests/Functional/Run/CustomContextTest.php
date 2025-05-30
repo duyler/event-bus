@@ -24,7 +24,7 @@ class CustomContextTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'TestDep',
-                handler: function (ActionContext $context) {},
+                handler: function (ActionContext $context): void {},
             ),
         );
 
@@ -62,7 +62,7 @@ class CustomContextTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'TestDep',
-                handler: function (ActionContext $context) {},
+                handler: function (ActionContext $context): void {},
             ),
         );
 
@@ -97,7 +97,7 @@ class CustomContextTest extends TestCase
 class CustomContext implements CustomContextInterface
 {
     public function __construct(
-        private ActionContext $actionContext,
+        private readonly ActionContext $actionContext,
     ) {}
 
     public function getHello(): string
@@ -109,6 +109,6 @@ class CustomContext implements CustomContextInterface
 class InvalidCustomContext
 {
     public function __construct(
-        private ActionContext $actionContext,
+        private readonly ActionContext $actionContext,
     ) {}
 }

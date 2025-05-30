@@ -19,9 +19,9 @@ use UnitEnum;
 class StateAction implements StateActionInterface
 {
     public function __construct(
-        private StateHandlerStorage $stateHandlerStorage,
-        private ActionContainerStorage $actionContainerStorage,
-        private StateContextScope $contextScope,
+        private readonly StateHandlerStorage $stateHandlerStorage,
+        private readonly ActionContainerStorage $actionContainerStorage,
+        private readonly StateContextScope $contextScope,
     ) {}
 
     #[Override]

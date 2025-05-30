@@ -8,7 +8,7 @@ use Duyler\EventBus\Formatter\IdFormatter;
 use Fiber;
 use UnitEnum;
 
-final class Listener
+final readonly class Listener
 {
     public function __construct(
         private string $channel,

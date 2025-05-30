@@ -7,7 +7,7 @@ namespace Duyler\EventBus\Bus;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Exception\CircularCallActionException;
 
-final class Validator
+final readonly class Validator
 {
     public function __construct(
         private State $state,

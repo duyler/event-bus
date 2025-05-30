@@ -18,10 +18,10 @@ use UnitEnum;
 class Bus implements BusInterface
 {
     public function __construct(
-        private Runner $runner,
-        private ResultService $resultService,
-        private EventDispatcherInterface $eventDispatcher,
-        private Termination $termination,
+        private readonly Runner $runner,
+        private readonly ResultService $resultService,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly Termination $termination,
     ) {}
 
     #[Override]

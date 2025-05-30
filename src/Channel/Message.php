@@ -20,7 +20,7 @@ final class Message
 
     public function __construct(
         private readonly string $channel,
-        private Transfer $transfer,
+        private readonly Transfer $transfer,
     ) {
         /** @var DateInterval $interval */
         $interval = DateInterval::createFromDateString('1 minute');
@@ -68,7 +68,7 @@ final class Message
             throw new RuntimeException('Message has no payload');
         }
 
-        Fiber::suspend(function () {
+        Fiber::suspend(function (): void {
             $this->transfer->push($this);
         });
     }

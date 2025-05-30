@@ -9,7 +9,7 @@ use Duyler\EventBus\Internal\Event\DoWhileEndEvent;
 
 class StateMainEndEventListener
 {
-    public function __construct(private StateMainInterface $stateMain) {}
+    public function __construct(private readonly StateMainInterface $stateMain) {}
 
     public function __invoke(DoWhileEndEvent $event): void
     {

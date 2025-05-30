@@ -13,13 +13,9 @@ use Override;
 /** @extends RecursiveIteratorIterator<RecursiveIterator> */
 final class ActionRequiredIterator extends RecursiveIteratorIterator
 {
-    /** @var array<string, Action> */
-    private array $actions;
-
     /** @param array<string, Action> $actions */
-    public function __construct(RecursiveIterator $iterator, array $actions)
+    public function __construct(RecursiveIterator $iterator, private array $actions)
     {
-        $this->actions = $actions;
         parent::__construct($iterator, self::SELF_FIRST);
     }
 

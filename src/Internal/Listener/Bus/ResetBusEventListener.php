@@ -10,7 +10,7 @@ use Duyler\EventBus\Termination;
 class ResetBusEventListener
 {
     public function __construct(
-        private Termination $termination,
+        private readonly Termination $termination,
     ) {}
 
     public function __invoke(BusIsResetEvent $event): void

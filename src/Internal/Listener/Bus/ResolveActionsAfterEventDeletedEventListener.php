@@ -11,8 +11,8 @@ use Duyler\EventBus\Storage\ActionStorage;
 class ResolveActionsAfterEventDeletedEventListener
 {
     public function __construct(
-        private ActionService $actionService,
-        private ActionStorage $actionStorage,
+        private readonly ActionService $actionService,
+        private readonly ActionStorage $actionStorage,
     ) {}
 
     public function __invoke(EventRemovedEvent $event): void

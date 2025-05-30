@@ -24,7 +24,7 @@ use PHPUnit\Framework\TestCase;
 class ExceptionTest extends TestCase
 {
     #[Test]
-    public function action_not_allow_external_access_exception_message()
+    public function action_not_allow_external_access_exception_message(): never
     {
         $this->expectException(ActionNotAllowExternalAccessException::class);
         $this->expectExceptionMessage('Action Test does not allow external access');
@@ -32,7 +32,7 @@ class ExceptionTest extends TestCase
     }
 
     #[Test]
-    public function action_not_defined_exception_message()
+    public function action_not_defined_exception_message(): never
     {
         $this->expectException(ActionNotDefinedException::class);
         $this->expectExceptionMessage('Required action TestAction not defined in the bus');
@@ -40,7 +40,7 @@ class ExceptionTest extends TestCase
     }
 
     #[Test]
-    public function contract_for_data_not_received_exception_message()
+    public function contract_for_data_not_received_exception_message(): never
     {
         $this->expectException(ContractForDataNotReceivedException::class);
         $this->expectExceptionMessage('TestAction with data, but contract for data is not received');
@@ -48,7 +48,7 @@ class ExceptionTest extends TestCase
     }
 
     #[Test]
-    public function data_for_contract_not_received_exception_message()
+    public function data_for_contract_not_received_exception_message(): never
     {
         $this->expectException(DataForContractNotReceivedException::class);
         $this->expectExceptionMessage('TestAction set as contract SomeClass, but data for contract is not received');
@@ -56,7 +56,7 @@ class ExceptionTest extends TestCase
     }
 
     #[Test]
-    public function dispatched_event_not_defined_exception_message()
+    public function dispatched_event_not_defined_exception_message(): never
     {
         $this->expectException(DispatchedEventNotDefinedException::class);
         $this->expectExceptionMessage('Listen event TestEvent not defined in the bus');
@@ -64,7 +64,7 @@ class ExceptionTest extends TestCase
     }
 
     #[Test]
-    public function event_not_defined_exception_message()
+    public function event_not_defined_exception_message(): never
     {
         $this->expectException(EventNotDefinedException::class);
         $this->expectExceptionMessage('Listen event TestEvent for action TestAction not defined in the bus');
@@ -72,7 +72,7 @@ class ExceptionTest extends TestCase
     }
 
     #[Test]
-    public function result_not_exists_exception_message()
+    public function result_not_exists_exception_message(): never
     {
         $this->expectException(ResultNotExistsException::class);
         $this->expectExceptionMessage('Action or event result for TestAction does not exist');
@@ -80,7 +80,7 @@ class ExceptionTest extends TestCase
     }
 
     #[Test]
-    public function subscribed_action_not_defined_exception_message()
+    public function subscribed_action_not_defined_exception_message(): never
     {
         $this->expectException(SubscribedActionNotDefinedException::class);
         $this->expectExceptionMessage('Subscribed action TestAction not defined');
@@ -88,7 +88,7 @@ class ExceptionTest extends TestCase
     }
 
     #[Test]
-    public function trigger_already_defined_exception_message()
+    public function trigger_already_defined_exception_message(): never
     {
         $trigger = new Trigger(actionId: 'A', subjectId: 'B');
         $this->expectException(TriggerAlreadyDefinedException::class);
@@ -97,7 +97,7 @@ class ExceptionTest extends TestCase
     }
 
     #[Test]
-    public function trigger_not_found_exception_message()
+    public function trigger_not_found_exception_message(): never
     {
         $trigger = new Trigger(actionId: 'A', subjectId: 'B');
 
@@ -107,7 +107,7 @@ class ExceptionTest extends TestCase
     }
 
     #[Test]
-    public function trigger_on_not_defined_action_exception_message()
+    public function trigger_on_not_defined_action_exception_message(): never
     {
         $trigger = new Trigger(actionId: 'A', subjectId: 'B');
         $this->expectException(TriggerOnNotDefinedActionException::class);
@@ -116,7 +116,7 @@ class ExceptionTest extends TestCase
     }
 
     #[Test]
-    public function trigger_on_silent_action_exception_message()
+    public function trigger_on_silent_action_exception_message(): never
     {
         $this->expectException(TriggerOnSilentActionException::class);
         $this->expectExceptionMessage('Action Acan not be triggered on silent action B');
@@ -124,7 +124,7 @@ class ExceptionTest extends TestCase
     }
 
     #[Test]
-    public function not_allowed_sealed_action_exception_message()
+    public function not_allowed_sealed_action_exception_message(): never
     {
         $this->expectException(NotAllowedSealedActionException::class);
         $this->expectExceptionMessage('Action A cannot be sealed to B');
