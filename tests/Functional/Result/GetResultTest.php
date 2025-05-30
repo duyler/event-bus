@@ -23,7 +23,7 @@ class GetResultTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'Test',
-                handler: function () {},
+                handler: function (): void {},
                 externalAccess: true,
             ),
         );
@@ -67,7 +67,7 @@ class GetResultTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'Test',
-                handler: function () {},
+                handler: function (): void {},
                 externalAccess: false,
             ),
         );
@@ -85,7 +85,7 @@ class GetResultTest extends TestCase
     public function getResult_with_not_exists_result()
     {
         $builder = new BusBuilder(new BusConfig());
-        $builder->doAction(new Action(id: 'Test', handler: function () {}));
+        $builder->doAction(new Action(id: 'Test', handler: function (): void {}));
 
         $bus = $builder->build();
         $bus->run();

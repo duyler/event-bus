@@ -30,7 +30,7 @@ class MainBeforeTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'TestAction',
-                handler: function () {},
+                handler: function (): void {},
             ),
         );
 
@@ -49,14 +49,14 @@ class MainBeforeTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'RejectAction',
-                handler: function () {},
+                handler: function (): void {},
             ),
         );
 
         $busBuilder->doAction(
             new Action(
                 id: 'NotRejectAction',
-                handler: function () {},
+                handler: function (): void {},
             ),
         );
 

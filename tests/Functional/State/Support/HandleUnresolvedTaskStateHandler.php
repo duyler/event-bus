@@ -18,7 +18,7 @@ class HandleUnresolvedTaskStateHandler implements MainUnresolvedStateHandlerInte
         $stateService->doAction(
             new Action(
                 id: 'ActionFromStateHandler',
-                handler: function () {},
+                handler: function (): void {},
             ),
         );
 

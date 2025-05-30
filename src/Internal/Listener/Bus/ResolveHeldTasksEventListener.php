@@ -9,7 +9,7 @@ use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
 
 class ResolveHeldTasksEventListener
 {
-    public function __construct(private Bus $bus) {}
+    public function __construct(private readonly Bus $bus) {}
 
     public function __invoke(TaskAfterRunEvent $event): void
     {

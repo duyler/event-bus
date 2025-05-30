@@ -11,7 +11,7 @@ use Duyler\EventBus\Storage\TaskStorage;
 
 use function is_callable;
 
-final class Rollback
+final readonly class Rollback
 {
     public function __construct(
         private ActionContainerStorage $containerStorage,

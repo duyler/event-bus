@@ -13,8 +13,8 @@ final class Termination
     private ?LogDto $logDto = null;
 
     public function __construct(
-        private ContainerInterface $container,
-        private State $state,
+        private readonly ContainerInterface $container,
+        private readonly State $state,
     ) {}
 
     public function run(): void

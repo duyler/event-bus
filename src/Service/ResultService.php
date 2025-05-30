@@ -13,8 +13,8 @@ use Duyler\EventBus\Exception\ResultNotExistsException;
 class ResultService
 {
     public function __construct(
-        private CompleteActionStorage $completeActionStorage,
-        private EventRelationStorage $eventRelationStorage,
+        private readonly CompleteActionStorage $completeActionStorage,
+        private readonly EventRelationStorage $eventRelationStorage,
     ) {}
 
     public function getResult(string $actionId): Result

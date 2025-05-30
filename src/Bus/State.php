@@ -42,7 +42,7 @@ final class State
 
     private ?string $errorAction = null;
 
-    public function __construct(private BusConfig $config) {}
+    public function __construct(private readonly BusConfig $config) {}
 
     public function pushCompleteAction(CompleteAction $completeAction): void
     {

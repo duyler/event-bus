@@ -43,7 +43,7 @@ class ChannelTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'SendToChannel',
-                handler: function () {
+                handler: function (): void {
                     Channel::write('custom')
                         ->setPayload('Payload text', 'test')
                         ->push();
@@ -89,7 +89,7 @@ class ChannelTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'SendToChannel',
-                handler: function () {
+                handler: function (): void {
                     Channel::write()
                         ->setPayload('Payload text', 'test')
                         ->push();
@@ -134,7 +134,7 @@ class ChannelTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'SendToChannel',
-                handler: function () {
+                handler: function (): void {
                     Channel::write('custom')
                         ->push();
                 },
@@ -186,7 +186,7 @@ class ChannelTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'SendToChannel',
-                handler: function () {
+                handler: function (): void {
                     Channel::write()
                         ->setPayload('Payload text', 'test')
                         ->setTtl('10 milliseconds')
@@ -235,7 +235,7 @@ class ChannelTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'SendToChannel',
-                handler: function () {},
+                handler: function (): void {},
             ),
         );
 
@@ -274,7 +274,7 @@ class ChannelTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'SendToChannel',
-                handler: function () {
+                handler: function (): void {
                     Fiber::suspend();
                 },
             ),

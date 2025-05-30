@@ -29,7 +29,7 @@ class ActionThrowingTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function () {throw new RuntimeException('Test exception message'); },
+                handler: function (): void {throw new RuntimeException('Test exception message'); },
                 externalAccess: true,
             ),
         );

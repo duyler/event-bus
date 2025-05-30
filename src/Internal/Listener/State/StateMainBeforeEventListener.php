@@ -11,8 +11,8 @@ use Duyler\EventBus\Internal\Event\TaskBeforeRunEvent;
 class StateMainBeforeEventListener
 {
     public function __construct(
-        private StateMainInterface $stateMain,
-        private State $state,
+        private readonly StateMainInterface $stateMain,
+        private readonly State $state,
     ) {}
 
     public function __invoke(TaskBeforeRunEvent $event): void

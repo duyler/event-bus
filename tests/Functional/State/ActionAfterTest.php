@@ -28,7 +28,7 @@ class ActionAfterTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function () {},
+                handler: function (): void {},
                 externalAccess: true,
             ),
         );

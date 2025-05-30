@@ -13,10 +13,10 @@ use Duyler\EventBus\Storage\ActionContainerStorage;
 class StateActionThrowingEventListener
 {
     public function __construct(
-        private StateActionInterface $stateAction,
-        private BusConfig $config,
-        private ActionContainerStorage $actionContainerStorage,
-        private State $state,
+        private readonly StateActionInterface $stateAction,
+        private readonly BusConfig $config,
+        private readonly ActionContainerStorage $actionContainerStorage,
+        private readonly State $state,
     ) {}
 
     public function __invoke(ActionThrownExceptionEvent $event): void

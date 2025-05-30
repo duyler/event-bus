@@ -28,7 +28,7 @@ class EventTest extends TestCase
         $builder->addAction(
             new Action(
                 id: 'ForEventAction',
-                handler: function () {},
+                handler: function (): void {},
                 listen: ['TestEvent'],
                 externalAccess: true,
             ),
@@ -56,7 +56,7 @@ class EventTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'ForEventAction',
-                handler: function () {},
+                handler: function (): void {},
                 listen: ['TestEvent'],
                 externalAccess: true,
             ),
@@ -79,7 +79,7 @@ class EventTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'ForEventAction',
-                handler: function () {},
+                handler: function (): void {},
                 listen: ['TestEvent1', 'TestEvent2'],
                 externalAccess: true,
             ),
@@ -109,7 +109,7 @@ class EventTest extends TestCase
         $builder->addAction(
             new Action(
                 id: 'ForEventAction',
-                handler: function (ActionContext $context) {},
+                handler: function (ActionContext $context): void {},
                 listen: ['TestEvent'],
                 argument: stdClass::class,
                 externalAccess: true,
@@ -152,7 +152,7 @@ class EventTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'RequiredListening',
-                handler: function () {},
+                handler: function (): void {},
                 required: ['ForEventAction'],
                 argument: stdClass::class,
                 externalAccess: true,
@@ -198,7 +198,7 @@ class EventTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'SomeAction',
-                handler: function () {},
+                handler: function (): void {},
                 externalAccess: true,
             ),
         );
@@ -206,7 +206,7 @@ class EventTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'RequiredListening',
-                handler: function (stdClass $data) {},
+                handler: function (stdClass $data): void {},
                 required: ['ForEventAction'],
                 argument: stdClass::class,
                 externalAccess: true,
@@ -231,7 +231,7 @@ class EventTest extends TestCase
         $builder->addAction(
             new Action(
                 id: 'ForEventAction',
-                handler: function () {},
+                handler: function (): void {},
                 listen: ['TestEvent'],
                 argument: stdClass::class,
                 externalAccess: true,
@@ -258,7 +258,7 @@ class EventTest extends TestCase
         $builder->addAction(
             new Action(
                 id: 'ForEventAction',
-                handler: function () {},
+                handler: function (): void {},
                 listen: ['TestEvent'],
                 argument: stdClass::class,
                 externalAccess: true,
@@ -286,7 +286,7 @@ class EventTest extends TestCase
         $builder->addAction(
             new Action(
                 id: 'ForEventAction',
-                handler: function () {},
+                handler: function (): void {},
                 listen: ['TestEvent'],
                 argument: stdClass::class,
                 externalAccess: true,
@@ -315,7 +315,7 @@ class EventTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'ForEventAction',
-                handler: function () {},
+                handler: function (): void {},
                 listen: ['TestEvent'],
                 argument: stdClass::class,
                 externalAccess: true,
@@ -334,7 +334,7 @@ class EventTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'ForEventAction',
-                handler: function () {
+                handler: function (): void {
                     Dispatcher::dispatch(new Event(
                         id: 'TestEvent',
                     ));
@@ -345,7 +345,7 @@ class EventTest extends TestCase
         $builder->addAction(
             new Action(
                 id: 'ForEventListenAction',
-                handler: function () {},
+                handler: function (): void {},
                 listen: ['TestEvent'],
             ),
         );

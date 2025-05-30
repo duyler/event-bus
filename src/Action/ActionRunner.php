@@ -11,8 +11,8 @@ use Duyler\EventBus\Contract\ActionRunnerInterface;
 class ActionRunner implements ActionRunnerInterface
 {
     public function __construct(
-        private Closure $runner,
-        private ?object $argument,
+        private readonly Closure $runner,
+        private readonly ?object $argument,
     ) {}
 
     #[Override]

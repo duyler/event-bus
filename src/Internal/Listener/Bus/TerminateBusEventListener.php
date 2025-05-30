@@ -11,8 +11,8 @@ use Duyler\EventBus\Termination;
 class TerminateBusEventListener
 {
     public function __construct(
-        private Termination $termination,
-        private BusConfig $config,
+        private readonly Termination $termination,
+        private readonly BusConfig $config,
     ) {}
 
     public function __invoke(BusCompletedEvent $event)

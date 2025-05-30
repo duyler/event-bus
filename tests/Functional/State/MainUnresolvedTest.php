@@ -31,7 +31,7 @@ class MainUnresolvedTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Unresolved',
-                handler: function () {},
+                handler: function (): void {},
                 required: ['Failed'],
             ),
         );

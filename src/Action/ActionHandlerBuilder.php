@@ -12,7 +12,7 @@ use Duyler\EventBus\Bus\ActionContainer;
 class ActionHandlerBuilder
 {
     public function __construct(
-        private ActionSubstitution $actionSubstitution,
+        private readonly ActionSubstitution $actionSubstitution,
     ) {}
 
     public function build(Action $action, ActionContainer $container): Closure

@@ -9,7 +9,7 @@ use Duyler\EventBus\Internal\Event\DoCyclicEvent;
 
 class StateMainCyclicEventListener
 {
-    public function __construct(private StateMainInterface $stateMain) {}
+    public function __construct(private readonly StateMainInterface $stateMain) {}
 
     public function __invoke(DoCyclicEvent $event): void
     {

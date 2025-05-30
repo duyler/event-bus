@@ -17,10 +17,10 @@ use Throwable;
 class ActionRunnerProvider implements ActionRunnerProviderInterface
 {
     public function __construct(
-        private ActionContainerProvider $actionContainerProvider,
-        private ActionHandlerArgumentBuilder $argumentBuilder,
-        private ActionHandlerBuilder $handlerBuilder,
-        private EventDispatcherInterface $eventDispatcher,
+        private readonly ActionContainerProvider $actionContainerProvider,
+        private readonly ActionHandlerArgumentBuilder $argumentBuilder,
+        private readonly ActionHandlerBuilder $handlerBuilder,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 
     #[Override]

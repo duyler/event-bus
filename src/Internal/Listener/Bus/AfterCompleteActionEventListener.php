@@ -9,12 +9,12 @@ use Duyler\EventBus\Storage\ActionContainerStorage;
 use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
 
-final class AfterCompleteActionEventListener
+final readonly class AfterCompleteActionEventListener
 {
     public function __construct(
-        private readonly ActionContainerStorage $containerStorage,
-        private readonly CompleteActionStorage $completeActionStorage,
-        private readonly Bus $bus,
+        private ActionContainerStorage $containerStorage,
+        private CompleteActionStorage $completeActionStorage,
+        private Bus $bus,
     ) {}
 
     public function __invoke(TaskAfterRunEvent $event): void

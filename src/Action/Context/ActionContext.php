@@ -10,9 +10,9 @@ use LogicException;
 final class ActionContext extends BaseContext
 {
     public function __construct(
-        private string $actionId,
-        private ActionContainer $actionContainer,
-        private mixed $argument,
+        private readonly string $actionId,
+        private readonly ActionContainer $actionContainer,
+        private readonly mixed $argument,
     ) {
         parent::__construct($this->actionContainer);
     }

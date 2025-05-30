@@ -13,7 +13,7 @@ use ReflectionNamedType;
 abstract class BaseContext
 {
     public function __construct(
-        private ActionContainer $actionContainer,
+        private readonly ActionContainer $actionContainer,
     ) {}
 
     public function call(Closure $callback): mixed

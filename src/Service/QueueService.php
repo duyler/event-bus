@@ -8,7 +8,7 @@ use Duyler\EventBus\Bus\TaskQueue;
 
 class QueueService
 {
-    public function __construct(private TaskQueue $taskQueue) {}
+    public function __construct(private readonly TaskQueue $taskQueue) {}
 
     public function isEmpty(): bool
     {

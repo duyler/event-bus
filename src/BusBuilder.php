@@ -51,7 +51,7 @@ class BusBuilder
     /** @var array<string, Event> */
     private array $events = [];
 
-    public function __construct(private BusConfig $config) {}
+    public function __construct(private readonly BusConfig $config) {}
 
     public function build(): BusInterface
     {
@@ -166,7 +166,7 @@ class BusBuilder
 
     public function addStateHandler(StateHandlerInterface $stateHandler): static
     {
-        $this->stateHandlers[get_class($stateHandler)] = $stateHandler;
+        $this->stateHandlers[$stateHandler::class] = $stateHandler;
 
         return $this;
     }

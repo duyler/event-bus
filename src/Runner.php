@@ -13,9 +13,9 @@ use Throwable;
 class Runner
 {
     public function __construct(
-        private DoWhile $doWhile,
-        private Rollback $rollback,
-        private EventDispatcherInterface $eventDispatcher,
+        private readonly DoWhile $doWhile,
+        private readonly Rollback $rollback,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 
     /**

@@ -8,10 +8,10 @@ use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
 use Duyler\EventBus\Storage\CompleteActionStorage;
 
-final class SaveCompleteActionEventListener
+final readonly class SaveCompleteActionEventListener
 {
     public function __construct(
-        private readonly CompleteActionStorage $completeActionStorage,
+        private CompleteActionStorage $completeActionStorage,
     ) {}
 
     public function __invoke(TaskAfterRunEvent $event): void

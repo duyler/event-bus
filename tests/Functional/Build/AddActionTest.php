@@ -22,7 +22,7 @@ class AddActionTest extends TestCase
         $builder->addAction(
             new Action(
                 id: TestAction::TestAction,
-                handler: function () {},
+                handler: function (): void {},
             ),
         );
 
@@ -31,7 +31,7 @@ class AddActionTest extends TestCase
         $builder->addAction(
             new Action(
                 id: TestAction::TestAction,
-                handler: function () {},
+                handler: function (): void {},
             ),
         );
     }
@@ -44,7 +44,7 @@ class AddActionTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'Test',
-                handler: function () {},
+                handler: function (): void {},
                 externalAccess: true,
             ),
         );
@@ -54,7 +54,7 @@ class AddActionTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'Test',
-                handler: function () {},
+                handler: function (): void {},
                 externalAccess: true,
             ),
         );
@@ -68,7 +68,7 @@ class AddActionTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'Test',
-                handler: function () {},
+                handler: function (): void {},
                 externalAccess: true,
             ),
         );
@@ -76,7 +76,7 @@ class AddActionTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'TestWithUndefinedRequire',
-                handler: function () {},
+                handler: function (): void {},
                 required: ['UndefinedRequire'],
                 externalAccess: true,
             ),

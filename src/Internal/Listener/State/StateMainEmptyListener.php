@@ -9,7 +9,7 @@ use Duyler\EventBus\Internal\Event\TaskQueueIsEmptyEvent;
 
 class StateMainEmptyListener
 {
-    public function __construct(private StateMainInterface $stateMain) {}
+    public function __construct(private readonly StateMainInterface $stateMain) {}
 
     public function __invoke(TaskQueueIsEmptyEvent $event): void
     {

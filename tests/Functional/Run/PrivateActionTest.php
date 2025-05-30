@@ -20,7 +20,7 @@ class PrivateActionTest extends TestCase
         $builder->addAction(
             new Action(
                 id: 'PrivateAction',
-                handler: function () {},
+                handler: function (): void {},
                 externalAccess: true,
                 private: true,
             ),
@@ -29,7 +29,7 @@ class PrivateActionTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'TestAction',
-                handler: function () {},
+                handler: function (): void {},
                 required: ['PrivateAction'],
                 externalAccess: true,
             ),
@@ -38,7 +38,7 @@ class PrivateActionTest extends TestCase
         $builder->addAction(
             new Action(
                 id: 'PrivateWithSealedAction',
-                handler: function () {},
+                handler: function (): void {},
                 externalAccess: true,
                 private: true,
                 sealed: ['TestAction'],
@@ -48,7 +48,7 @@ class PrivateActionTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'TestWithSealedAction',
-                handler: function () {},
+                handler: function (): void {},
                 required: ['PrivateAction', 'PrivateWithSealedAction'],
                 externalAccess: true,
             ),
@@ -57,7 +57,7 @@ class PrivateActionTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'SomeAction',
-                handler: function () {},
+                handler: function (): void {},
                 externalAccess: true,
             ),
         );

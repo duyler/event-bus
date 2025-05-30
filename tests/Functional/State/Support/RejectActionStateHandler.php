@@ -12,7 +12,7 @@ use Override;
 class RejectActionStateHandler implements MainBeforeStateHandlerInterface
 {
     public function __construct(
-        private string $actionId,
+        private readonly string $actionId,
     ) {}
 
     #[Override]

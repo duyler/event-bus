@@ -21,7 +21,7 @@ class SealedActionTest extends TestCase
         $builder->addAction(
             new Action(
                 id: 'SealedAction',
-                handler: function () {},
+                handler: function (): void {},
                 externalAccess: true,
                 sealed: ['AcceptAction'],
             ),
@@ -30,7 +30,7 @@ class SealedActionTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'AcceptAction',
-                handler: function () {},
+                handler: function (): void {},
                 required: ['SealedAction'],
                 externalAccess: true,
             ),
@@ -50,7 +50,7 @@ class SealedActionTest extends TestCase
         $builder->addAction(
             new Action(
                 id: 'SealedAction',
-                handler: function () {},
+                handler: function (): void {},
                 externalAccess: true,
                 sealed: ['AcceptAction'],
             ),
@@ -59,7 +59,7 @@ class SealedActionTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'NotAcceptAction',
-                handler: function () {},
+                handler: function (): void {},
                 required: ['SealedAction'],
                 externalAccess: true,
             ),
@@ -68,7 +68,7 @@ class SealedActionTest extends TestCase
         $builder->doAction(
             new Action(
                 id: 'SomeAction',
-                handler: function () {},
+                handler: function (): void {},
                 externalAccess: true,
             ),
         );

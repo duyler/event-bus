@@ -8,14 +8,7 @@ use Duyler\EventBus\Enum\ResultStatus;
 
 final readonly class Result
 {
-    public ResultStatus $status;
-    public ?object $data;
-
-    private function __construct(ResultStatus $status, ?object $data = null)
-    {
-        $this->status = $status;
-        $this->data = $data;
-    }
+    private function __construct(public ResultStatus $status, public ?object $data = null) {}
 
     public static function success(?object $data = null): Result
     {

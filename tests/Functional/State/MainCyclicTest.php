@@ -30,7 +30,7 @@ class MainCyclicTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'TestAction',
-                handler: function () {},
+                handler: function (): void {},
             ),
         );
 

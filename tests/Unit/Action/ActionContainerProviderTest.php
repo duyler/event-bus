@@ -35,7 +35,7 @@ class ActionContainerProviderTest extends TestCase
     #[Test]
     public function get_with_returns_action_container(): void
     {
-        $action = new Action('id', function () {});
+        $action = new Action('id', function (): void {});
         $container = new ActionContainer('id', $this->config);
 
         $this->containerStorage->expects($this->once())

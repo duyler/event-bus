@@ -20,7 +20,7 @@ class ActionContainerProvider
     /** @var array<string, SharedService> */
     private array $sharedServices = [];
 
-    private ContainerInterface $sharedContainer;
+    private readonly ContainerInterface $sharedContainer;
 
     public function __construct(
         private readonly BusConfig $config,

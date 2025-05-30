@@ -64,9 +64,7 @@ class ActionHandlerTest extends TestCase
         $busBuilder->addAction(
             new Action(
                 id: 'TestDep',
-                handler: function (ActionContext $context) {
-                    return $context->call(fn(TestContract $testContract) => $testContract);
-                },
+                handler: fn(ActionContext $context) => $context->call(fn(TestContract $testContract) => $testContract),
                 type: TestContract::class,
             ),
         );

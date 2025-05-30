@@ -11,8 +11,8 @@ use Duyler\EventBus\Internal\Event\TaskResumeEvent;
 class StateMainResumeEventListener
 {
     public function __construct(
-        private StateMainInterface $stateMain,
-        private State $state,
+        private readonly StateMainInterface $stateMain,
+        private readonly State $state,
     ) {}
 
     public function __invoke(TaskResumeEvent $event): void

@@ -20,7 +20,7 @@ class CreateActionTest extends TestCase
 
         new Action(
             id: 'test',
-            handler: function () {},
+            handler: function (): void {},
             type: stdClass::class,
             immutable: true,
         );
@@ -33,7 +33,7 @@ class CreateActionTest extends TestCase
 
         new Action(
             id: 'test',
-            handler: function () {},
+            handler: function (): void {},
             type: DatetimeInterface::class,
             immutable: true,
         );
