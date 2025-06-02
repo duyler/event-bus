@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Duyler\EventBus\Dispatcher;
+namespace Duyler\EventBus\Event;
 
 use Duyler\EventBus\Dto\Event;
 use Duyler\EventBus\Service\EventService;
 use Fiber;
 
-final class Dispatcher
+final class EventDispatcher
 {
     private static EventService $eventService;
 

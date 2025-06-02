@@ -8,8 +8,8 @@ use Duyler\EventBus\Action\Context\ActionContext;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
-use Duyler\EventBus\Dispatcher\Dispatcher;
 use Duyler\EventBus\Dto\Event;
+use Duyler\EventBus\Event\EventDispatcher;
 use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
@@ -335,7 +335,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: function (): void {
-                    Dispatcher::dispatch(new Event(
+                    EventDispatcher::dispatch(new Event(
                         id: 'TestEvent',
                     ));
                 },
