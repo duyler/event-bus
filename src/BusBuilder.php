@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
+use Duyler\DI\Container;
+use Duyler\DI\ContainerConfig;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Build\Context;
 use Duyler\EventBus\Build\Event;
@@ -12,7 +14,7 @@ use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\Bus\State;
 use Duyler\EventBus\Channel\Channel;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
-use Duyler\EventBus\Dispatcher\Dispatcher;
+use Duyler\EventBus\Event\EventDispatcher;
 use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
 use Duyler\EventBus\Exception\TriggerAlreadyDefinedException;
 use Duyler\EventBus\Formatter\IdFormatter;
@@ -21,8 +23,6 @@ use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\EventService;
 use Duyler\EventBus\Service\StateService;
 use Duyler\EventBus\Service\TriggerService;
-use Duyler\DI\Container;
-use Duyler\DI\ContainerConfig;
 use Psr\EventDispatcher\ListenerProviderInterface;
 
 class BusBuilder
@@ -120,7 +120,7 @@ class BusBuilder
         }
 
         $container->get(Channel::class);
-        $container->get(Dispatcher::class);
+        $container->get(EventDispatcher::class);
 
         /** @var BusInterface $bus */
         $bus = $container->get(Bus::class);
