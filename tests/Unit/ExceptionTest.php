@@ -59,7 +59,7 @@ class ExceptionTest extends TestCase
     public function dispatched_event_not_defined_exception_message(): never
     {
         $this->expectException(DispatchedEventNotDefinedException::class);
-        $this->expectExceptionMessage('Listen event TestEvent not defined in the bus');
+        $this->expectExceptionMessage('Dispatched event TestEvent not defined in the bus');
         throw new DispatchedEventNotDefinedException('TestEvent');
     }
 

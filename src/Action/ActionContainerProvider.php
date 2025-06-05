@@ -14,6 +14,7 @@ use Duyler\DI\ContainerInterface;
 use Duyler\DI\Definition;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 class ActionContainerProvider
 {
@@ -25,6 +26,7 @@ class ActionContainerProvider
     public function __construct(
         private readonly BusConfig $config,
         private readonly ActionContainerStorage $containerStorage,
+        private readonly ActionEventDispatcher $dispatcher,
     ) {
         $this->sharedContainer = new Container();
     }
@@ -101,6 +103,11 @@ class ActionContainerProvider
         foreach ($actionDefinitions as $actionDefinition) {
             $actionContainer->addDefinition($actionDefinition);
         }
+
+        $actionContainer->set($this->dispatcher)
+            ->bind([
+                EventDispatcherInterface::class => $this->dispatcher::class,
+            ]);
 
         $this->containerStorage->save($actionContainer);
     }
