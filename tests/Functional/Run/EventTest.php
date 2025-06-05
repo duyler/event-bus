@@ -13,9 +13,12 @@ use Duyler\EventBus\Event\EventDispatcher;
 use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
+use Duyler\EventBus\Exception\DispatchedEventNotDefinedException;
 use Duyler\EventBus\Exception\EventNotDefinedException;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use RuntimeException;
 use stdClass;
 
@@ -336,7 +339,7 @@ class EventTest extends TestCase
                 id: 'ForEventAction',
                 handler: function (): void {
                     EventDispatcher::dispatch(new Event(
-                        id: 'TestEvent',
+                        id: 'TestEvent1',
                     ));
                 },
             ),
@@ -344,20 +347,77 @@ class EventTest extends TestCase
 
         $builder->addAction(
             new Action(
-                id: 'ForEventListenAction',
-                handler: function (): void {},
-                listen: ['TestEvent'],
+                id: 'ForEventListenAction1',
+                handler: function (ActionContext $context): void {
+                    $context->call(
+                        function (EventDispatcherInterface $dispatcher): void {
+                            $dispatcher->dispatch(new Event(
+                                id: 'TestEvent2',
+                            ));
+                        },
+                    );
+                },
+                listen: ['TestEvent1'],
             ),
         );
 
-        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent'));
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent1'));
+        $builder->addEvent(new \Duyler\EventBus\Build\Event(id: 'TestEvent2'));
 
         $bus = $builder->build();
 
         $bus->run();
 
         $this->assertTrue($bus->resultIsExists('ForEventAction'));
-        $this->assertTrue($bus->resultIsExists('TestEvent'));
-        $this->assertTrue($bus->resultIsExists('ForEventListenAction'));
+        $this->assertTrue($bus->resultIsExists('TestEvent1'));
+        $this->assertFalse($bus->resultIsExists('TestEvent2'));
+        $this->assertTrue($bus->resultIsExists('ForEventListenAction1'));
+    }
+
+    #[Test]
+    public function run_with_dispatch_not_defined_event_from_action(): void
+    {
+        $builder = new BusBuilder(new BusConfig());
+        $builder->doAction(
+            new Action(
+                id: 'ForEventAction',
+                handler: function (): void {
+                    EventDispatcher::dispatch(new Event(
+                        id: 'TestNotDefinedEvent',
+                    ));
+                },
+            ),
+        );
+
+        $bus = $builder->build();
+
+        $this->expectException(DispatchedEventNotDefinedException::class);
+
+        $bus->run();
+    }
+
+    #[Test]
+    public function run_with_dispatch_invalid_event_from_action(): void
+    {
+        $builder = new BusBuilder(new BusConfig());
+        $builder->doAction(
+            new Action(
+                id: 'ForEventAction',
+                handler: function (ActionContext $context): void {
+                    $context->call(
+                        function (EventDispatcherInterface $dispatcher): void {
+                            $dispatcher->dispatch(new stdClass());
+                        },
+                    );
+                },
+            ),
+        );
+
+        $bus = $builder->build();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Event must be an instance of ' . Event::class);
+
+        $bus->run();
     }
 }

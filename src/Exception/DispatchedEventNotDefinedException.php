@@ -11,7 +11,7 @@ class DispatchedEventNotDefinedException extends Exception
     public function __construct(string $event)
     {
         parent::__construct(
-            'Listen event ' . $event . ' not defined in the bus',
+            'Dispatched event ' . $event . ' not defined in the bus',
         );
     }
 }
