@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Unit\Storage;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Bus\Action;
 use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Storage\CompleteActionStorage;
@@ -18,7 +18,7 @@ class EventStorageTest extends TestCase
     #[Test]
     public function save_event(): void
     {
-        $action = new Action(id: 'test', handler: 'test');
+        $action = new Action(id: 'test', externalId: 'Empty.Required.Action', handler: 'test');
         $event = new CompleteAction(
             action: $action,
             result: Result::success(),

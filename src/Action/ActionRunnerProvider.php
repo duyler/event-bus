@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Bus\Action;
 use Duyler\EventBus\Contract\ActionRunnerInterface;
 use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
 use Duyler\EventBus\Internal\Event\ActionAfterRunEvent;

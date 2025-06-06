@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Unit\Action;
 
-use Duyler\EventBus\Action\ActionEventDispatcher;
-use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
 use Duyler\EventBus\Action\ActionContainerProvider;
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Action\ActionEventDispatcher;
 use Duyler\EventBus\Build\SharedService;
+use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Bus\ActionContainer;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Storage\ActionContainerStorage;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 
 class ActionContainerProviderTest extends TestCase
@@ -52,7 +52,7 @@ class ActionContainerProviderTest extends TestCase
             ->with($action->id)
             ->willReturn($container);
 
-        $this->assertSame($container, $this->provider->get($action));
+        $this->assertSame($container, $this->provider->get(\Duyler\EventBus\Bus\Action::fromExternal($action)));
     }
 
     #[Test]

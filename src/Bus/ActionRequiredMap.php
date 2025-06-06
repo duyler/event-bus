@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Bus;
 
 use Duyler\DI\Attribute\Finalize;
-use Duyler\EventBus\Build\Action;
 
 #[Finalize]
 final class ActionRequiredMap

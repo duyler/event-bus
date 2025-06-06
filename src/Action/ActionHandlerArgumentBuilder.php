@@ -8,7 +8,7 @@ use Duyler\EventBus\Action\Context\ActionContext;
 use Duyler\EventBus\Action\Context\CustomContextInterface;
 use Duyler\EventBus\Action\Context\FactoryContext;
 use Duyler\EventBus\Action\Exception\InvalidArgumentFactoryException;
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Bus\Action;
 use Duyler\EventBus\Bus\ActionContainer;
 use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Enum\ResultStatus;

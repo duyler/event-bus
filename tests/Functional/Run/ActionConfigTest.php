@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\DI\Provider\AbstractProvider;
 use Duyler\EventBus\Build\SharedService;
+use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
-use Duyler\DI\Provider\AbstractProvider;
+use Override;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Override;
 
 class ActionConfigTest extends TestCase
 {

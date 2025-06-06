@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-use Duyler\EventBus\Build\Action;
-use Duyler\EventBus\Build\SharedService;
-use Duyler\EventBus\Bus\ActionContainer;
-use Duyler\EventBus\BusConfig;
-use Duyler\EventBus\Storage\ActionContainerStorage;
 use Duyler\DI\Container;
 use Duyler\DI\ContainerInterface;
 use Duyler\DI\Definition;
+use Duyler\EventBus\Build\SharedService;
+use Duyler\EventBus\Bus\Action;
+use Duyler\EventBus\Bus\ActionContainer;
+use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Storage\ActionContainerStorage;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;

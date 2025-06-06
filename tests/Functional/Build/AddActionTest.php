@@ -61,7 +61,7 @@ class AddActionTest extends TestCase
     }
 
     #[Test]
-    public function doAction_with_underdefine()
+    public function doAction_with_undefined()
     {
         $builder = new BusBuilder(new BusConfig());
 

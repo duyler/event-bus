@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Test\Functional\Build;
 
 use DateTimeInterface;
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Bus\Action;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -20,6 +20,7 @@ class CreateActionTest extends TestCase
 
         new Action(
             id: 'test',
+            externalId: 'test',
             handler: function (): void {},
             type: stdClass::class,
             immutable: true,
@@ -33,8 +34,24 @@ class CreateActionTest extends TestCase
 
         new Action(
             id: 'test',
+            externalId: 'test',
             handler: function (): void {},
             type: DatetimeInterface::class,
+            immutable: true,
+        );
+    }
+
+    #[Test]
+    public function create_with_collection()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Type not set for collection ' . stdClass::class);
+
+        new Action(
+            id: 'test',
+            externalId: 'test',
+            handler: function (): void {},
+            typeCollection: stdClass::class,
             immutable: true,
         );
     }

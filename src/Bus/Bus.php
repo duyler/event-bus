@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Bus;
 
 use DateTimeImmutable;
-use Duyler\EventBus\Build\Action;
+use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Enum\Mode;
 use Duyler\EventBus\Enum\ResultStatus;
@@ -14,7 +14,6 @@ use Duyler\EventBus\Exception\UnableToContinueWithFailActionException;
 use Duyler\EventBus\Internal\Event\TaskUnresolvedEvent;
 use Duyler\EventBus\Storage\ActionStorage;
 use Duyler\EventBus\Storage\CompleteActionStorage;
-use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\TaskStorage;
 use Psr\EventDispatcher\EventDispatcherInterface;

@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Bus\Action;
 use Duyler\EventBus\Contract\State\StateHandlerObservedInterface;
 use Duyler\EventBus\Contract\StateActionInterface;
-use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\State\Service\StateActionAfterService;
 use Duyler\EventBus\State\Service\StateActionBeforeService;
 use Duyler\EventBus\State\Service\StateActionThrowingService;
 use Duyler\EventBus\Storage\ActionContainerStorage;
 use Override;
 use Throwable;
-use UnitEnum;
 
 class StateAction implements StateActionInterface
 {
@@ -78,10 +76,6 @@ class StateAction implements StateActionInterface
     private function isObserved(StateHandlerObservedInterface $handler, Action $action, StateContext $context): bool
     {
         $observed = $handler->observed($context);
-        /** @var string|UnitEnum $actionId */
-        foreach ($observed as $actionId) {
-            $observed[] = IdFormatter::toString($actionId);
-        }
-        return count($observed) === 0 || in_array($action->id, $observed);
+        return count($observed) === 0 || in_array($action->externalId, $observed);
     }
 }
