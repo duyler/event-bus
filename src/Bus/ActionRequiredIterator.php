@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Exception\ActionNotDefinedException;
+use Override;
 use RecursiveIterator;
 use RecursiveIteratorIterator;
-use Override;
 
 /** @extends RecursiveIteratorIterator<RecursiveIterator> */
 final class ActionRequiredIterator extends RecursiveIteratorIterator

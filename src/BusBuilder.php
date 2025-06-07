@@ -6,11 +6,12 @@ namespace Duyler\EventBus;
 
 use Duyler\DI\Container;
 use Duyler\DI\ContainerConfig;
-use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Build\Context;
 use Duyler\EventBus\Build\Event;
 use Duyler\EventBus\Build\SharedService;
 use Duyler\EventBus\Build\Trigger;
+use Duyler\EventBus\Bus\Action as InternalAction;
+use Duyler\EventBus\Build\Action as ExternalAction;
 use Duyler\EventBus\Bus\State;
 use Duyler\EventBus\Channel\Channel;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
@@ -27,13 +28,13 @@ use Psr\EventDispatcher\ListenerProviderInterface;
 
 class BusBuilder
 {
-    /** @var array<string, Action> */
+    /** @var array<string, InternalAction> */
     private array $actions = [];
 
     /** @var Trigger[] */
     private array $triggers = [];
 
-    /** @var array<string, Action> */
+    /** @var array<string, InternalAction> */
     private array $doActions = [];
 
     /** @var StateHandlerInterface[] */
@@ -125,16 +126,20 @@ class BusBuilder
         /** @var BusInterface $bus */
         $bus = $container->get(Bus::class);
 
+        gc_collect_cycles();
+
         return $bus;
     }
 
-    public function addAction(Action $action): static
+    public function addAction(ExternalAction $action): static
     {
-        if (array_key_exists($action->id, $this->actions)) {
-            throw new ActionAlreadyDefinedException($action->id);
+        $internalAction = InternalAction::fromExternal($action);
+
+        if (array_key_exists($internalAction->id, $this->actions)) {
+            throw new ActionAlreadyDefinedException($internalAction->id);
         }
 
-        $this->actions[$action->id] = $action;
+        $this->actions[$internalAction->id] = $internalAction;
 
         return $this;
     }
@@ -152,14 +157,16 @@ class BusBuilder
         return $this;
     }
 
-    public function doAction(Action $action): static
+    public function doAction(ExternalAction $action): static
     {
-        if (array_key_exists($action->id, $this->actions)) {
-            throw new ActionAlreadyDefinedException($action->id);
+        $internalAction = InternalAction::fromExternal($action);
+
+        if (array_key_exists($internalAction->id, $this->actions)) {
+            throw new ActionAlreadyDefinedException($internalAction->id);
         }
 
-        $this->actions[$action->id] = $action;
-        $this->doActions[$action->id] = $action;
+        $this->actions[$internalAction->id] = $internalAction;
+        $this->doActions[$internalAction->id] = $internalAction;
 
         return $this;
     }

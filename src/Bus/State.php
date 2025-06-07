@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Log as LogDto;
-use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\Enum\Mode;
 use Duyler\EventBus\Enum\ResultStatus;
 

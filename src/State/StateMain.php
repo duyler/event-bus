@@ -15,7 +15,6 @@ use Duyler\EventBus\State\Service\StateMainUnresolvedService;
 use Duyler\EventBus\Storage\ActionContainerStorage;
 use Duyler\EventBus\Contract\State\StateHandlerObservedInterface;
 use Duyler\EventBus\Contract\StateMainInterface;
-use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\QueueService;
@@ -33,7 +32,6 @@ use Duyler\EventBus\State\Service\StateMainSuspendService;
 use Duyler\EventBus\Storage\MessageStorage;
 use Override;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use UnitEnum;
 
 readonly class StateMain implements StateMainInterface
 {
@@ -112,7 +110,7 @@ readonly class StateMain implements StateMainInterface
     {
         $handlers = $this->stateHandlerStorage->getMainSuspend();
 
-        $suspend = new Suspend(IdFormatter::reverse($task->action->id), $task->getValue());
+        $suspend = new Suspend($task->action->externalId, $task->getValue());
 
         $stateService = new StateMainSuspendService(
             $suspend,
@@ -183,7 +181,7 @@ readonly class StateMain implements StateMainInterface
         $stateService = new StateMainAfterService(
             $task->getResult()->status,
             $task->getResult()->data,
-            $task->action->id,
+            $task->action->externalId,
             $this->actionService,
             $this->resultService,
             $this->logService,
@@ -260,10 +258,6 @@ readonly class StateMain implements StateMainInterface
     private function isObserved(StateHandlerObservedInterface $handler, Task $task, StateContext $context): bool
     {
         $observed = $handler->observed($context);
-        /** @var string|UnitEnum $actionId */
-        foreach ($observed as $actionId) {
-            $observed[] = IdFormatter::toString($actionId);
-        }
-        return count($observed) === 0 || in_array($task->action->id, $observed);
+        return count($observed) === 0 || in_array($task->action->externalId, $observed);
     }
 }

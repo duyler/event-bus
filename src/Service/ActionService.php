@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Service;
 
 use Duyler\EventBus\Action\ActionContainerProvider;
-use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Build\ActionHandlerSubstitution;
 use Duyler\EventBus\Build\ActionResultSubstitution;
 use Duyler\EventBus\Build\SharedService;
+use Duyler\EventBus\Bus\Action;
 use Duyler\EventBus\Bus\ActionRequiredIterator;
 use Duyler\EventBus\Bus\ActionRequiredMap;
 use Duyler\EventBus\Bus\Bus;

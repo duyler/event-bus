@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Storage;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Bus\Action;
 
 use function array_key_exists;
 

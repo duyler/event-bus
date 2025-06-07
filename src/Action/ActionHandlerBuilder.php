@@ -6,7 +6,7 @@ namespace Duyler\EventBus\Action;
 
 use Closure;
 use Duyler\EventBus\Action\Exception\ActionHandlerMustBeCallableException;
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Bus\Action;
 use Duyler\EventBus\Bus\ActionContainer;
 
 class ActionHandlerBuilder

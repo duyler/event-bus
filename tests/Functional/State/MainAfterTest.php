@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\State;
 
-use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Build\Context;
 use Duyler\EventBus\Build\Trigger;
+use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\RollbackActionInterface;

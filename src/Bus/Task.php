@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Bus;
 
 use DateTimeImmutable;
-use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Contract\ActionRunnerInterface;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;

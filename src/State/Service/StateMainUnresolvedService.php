@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Duyler\EventBus\State\Service;
 
 use Duyler\EventBus\Bus\Task;
-use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\QueueService;
@@ -37,6 +36,6 @@ class StateMainUnresolvedService
 
     public function getActionId(): string|UnitEnum
     {
-        return IdFormatter::reverse($this->task->action->id);
+        return $this->task->action->externalId;
     }
 }
