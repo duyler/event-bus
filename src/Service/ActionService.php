@@ -99,9 +99,9 @@ readonly class ActionService
     }
 
     /** @return array<string, Action> */
-    public function getByContract(string $contract): array
+    public function getByType(string $type): array
     {
-        return $this->actionStorage->getByContract($contract);
+        return $this->actionStorage->getByType($type);
     }
 
     public function actionIsExists(string $actionId): bool

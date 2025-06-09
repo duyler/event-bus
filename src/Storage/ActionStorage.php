@@ -21,7 +21,7 @@ class ActionStorage
     private array $dynamic = [];
 
     /** @var array<string, array<string, Action>> */
-    private array $byContract = [];
+    private array $byType = [];
 
     /** @var array<string, array<string, Action>> */
     private array $byEvent = [];
@@ -29,7 +29,7 @@ class ActionStorage
     public function save(Action $action): void
     {
         if (null !== $action->type) {
-            $this->byContract[$action->type][$action->id] = $action;
+            $this->byType[$action->type][$action->id] = $action;
         }
 
         foreach ($action->listen as $eventId) {
@@ -68,9 +68,9 @@ class ActionStorage
     }
 
     /** @return array<string, Action> */
-    public function getByContract(string $contract): array
+    public function getByType(string $contract): array
     {
-        return $this->byContract[$contract] ?? [];
+        return $this->byType[$contract] ?? [];
     }
 
     /** @return array<string, Action> */

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service;
 
-use Duyler\EventBus\Bus\Action;
+use Duyler\EventBus\Build\Action as ExternalAction;
 use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\EventService;
@@ -26,8 +26,9 @@ class StateMainBeginService
         private readonly EventService $eventService,
     ) {}
 
-    public function getById(string|UnitEnum $actionId): Action
+    public function getById(string|UnitEnum $actionId): ExternalAction
     {
-        return $this->actionService->getById(IdFormatter::toString($actionId));
+        $internalAction = $this->actionService->getById(IdFormatter::toString($actionId));
+        return ExternalAction::fromInternal($internalAction);
     }
 }
