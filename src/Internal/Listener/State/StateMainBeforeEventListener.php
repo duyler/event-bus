@@ -17,7 +17,7 @@ class StateMainBeforeEventListener
 
     public function __invoke(TaskBeforeRunEvent $event): void
     {
-        $this->state->setBeginAction($event->task->action->id);
+        $this->state->setBeginAction($event->task->action->getId());
         $this->stateMain->before($event->task);
     }
 }

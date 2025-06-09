@@ -50,30 +50,30 @@ readonly class ActionService
 
     private function validateAction(Action $action): void
     {
-        if ($this->actionStorage->isExists($action->id)) {
-            throw new ActionAlreadyDefinedException($action->id);
+        if ($this->actionStorage->isExists($action->getId())) {
+            throw new ActionAlreadyDefinedException($action->getId());
         }
 
         /** @var string $subject */
-        foreach ($action->required as $subject) {
+        foreach ($action->getRequired() as $subject) {
             if (false === $this->actionStorage->isExists($subject)) {
                 $this->throwActionNotDefined($subject);
             }
 
             $requiredAction = $this->actionStorage->get($subject);
 
-            $this->checkRequiredAction($action->id, $requiredAction);
+            $this->checkRequiredAction($action->getId(), $requiredAction);
         }
 
-        foreach ($action->alternates as $actionId) {
+        foreach ($action->getAlternates() as $actionId) {
             if (false === $this->actionStorage->isExists($actionId)) {
                 $this->throwActionNotDefined($actionId);
             }
         }
 
-        foreach ($action->listen as $eventId) {
+        foreach ($action->getListen() as $eventId) {
             if (false === $this->eventStorage->has($eventId)) {
-                $this->throwEventNotDefined($eventId, $action->id);
+                $this->throwEventNotDefined($eventId, $action->getId());
             }
         }
     }
@@ -115,7 +115,7 @@ readonly class ActionService
     public function collect(array $actions): void
     {
         foreach ($actions as $action) {
-            $requiredIterator = new ActionRequiredIterator($action->required, $actions);
+            $requiredIterator = new ActionRequiredIterator($action->getRequired(), $actions);
 
             /** @var string $subject */
             foreach ($requiredIterator as $subject) {
@@ -123,18 +123,18 @@ readonly class ActionService
                     $this->throwActionNotDefined($subject);
                 }
 
-                $this->checkRequiredAction($action->id, $actions[$subject]);
+                $this->checkRequiredAction($action->getId(), $actions[$subject]);
             }
 
-            foreach ($action->alternates as $actionId) {
+            foreach ($action->getAlternates() as $actionId) {
                 if (false === array_key_exists($actionId, $actions)) {
                     $this->throwActionNotDefined($actionId);
                 }
             }
 
-            foreach ($action->listen as $eventId) {
+            foreach ($action->getListen() as $eventId) {
                 if (false === $this->eventStorage->has($eventId)) {
-                    $this->throwEventNotDefined($eventId, $action->id);
+                    $this->throwEventNotDefined($eventId, $action->getId());
                 }
             }
 
@@ -147,16 +147,16 @@ readonly class ActionService
 
     private function checkRequiredAction(string $subject, Action $requiredAction): void
     {
-        if (in_array($subject, $requiredAction->required->getArrayCopy())) {
-            throw new CircularCallActionException($subject, $requiredAction->id);
+        if (in_array($subject, $requiredAction->getRequired()->getArrayCopy())) {
+            throw new CircularCallActionException($subject, $requiredAction->getId());
         }
 
-        if ($requiredAction->private) {
-            throw new CannotRequirePrivateActionException($subject, $requiredAction->id);
+        if ($requiredAction->isPrivate()) {
+            throw new CannotRequirePrivateActionException($subject, $requiredAction->getId());
         }
 
-        if (count($requiredAction->sealed) > 0 && !in_array($subject, $requiredAction->sealed)) {
-            throw new NotAllowedSealedActionException($subject, $requiredAction->id);
+        if (count($requiredAction->getSealed()) > 0 && !in_array($subject, $requiredAction->getSealed())) {
+            throw new NotAllowedSealedActionException($subject, $requiredAction->getId());
         }
     }
 
@@ -231,7 +231,7 @@ readonly class ActionService
         IdFormatter::remove($actionId);
 
         foreach ($requiredMap as $subject) {
-            $this->removeAction($subject->id);
+            $this->removeAction($subject->getId());
         }
 
         $this->actionStorage->removeDynamic($actionId);

@@ -17,7 +17,7 @@ class StateMainSuspendEventListener
 
     public function __invoke(TaskSuspendedEvent $event): void
     {
-        $this->state->pushSuspendedLog($event->task->action->id);
+        $this->state->pushSuspendedLog($event->task->action->getId());
         $this->stateMain->suspend($event->task);
     }
 }

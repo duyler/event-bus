@@ -91,7 +91,7 @@ class BusBuilder
         $actionService->collect($this->actions);
 
         foreach ($this->doActions as $action) {
-            $actionService->doExistsAction($action->id);
+            $actionService->doExistsAction($action->getId());
         }
 
         foreach ($this->triggers as $trigger) {
@@ -135,11 +135,11 @@ class BusBuilder
     {
         $internalAction = InternalAction::fromExternal($action);
 
-        if (array_key_exists($internalAction->id, $this->actions)) {
-            throw new ActionAlreadyDefinedException($internalAction->id);
+        if (array_key_exists($internalAction->getId(), $this->actions)) {
+            throw new ActionAlreadyDefinedException($internalAction->getId());
         }
 
-        $this->actions[$internalAction->id] = $internalAction;
+        $this->actions[$internalAction->getId()] = $internalAction;
 
         return $this;
     }
@@ -161,12 +161,12 @@ class BusBuilder
     {
         $internalAction = InternalAction::fromExternal($action);
 
-        if (array_key_exists($internalAction->id, $this->actions)) {
-            throw new ActionAlreadyDefinedException($internalAction->id);
+        if (array_key_exists($internalAction->getId(), $this->actions)) {
+            throw new ActionAlreadyDefinedException($internalAction->getId());
         }
 
-        $this->actions[$internalAction->id] = $internalAction;
-        $this->doActions[$internalAction->id] = $internalAction;
+        $this->actions[$internalAction->getId()] = $internalAction;
+        $this->doActions[$internalAction->getId()] = $internalAction;
 
         return $this;
     }

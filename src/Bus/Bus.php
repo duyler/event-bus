@@ -51,21 +51,21 @@ final class Bus
             return;
         }
 
-        if ($this->isRepeat($action->id) && false === $action->repeatable) {
+        if ($this->isRepeat($action->getId()) && false === $action->isRepeatable()) {
             return;
         }
 
-        $requiredIterator = new ActionRequiredIterator($action->required, $this->actionStorage->getAll());
+        $requiredIterator = new ActionRequiredIterator($action->getRequired(), $this->actionStorage->getAll());
 
         /** @var string $subject */
         foreach ($requiredIterator as $subject) {
             $requiredAction = $this->actionStorage->get($subject);
 
-            if ($this->isRepeat($requiredAction->id) && false === $requiredAction->repeatable) {
+            if ($this->isRepeat($requiredAction->getId()) && false === $requiredAction->isRepeatable()) {
                 continue;
             }
 
-            if (0 < count($requiredAction->listen)) {
+            if (0 < count($requiredAction->getListen())) {
                 continue;
             }
 
@@ -78,7 +78,7 @@ final class Bus
     private function isRepeat(string $actionId): bool
     {
         foreach ($this->heldTasks as $task) {
-            if ($task->action->id === $actionId) {
+            if ($task->action->getId() === $actionId) {
                 return true;
             }
         }
@@ -99,7 +99,7 @@ final class Bus
         if ($this->isSatisfiedConditions($task)) {
             $this->taskQueue->push($task);
             $this->retries[$task->getId()] = 0;
-            $this->finalized[$task->action->id] = false;
+            $this->finalized[$task->action->getId()] = false;
         } else {
             $task->setStatus(TaskStatus::Held);
             $this->heldTasks[$task->getId()] = $task;
@@ -119,7 +119,7 @@ final class Bus
 
     private function isSatisfiedEvents(Action $action): bool
     {
-        foreach ($action->listen as $eventId) {
+        foreach ($action->getListen() as $eventId) {
             if (false === $this->eventRelationStorage->isExists($eventId)) {
                 return false;
             }
@@ -133,13 +133,14 @@ final class Bus
             return false;
         }
 
-        if (0 === $task->action->required->count()) {
+        if (0 === $task->action->getRequired()->count()) {
             return true;
         }
 
-        $completeRequiredActions = $this->completeActionStorage->getAllByArray($task->action->required->getArrayCopy());
+        $requiredArray = $task->action->getRequired()->getArrayCopy();
+        $completeRequiredActions = $this->completeActionStorage->getAllByArray($requiredArray);
 
-        if (count($completeRequiredActions) < $task->action->required->count()) {
+        if (count($completeRequiredActions) < $task->action->getRequired()->count()) {
             return false;
         }
 
@@ -150,11 +151,11 @@ final class Bus
 
         foreach ($completeRequiredActions as $completeRequiredAction) {
             if (ResultStatus::Fail === $completeRequiredAction->result->status) {
-                if ($this->retries[$completeRequiredAction->taskId] < $completeRequiredAction->action->retries) {
+                if ($this->retries[$completeRequiredAction->taskId] < $completeRequiredAction->action->getRetries()) {
                     return false;
                 }
 
-                if (false === $this->finalized[$completeRequiredAction->action->id]) {
+                if (false === $this->finalized[$completeRequiredAction->action->getId()]) {
                     return false;
                 }
 
@@ -163,16 +164,16 @@ final class Bus
         }
 
         foreach ($failActions as $failAction) {
-            $this->alternates[$failAction->action->id] = $failAction->action->alternates;
+            $this->alternates[$failAction->action->getId()] = $failAction->action->getAlternates();
 
-            if ($this->tryReplacedFailAction($failAction->action->id)) {
+            if ($this->tryReplacedFailAction($failAction->action->getId())) {
                 $replacedActions[] = $failAction;
             }
         }
 
         if (count($failActions) > count($replacedActions)) {
             foreach ($failActions as $failAction) {
-                foreach ($this->alternates[$failAction->action->id] as $alternate) {
+                foreach ($this->alternates[$failAction->action->getId()] as $alternate) {
                     if ($this->taskQueue->inQueue($alternate)) {
                         return false;
                     }
@@ -186,7 +187,7 @@ final class Bus
                 return false;
             }
 
-            throw new UnableToContinueWithFailActionException($task->action->id);
+            throw new UnableToContinueWithFailActionException($task->action->getId());
         }
 
         return true;
@@ -194,15 +195,15 @@ final class Bus
 
     private function isLock(Task $task): bool
     {
-        if (false === $task->action->lock) {
+        if (false === $task->action->isLock()) {
             return false;
         }
 
-        if ($this->taskQueue->inQueue($task->action->id)) {
+        if ($this->taskQueue->inQueue($task->action->getId())) {
             return true;
         }
 
-        $tasks = $this->taskStorage->getAllByActionId($task->action->id);
+        $tasks = $this->taskStorage->getAllByActionId($task->action->getId());
 
         unset($tasks[$task->getId()]);
 
@@ -213,7 +214,7 @@ final class Bus
                 }
             }
 
-            if (($this->retries[$currentTask->action->id] ?? 0) < $task->action->retries) {
+            if (($this->retries[$currentTask->action->getId()] ?? 0) < $task->action->getRetries()) {
                 return true;
             }
         }
@@ -226,8 +227,8 @@ final class Bus
         foreach ($this->alternates[$failActionId] as $actionId) {
             $alternate = $this->actionStorage->get($actionId);
 
-            if ($this->completeActionStorage->isExists($alternate->id)) {
-                $completeAction = $this->completeActionStorage->get($alternate->id);
+            if ($this->completeActionStorage->isExists($alternate->getId())) {
+                $completeAction = $this->completeActionStorage->get($alternate->getId());
                 if (ResultStatus::Success === $completeAction->result->status) {
                     return true;
                 }
@@ -245,16 +246,16 @@ final class Bus
     public function afterCompleteAction(CompleteAction $completeAction): void
     {
         if (ResultStatus::Success === $completeAction->result->status) {
-            $this->finalized[$completeAction->action->id] = true;
+            $this->finalized[$completeAction->action->getId()] = true;
             $this->removeTask($completeAction);
             return;
         }
 
-        if ($this->retries[$completeAction->taskId] < $completeAction->action->retries) {
+        if ($this->retries[$completeAction->taskId] < $completeAction->action->getRetries()) {
             $this->taskQueue->push($this->createRetryTask($completeAction));
             ++$this->retries[$completeAction->taskId];
         } else {
-            $this->finalized[$completeAction->action->id] = true;
+            $this->finalized[$completeAction->action->getId()] = true;
             $this->removeTask($completeAction);
         }
     }
@@ -262,18 +263,20 @@ final class Bus
     private function removeTask(CompleteAction $completeAction): void
     {
         if (Mode::Loop === $this->config->mode || $this->config->allowCircularCall) {
-            $this->taskStorage->remove($completeAction->action->id, $completeAction->taskId);
+            $this->taskStorage->remove($completeAction->action->getId(), $completeAction->taskId);
             unset($this->retries[$completeAction->taskId]);
         }
     }
 
     private function createRetryTask(CompleteAction $completeAction): Task
     {
-        $task = $this->taskStorage->get($completeAction->action->id, $completeAction->taskId);
+        $task = $this->taskStorage->get($completeAction->action->getId(), $completeAction->taskId);
 
         $now = new DateTimeImmutable();
 
-        $retryTimestamp = $completeAction->action->retryDelay ? $now->add($completeAction->action->retryDelay) : $now;
+        $retryTimestamp = $completeAction->action->getRetryDelay()
+            ? $now->add($completeAction->action->getRetryDelay())
+            : $now;
 
         $task->setRetryTimestamp($retryTimestamp);
         $task->setStatus(TaskStatus::Retry);

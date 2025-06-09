@@ -24,7 +24,7 @@ final readonly class Validator
 
         if (false === $this->config->allowCircularCall) {
             if (count($mainEventLog) === count($repeatedEventLog)) {
-                throw new CircularCallActionException($completeAction->action->id, (string) end($mainEventLog));
+                throw new CircularCallActionException($completeAction->action->getId(), (string) end($mainEventLog));
             }
         }
     }

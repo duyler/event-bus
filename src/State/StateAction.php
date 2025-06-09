@@ -26,7 +26,7 @@ class StateAction implements StateActionInterface
     public function before(Action $action, object|null $argument): void
     {
         $stateService = new StateActionBeforeService(
-            $this->actionContainerStorage->get($action->id),
+            $this->actionContainerStorage->get($action->getId()),
             $action,
             $argument,
         );
@@ -43,7 +43,7 @@ class StateAction implements StateActionInterface
     public function after(Action $action, mixed $resultData): void
     {
         $stateService = new StateActionAfterService(
-            $this->actionContainerStorage->get($action->id),
+            $this->actionContainerStorage->get($action->getId()),
             $action,
             $resultData,
         );
@@ -60,7 +60,7 @@ class StateAction implements StateActionInterface
     public function throwing(Action $action, Throwable $exception): void
     {
         $stateService = new StateActionThrowingService(
-            $this->actionContainerStorage->get($action->id),
+            $this->actionContainerStorage->get($action->getId()),
             $exception,
             $action,
         );
@@ -76,6 +76,6 @@ class StateAction implements StateActionInterface
     private function isObserved(StateHandlerObservedInterface $handler, Action $action, StateContext $context): bool
     {
         $observed = $handler->observed($context);
-        return count($observed) === 0 || in_array($action->externalId, $observed);
+        return count($observed) === 0 || in_array($action->getExternalId(), $observed);
     }
 }

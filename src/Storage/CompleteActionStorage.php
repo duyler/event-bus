@@ -18,7 +18,7 @@ class CompleteActionStorage
 
     public function save(CompleteAction $completeAction): void
     {
-        $this->data[$completeAction->action->id] = $completeAction;
+        $this->data[$completeAction->action->getId()] = $completeAction;
     }
 
     /**

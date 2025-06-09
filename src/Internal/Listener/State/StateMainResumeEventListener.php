@@ -17,7 +17,7 @@ class StateMainResumeEventListener
 
     public function __invoke(TaskResumeEvent $event): void
     {
-        $this->state->resolveResumeAction($event->task->action->id);
+        $this->state->resolveResumeAction($event->task->action->getId());
         $this->stateMain->resume($event->task);
     }
 }

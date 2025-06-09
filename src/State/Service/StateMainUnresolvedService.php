@@ -36,6 +36,6 @@ class StateMainUnresolvedService
 
     public function getActionId(): string|UnitEnum
     {
-        return $this->task->action->externalId;
+        return $this->task->action->getExternalId();
     }
 }

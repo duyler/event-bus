@@ -17,8 +17,8 @@ class ActionHandlerBuilder
 
     public function build(Action $action, ActionContainer $container): Closure
     {
-        if ($this->actionSubstitution->isSubstituteHandler($action->id)) {
-            $handlerSubstitution = $this->actionSubstitution->getSubstituteHandler($action->id);
+        if ($this->actionSubstitution->isSubstituteHandler($action->getId())) {
+            $handlerSubstitution = $this->actionSubstitution->getSubstituteHandler($action->getId());
             if ($handlerSubstitution->handler instanceof Closure) {
                 return $handlerSubstitution->handler;
             }
@@ -27,11 +27,11 @@ class ActionHandlerBuilder
             return $this->getCallableHandler($container, $handlerSubstitution->handler);
         }
 
-        if ($action->handler instanceof Closure) {
-            return $action->handler;
+        if ($action->getHandler() instanceof Closure) {
+            return $action->getHandler();
         }
 
-        return $this->getCallableHandler($container, $action->handler);
+        return $this->getCallableHandler($container, $action->getHandler());
     }
 
     private function getCallableHandler(ActionContainer $container, string $handler): Closure

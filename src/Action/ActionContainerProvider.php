@@ -33,11 +33,11 @@ class ActionContainerProvider
 
     public function get(Action $action): ActionContainer
     {
-        if (false === $this->containerStorage->isExists($action->id)) {
+        if (false === $this->containerStorage->isExists($action->getId())) {
             $this->buildContainer($action);
         }
 
-        return $this->containerStorage->get($action->id);
+        return $this->containerStorage->get($action->getId());
     }
 
     public function buildContainer(Action $action): void
@@ -50,19 +50,19 @@ class ActionContainerProvider
 
         $actionDefinitions = [];
 
-        foreach ($action->definitions as $key => $value) {
+        foreach ($action->getDefinitions() as $key => $value) {
             if (class_exists($key)) {
                 $actionDefinitions[$key] = new Definition(id: $key, arguments: $value);
             }
         }
 
         $actionContainer = new ActionContainer(
-            $action->id,
+            $action->getId(),
             $this->config,
         );
 
-        $actionContainer->bind($action->bind);
-        $actionContainer->addProviders($action->providers);
+        $actionContainer->bind($action->getBind());
+        $actionContainer->addProviders($action->getProviders());
         $actionClassMap = $actionContainer->getClassMap();
 
         $actionContainer->set($actionContainer);
@@ -77,14 +77,14 @@ class ActionContainerProvider
             $sharedClassMap = $container->getClassMap();
 
             if (0 < count(array_intersect_key($sharedClassMap, $actionClassMap))
-                || 0 < count(array_intersect_key($sharedService->providers, $action->providers))
+                || 0 < count(array_intersect_key($sharedService->providers, $action->getProviders()))
                 || 0 < count(array_intersect_key(array_flip($sharedClassMap), $actionDefinitions))
                 || 0 < count(array_intersect_key($actionDefinitions, $externalConfigDefinitions))
             ) {
                 $actionContainer->bind($sharedService->bind);
                 $actionContainer->addProviders($sharedService->providers);
-                $actionContainer->bind($action->bind);
-                $actionContainer->addProviders($action->providers);
+                $actionContainer->bind($action->getBind());
+                $actionContainer->addProviders($action->getProviders());
                 continue;
             }
 

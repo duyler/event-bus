@@ -28,7 +28,7 @@ final class ActionRequiredIterator extends RecursiveIteratorIterator
             $this->throwNotFoundAction($current);
         }
 
-        return 0 < $this->actions[$current]->required->count();
+        return 0 < $this->actions[$current]->getRequired()->count();
     }
 
     #[Override]
@@ -41,7 +41,7 @@ final class ActionRequiredIterator extends RecursiveIteratorIterator
             $this->throwNotFoundAction($current);
         }
 
-        return $this->actions[$current]->required;
+        return $this->actions[$current]->getRequired();
     }
 
     private function throwNotFoundAction(string $actionId): never

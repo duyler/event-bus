@@ -22,7 +22,7 @@ class ResultService
         if ($this->completeActionStorage->isExists($actionId)) {
             $completeAction = $this->completeActionStorage->get($actionId);
 
-            if (false === $completeAction->action->externalAccess) {
+            if (false === $completeAction->action->isExternalAccess()) {
                 throw new ActionNotAllowExternalAccessException($actionId);
             }
 

@@ -21,11 +21,11 @@ class StateActionThrowingEventListener
 
     public function __invoke(ActionThrownExceptionEvent $event): void
     {
-        $this->state->setErrorAction($event->action->id);
+        $this->state->setErrorAction($event->action->getId());
         $this->stateAction->throwing($event->action, $event->exception);
 
         if ($this->config->continueAfterException) {
-            $actionContainer = $this->actionContainerStorage->get($event->action->id);
+            $actionContainer = $this->actionContainerStorage->get($event->action->getId());
             $actionContainer->finalize();
         } else {
             throw $event->exception;

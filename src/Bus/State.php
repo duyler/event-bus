@@ -45,17 +45,17 @@ final class State
 
     public function pushCompleteAction(CompleteAction $completeAction): void
     {
-        $actionId = $completeAction->action->id . '.' . $completeAction->result->status->value;
+        $actionId = $completeAction->action->getId() . '.' . $completeAction->result->status->value;
 
-        if (in_array($actionId, $this->mainLog) && 0 === $completeAction->action->retries) {
+        if (in_array($actionId, $this->mainLog) && 0 === $completeAction->action->getRetries()) {
             $this->pushRepeatedLog($actionId);
             $this->pushRetriesLog($actionId);
         } else {
             $this->pushMainLog($actionId);
             if (ResultStatus::Success === $completeAction->result->status) {
-                $this->pushSuccessLog($completeAction->action->id);
+                $this->pushSuccessLog($completeAction->action->getId());
             } else {
-                $this->pushFailLog($completeAction->action->id);
+                $this->pushFailLog($completeAction->action->getId());
             }
         }
 
@@ -67,7 +67,7 @@ final class State
         if ($this->isLooped() && count($this->actionLog) === $this->config->logMaxSize) {
             array_shift($this->actionLog);
         }
-        $this->actionLog[] = $action->id;
+        $this->actionLog[] = $action->getId();
     }
 
     private function pushSuccessLog(string $actionId): void
