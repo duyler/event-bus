@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
+use function count;
+
 use DateTimeImmutable;
 use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\BusConfig;
@@ -17,8 +19,6 @@ use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\TaskStorage;
 use Psr\EventDispatcher\EventDispatcherInterface;
-
-use function count;
 
 #[Finalize(method: 'reset')]
 final class Bus

@@ -6,8 +6,8 @@ namespace Duyler\EventBus\Bus;
 
 use Closure;
 use DateInterval;
-use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Build\Action as ExternalAction;
+use Duyler\EventBus\Formatter\IdFormatter;
 use InvalidArgumentException;
 use RecursiveArrayIterator;
 use ReflectionClass;

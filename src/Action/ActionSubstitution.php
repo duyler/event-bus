@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
+use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\Build\ActionHandlerSubstitution;
 use Duyler\EventBus\Build\ActionResultSubstitution;
 use Duyler\EventBus\Contract\ActionSubstitutionInterface;
-use Duyler\DI\Attribute\Finalize;
 use Override;
 
 #[Finalize(method: 'reset')]

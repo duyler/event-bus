@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
+use Duyler\EventBus\Dto\Event;
 use Duyler\EventBus\Dto\Log;
 use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Dto\Event;
 use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Internal\Event\BusCompletedEvent;
 use Duyler\EventBus\Internal\Event\EventDispatchedEvent;
