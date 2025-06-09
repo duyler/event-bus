@@ -15,7 +15,7 @@ final class ActionRequiredMap
     public function create(Action $action): void
     {
         /** @var string $required */
-        foreach ($action->required as $required) {
+        foreach ($action->getRequired() as $required) {
             $this->map[$required][] = $action;
         }
     }

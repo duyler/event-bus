@@ -129,10 +129,10 @@ final class Task
             return Result::success($this->assertObjectContract($resultData));
         }
 
-        if (null !== $this->action->type || null !== $this->action->typeCollection) {
+        if (null !== $this->action->getType() || null !== $this->action->getTypeCollection()) {
             /** @var string $contract */
-            $contract = $this->action->typeCollection ?? $this->action->type;
-            throw new DataForContractNotReceivedException($this->action->id, $contract);
+            $contract = $this->action->getTypeCollection() ?? $this->action->getType();
+            throw new DataForContractNotReceivedException($this->action->getId(), $contract);
         }
 
         return Result::success();
@@ -140,44 +140,44 @@ final class Task
 
     private function assertResultContract(Result $result): void
     {
-        if (null === $this->action->type && null !== $result->data) {
-            throw new ActionReturnValueExistsException($this->action->id);
+        if (null === $this->action->getType() && null !== $result->data) {
+            throw new ActionReturnValueExistsException($this->action->getId());
         }
 
-        $contract = $this->action->typeCollection ?? $this->action->type;
+        $type = $this->action->getTypeCollection() ?? $this->action->getType();
 
-        if (null !== $contract) {
-            if (null !== $result->data && false === $result->data instanceof $contract) {
-                $this->throwDataMustBeCompatibleWithContractException($this->action->id, $contract);
+        if (null !== $type) {
+            if (null !== $result->data && false === $result->data instanceof $type) {
+                $this->throwDataMustBeCompatibleWithContractException($this->action->getId(), $type);
             }
         }
 
-        if (null !== $this->action->type && null === $result->data && ResultStatus::Success === $result->status) {
-            throw new DataForContractNotReceivedException($this->action->id, $this->action->type);
+        if (null !== $this->action->getType() && null === $result->data && ResultStatus::Success === $result->status) {
+            throw new DataForContractNotReceivedException($this->action->getId(), $this->action->getType());
         }
     }
 
     private function assertObjectContract(mixed $resultData): object
     {
         if (false === is_object($resultData)) {
-            throw new ActionReturnValueMustBeTypeObjectException($this->action->id, $resultData);
+            throw new ActionReturnValueMustBeTypeObjectException($this->action->getId(), $resultData);
         }
 
-        if (null === $this->action->type) {
-            throw new ActionReturnValueExistsException($this->action->id);
+        if (null === $this->action->getType()) {
+            throw new ActionReturnValueExistsException($this->action->getId());
         }
 
-        $contract = $this->action->typeCollection ?? $this->action->type;
+        $type = $this->action->getTypeCollection() ?? $this->action->getType();
 
-        if (false === $resultData instanceof $contract) {
-            $this->throwDataMustBeCompatibleWithContractException($this->action->id, $contract);
+        if (false === $resultData instanceof $type) {
+            $this->throwDataMustBeCompatibleWithContractException($this->action->getId(), $type);
         }
 
         return $resultData;
     }
 
-    private function throwDataMustBeCompatibleWithContractException(string $actionId, string $contract): never
+    private function throwDataMustBeCompatibleWithContractException(string $actionId, string $type): never
     {
-        throw new DataMustBeCompatibleWithContractException($actionId, $contract);
+        throw new DataMustBeCompatibleWithContractException($actionId, $type);
     }
 }

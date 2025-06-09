@@ -19,7 +19,7 @@ trait ActionServiceTrait
     public function addAction(ExternalAction $action): void
     {
         $internalAction = InternalAction::fromExternal($action);
-        if (false === $this->actionService->actionIsExists($internalAction->id)) {
+        if (false === $this->actionService->actionIsExists($internalAction->getId())) {
             $this->actionService->addDynamicAction($internalAction);
         }
     }
@@ -50,7 +50,7 @@ trait ActionServiceTrait
         $externalByType = [];
 
         foreach ($this->actionService->getByType($type) as $action) {
-            $externalByType[$action->id] = ExternalAction::fromInternal($action);
+            $externalByType[$action->getId()] = ExternalAction::fromInternal($action);
         }
 
         return $externalByType;

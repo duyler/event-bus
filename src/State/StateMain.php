@@ -110,18 +110,18 @@ readonly class StateMain implements StateMainInterface
     {
         $handlers = $this->stateHandlerStorage->getMainSuspend();
 
-        $suspend = new Suspend($task->action->externalId, $task->getValue());
+        $suspend = new Suspend($task->action->getExternalId(), $task->getValue());
 
         $stateService = new StateMainSuspendService(
             $suspend,
             $this->resultService,
-            $this->actionContainerStorage->get($task->action->id),
+            $this->actionContainerStorage->get($task->action->getId()),
             $this->actionService,
             $this->eventService,
             $this->triggerService,
         );
 
-        $this->suspendContext->addSuspend($task->action->id, $suspend);
+        $this->suspendContext->addSuspend($task->action->getId(), $suspend);
 
         foreach ($handlers as $handler) {
             $context = $this->contextScope->getContext($handler::class);
@@ -136,12 +136,12 @@ readonly class StateMain implements StateMainInterface
     {
         $handlers = $this->stateHandlerStorage->getMainResume();
 
-        $suspend = $this->suspendContext->getSuspend($task->action->id);
+        $suspend = $this->suspendContext->getSuspend($task->action->getId());
 
         $stateService = new StateMainResumeService(
             $suspend,
             $this->resultService,
-            $this->actionContainerStorage->get($task->action->id),
+            $this->actionContainerStorage->get($task->action->getId()),
             $this->actionService,
             $this->eventService,
             $this->triggerService,
@@ -168,7 +168,7 @@ readonly class StateMain implements StateMainInterface
             $task->resume(($suspend->value)());
         } else {
             $message = new Message(Channel::DEFAULT_CHANNEL, $this->transfer);
-            $message->setPayload($suspend->value, $task->action->id);
+            $message->setPayload($suspend->value, $task->action->getId());
 
             $this->messageStorage->set($message);
             $task->resume();
@@ -181,7 +181,7 @@ readonly class StateMain implements StateMainInterface
         $stateService = new StateMainAfterService(
             $task->getResult()->status,
             $task->getResult()->data,
-            $task->action->externalId,
+            $task->action->getExternalId(),
             $this->actionService,
             $this->resultService,
             $this->logService,
@@ -258,6 +258,6 @@ readonly class StateMain implements StateMainInterface
     private function isObserved(StateHandlerObservedInterface $handler, Task $task, StateContext $context): bool
     {
         $observed = $handler->observed($context);
-        return count($observed) === 0 || in_array($task->action->externalId, $observed);
+        return count($observed) === 0 || in_array($task->action->getExternalId(), $observed);
     }
 }

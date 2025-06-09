@@ -39,7 +39,7 @@ readonly class TriggerService
 
         $subject = $this->actionStorage->get($trigger->subjectId);
 
-        if ($subject->silent) {
+        if ($subject->isSilent()) {
             throw new TriggerOnSilentActionException($trigger->actionId, $trigger->subjectId);
         }
 
@@ -54,7 +54,7 @@ readonly class TriggerService
     public function resolveTriggers(CompleteAction $completeAction): void
     {
         $triggers = $this->triggerStorage->getTriggers(
-            $completeAction->action->id,
+            $completeAction->action->getId(),
             $completeAction->result->status,
         );
 

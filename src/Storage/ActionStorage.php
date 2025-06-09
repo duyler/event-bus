@@ -28,20 +28,20 @@ class ActionStorage
 
     public function save(Action $action): void
     {
-        if (null !== $action->type) {
-            $this->byType[$action->type][$action->id] = $action;
+        if (null !== $action->getType()) {
+            $this->byType[$action->getType()][$action->getId()] = $action;
         }
 
-        foreach ($action->listen as $eventId) {
-            $this->byEvent[$eventId][$action->id] = $action;
+        foreach ($action->getListen() as $eventId) {
+            $this->byEvent[$eventId][$action->getId()] = $action;
         }
 
-        $this->data[$action->id] = $action;
+        $this->data[$action->getId()] = $action;
     }
 
     public function saveDynamic(Action $action): void
     {
-        $this->dynamic[$action->id] = $action;
+        $this->dynamic[$action->getId()] = $action;
     }
 
     public function get(string $actionId): Action

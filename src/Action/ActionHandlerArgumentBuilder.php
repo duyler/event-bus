@@ -33,9 +33,9 @@ class ActionHandlerArgumentBuilder
         /** @var array<string, object> $results */
         $results = [];
 
-        if ($this->eventRelationStorage->has($action->id)) {
-            foreach ($action->listen as $eventId) {
-                $eventDto = $this->eventRelationStorage->shift($action->id, $eventId)->event;
+        if ($this->eventRelationStorage->has($action->getId())) {
+            foreach ($action->getListen() as $eventId) {
+                $eventDto = $this->eventRelationStorage->shift($action->getId(), $eventId)->event;
                 $event = $this->eventStorage->get($eventDto->id);
                 if (null !== $eventDto->data && null !== $event && null !== $event->type) {
                     $results[$event->id] = $eventDto->data;
@@ -43,19 +43,19 @@ class ActionHandlerArgumentBuilder
             }
         }
 
-        $completeActions = $this->completeActionStorage->getAllByArray($action->required->getArrayCopy());
+        $completeActions = $this->completeActionStorage->getAllByArray($action->getRequired()->getArrayCopy());
 
         foreach ($completeActions as $completeAction) {
             $results = $this->prepareRequiredResults($completeAction) + $results;
         }
 
-        if ($this->actionSubstitution->isSubstituteResult($action->id)) {
-            $actionResultSubstitution = $this->actionSubstitution->getSubstituteResult($action->id);
+        if ($this->actionSubstitution->isSubstituteResult($action->getId())) {
+            $actionResultSubstitution = $this->actionSubstitution->getSubstituteResult($action->getId());
             $results[$actionResultSubstitution->requiredActionId] = $actionResultSubstitution->substitution;
         }
 
-        if (null === $action->argument) {
-            if (is_callable($action->handler)) {
+        if (null === $action->getArgument()) {
+            if (is_callable($action->getHandler())) {
                 return $this->createContext(
                     $action,
                     $container,
@@ -65,10 +65,11 @@ class ActionHandlerArgumentBuilder
             return null;
         }
 
-        if (null === $action->argumentFactory) {
+        if (null === $action->getArgumentFactory()) {
             foreach ($results as $definition) {
-                if ($definition instanceof $action->argument) {
-                    if (is_callable($action->handler)) {
+                $actionArgument = $action->getArgument();
+                if ($definition instanceof $actionArgument) {
+                    if (is_callable($action->getHandler())) {
                         return $this->createContext(
                             $action,
                             $container,
@@ -79,14 +80,14 @@ class ActionHandlerArgumentBuilder
                 }
             }
             throw new LogicException(
-                'Argument factory is not set to unresolved argument: ' . $action->argument . ' for ' . $action->id,
+                'Argument factory is not set to unresolved argument: ' . $action->getArgument() . ' for ' . $action->getId(),
             );
         }
 
-        $factory = $action->argumentFactory;
+        $factory = $action->getArgumentFactory();
 
         $factoryContext = new FactoryContext(
-            $action->id,
+            $action->getId(),
             $container,
             $results,
         );
@@ -98,13 +99,13 @@ class ActionHandlerArgumentBuilder
             $factory = $container->get($factory);
 
             if (!is_callable($factory)) {
-                throw new InvalidArgumentFactoryException($action->argument);
+                throw new InvalidArgumentFactoryException($action->getArgument());
             }
             /** @var object $argument */
             $argument = $factory($factoryContext);
         }
 
-        if (is_callable($action->handler)) {
+        if (is_callable($action->getHandler())) {
             return $this->createContext(
                 $action,
                 $container,
@@ -120,8 +121,8 @@ class ActionHandlerArgumentBuilder
     {
         $results = [];
 
-        if (ResultStatus::Fail === $completeAction->result->status && null !== $completeAction->action->type) {
-            $alternatesActions = $this->completeActionStorage->getAllByArray($completeAction->action->alternates);
+        if (ResultStatus::Fail === $completeAction->result->status && null !== $completeAction->action->getType()) {
+            $alternatesActions = $this->completeActionStorage->getAllByArray($completeAction->action->getAlternates());
 
             foreach ($alternatesActions as $alternateAction) {
                 if (ResultStatus::Success === $alternateAction->result->status) {
@@ -129,15 +130,15 @@ class ActionHandlerArgumentBuilder
                         continue;
                     }
 
-                    $results[$completeAction->action->id] = $alternateAction->result->data;
+                    $results[$completeAction->action->getId()] = $alternateAction->result->data;
 
                     return $results;
                 }
             }
         }
 
-        if (null !== $completeAction->result->data && null !== $completeAction->action->type) {
-            $results[$completeAction->action->id] = $completeAction->result->data;
+        if (null !== $completeAction->result->data && null !== $completeAction->action->getType()) {
+            $results[$completeAction->action->getId()] = $completeAction->result->data;
         }
 
         return $results;
@@ -150,16 +151,16 @@ class ActionHandlerArgumentBuilder
     ): object {
 
         $context = new ActionContext(
-            $action->id,
+            $action->getId(),
             $container,
             $argument,
         );
 
-        if (null === $action->context) {
+        if (null === $action->getContext()) {
             return $context;
         }
 
-        $reflectionClass = new ReflectionClass($action->context);
+        $reflectionClass = new ReflectionClass($action->getContext());
         $customContext = $reflectionClass->newInstance($context);
 
         if (false === $customContext instanceof CustomContextInterface) {

@@ -20,7 +20,7 @@ class ResolveActionsAfterEventDeletedEventListener
         $actions = $this->actionStorage->getByEvent($event->eventId);
 
         foreach ($actions as $action) {
-            $this->actionService->removeAction($action->id);
+            $this->actionService->removeAction($action->getId());
         }
     }
 }

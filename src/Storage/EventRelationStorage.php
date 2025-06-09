@@ -21,7 +21,7 @@ class EventRelationStorage
 
     public function save(EventRelation $eventRelation): void
     {
-        $this->data[$eventRelation->action->id][$eventRelation->event->id][] = $eventRelation;
+        $this->data[$eventRelation->action->getId()][$eventRelation->event->id][] = $eventRelation;
         $this->lastById[$eventRelation->event->id] = $eventRelation;
     }
 
@@ -69,7 +69,7 @@ class EventRelationStorage
         }
 
         foreach ($this->lastById as $relation) {
-            if ($relation->action->id === $actionId) {
+            if ($relation->action->getId() === $actionId) {
                 unset($this->lastById[$relation->event->id]);
             }
         }

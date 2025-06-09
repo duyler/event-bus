@@ -35,7 +35,7 @@ final readonly class Action
         public string|Closure|null $argumentFactory = null,
 
         /** @var class-string|null */
-        public string|Closure|null $context = null,
+        public string|null $context = null,
 
         /** @var class-string|null */
         public string|null $type = null,
@@ -65,29 +65,30 @@ final readonly class Action
     public static function fromInternal(InternalAction $internalAction): Action
     {
         return new static(
-            id: $internalAction->externalId,
-            handler: $internalAction->handler,
-            required: $internalAction->externalRequired,
-            listen: $internalAction->externalListen,
-            bind: $internalAction->bind,
-            providers: $internalAction->providers,
-            definitions: $internalAction->definitions,
-            argument: $internalAction->argument,
-            argumentFactory: $internalAction->argumentFactory,
-            context: $internalAction->context,
-            type: $internalAction->type,
-            typeCollection: $internalAction->typeCollection,
-            immutable: $internalAction->immutable,
-            rollback: $internalAction->rollback,
-            externalAccess: $internalAction->externalAccess,
-            repeatable: $internalAction->repeatable,
-            lock: $internalAction->lock,
-            private: $internalAction->private,
-            silent: $internalAction->silent,
-            alternates: $internalAction->externalAlternates,
-            retries: $internalAction->retries,
-            retryDelay: $internalAction->retryDelay,
-            labels: $internalAction->labels,
+            id: $internalAction->getExternalId(),
+            handler: $internalAction->getHandler(),
+            required: $internalAction->getExternalRequired(),
+            listen: $internalAction->getExternalListen(),
+            bind: $internalAction->getBind(),
+            providers: $internalAction->getProviders(),
+            definitions: $internalAction->getDefinitions(),
+            argument: $internalAction->getArgument(),
+            argumentFactory: $internalAction->getArgumentFactory(),
+            context: $internalAction->getContext(),
+            type: $internalAction->getType(),
+            typeCollection: $internalAction->getTypeCollection(),
+            immutable: $internalAction->isImmutable(),
+            rollback: $internalAction->getRollback(),
+            externalAccess: $internalAction->isExternalAccess(),
+            repeatable: $internalAction->isRepeatable(),
+            lock: $internalAction->isLock(),
+            private: $internalAction->isPrivate(),
+            sealed: $internalAction->getExternalSealed(),
+            silent: $internalAction->isSilent(),
+            alternates: $internalAction->getExternalAlternates(),
+            retries: $internalAction->getRetries(),
+            retryDelay: $internalAction->getRetryDelay(),
+            labels: $internalAction->getLabels(),
         );
     }
 }

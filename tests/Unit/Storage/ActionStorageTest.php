@@ -25,7 +25,7 @@ class ActionStorageTest extends TestCase
         );
         $this->actionStorage->save($action);
 
-        $this->assertSame($action, $this->actionStorage->get($action->id));
+        $this->assertSame($action, $this->actionStorage->get($action->getId()));
     }
 
     protected function setUp(): void

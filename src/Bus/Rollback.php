@@ -26,11 +26,14 @@ final readonly class Rollback
         foreach ($successLog as $actionId) {
             $tasks = $this->taskStorage->getAllByActionId($actionId);
             foreach ($tasks as $task) {
-                if (null === $task->action->rollback) {
+
+                $actionRollback = $task->action->getRollback();
+
+                if (null === $actionRollback) {
                     continue;
                 }
 
-                $actionContainer = $this->containerStorage->get($task->action->id);
+                $actionContainer = $this->containerStorage->get($task->action->getId());
 
                 $rollbackDto = new RollbackDto(
                     container: $actionContainer,
@@ -39,13 +42,13 @@ final readonly class Rollback
                     result: $task->getResult(),
                 );
 
-                if (is_callable($task->action->rollback)) {
-                    ($task->action->rollback)($rollbackDto);
+                if (is_callable($actionRollback)) {
+                    ($actionRollback)($rollbackDto);
                     continue;
                 }
 
                 /** @var RollbackActionInterface $rollback */
-                $rollback = $actionContainer->get($task->action->rollback);
+                $rollback = $actionContainer->get($actionRollback);
                 $this->rollback($rollback, $rollbackDto);
             }
         }

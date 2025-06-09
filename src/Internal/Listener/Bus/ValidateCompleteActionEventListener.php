@@ -17,8 +17,8 @@ class ValidateCompleteActionEventListener
 
     public function __invoke(TaskAfterRunEvent $event): void
     {
-        if ($this->completeActionStorage->isExists($event->task->action->id)) {
-            $completeAction = $this->completeActionStorage->get($event->task->action->id);
+        if ($this->completeActionStorage->isExists($event->task->action->getId())) {
+            $completeAction = $this->completeActionStorage->get($event->task->action->getId());
             $this->validateService->validateCompleteAction($completeAction);
         }
     }

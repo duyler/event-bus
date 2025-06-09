@@ -15,7 +15,7 @@ final class TaskStorage
 
     public function add(Task $task): void
     {
-        $this->tasks[$task->action->id][$task->getId()] = $task;
+        $this->tasks[$task->action->getId()][$task->getId()] = $task;
     }
 
     public function get(string $actionId, string $taskId): Task

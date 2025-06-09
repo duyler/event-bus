@@ -27,9 +27,9 @@ class EventStorageTest extends TestCase
 
         $this->eventStorage->save($event);
 
-        $this->assertEquals($event, $this->eventStorage->get($event->action->id));
-        $this->assertTrue($this->eventStorage->isExists($event->action->id));
-        $this->assertEquals($event->result, $this->eventStorage->getResult($event->action->id));
+        $this->assertEquals($event, $this->eventStorage->get($event->action->getId()));
+        $this->assertTrue($this->eventStorage->isExists($event->action->getId()));
+        $this->assertEquals($event->result, $this->eventStorage->getResult($event->action->getId()));
     }
 
     protected function setUp(): void
