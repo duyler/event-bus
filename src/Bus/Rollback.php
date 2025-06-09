@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
+use Duyler\EventBus\Contract\RollbackActionInterface;
 use Duyler\EventBus\Dto\Rollback as RollbackDto;
 use Duyler\EventBus\Storage\ActionContainerStorage;
-use Duyler\EventBus\Contract\RollbackActionInterface;
 use Duyler\EventBus\Storage\TaskStorage;
 
 use function is_callable;

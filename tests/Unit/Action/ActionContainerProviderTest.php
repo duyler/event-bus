@@ -6,8 +6,8 @@ namespace Duyler\EventBus\Test\Unit\Action;
 
 use Duyler\EventBus\Action\ActionContainerProvider;
 use Duyler\EventBus\Action\ActionEventDispatcher;
-use Duyler\EventBus\Build\SharedService;
 use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\SharedService;
 use Duyler\EventBus\Bus\ActionContainer;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Storage\ActionContainerStorage;

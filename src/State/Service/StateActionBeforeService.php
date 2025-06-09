@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service;
 
-use Duyler\EventBus\Bus\Action as InternalAction;
 use Duyler\EventBus\Build\Action as ExternalAction;
+use Duyler\EventBus\Bus\Action as InternalAction;
 use Duyler\EventBus\Bus\ActionContainer;
 
 class StateActionBeforeService

@@ -6,8 +6,8 @@ namespace Duyler\EventBus\Build;
 
 use Closure;
 use DateInterval;
-use UnitEnum;
 use Duyler\EventBus\Bus\Action as InternalAction;
+use UnitEnum;
 
 final readonly class Action
 {

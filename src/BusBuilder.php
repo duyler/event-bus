@@ -6,12 +6,12 @@ namespace Duyler\EventBus;
 
 use Duyler\DI\Container;
 use Duyler\DI\ContainerConfig;
+use Duyler\EventBus\Build\Action as ExternalAction;
 use Duyler\EventBus\Build\Context;
 use Duyler\EventBus\Build\Event;
 use Duyler\EventBus\Build\SharedService;
 use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\Bus\Action as InternalAction;
-use Duyler\EventBus\Build\Action as ExternalAction;
 use Duyler\EventBus\Bus\State;
 use Duyler\EventBus\Channel\Channel;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;

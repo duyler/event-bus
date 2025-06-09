@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service\Trait;
 
+use Duyler\EventBus\Build\Action as ExternalAction;
 use Duyler\EventBus\Build\SharedService;
 use Duyler\EventBus\Bus\Action as InternalAction;
-use Duyler\EventBus\Build\Action as ExternalAction;
 use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Service\ActionService;
 use UnitEnum;

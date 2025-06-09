@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Storage;
 
-use Duyler\EventBus\Build\Trigger;
-use Duyler\EventBus\Enum\ResultStatus;
-use Duyler\EventBus\Formatter\IdFormatter;
-
 use function array_flip;
 use function array_intersect_key;
 use function array_key_exists;
 use function array_keys;
+
+use Duyler\EventBus\Build\Trigger;
+use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Formatter\IdFormatter;
+
 use function preg_grep;
 use function preg_quote;
 

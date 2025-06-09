@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Service;
 
-use Duyler\EventBus\Storage\CompleteActionStorage;
-use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Exception\ActionNotAllowExternalAccessException;
 use Duyler\EventBus\Exception\ResultNotExistsException;
+use Duyler\EventBus\Storage\CompleteActionStorage;
+use Duyler\EventBus\Storage\EventRelationStorage;
 
 class ResultService
 {

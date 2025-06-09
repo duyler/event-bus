@@ -11,13 +11,13 @@ use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DispatchedEventNotDefinedException;
 use Duyler\EventBus\Exception\EventNotDefinedException;
+use Duyler\EventBus\Exception\NotAllowedSealedActionException;
 use Duyler\EventBus\Exception\ResultNotExistsException;
 use Duyler\EventBus\Exception\SubscribedActionNotDefinedException;
 use Duyler\EventBus\Exception\TriggerAlreadyDefinedException;
 use Duyler\EventBus\Exception\TriggerNotFoundException;
 use Duyler\EventBus\Exception\TriggerOnNotDefinedActionException;
 use Duyler\EventBus\Exception\TriggerOnSilentActionException;
-use Duyler\EventBus\Exception\NotAllowedSealedActionException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

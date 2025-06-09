@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Test\Functional\Run;
 
 use Duyler\DI\Provider\AbstractProvider;
-use Duyler\EventBus\Build\SharedService;
 use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\SharedService;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Override;

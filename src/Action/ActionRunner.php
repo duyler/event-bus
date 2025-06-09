@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-use Override;
 use Closure;
 use Duyler\EventBus\Contract\ActionRunnerInterface;
+use Override;
 
 class ActionRunner implements ActionRunnerInterface
 {

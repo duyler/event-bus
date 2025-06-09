@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Internal\Listener\Bus;
 
 use Duyler\EventBus\Bus\Bus;
+use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
 use Duyler\EventBus\Storage\ActionContainerStorage;
 use Duyler\EventBus\Storage\CompleteActionStorage;
-use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
 
 final readonly class AfterCompleteActionEventListener
 {

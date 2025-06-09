@@ -8,14 +8,14 @@ use Duyler\EventBus\Build\Event;
 use Duyler\EventBus\Bus\Bus;
 use Duyler\EventBus\Bus\EventRelation;
 use Duyler\EventBus\Bus\State;
-use Duyler\EventBus\Exception\DispatchedEventNotDefinedException;
-use Duyler\EventBus\Internal\Event\EventRemovedEvent;
-use Duyler\EventBus\Storage\ActionStorage;
-use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Dto\Event as EventDto;
 use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
+use Duyler\EventBus\Exception\DispatchedEventNotDefinedException;
+use Duyler\EventBus\Internal\Event\EventRemovedEvent;
+use Duyler\EventBus\Storage\ActionStorage;
+use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\EventStorage;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
