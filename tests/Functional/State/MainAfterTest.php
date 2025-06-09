@@ -344,7 +344,7 @@ class MainAfterStateHandlerWithAction implements MainAfterStateHandlerInterface
     #[Override]
     public function handle(StateMainAfterService $stateService, StateContext $context): void
     {
-        $stateService->getByContract(stdClass::class);
+        $stateService->getByType(stdClass::class);
     }
 
     #[Override]

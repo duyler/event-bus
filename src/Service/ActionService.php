@@ -99,7 +99,7 @@ readonly class ActionService
     }
 
     /** @return array<string, Action> */
-    public function getByContract(string $contract): array
+    public function getByType(string $contract): array
     {
         return $this->actionStorage->getByContract($contract);
     }

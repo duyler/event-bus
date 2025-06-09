@@ -45,11 +45,11 @@ trait ActionServiceTrait
     }
 
     /** @return array<string, ExternalAction> */
-    public function getByContract(string $contract): array
+    public function getByType(string $contract): array
     {
         $externalByType = [];
 
-        foreach ($this->actionService->getByContract($contract) as $action) {
+        foreach ($this->actionService->getByType($contract) as $action) {
             $externalByType[$action->id] = ExternalAction::fromInternal($action);
         }
 
