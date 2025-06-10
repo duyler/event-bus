@@ -269,6 +269,15 @@ class MainAfterStateHandlerWithAddDynamicAction implements MainAfterStateHandler
             new Trigger(
                 subjectId: 'ActionFromBuilder',
                 actionId: 'RemovableAction',
+                status: ResultStatus::Success,
+            ),
+        );
+
+        $stateService->addTrigger(
+            new Trigger(
+                subjectId: 'ActionFromBuilder',
+                actionId: 'RemovableAction',
+                status: ResultStatus::Fail,
             ),
         );
     }

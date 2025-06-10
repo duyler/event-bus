@@ -13,22 +13,16 @@ use Duyler\EventBus\Exception\TriggerNotFoundException;
 use Duyler\EventBus\Exception\TriggerOnNotDefinedActionException;
 use Duyler\EventBus\Exception\TriggerOnSilentActionException;
 use Duyler\EventBus\Storage\ActionStorage;
-use Duyler\EventBus\Storage\TriggerStorage;
 
 readonly class TriggerService
 {
     public function __construct(
-        private TriggerStorage $triggerStorage,
         private ActionStorage $actionStorage,
         private Bus $bus,
     ) {}
 
     public function addTrigger(Trigger $trigger): void
     {
-        if ($this->triggerStorage->isExists($trigger)) {
-            throw new TriggerAlreadyDefinedException($trigger);
-        }
-
         if (false === $this->actionStorage->isExists($trigger->actionId)) {
             throw new SubscribedActionNotDefinedException($trigger->subjectId);
         }
@@ -39,38 +33,44 @@ readonly class TriggerService
 
         $subject = $this->actionStorage->get($trigger->subjectId);
 
+        if ($subject->triggerIsExists($trigger->actionId, $trigger->status)) {
+            throw new TriggerAlreadyDefinedException($trigger);
+        }
+
         if ($subject->isSilent()) {
             throw new TriggerOnSilentActionException($trigger->actionId, $trigger->subjectId);
         }
 
-        $this->triggerStorage->save($trigger);
+        $subject->addTrigger($trigger);
+        $triggeredOn = $this->actionStorage->get($trigger->actionId);
+        $triggeredOn->addTriggeredOn($trigger->subjectId);
     }
 
     public function triggerIsExists(Trigger $trigger): bool
     {
-        return $this->triggerStorage->isExists($trigger);
+        return $this->actionStorage
+            ->get($trigger->subjectId)
+            ->triggerIsExists($trigger->actionId, $trigger->status);
     }
 
     public function resolveTriggers(CompleteAction $completeAction): void
     {
-        $triggers = $this->triggerStorage->getTriggers(
-            $completeAction->action->getId(),
-            $completeAction->result->status,
-        );
+        $triggers = $completeAction->action->getTriggers($completeAction->result->status);
 
-        foreach ($triggers as $trigger) {
-            $action = $this->actionStorage->get($trigger->actionId);
-
+        foreach ($triggers as $actionId) {
+            $action = $this->actionStorage->get($actionId);
             $this->bus->doAction($action);
         }
     }
 
     public function remove(Trigger $trigger): void
     {
-        if (false === $this->triggerStorage->isExists($trigger)) {
+        $action = $this->actionStorage->get($trigger->subjectId);
+
+        if (false === $action->triggerIsExists($trigger->actionId, $trigger->status)) {
             throw new TriggerNotFoundException($trigger);
         }
 
-        $this->triggerStorage->remove($trigger);
+        $action->removeTrigger($trigger->actionId, $trigger->status);
     }
 }

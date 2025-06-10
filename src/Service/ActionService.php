@@ -29,7 +29,6 @@ use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\EventStorage;
 use Duyler\EventBus\Storage\TaskStorage;
-use Duyler\EventBus\Storage\TriggerStorage;
 
 readonly class ActionService
 {
@@ -37,7 +36,6 @@ readonly class ActionService
         private ActionStorage $actionStorage,
         private ActionContainerProvider $actionContainerProvider,
         private ActionSubstitutionInterface $actionSubstitution,
-        private TriggerStorage $triggerStorage,
         private EventStorage $eventStorage,
         private Bus $bus,
         private ActionContainerStorage $actionContainerStorage,
@@ -211,6 +209,16 @@ readonly class ActionService
             return;
         }
 
+        $action = $this->actionStorage->get($actionId);
+
+        $triggeredOn = $action->getTriggeredOn();
+
+        foreach ($triggeredOn as $triggeredActionId) {
+            $triggeredAction = $this->actionStorage->get($triggeredActionId);
+            $triggeredAction->removeTrigger($actionId, ResultStatus::Success);
+            $triggeredAction->removeTrigger($actionId, ResultStatus::Fail);
+        }
+
         $requiredMap = $this->actionRequiredMap->get($actionId);
         $this->actionRequiredMap->remove($actionId);
 
@@ -230,12 +238,7 @@ readonly class ActionService
 
         IdFormatter::remove($actionId);
 
-        foreach ($requiredMap as $subject) {
-            $this->removeAction($subject->getId());
-        }
-
         $this->actionStorage->removeDynamic($actionId);
-        $this->triggerStorage->removeByActionId($actionId);
         $this->actionContainerStorage->remove($actionId);
         $this->eventRelationStorage->removeByActionId($actionId);
 
@@ -243,16 +246,8 @@ readonly class ActionService
             $this->completeActionStorage->remove($actionId);
         }
 
-        $successTriggers = $this->triggerStorage->getTriggers($actionId, ResultStatus::Success);
-
-        foreach ($successTriggers as $successTrigger) {
-            $this->triggerStorage->remove($successTrigger);
-        }
-
-        $failTriggers = $this->triggerStorage->getTriggers($actionId, ResultStatus::Fail);
-
-        foreach ($failTriggers as $failTrigger) {
-            $this->triggerStorage->remove($failTrigger);
+        foreach ($requiredMap as $subject) {
+            $this->removeAction($subject->getId());
         }
     }
 }
