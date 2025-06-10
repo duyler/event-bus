@@ -7,34 +7,45 @@ namespace Duyler\EventBus\Bus;
 use Closure;
 use DateInterval;
 use Duyler\EventBus\Build\Action as ExternalAction;
+use Duyler\EventBus\Build\Trigger;
+use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Formatter\IdFormatter;
 use InvalidArgumentException;
 use RecursiveArrayIterator;
 use ReflectionClass;
 use UnitEnum;
 
-final readonly class Action
+final class Action
 {
     /** @var RecursiveArrayIterator<array-key, string> */
-    private RecursiveArrayIterator $required;
+    private readonly RecursiveArrayIterator $required;
 
     /** @var string[] */
-    private array $listen;
+    private readonly array $listen;
 
     /** @var array<array-key, string|UnitEnum> */
-    private array $externalListen;
+    private readonly array $externalListen;
 
     /** @var string[] */
-    private array $sealed;
+    private readonly array $sealed;
 
     /** @var array<array-key, string|UnitEnum> */
-    private array $externalSealed;
+    private readonly array $externalSealed;
 
     /** @var string[] */
-    private array $alternates;
+    private readonly array $alternates;
 
     /** @var array<array-key, string|UnitEnum> */
-    private array $externalAlternates;
+    private readonly array $externalAlternates;
+
+    /** @var array<string, string> */
+    private array $triggerOnFailureFor = [];
+
+    /** @var array<string, string> */
+    private array $triggerOnSuccessFor = [];
+
+    /** @var array<array-key, string> */
+    private array $triggeredOn = [];
 
     /**
      * @param array<array-key, string|UnitEnum> $externalRequired
@@ -43,49 +54,49 @@ final readonly class Action
      * @param array<array-key, string|UnitEnum> $alternates
      */
     public function __construct(
-        private string $id,
-        private string|UnitEnum $externalId,
-        private string|Closure $handler,
+        private readonly string $id,
+        private readonly string|UnitEnum $externalId,
+        private readonly string|Closure $handler,
 
         /** @var array<array-key, string|UnitEnum> */
-        private array $externalRequired = [],
+        private readonly array $externalRequired = [],
         array $listen = [],
 
         /** @var array<string, string> */
-        private array $bind = [],
+        private readonly array $bind = [],
 
         /** @var array<string, string> */
-        private array $providers = [],
+        private readonly array $providers = [],
 
         /** @var array<string, array<string, mixed>> */
-        private array $definitions = [],
-        private ?string $argument = null,
+        private readonly array $definitions = [],
+        private readonly ?string $argument = null,
 
         /** @var class-string|Closure|null */
-        private string|Closure|null $argumentFactory = null,
+        private readonly string|Closure|null $argumentFactory = null,
 
         /** @var class-string|null */
-        private string|null $context = null,
+        private readonly string|null $context = null,
 
         /** @var class-string|null */
-        private string|null $type = null,
+        private readonly string|null $type = null,
 
         /** @var class-string|null */
-        private string|null $typeCollection = null,
-        private bool $immutable = true,
-        private string|Closure|null $rollback = null,
-        private bool $externalAccess = true,
-        private bool $repeatable = false,
-        private bool $lock = true,
-        private bool $private = false,
+        private readonly string|null $typeCollection = null,
+        private readonly bool $immutable = true,
+        private readonly string|Closure|null $rollback = null,
+        private readonly bool $externalAccess = true,
+        private readonly bool $repeatable = false,
+        private readonly bool $lock = true,
+        private readonly bool $private = false,
         array $sealed = [],
-        private bool $silent = false,
+        private readonly bool $silent = false,
         array $alternates = [],
-        private int $retries = 0,
-        private null|DateInterval $retryDelay = null,
+        private readonly int $retries = 0,
+        private readonly null|DateInterval $retryDelay = null,
 
         /** @var array<string|int, mixed> */
-        private array $labels = [],
+        private readonly array $labels = [],
     ) {
         if ($this->immutable) {
             if (null !== $this->type) {
@@ -362,5 +373,57 @@ final readonly class Action
     public function getLabels(): array
     {
         return $this->labels;
+    }
+
+    public function addTrigger(Trigger $trigger): void
+    {
+        if (ResultStatus::Fail === $trigger->status) {
+            $this->triggerOnFailureFor[$trigger->actionId] = $trigger->actionId;
+        } else {
+            $this->triggerOnSuccessFor[$trigger->actionId] = $trigger->actionId;
+        }
+    }
+
+    public function addTriggeredOn(string $actionId): void
+    {
+        $this->triggeredOn[] = $actionId;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getTriggers(ResultStatus $status): array
+    {
+        return match ($status) {
+            ResultStatus::Success => $this->triggerOnSuccessFor,
+            ResultStatus::Fail => $this->triggerOnFailureFor,
+            default => [],
+        };
+    }
+
+    public function triggerIsExists(string $actionId, ResultStatus $status): bool
+    {
+        if (ResultStatus::Success === $status) {
+            return array_key_exists($actionId, $this->triggerOnSuccessFor);
+        }
+
+        return array_key_exists($actionId, $this->triggerOnFailureFor);
+    }
+
+    public function removeTrigger(string $actionId, ResultStatus $status): void
+    {
+        if (ResultStatus::Fail === $status) {
+            unset($this->triggerOnFailureFor[$actionId]);
+        } else {
+            unset($this->triggerOnSuccessFor[$actionId]);
+        }
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getTriggeredOn(): array
+    {
+        return $this->triggeredOn;
     }
 }
