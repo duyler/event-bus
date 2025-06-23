@@ -86,6 +86,22 @@ class AddActionTest extends TestCase
 
         $builder->build()->run();
     }
+
+    #[Test]
+    public function actionIsExists_with_action()
+    {
+        $builder = new BusBuilder(new BusConfig());
+
+        $builder->doAction(
+            new Action(
+                id: 'Test',
+                handler: function (): void {},
+                externalAccess: true,
+            ),
+        );
+
+        $this->assertTrue($builder->actionIsExists('Test'));
+    }
 }
 
 enum TestAction

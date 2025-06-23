@@ -25,6 +25,7 @@ use Duyler\EventBus\Service\EventService;
 use Duyler\EventBus\Service\StateService;
 use Duyler\EventBus\Service\TriggerService;
 use Psr\EventDispatcher\ListenerProviderInterface;
+use UnitEnum;
 
 class BusBuilder
 {
@@ -131,6 +132,11 @@ class BusBuilder
         return $bus;
     }
 
+    public function actionIsExists(string|UnitEnum $actionId): bool
+    {
+        return array_key_exists(IdFormatter::toString($actionId), $this->actions);
+    }
+
     public function addAction(ExternalAction $action): static
     {
         $internalAction = InternalAction::fromExternal($action);
@@ -197,5 +203,10 @@ class BusBuilder
         $this->events[$event->id] = $event;
 
         return $this;
+    }
+
+    public function eventIsExists(string|UnitEnum $eventId): bool
+    {
+        return array_key_exists(IdFormatter::toString($eventId), $this->events);
     }
 }
