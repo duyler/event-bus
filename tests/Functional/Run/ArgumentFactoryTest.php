@@ -44,7 +44,7 @@ class ArgumentFactoryTest extends TestCase
                                 return $text;
                             },
                         );
-                        return new TestArgument($context->getType('TestArgumentFactoryAction')->seyHello . $text->name);
+                        return new TestArgument($context->getTypeById('TestArgumentFactoryAction')->seyHello . $text->name);
                     },
                     type: TestArgument::class,
                     externalAccess: true,
@@ -69,7 +69,7 @@ class ArgumentFactoryTest extends TestCase
                     handler: fn(ActionContext $context) => $context->argument(),
                     argument: TestArgument::class,
                     argumentFactory: function (FactoryContext $context) {
-                        $contract = $context->getType(TestArgumentContract::class);
+                        $contract = $context->getTypeById(TestArgumentContract::class);
                         $text = $context->call(
                             function (stdClass $text) {
                                 $text->name = ' Duyler!';
@@ -84,7 +84,7 @@ class ArgumentFactoryTest extends TestCase
             );
 
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('Addressing an invalid context from TestArgument');
+        $this->expectExceptionMessage('Type not defined with action id ' . TestArgumentContract::class . ' for TestArgument factory');
 
         $builder->build()->run();
     }
@@ -167,7 +167,7 @@ class ArgumentFactory
 {
     public function __invoke(FactoryContext $context): TestArgument
     {
-        $contract = $context->getType('TestArgumentFactoryAction');
+        $contract = $context->getTypeById('TestArgumentFactoryAction');
         return new TestArgument($contract->seyHello . ' Duyler! With class factory');
     }
 }

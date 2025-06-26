@@ -8,6 +8,7 @@ use Closure;
 use DateInterval;
 use Duyler\EventBus\Build\Action as ExternalAction;
 use Duyler\EventBus\Build\Trigger;
+use Duyler\EventBus\Build\Type;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Formatter\IdFormatter;
 use InvalidArgumentException;
@@ -17,8 +18,15 @@ use UnitEnum;
 
 final class Action
 {
+    public const string COLLECTION_PREFIX = 'Collection@';
+
+    private readonly null|string $typeId;
+
     /** @var RecursiveArrayIterator<array-key, string> */
     private readonly RecursiveArrayIterator $required;
+
+    /** @var array<array-key, string> */
+    private readonly array $dependsOn;
 
     /** @var string[] */
     private readonly array $listen;
@@ -49,6 +57,7 @@ final class Action
 
     /**
      * @param array<array-key, string|UnitEnum> $externalRequired
+     * @param array<array-key, Type> $dependsOn
      * @param array<array-key, string|UnitEnum> $listen
      * @param array<array-key, string|UnitEnum> $sealed
      * @param array<array-key, string|UnitEnum> $alternates
@@ -60,6 +69,7 @@ final class Action
 
         /** @var array<array-key, string|UnitEnum> */
         private readonly array $externalRequired = [],
+        array $dependsOn = [],
         array $listen = [],
 
         /** @var array<string, string> */
@@ -116,12 +126,32 @@ final class Action
             throw new InvalidArgumentException('Type not set for collection ' . $this->typeCollection);
         }
 
+        if (null !== $this->typeCollection) {
+            $this->typeId = self::COLLECTION_PREFIX . $this->type;
+        } else {
+            $this->typeId = $this->type;
+        }
+
         $this->required = new RecursiveArrayIterator();
 
         /** @var string|UnitEnum $actionId */
         foreach ($this->externalRequired as $actionId) {
             $this->required->append(IdFormatter::toString($actionId));
         }
+
+        $dependsOnIds = [];
+
+        foreach ($dependsOn as $type) {
+            $typeId = '';
+
+            if ($type->typeCollection) {
+                $typeId = self::COLLECTION_PREFIX;
+            }
+
+            $dependsOnIds[] = $typeId . $type->type;
+        }
+
+        $this->dependsOn = $dependsOnIds;
 
         $alternatesActions = [];
 
@@ -161,6 +191,7 @@ final class Action
             externalId: $externalAction->id,
             handler: $externalAction->handler,
             externalRequired: $externalAction->required,
+            dependsOn: $externalAction->dependsOn,
             listen: $externalAction->listen,
             bind: $externalAction->bind,
             providers: $externalAction->providers,
@@ -191,6 +222,19 @@ final class Action
     public function getRequired(): RecursiveArrayIterator
     {
         return $this->required;
+    }
+
+    /**
+     * @return array<array-key, string>
+     */
+    public function getDependsOn(): array
+    {
+        return $this->dependsOn;
+    }
+
+    public function getTypeId(): ?string
+    {
+        return $this->typeId;
     }
 
     /**

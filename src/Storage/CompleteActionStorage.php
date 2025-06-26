@@ -16,9 +16,28 @@ class CompleteActionStorage
      */
     private array $data = [];
 
+    /**
+     * @var array<string, CompleteAction>
+     */
+    private array $byTypeId = [];
+
     public function save(CompleteAction $completeAction): void
     {
         $this->data[$completeAction->action->getId()] = $completeAction;
+
+        $type = $completeAction->action->getTypeId();
+
+        if (null !== $type) {
+            $this->byTypeId[$type] = $completeAction;
+        }
+    }
+
+    /**
+     * @return array<string, CompleteAction>
+     */
+    public function getAllByTypeArray(array $array): array
+    {
+        return array_intersect_key($this->byTypeId, array_flip($array));
     }
 
     /**
@@ -55,6 +74,7 @@ class CompleteActionStorage
     public function reset(): void
     {
         $this->data = [];
+        $this->byTypeId = [];
     }
 
     public function remove(string $actionId): void

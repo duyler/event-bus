@@ -18,6 +18,7 @@ use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Enum\TaskStatus;
 use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
 use Duyler\EventBus\Exception\ActionNotDefinedException;
+use Duyler\EventBus\Exception\ActionWithNotResolvedDependsException;
 use Duyler\EventBus\Exception\CannotRequirePrivateActionException;
 use Duyler\EventBus\Exception\CircularCallActionException;
 use Duyler\EventBus\Exception\EventNotDefinedException;
@@ -113,6 +114,9 @@ readonly class ActionService
     public function collect(array $actions): void
     {
         foreach ($actions as $action) {
+
+            $this->checkDependsOn($action, $actions);
+
             $requiredIterator = new ActionRequiredIterator($action->getRequired(), $actions);
 
             /** @var string $subject */
@@ -155,6 +159,26 @@ readonly class ActionService
 
         if (count($requiredAction->getSealed()) > 0 && !in_array($subject, $requiredAction->getSealed())) {
             throw new NotAllowedSealedActionException($subject, $requiredAction->getId());
+        }
+    }
+
+    /**
+     *@param array<string, Action> $actions
+     */
+    private function checkDependsOn(Action $actionWithDepends, array $actions): void
+    {
+        $depends = [];
+
+        foreach ($actions as $action) {
+            if (null !== $action->getTypeId()) {
+                $depends[$action->getTypeId()] = $action;
+            }
+        }
+
+        foreach ($actionWithDepends->getDependsOn() as $typeId) {
+            if (false === array_key_exists($typeId, $depends)) {
+                throw new ActionWithNotResolvedDependsException($typeId, $actionWithDepends->getId());
+            }
         }
     }
 
@@ -248,6 +272,20 @@ readonly class ActionService
 
         foreach ($requiredMap as $subject) {
             $this->removeAction($subject->getId());
+        }
+
+        $allActions = $this->actionStorage->getAll();
+
+        foreach ($allActions as $actionDepends) {
+            if ($action->getTypeId() === $actionDepends->getTypeId()) {
+                return;
+            }
+        }
+
+        foreach ($allActions as $actionDepends) {
+            if (in_array($action->getTypeId(), $actionDepends->getDependsOn())) {
+                $this->removeAction($actionDepends->getId());
+            }
         }
     }
 }

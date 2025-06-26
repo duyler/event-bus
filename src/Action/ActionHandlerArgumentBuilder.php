@@ -43,6 +43,12 @@ class ActionHandlerArgumentBuilder
             }
         }
 
+        $completeActionByType = $this->completeActionStorage->getAllByTypeArray($action->getDependsOn());
+
+        foreach ($completeActionByType as $completeAction) {
+            $results[$completeAction->action->getId()] = $completeAction->result->data;
+        }
+
         $completeActions = $this->completeActionStorage->getAllByArray($action->getRequired()->getArrayCopy());
 
         foreach ($completeActions as $completeAction) {
@@ -90,6 +96,7 @@ class ActionHandlerArgumentBuilder
             $action->getId(),
             $container,
             $results,
+            $this->completeActionStorage->getAllByTypeArray($action->getDependsOn()),
         );
 
         if (is_callable($factory)) {

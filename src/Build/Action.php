@@ -18,6 +18,9 @@ final readonly class Action
         /** @var array<array-key, string|UnitEnum> */
         public array $required = [],
 
+        /** @var array<array-key, Type> */
+        public array $dependsOn = [],
+
         /** @var array<array-key, string|UnitEnum> */
         public array $listen = [],
 
