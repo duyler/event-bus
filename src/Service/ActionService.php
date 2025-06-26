@@ -229,62 +229,79 @@ readonly class ActionService
 
     public function removeAction(string $actionId): void
     {
-        if (false === $this->actionStorage->isExistsDynamic($actionId)) {
-            return;
-        }
+        $stack = [$actionId];
+        $visited = [];
 
-        $action = $this->actionStorage->get($actionId);
+        while (0 < count($stack)) {
 
-        $triggeredOn = $action->getTriggeredOn();
+            $currentActionId = array_pop($stack);
 
-        foreach ($triggeredOn as $triggeredActionId) {
-            $triggeredAction = $this->actionStorage->get($triggeredActionId);
-            $triggeredAction->removeTrigger($actionId, ResultStatus::Success);
-            $triggeredAction->removeTrigger($actionId, ResultStatus::Fail);
-        }
+            if (isset($visited[$currentActionId])) {
+                continue;
+            }
 
-        $requiredMap = $this->actionRequiredMap->get($actionId);
-        $this->actionRequiredMap->remove($actionId);
+            $visited[$currentActionId] = true;
 
-        $tasks = $this->taskStorage->getAllByActionId($actionId);
+            if (false === $this->actionStorage->isExistsDynamic($currentActionId)) {
+                continue;
+            }
 
-        foreach ($tasks as $task) {
-            if ($this->taskQueue->inQueue($actionId)) {
-                if (TaskStatus::Primary === $task->getStatus()) {
-                    $task->reject();
+            $action = $this->actionStorage->get($currentActionId);
+            $triggeredOn = $action->getTriggeredOn();
+
+            foreach ($triggeredOn as $triggeredActionId) {
+                $triggeredAction = $this->actionStorage->get($triggeredActionId);
+                $triggeredAction->removeTrigger($currentActionId, ResultStatus::Success);
+                $triggeredAction->removeTrigger($currentActionId, ResultStatus::Fail);
+            }
+
+            $requiredMap = $this->actionRequiredMap->get($currentActionId);
+
+            $this->actionRequiredMap->remove($currentActionId);
+
+            $tasks = $this->taskStorage->getAllByActionId($currentActionId);
+            foreach ($tasks as $task) {
+                if ($this->taskQueue->inQueue($currentActionId)) {
+                    if (TaskStatus::Primary === $task->getStatus()) {
+                        $task->reject();
+                    }
+                }
+                if (TaskStatus::Held !== $task->getStatus()) {
+                    $this->bus->removeHeldTask($task->getId());
                 }
             }
 
-            if (TaskStatus::Held !== $task->getStatus()) {
-                $this->bus->removeHeldTask($task->getId());
+            IdFormatter::remove($currentActionId);
+
+            $this->actionStorage->removeDynamic($currentActionId);
+            $this->actionContainerStorage->remove($currentActionId);
+            $this->eventRelationStorage->removeByActionId($currentActionId);
+            if ($this->completeActionStorage->isExists($currentActionId)) {
+                $this->completeActionStorage->remove($currentActionId);
             }
-        }
 
-        IdFormatter::remove($actionId);
-
-        $this->actionStorage->removeDynamic($actionId);
-        $this->actionContainerStorage->remove($actionId);
-        $this->eventRelationStorage->removeByActionId($actionId);
-
-        if ($this->completeActionStorage->isExists($actionId)) {
-            $this->completeActionStorage->remove($actionId);
-        }
-
-        foreach ($requiredMap as $subject) {
-            $this->removeAction($subject->getId());
-        }
-
-        $allActions = $this->actionStorage->getAll();
-
-        foreach ($allActions as $actionDepends) {
-            if ($action->getTypeId() === $actionDepends->getTypeId()) {
-                return;
+            foreach ($requiredMap as $subject) {
+                $stack[] = $subject->getId();
             }
-        }
 
-        foreach ($allActions as $actionDepends) {
-            if (in_array($action->getTypeId(), $actionDepends->getDependsOn())) {
-                $this->removeAction($actionDepends->getId());
+            $allActions = $this->actionStorage->getAll();
+            $hasSameType = false;
+
+            foreach ($allActions as $actionDepends) {
+                if ($action->getTypeId() === $actionDepends->getTypeId()) {
+                    $hasSameType = true;
+                    break;
+                }
+            }
+
+            if ($hasSameType) {
+                continue;
+            }
+
+            foreach ($allActions as $actionDepends) {
+                if (in_array($action->getTypeId(), $actionDepends->getDependsOn())) {
+                    $stack[] = $actionDepends->getId();
+                }
             }
         }
     }
