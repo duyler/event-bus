@@ -285,23 +285,24 @@ readonly class ActionService
             }
 
             $allActions = $this->actionStorage->getAll();
-            $hasSameType = false;
+            $allWithType = [];
+            $allWithTypeAndDependsOnType = [];
 
             foreach ($allActions as $actionDepends) {
                 if ($action->getTypeId() === $actionDepends->getTypeId()) {
-                    $hasSameType = true;
-                    break;
+                    $allWithType[] = $actionDepends;
+                    if (in_array($action->getTypeId(), $actionDepends->getDependsOn())) {
+                        $allWithTypeAndDependsOnType[] = $actionDepends;
+                    }
                 }
             }
 
-            if ($hasSameType) {
+            if (count($allWithType) > count($allWithTypeAndDependsOnType)) {
                 continue;
             }
 
-            foreach ($allActions as $actionDepends) {
-                if (in_array($action->getTypeId(), $actionDepends->getDependsOn())) {
-                    $stack[] = $actionDepends->getId();
-                }
+            foreach ($allWithType as $actionDepends) {
+                $stack[] = $actionDepends->getId();
             }
         }
     }
