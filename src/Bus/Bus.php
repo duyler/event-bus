@@ -133,6 +133,12 @@ final class Bus
             return false;
         }
 
+        $completeByTypes = $this->completeActionStorage->getAllByTypeArray($task->action->getDependsOn());
+
+        if (count($completeByTypes) < count($task->action->getDependsOn())) {
+            return false;
+        }
+
         if (0 === $task->action->getRequired()->count()) {
             return true;
         }

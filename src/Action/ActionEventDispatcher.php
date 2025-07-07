@@ -15,7 +15,7 @@ use Throwable;
 class ActionEventDispatcher implements EventDispatcherInterface
 {
     public function __construct(
-        readonly private EventService $eventService,
+        private readonly EventService $eventService,
     ) {}
 
     /**
