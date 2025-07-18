@@ -66,6 +66,7 @@ final class Action
         private readonly string $id,
         private readonly string|UnitEnum $externalId,
         private readonly string|Closure $handler,
+        private readonly ?string $description = null,
 
         /** @var array<array-key, string|UnitEnum> */
         private readonly array $externalRequired = [],
@@ -190,6 +191,7 @@ final class Action
             id: IdFormatter::toString($externalAction->id),
             externalId: $externalAction->id,
             handler: $externalAction->handler,
+            description: $externalAction->description,
             externalRequired: $externalAction->required,
             dependsOn: $externalAction->dependsOn,
             listen: $externalAction->listen,
@@ -469,5 +471,10 @@ final class Action
     public function getTriggeredOn(): array
     {
         return $this->triggeredOn;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
     }
 }
