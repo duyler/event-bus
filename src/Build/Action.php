@@ -14,6 +14,7 @@ final readonly class Action
     public function __construct(
         public string|UnitEnum $id,
         public string|Closure $handler,
+        public ?string $description = null,
 
         /** @var array<array-key, string|UnitEnum> */
         public array $required = [],
@@ -70,6 +71,7 @@ final readonly class Action
         return new static(
             id: $internalAction->getExternalId(),
             handler: $internalAction->getHandler(),
+            description: $internalAction->getDescription(),
             required: $internalAction->getExternalRequired(),
             listen: $internalAction->getExternalListen(),
             bind: $internalAction->getBind(),
