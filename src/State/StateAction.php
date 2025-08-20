@@ -23,7 +23,7 @@ class StateAction implements StateActionInterface
     ) {}
 
     #[Override]
-    public function before(Action $action, object|null $argument): void
+    public function before(Action $action, ?object $argument): void
     {
         $stateService = new StateActionBeforeService(
             $this->actionContainerStorage->get($action->getId()),

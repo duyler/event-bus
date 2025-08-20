@@ -215,12 +215,10 @@ class ArgumentFactoryTest extends TestCase
             )->doAction(
                 new Action(
                     id: 'TestDepend',
-                    handler: function (ActionContext $context) {},
+                    handler: function (ActionContext $context): void {},
                     dependsOn: [Type::collectionOf(stdClass::class)],
                     argument: ArrayIterator::class,
-                    argumentFactory: function (FactoryContext $context) {
-                        return $context->getTypeCollection(stdClass::class);
-                    },
+                    argumentFactory: fn(FactoryContext $context) => $context->getTypeCollection(stdClass::class),
                 ),
             );
 
@@ -243,7 +241,7 @@ class ArgumentFactoryTest extends TestCase
                     id: 'TestArgument',
                     handler: fn(ActionContext $context) => $context->argument(),
                     argument: TestArgument::class,
-                    argumentFactory: function (FactoryContext $context) {
+                    argumentFactory: function (FactoryContext $context): void {
                         $context->getType(stdClass::class);
                     },
                     type: TestArgument::class,
@@ -268,7 +266,7 @@ class ArgumentFactoryTest extends TestCase
                     id: 'TestArgument',
                     handler: fn(ActionContext $context) => $context->argument(),
                     argument: TestArgument::class,
-                    argumentFactory: function (FactoryContext $context) {
+                    argumentFactory: function (FactoryContext $context): void {
                         $context->getTypeCollection(stdClass::class);
                     },
                     type: TestArgument::class,

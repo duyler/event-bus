@@ -10,6 +10,6 @@ readonly class ActionBeforeRunEvent
 {
     public function __construct(
         public Action $action,
-        public object|null $argument = null,
+        public ?object $argument = null,
     ) {}
 }

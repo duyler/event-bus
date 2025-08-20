@@ -13,7 +13,7 @@ class StateActionBeforeService
     public function __construct(
         private readonly ActionContainer $container,
         private readonly InternalAction $action,
-        private readonly object|null $argument,
+        private readonly ?object $argument,
     ) {}
 
     public function getContainer(): ActionContainer
@@ -26,7 +26,7 @@ class StateActionBeforeService
         return ExternalAction::fromInternal($this->action);
     }
 
-    public function getArgument(): null|object
+    public function getArgument(): ?object
     {
         return $this->argument;
     }

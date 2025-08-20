@@ -24,7 +24,7 @@ final class Message
     ) {
         /** @var DateInterval $interval */
         $interval = DateInterval::createFromDateString('1 minute');
-        $this->ttl = (new DateTimeImmutable())->add($interval);
+        $this->ttl = new DateTimeImmutable()->add($interval);
     }
 
     public function setPayload(mixed $payload, string $tag): self
@@ -38,7 +38,7 @@ final class Message
     {
         /** @var DateInterval $interval */
         $interval = DateInterval::createFromDateString($ttl);
-        $this->ttl = (new DateTimeImmutable())->add($interval);
+        $this->ttl = new DateTimeImmutable()->add($interval);
         return $this;
     }
 
