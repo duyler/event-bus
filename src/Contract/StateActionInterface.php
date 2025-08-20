@@ -9,7 +9,7 @@ use Throwable;
 
 interface StateActionInterface
 {
-    public function before(Action $action, object|null $argument): void;
+    public function before(Action $action, ?object $argument): void;
 
     public function after(Action $action, mixed $resultData): void;
 

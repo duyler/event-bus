@@ -19,7 +19,7 @@ class CompleteActionStorage
     /**
      * @var array<string, CompleteAction>
      */
-    private array $byTypeId = [];
+    private array $byTypeIdAllowed = [];
 
     public function save(CompleteAction $completeAction): void
     {
@@ -28,16 +28,32 @@ class CompleteActionStorage
         $type = $completeAction->action->getTypeId();
 
         if (null !== $type) {
-            $this->byTypeId[$type] = $completeAction;
+            if (false === $completeAction->action->isPrivate()) {
+                $this->byTypeIdAllowed[$type] = $completeAction;
+            }
         }
     }
 
     /**
      * @return array<string, CompleteAction>
      */
-    public function getAllByTypeArray(array $array): array
+    public function getAllAllowedByTypeArray(array $array, string $actionId): array
     {
-        return array_intersect_key($this->byTypeId, array_flip($array));
+        $withoutPrivate = array_intersect_key($this->byTypeIdAllowed, array_flip($array));
+
+        $allowed = [];
+
+        foreach ($withoutPrivate as $type => $completeAction) {
+            if (0 < count($completeAction->action->getSealed())) {
+                if (in_array($actionId, $completeAction->action->getSealed())) {
+                    $allowed[$type] = $completeAction;
+                }
+            } else {
+                $allowed[$type] = $completeAction;
+            }
+        }
+
+        return $allowed;
     }
 
     /**
@@ -74,7 +90,7 @@ class CompleteActionStorage
     public function reset(): void
     {
         $this->data = [];
-        $this->byTypeId = [];
+        $this->byTypeIdAllowed = [];
     }
 
     public function remove(string $actionId): void

@@ -133,7 +133,7 @@ class DependsOnTest extends TestCase
 
                     $stateService->doAction(new Action(
                         id: 'TestDepend',
-                        handler: function (ActionContext $context) {},
+                        handler: function (ActionContext $context): void {},
                         dependsOn: [Type::of(stdClass::class)],
                         argument: stdClass::class,
                     ));
@@ -203,7 +203,7 @@ class DependsOnTest extends TestCase
 
                     $stateService->doAction(new Action(
                         id: 'TestDepend',
-                        handler: function (ActionContext $context) {},
+                        handler: function (ActionContext $context): void {},
                         dependsOn: [Type::collectionOf(stdClass::class)],
                         argument: ArrayIterator::class,
                     ));

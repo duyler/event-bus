@@ -39,13 +39,13 @@ final readonly class Action
         public string|Closure|null $argumentFactory = null,
 
         /** @var class-string|null */
-        public string|null $context = null,
+        public ?string $context = null,
 
         /** @var class-string|null */
-        public string|null $type = null,
+        public ?string $type = null,
 
         /** @var class-string|null */
-        public string|null $typeCollection = null,
+        public ?string $typeCollection = null,
         public bool $immutable = true,
         public string|Closure|null $rollback = null,
         public bool $externalAccess = true,
@@ -60,7 +60,7 @@ final readonly class Action
         /** @var array<array-key, string|UnitEnum> */
         public array $alternates = [],
         public int $retries = 0,
-        public null|DateInterval $retryDelay = null,
+        public ?DateInterval $retryDelay = null,
 
         /** @var array<string|int, mixed> */
         public array $labels = [],

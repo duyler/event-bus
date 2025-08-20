@@ -20,7 +20,7 @@ final class Action
 {
     public const string COLLECTION_PREFIX = 'Collection@';
 
-    private readonly null|string $typeId;
+    private readonly ?string $typeId;
 
     /** @var RecursiveArrayIterator<array-key, string> */
     private readonly RecursiveArrayIterator $required;
@@ -87,13 +87,13 @@ final class Action
         private readonly string|Closure|null $argumentFactory = null,
 
         /** @var class-string|null */
-        private readonly string|null $context = null,
+        private readonly ?string $context = null,
 
         /** @var class-string|null */
-        private readonly string|null $type = null,
+        private readonly ?string $type = null,
 
         /** @var class-string|null */
-        private readonly string|null $typeCollection = null,
+        private readonly ?string $typeCollection = null,
         private readonly bool $immutable = true,
         private readonly string|Closure|null $rollback = null,
         private readonly bool $externalAccess = true,
@@ -104,7 +104,7 @@ final class Action
         private readonly bool $silent = false,
         array $alternates = [],
         private readonly int $retries = 0,
-        private readonly null|DateInterval $retryDelay = null,
+        private readonly ?DateInterval $retryDelay = null,
 
         /** @var array<string|int, mixed> */
         private readonly array $labels = [],
@@ -350,7 +350,7 @@ final class Action
     /**
      * @return class-string|null
      */
-    public function getContext(): string|null
+    public function getContext(): ?string
     {
         return $this->context;
     }

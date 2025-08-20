@@ -28,7 +28,7 @@ class ActionHandlerArgumentBuilder
         private readonly EventStorage $eventStorage,
     ) {}
 
-    public function build(Action $action, ActionContainer $container): object|null
+    public function build(Action $action, ActionContainer $container): ?object
     {
         /** @var array<string, object> $results */
         $results = [];
@@ -43,7 +43,10 @@ class ActionHandlerArgumentBuilder
             }
         }
 
-        $completeActionByType = $this->completeActionStorage->getAllByTypeArray($action->getDependsOn());
+        $completeActionByType = $this->completeActionStorage->getAllAllowedByTypeArray(
+            $action->getDependsOn(),
+            $action->getId(),
+        );
 
         foreach ($completeActionByType as $completeAction) {
             $results[$completeAction->action->getId()] = $completeAction->result->data;
@@ -96,7 +99,10 @@ class ActionHandlerArgumentBuilder
             $action->getId(),
             $container,
             $results,
-            $this->completeActionStorage->getAllByTypeArray($action->getDependsOn()),
+            $this->completeActionStorage->getAllAllowedByTypeArray(
+                $action->getDependsOn(),
+                $action->getId(),
+            ),
         );
 
         if (is_callable($factory)) {
