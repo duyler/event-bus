@@ -75,6 +75,8 @@ readonly class ActionService
                 $this->throwEventNotDefined($eventId, $action->getId());
             }
         }
+
+        $this->checkSealedAction($action);
     }
 
     public function doExistsAction(string $actionId): void
@@ -134,6 +136,12 @@ readonly class ActionService
                 }
             }
 
+            foreach ($action->getSealed() as $actionId) {
+                if (false === array_key_exists($actionId, $actions)) {
+                    $this->throwActionNotDefined($actionId);
+                }
+            }
+
             foreach ($action->getListen() as $eventId) {
                 if (false === $this->eventStorage->has($eventId)) {
                     $this->throwEventNotDefined($eventId, $action->getId());
@@ -159,6 +167,15 @@ readonly class ActionService
 
         if (count($requiredAction->getSealed()) > 0 && !in_array($subject, $requiredAction->getSealed())) {
             throw new NotAllowedSealedActionException($subject, $requiredAction->getId());
+        }
+    }
+
+    private function checkSealedAction(Action $sealedAction): void
+    {
+        foreach ($sealedAction->getSealed() as $actionId) {
+            if (false === $this->actionStorage->isExists($actionId)) {
+                $this->throwActionNotDefined($actionId);
+            }
         }
     }
 
