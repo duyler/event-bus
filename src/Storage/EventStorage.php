@@ -6,6 +6,8 @@ namespace Duyler\EventBus\Storage;
 
 use Duyler\EventBus\Build\Event;
 
+use function array_key_exists;
+
 class EventStorage
 {
     /** @var array<string, Event> */

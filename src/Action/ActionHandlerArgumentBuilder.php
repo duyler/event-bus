@@ -19,6 +19,8 @@ use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
 
+use function is_callable;
+
 class ActionHandlerArgumentBuilder
 {
     public function __construct(

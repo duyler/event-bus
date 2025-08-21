@@ -10,6 +10,11 @@ use Duyler\EventBus\Dto\Log as LogDto;
 use Duyler\EventBus\Enum\Mode;
 use Duyler\EventBus\Enum\ResultStatus;
 
+use function array_search;
+use function array_shift;
+use function count;
+use function in_array;
+
 #[Finalize(method: 'reset')]
 final class State
 {

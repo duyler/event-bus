@@ -33,6 +33,9 @@ use Duyler\EventBus\Storage\MessageStorage;
 use Override;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
+use function in_array;
+use function is_callable;
+
 readonly class StateMain implements StateMainInterface
 {
     public function __construct(

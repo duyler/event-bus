@@ -9,6 +9,8 @@ use Override;
 use RecursiveIterator;
 use RecursiveIteratorIterator;
 
+use function array_key_exists;
+
 /** @extends RecursiveIteratorIterator<RecursiveIterator> */
 final class ActionRequiredIterator extends RecursiveIteratorIterator
 {

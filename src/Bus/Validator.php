@@ -7,6 +7,9 @@ namespace Duyler\EventBus\Bus;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Exception\CircularCallActionException;
 
+use function count;
+use function end;
+
 final readonly class Validator
 {
     public function __construct(

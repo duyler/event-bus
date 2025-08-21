@@ -14,6 +14,9 @@ use Duyler\EventBus\Storage\ActionContainerStorage;
 use Override;
 use Throwable;
 
+use function count;
+use function in_array;
+
 class StateAction implements StateActionInterface
 {
     public function __construct(

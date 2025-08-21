@@ -7,6 +7,9 @@ namespace Duyler\EventBus\Formatter;
 use Duyler\DI\Attribute\Finalize;
 use UnitEnum;
 
+use function array_search;
+use function is_string;
+
 #[Finalize]
 final class IdFormatter
 {

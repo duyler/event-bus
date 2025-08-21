@@ -8,6 +8,9 @@ use Duyler\DI\Attribute\Finalize;
 use RuntimeException;
 use SplQueue;
 
+use function array_search;
+use function in_array;
+
 #[Finalize]
 final class TaskQueue
 {

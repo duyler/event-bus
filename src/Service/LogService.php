@@ -6,6 +6,9 @@ namespace Duyler\EventBus\Service;
 
 use Duyler\EventBus\Bus\State;
 
+use function current;
+use function end;
+
 readonly class LogService
 {
     public function __construct(

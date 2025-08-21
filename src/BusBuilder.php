@@ -27,6 +27,8 @@ use Duyler\EventBus\Service\TriggerService;
 use Psr\EventDispatcher\ListenerProviderInterface;
 use UnitEnum;
 
+use function array_key_exists;
+
 class BusBuilder
 {
     /** @var array<string, InternalAction> */

@@ -10,6 +10,8 @@ use Duyler\EventBus\Build\ActionResultSubstitution;
 use Duyler\EventBus\Contract\ActionSubstitutionInterface;
 use Override;
 
+use function array_key_exists;
+
 #[Finalize(method: 'reset')]
 class ActionSubstitution implements ActionSubstitutionInterface
 {

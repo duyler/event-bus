@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Storage;
 
-use function array_key_exists;
-
 use Duyler\EventBus\Bus\Action;
+
+use function array_key_exists;
 
 class ActionStorage
 {
