@@ -31,6 +31,11 @@ use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\EventStorage;
 use Duyler\EventBus\Storage\TaskStorage;
 
+use function array_key_exists;
+use function array_pop;
+use function count;
+use function in_array;
+
 readonly class ActionService
 {
     public function __construct(

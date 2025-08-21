@@ -18,6 +18,9 @@ use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\TaskStorage;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
+use function array_filter;
+use function count;
+
 #[Finalize(method: 'reset')]
 final class Bus
 {

@@ -11,6 +11,8 @@ use Duyler\EventBus\Formatter\IdFormatter;
 use LogicException;
 use UnitEnum;
 
+use function array_key_exists;
+
 final class FactoryContext extends BaseContext
 {
     public function __construct(

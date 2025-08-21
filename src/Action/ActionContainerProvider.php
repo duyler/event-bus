@@ -16,6 +16,11 @@ use InvalidArgumentException;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
+use function array_flip;
+use function array_intersect_key;
+use function class_exists;
+use function count;
+
 class ActionContainerProvider
 {
     /** @var array<string, SharedService> */

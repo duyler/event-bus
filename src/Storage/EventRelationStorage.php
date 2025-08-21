@@ -8,6 +8,8 @@ use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\Bus\EventRelation;
 use RuntimeException;
 
+use function array_shift;
+
 #[Finalize(method: 'reset')]
 class EventRelationStorage
 {

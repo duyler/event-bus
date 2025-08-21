@@ -5,6 +5,9 @@ namespace Duyler\EventBus\Storage;
 use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\Bus\ActionContainer;
 
+use function array_flip;
+use function array_intersect_key;
+
 #[Finalize(method: 'reset')]
 class ActionContainerStorage
 {

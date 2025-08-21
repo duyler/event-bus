@@ -8,6 +8,12 @@ use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Dto\Result;
 
+use function array_flip;
+use function array_intersect_key;
+use function array_key_exists;
+use function count;
+use function in_array;
+
 #[Finalize(method: 'reset')]
 class CompleteActionStorage
 {

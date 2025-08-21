@@ -12,6 +12,9 @@ use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\EventStorage;
 
+use function array_key_first;
+use function count;
+
 final readonly class CleanByLimitEventListener
 {
     public function __construct(
