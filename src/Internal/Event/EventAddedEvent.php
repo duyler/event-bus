@@ -6,7 +6,7 @@ namespace Duyler\EventBus\Internal\Event;
 
 use Duyler\EventBus\Build\Event;
 
-readonly class EventRemovedEvent
+readonly class EventAddedEvent
 {
     public function __construct(
         public Event $event,

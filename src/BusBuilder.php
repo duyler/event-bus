@@ -24,7 +24,7 @@ use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\EventService;
 use Duyler\EventBus\Service\StateService;
 use Duyler\EventBus\Service\TriggerService;
-use Psr\EventDispatcher\ListenerProviderInterface;
+use InvalidArgumentException;
 use UnitEnum;
 
 use function array_key_exists;
@@ -55,6 +55,9 @@ class BusBuilder
     /** @var array<string, Event> */
     private array $events = [];
 
+    /** @var array<string, callable[]> */
+    private array $listeners = [];
+
     public function __construct(private readonly BusConfig $config) {}
 
     public function build(): BusInterface
@@ -72,6 +75,15 @@ class BusBuilder
         $container->bind($this->config->bind);
 
         $container->get(IdFormatter::class);
+
+        /** @var ListenerProvider $listenerProvider */
+        $listenerProvider = $container->get(ListenerProvider::class);
+
+        foreach ($this->listeners as $event => $listeners) {
+            foreach ($listeners as $listener) {
+                $listenerProvider->addListener($event, $listener);
+            }
+        }
 
         /** @var ActionService $actionService */
         $actionService = $container->get(ActionService::class);
@@ -113,9 +125,6 @@ class BusBuilder
         $state = $container->get(State::class);
         $termination = new Termination($container, $state);
         $container->set($termination);
-
-        /** @var ListenerProvider $listenerProvider */
-        $listenerProvider = $container->get(ListenerProviderInterface::class);
 
         foreach ($this->config->getListeners() as $event => $listeners) {
             foreach ($listeners as $listener) {
@@ -210,5 +219,19 @@ class BusBuilder
     public function eventIsExists(string|UnitEnum $eventId): bool
     {
         return array_key_exists(IdFormatter::toString($eventId), $this->events);
+    }
+
+    /**
+     * @param class-string $event
+     */
+    public function addListener(string $event, callable $listener): static
+    {
+        if (false === in_array($event, $this->config->getExternalAllowedEvents())) {
+            throw new InvalidArgumentException('Event is not allowed or not exists');
+        }
+
+        $this->listeners[$event][] = $listener;
+
+        return $this;
     }
 }

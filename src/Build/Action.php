@@ -7,9 +7,12 @@ namespace Duyler\EventBus\Build;
 use Closure;
 use DateInterval;
 use Duyler\EventBus\Bus\Action as InternalAction;
+use Duyler\EventBus\Formatter\IdFormatter;
+use JsonSerializable;
+use Override;
 use UnitEnum;
 
-final readonly class Action
+final readonly class Action implements JsonSerializable
 {
     public function __construct(
         public string|UnitEnum $id,
@@ -63,7 +66,7 @@ final readonly class Action
         public ?DateInterval $retryDelay = null,
 
         /** @var array<string|int, mixed> */
-        public array $labels = [],
+        public array $attributes = [],
     ) {}
 
     public static function fromInternal(InternalAction $internalAction): Action
@@ -93,7 +96,59 @@ final readonly class Action
             alternates: $internalAction->getExternalAlternates(),
             retries: $internalAction->getRetries(),
             retryDelay: $internalAction->getRetryDelay(),
-            labels: $internalAction->getLabels(),
+            attributes: $internalAction->getAttributes(),
         );
+    }
+
+    #[Override]
+    public function jsonSerialize(): array
+    {
+        $require = [];
+
+        foreach ($this->required as $actionId) {
+            $require[] = IdFormatter::toString($actionId);
+        }
+
+        $listen = [];
+
+        foreach ($this->listen as $eventId) {
+            $listen[] = IdFormatter::toString($eventId);
+        }
+
+        $sealed = [];
+
+        foreach ($this->sealed as $actionId) {
+            $sealed[] = IdFormatter::toString($actionId);
+        }
+
+        $alternates = [];
+
+        foreach ($this->alternates as $actionId) {
+            $alternates[] = IdFormatter::toString($actionId);
+        }
+
+        return [
+            'id' => IdFormatter::toString($this->id),
+            'description' => $this->description,
+            'handler' => $this->handler,
+            'require' => $require,
+            'listen' => $listen,
+            'argument' => $this->argument,
+            'argumentFactory' => $this->argumentFactory,
+            'type' => $this->type,
+            'immutable' => $this->immutable,
+            'dependsOn' => $this->dependsOn,
+            'lock' => $this->lock,
+            'externalAccess' => $this->externalAccess,
+            'silent' => $this->silent,
+            'retries' => $this->retries,
+            'retryDelay' => $this->retryDelay,
+            'context' => $this->context,
+            'private' => $this->private,
+            'sealed' => $sealed,
+            'alternates' => $alternates,
+            'rollback' => $this->rollback,
+            'attributes' => $this->attributes,
+        ];
     }
 }

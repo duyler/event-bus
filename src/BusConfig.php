@@ -12,14 +12,17 @@ use Duyler\EventBus\Contract\ActionSubstitutionInterface;
 use Duyler\EventBus\Contract\StateActionInterface;
 use Duyler\EventBus\Contract\StateMainInterface;
 use Duyler\EventBus\Enum\Mode;
+use Duyler\EventBus\Internal\Event\ActionAddedEvent;
 use Duyler\EventBus\Internal\Event\ActionAfterRunEvent;
 use Duyler\EventBus\Internal\Event\ActionBeforeRunEvent;
+use Duyler\EventBus\Internal\Event\ActionRemovedEvent;
 use Duyler\EventBus\Internal\Event\ActionThrownExceptionEvent;
 use Duyler\EventBus\Internal\Event\BusCompletedEvent;
 use Duyler\EventBus\Internal\Event\BusIsResetEvent;
 use Duyler\EventBus\Internal\Event\DoCyclicEvent;
 use Duyler\EventBus\Internal\Event\DoWhileBeginEvent;
 use Duyler\EventBus\Internal\Event\DoWhileEndEvent;
+use Duyler\EventBus\Internal\Event\EventAddedEvent;
 use Duyler\EventBus\Internal\Event\EventDispatchedEvent;
 use Duyler\EventBus\Internal\Event\EventRemovedEvent;
 use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
@@ -29,6 +32,8 @@ use Duyler\EventBus\Internal\Event\TaskResumeEvent;
 use Duyler\EventBus\Internal\Event\TaskSuspendedEvent;
 use Duyler\EventBus\Internal\Event\TaskUnresolvedEvent;
 use Duyler\EventBus\Internal\Event\ThrowExceptionEvent;
+use Duyler\EventBus\Internal\Event\TriggerAddedEvent;
+use Duyler\EventBus\Internal\Event\TriggerRemovedEvent;
 use Duyler\EventBus\Internal\EventDispatcher;
 use Duyler\EventBus\Internal\Listener\Bus\AfterCompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\CleanByLimitEventListener;
@@ -161,6 +166,22 @@ class BusConfig
             BusIsResetEvent::class => [
                 ResetBusEventListener::class,
             ],
+        ];
+    }
+
+    /**
+     * @return class-string[]
+     */
+    public function getExternalAllowedEvents(): array
+    {
+        return [
+            ThrowExceptionEvent::class,
+            ActionAddedEvent::class,
+            EventAddedEvent::class,
+            TriggerAddedEvent::class,
+            ActionRemovedEvent::class,
+            EventRemovedEvent::class,
+            TriggerRemovedEvent::class,
         ];
     }
 }

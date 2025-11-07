@@ -13,6 +13,7 @@ use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
 use Duyler\EventBus\Exception\DispatchedEventNotDefinedException;
+use Duyler\EventBus\Internal\Event\EventAddedEvent;
 use Duyler\EventBus\Internal\Event\EventRemovedEvent;
 use Duyler\EventBus\Storage\ActionStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
@@ -71,19 +72,26 @@ class EventService
     {
         foreach ($events as $event) {
             $this->eventStorage->save($event);
+            $this->eventDispatcher->dispatch(new EventAddedEvent($event));
         }
     }
 
     public function addEvent(Event $event): void
     {
         $this->eventStorage->saveDynamic($event);
+        $this->eventDispatcher->dispatch(new EventAddedEvent($event));
     }
 
     public function removeEvent(string $eventId): void
     {
+        $event = $this->eventStorage->get($eventId);
+
         $this->eventStorage->removeDynamic($eventId);
-        $this->eventDispatcher->dispatch(
-            new EventRemovedEvent($eventId),
-        );
+
+        if (null !== $event) {
+            $this->eventDispatcher->dispatch(
+                new EventRemovedEvent($event),
+            );
+        }
     }
 }

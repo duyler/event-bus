@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Service;
 
 use Duyler\EventBus\Action\ActionContainerProvider;
+use Duyler\EventBus\Build\Action as ExternalAction;
 use Duyler\EventBus\Build\ActionHandlerSubstitution;
 use Duyler\EventBus\Build\ActionResultSubstitution;
 use Duyler\EventBus\Build\SharedService;
+use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\Bus\Action;
 use Duyler\EventBus\Bus\ActionRequiredIterator;
 use Duyler\EventBus\Bus\ActionRequiredMap;
@@ -24,12 +26,16 @@ use Duyler\EventBus\Exception\CircularCallActionException;
 use Duyler\EventBus\Exception\EventNotDefinedException;
 use Duyler\EventBus\Exception\NotAllowedSealedActionException;
 use Duyler\EventBus\Formatter\IdFormatter;
+use Duyler\EventBus\Internal\Event\ActionAddedEvent;
+use Duyler\EventBus\Internal\Event\ActionRemovedEvent;
+use Duyler\EventBus\Internal\Event\TriggerRemovedEvent;
 use Duyler\EventBus\Storage\ActionContainerStorage;
 use Duyler\EventBus\Storage\ActionStorage;
 use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\EventStorage;
 use Duyler\EventBus\Storage\TaskStorage;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 use function array_key_exists;
 use function array_pop;
@@ -50,6 +56,7 @@ readonly class ActionService
         private ActionRequiredMap $actionRequiredMap,
         private TaskStorage $taskStorage,
         private TaskQueue $taskQueue,
+        private EventDispatcherInterface $eventDispatcher,
     ) {}
 
     private function validateAction(Action $action): void
@@ -157,6 +164,8 @@ readonly class ActionService
 
             $this->actionRequiredMap->create($action);
             $this->actionStorage->save($action);
+
+            $this->eventDispatcher->dispatch(new ActionAddedEvent(ExternalAction::fromInternal($action)));
         }
     }
 
@@ -236,6 +245,8 @@ readonly class ActionService
         $this->actionRequiredMap->create($action);
         $this->actionStorage->save($action);
         $this->actionStorage->saveDynamic($action);
+
+        $this->eventDispatcher->dispatch(new ActionAddedEvent(ExternalAction::fromInternal($action)));
     }
 
     public function doDynamicAction(Action $action): void
@@ -245,6 +256,8 @@ readonly class ActionService
         $this->actionRequiredMap->create($action);
         $this->actionStorage->save($action);
         $this->actionStorage->saveDynamic($action);
+
+        $this->eventDispatcher->dispatch(new ActionAddedEvent(ExternalAction::fromInternal($action)));
 
         $this->bus->doAction($action);
     }
@@ -273,8 +286,28 @@ readonly class ActionService
 
             foreach ($triggeredOn as $triggeredActionId) {
                 $triggeredAction = $this->actionStorage->get($triggeredActionId);
-                $triggeredAction->removeTrigger($currentActionId, ResultStatus::Success);
-                $triggeredAction->removeTrigger($currentActionId, ResultStatus::Fail);
+
+                if ($triggeredAction->triggerIsExists($currentActionId, ResultStatus::Success)) {
+                    $triggeredAction->removeTrigger($currentActionId, ResultStatus::Success);
+                    $this->eventDispatcher->dispatch(new TriggerRemovedEvent(
+                        new Trigger(
+                            $triggeredActionId,
+                            $currentActionId,
+                            ResultStatus::Success,
+                        ),
+                    ));
+                }
+
+                if ($triggeredAction->triggerIsExists($currentActionId, ResultStatus::Fail)) {
+                    $triggeredAction->removeTrigger($currentActionId, ResultStatus::Fail);
+                    $this->eventDispatcher->dispatch(new TriggerRemovedEvent(
+                        new Trigger(
+                            $triggeredActionId,
+                            $currentActionId,
+                            ResultStatus::Fail,
+                        ),
+                    ));
+                }
             }
 
             $requiredMap = $this->actionRequiredMap->get($currentActionId);
@@ -326,6 +359,8 @@ readonly class ActionService
             foreach ($allWithType as $actionDepends) {
                 $stack[] = $actionDepends->getId();
             }
+
+            $this->eventDispatcher->dispatch(new ActionRemovedEvent(ExternalAction::fromInternal($action)));
         }
     }
 }
