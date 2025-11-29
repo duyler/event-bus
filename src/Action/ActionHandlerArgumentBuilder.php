@@ -172,10 +172,13 @@ class ActionHandlerArgumentBuilder
         return $results;
     }
 
+    /**
+     * @param null|object $argument
+     */
     private function createContext(
         Action $action,
         ActionContainer $container,
-        mixed $argument,
+        object|null $argument,
     ): object {
         $context = new ActionContext(
             $action->getId(),
