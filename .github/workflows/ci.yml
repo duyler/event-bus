@@ -47,18 +47,6 @@ jobs:
               --colors=always \
               --process-isolation
 
-      - name: Run tests without coverage first
-        run: vendor/bin/phpunit --colors=always
-
-      - name: Generate coverage separately
-        run: |
-          php -d pcov.enabled=1 \
-              -d memory_limit=512M \
-              vendor/bin/phpunit \
-              --coverage-clover=coverage.xml \
-              --colors=always \
-              --no-logging
-
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:
