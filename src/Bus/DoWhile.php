@@ -20,6 +20,7 @@ use Duyler\EventBus\Internal\Event\TaskSuspendedEvent;
 use Ev;
 use EvTimer;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use RuntimeException;
 use Throwable;
 
 final readonly class DoWhile
@@ -44,21 +45,25 @@ final readonly class DoWhile
     {
         $this->eventDispatcher->dispatch(new DoWhileBeginEvent());
 
+        if (Mode::Queue === $this->busConfig->mode && $this->taskQueue->isEmpty()) {
+            throw new RuntimeException('TaskQueue is empty');
+        }
+
         Ev::run();
     }
 
     private function tick(): void
     {
-        $this->eventDispatcher->dispatch(new DoCyclicEvent());
-
-        if ($this->taskQueue->isEmpty() && Mode::Loop === $this->busConfig->mode) {
-            return;
-        }
-
         if (Mode::Queue === $this->busConfig->mode && $this->taskQueue->isEmpty()) {
             $this->timer->stop();
             Ev::stop(Ev::BREAK_ALL);
             $this->eventDispatcher->dispatch(new DoWhileEndEvent());
+            return;
+        }
+
+        $this->eventDispatcher->dispatch(new DoCyclicEvent());
+
+        if (Mode::Loop === $this->busConfig->mode && $this->taskQueue->isEmpty()) {
             return;
         }
 
@@ -88,6 +93,10 @@ final readonly class DoWhile
             }
 
             $this->process($task);
+
+            if ($this->taskQueue->isEmpty()) {
+                $this->eventDispatcher->dispatch(new TaskQueueIsEmptyEvent());
+            }
         } catch (Throwable $e) {
             $this->errorHandler->handle($e, $this->state->getLog());
         }
@@ -100,9 +109,6 @@ final readonly class DoWhile
             $this->eventDispatcher->dispatch(new TaskSuspendedEvent($task));
         } else {
             $this->eventDispatcher->dispatch(new TaskAfterRunEvent($task));
-            if ($this->taskQueue->isEmpty()) {
-                $this->eventDispatcher->dispatch(new TaskQueueIsEmptyEvent());
-            }
         }
     }
 

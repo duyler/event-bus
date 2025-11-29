@@ -26,7 +26,7 @@ final class TaskQueue
     public function push(Task $task): void
     {
         $this->queue->push($task);
-        $this->queueLog[] = $task->action->getId();
+        $this->queueLog[$task->getId()] = $task->action->getId();
     }
 
     public function isNotEmpty(): bool
@@ -48,8 +48,7 @@ final class TaskQueue
         /** @var Task $task */
         $task = $this->queue->dequeue();
 
-        $key = array_search($task->action->getId(), $this->queueLog);
-        unset($this->queueLog[$key]);
+        unset($this->queueLog[$task->getId()]);
 
         return $task;
     }

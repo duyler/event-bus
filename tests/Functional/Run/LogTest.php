@@ -74,6 +74,6 @@ class LogTest extends TestCase
         $log = $bus->getLog();
 
         $this->asserttrue(3 === count($log->mainEventLog));
-        $this->asserttrue(1 === count($log->repeatedEventLog));
+        $this->asserttrue(0 === count($log->repeatedEventLog));
     }
 }
