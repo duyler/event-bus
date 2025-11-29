@@ -10,7 +10,6 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\MainCyclicStateHandlerInterface;
 use Duyler\EventBus\Dto\Event;
-use Duyler\EventBus\Exception\CircularCallActionException;
 use Duyler\EventBus\State\Service\StateMainCyclicService;
 use Duyler\EventBus\State\StateContext;
 use Duyler\EventBus\Test\Functional\State\Support\ResetBusStateHandler;

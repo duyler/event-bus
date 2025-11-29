@@ -7,7 +7,6 @@ namespace Duyler\EventBus;
 use Duyler\EventBus\Bus\DoWhile;
 use Duyler\EventBus\Bus\Rollback;
 use Duyler\EventBus\Internal\Event\ThrowExceptionEvent;
-use Ev;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 

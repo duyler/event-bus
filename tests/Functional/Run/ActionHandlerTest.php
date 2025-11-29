@@ -14,7 +14,6 @@ use InvalidArgumentException;
 use LogicException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
 use stdClass;
 
 class ActionHandlerTest extends TestCase
