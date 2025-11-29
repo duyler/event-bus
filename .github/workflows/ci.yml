@@ -6,20 +6,15 @@ on:
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}-${{ matrix.os }}
-
-    env:
-      key: cache-v1
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     container:
-      image: duyler/php-zts:8.4
+      image: duyler/php-zts:latest
       options: --user root
 
     strategy:
       matrix:
-        php-image: ['duyler/php-zts:8.4']
+        php-image: ['duyler/php-zts:latest']
 
     steps:
       - name: Checkout
