@@ -41,8 +41,13 @@ jobs:
       - name: Check PHP extensions
         run: php -m
 
+      - name: Enable PCOV extension
+        run: |
+          echo "extension=pcov.so" > /usr/local/etc/php/conf.d/pcov.ini
+          echo "pcov.enabled=1" >> /usr/local/etc/php/conf.d/pcov.ini
+
       - name: Run tests with phpunit
-        run: php -d pcov.enabled=1 vendor/bin/phpunit --coverage-clover=coverage.xml --colors=always
+        run: vendor/bin/phpunit --coverage-clover=coverage.xml --colors=always
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
