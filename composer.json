@@ -17,6 +17,7 @@
     },
     "require": {
         "php": "^8.4",
+        "ext-ev": "*",
         "duyler/di": "dev-main",
         "psr/event-dispatcher": "^1.0.0"
     },

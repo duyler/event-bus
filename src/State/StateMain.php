@@ -73,6 +73,7 @@ readonly class StateMain implements StateMainInterface
     #[Override]
     public function cyclic(): void
     {
+        // TODO Move into listener
         if (Mode::Loop === $this->busConfig->mode) {
             $this->messageStorage->recount();
         }
@@ -170,6 +171,7 @@ readonly class StateMain implements StateMainInterface
         if (is_callable($suspend->value)) {
             $task->resume(($suspend->value)());
         } else {
+            // TODO Wrap into callback
             $message = new Message(Channel::DEFAULT_CHANNEL, $this->transfer);
             $message->setPayload($suspend->value, $task->action->getId());
 

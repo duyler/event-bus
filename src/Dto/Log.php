@@ -33,4 +33,20 @@ final readonly class Log
         public ?string $beginAction,
         public ?string $errorAction,
     ) {}
+
+    public function toArray(): array
+    {
+        return [
+            'action' => $this->actionLog,
+            'main_event' => $this->mainEventLog,
+            'repeated_event' => $this->repeatedEventLog,
+            'event' => $this->eventLog,
+            'retries' => $this->retriesLog,
+            'success' => $this->successLog,
+            'suspended' => $this->suspendedLog,
+            'fail' => $this->failLog,
+            'begin_action' => $this->beginAction,
+            'error_action' => $this->errorAction,
+        ];
+    }
 }

@@ -13,27 +13,19 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    container:
+      image: duyler/php-zts:8.4
+      options: --user root
+
     strategy:
       matrix:
-        os:
-          - ubuntu-latest
-
-        php:
-          - "8.4"
+        php-image: ['duyler/php-zts:8.4']
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Install PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          ini-values: date.timezone='UTC'
-          coverage: pcov
-          tools: composer:v2
 
       - name: Determine composer cache directory
         run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV

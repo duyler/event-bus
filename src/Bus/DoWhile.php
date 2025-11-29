@@ -6,6 +6,7 @@ namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
+use Duyler\EventBus\Contract\ErrorHandlerInterface;
 use Duyler\EventBus\Enum\Mode;
 use Duyler\EventBus\Enum\TaskStatus;
 use Duyler\EventBus\Internal\Event\DoCyclicEvent;
@@ -16,56 +17,78 @@ use Duyler\EventBus\Internal\Event\TaskBeforeRunEvent;
 use Duyler\EventBus\Internal\Event\TaskQueueIsEmptyEvent;
 use Duyler\EventBus\Internal\Event\TaskResumeEvent;
 use Duyler\EventBus\Internal\Event\TaskSuspendedEvent;
+use Ev;
+use EvTimer;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Throwable;
 
 final readonly class DoWhile
 {
+    private EvTimer $timer;
+
     public function __construct(
         private ActionRunnerProviderInterface $actionRunnerProvider,
         private TaskQueue $taskQueue,
         private EventDispatcherInterface $eventDispatcher,
         private BusConfig $busConfig,
-    ) {}
+        private ErrorHandlerInterface $errorHandler,
+        private State $state,
+    ) {
+        $repeat = $this->busConfig->tickInterval / 1000;
+        $this->timer = new EvTimer(0.001, $repeat, function () {
+            $this->tick();
+        });
+    }
 
     public function run(): void
     {
         $this->eventDispatcher->dispatch(new DoWhileBeginEvent());
 
-        do {
-            $this->eventDispatcher->dispatch(new DoCyclicEvent());
+        Ev::run();
+    }
 
-            if ($this->taskQueue->isEmpty() && Mode::Loop === $this->busConfig->mode) {
-                continue;
-            }
+    private function tick(): void
+    {
+        $this->eventDispatcher->dispatch(new DoCyclicEvent());
 
-            $task = $this->taskQueue->dequeue();
+        if ($this->taskQueue->isEmpty() && Mode::Loop === $this->busConfig->mode) {
+            return;
+        }
 
-            if ($task->isRunning()) {
-                $this->eventDispatcher->dispatch(new TaskResumeEvent($task));
-                $this->process($task);
-                continue;
-            }
+        $task = $this->taskQueue->dequeue();
 
-            $this->eventDispatcher->dispatch(new TaskBeforeRunEvent($task));
+        if ($task->isRunning()) {
+            $this->eventDispatcher->dispatch(new TaskResumeEvent($task));
+            $this->process($task);
+            return;
+        }
 
-            if ($task->isRejected()) {
-                continue;
-            }
+        $this->eventDispatcher->dispatch(new TaskBeforeRunEvent($task));
 
+        if ($task->isRejected()) {
+            return;
+        }
+
+        try {
             if (TaskStatus::Primary === $task->getStatus()) {
                 $task->run($this->actionRunnerProvider->getRunner($task->action));
             } elseif (TaskStatus::Retry === $task->getStatus()) {
                 if (false === $task->isReady()) {
                     $this->taskQueue->push($task);
-                    continue;
+                    return;
                 }
                 $task->retry();
             }
 
             $this->process($task);
-        } while (Mode::Loop === $this->busConfig->mode || $this->taskQueue->isNotEmpty());
 
-        $this->eventDispatcher->dispatch(new DoWhileEndEvent());
+            if (Mode::Queue === $this->busConfig->mode && $this->taskQueue->isEmpty()) {
+                $this->timer->stop();
+                $this->eventDispatcher->dispatch(new DoWhileEndEvent());
+            }
+        } catch (Throwable $e) {
+            $this->errorHandler->handle($e, $this->state->getLog());
+        }
     }
 
     private function process(Task $task): void

@@ -12,8 +12,10 @@ use Duyler\EventBus\Build\Event;
 use Duyler\EventBus\Build\SharedService;
 use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\Bus\Action as InternalAction;
+use Duyler\EventBus\Bus\ErrorHandler;
 use Duyler\EventBus\Bus\State;
 use Duyler\EventBus\Channel\Channel;
+use Duyler\EventBus\Contract\ErrorHandlerInterface;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Event\EventDispatcher;
 use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
@@ -25,6 +27,8 @@ use Duyler\EventBus\Service\EventService;
 use Duyler\EventBus\Service\StateService;
 use Duyler\EventBus\Service\TriggerService;
 use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use UnitEnum;
 
 use function array_key_exists;
@@ -58,7 +62,14 @@ class BusBuilder
     /** @var array<string, callable[]> */
     private array $listeners = [];
 
-    public function __construct(private readonly BusConfig $config) {}
+    private LoggerInterface $logger;
+
+    private ?ErrorHandlerInterface $errorHandler = null;
+
+    public function __construct(private readonly BusConfig $config)
+    {
+        $this->logger = new NullLogger();
+    }
 
     public function build(): BusInterface
     {
@@ -73,6 +84,23 @@ class BusBuilder
         $container = new Container($containerConfig);
         $container->set($this->config);
         $container->bind($this->config->bind);
+
+        $container->set($this->logger);
+        $container->bind([
+            LoggerInterface::class => $this->logger::class,
+        ]);
+
+        if (null === $this->errorHandler) {
+            $container->get(ErrorHandler::class);
+            $container->bind([
+                ErrorHandlerInterface::class => ErrorHandler::class,
+            ]);
+        } else {
+            $container->set($this->errorHandler);
+            $container->bind([
+                ErrorHandlerInterface::class => $this->errorHandler::class,
+            ]);
+        }
 
         $container->get(IdFormatter::class);
 
@@ -128,7 +156,9 @@ class BusBuilder
 
         foreach ($this->config->getListeners() as $event => $listeners) {
             foreach ($listeners as $listener) {
-                $listenerProvider->addListener($event, $container->get($listener));
+                /** @var callable $listenerObj */
+                $listenerObj = $container->get($listener);
+                $listenerProvider->addListener($event, $listenerObj);
             }
         }
 
@@ -141,6 +171,16 @@ class BusBuilder
         gc_collect_cycles();
 
         return $bus;
+    }
+
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
+    }
+
+    public function setErrorHandler(ErrorHandlerInterface $errorHandler): void
+    {
+        $this->errorHandler = $errorHandler;
     }
 
     public function actionIsExists(string|UnitEnum $actionId): bool

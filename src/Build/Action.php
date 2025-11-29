@@ -52,7 +52,7 @@ final readonly class Action implements JsonSerializable
         public bool $immutable = true,
         public string|Closure|null $rollback = null,
         public bool $externalAccess = true,
-        public bool $repeatable = false,
+        public bool $repeatable = true,
         public bool $lock = true,
         public bool $private = false,
 

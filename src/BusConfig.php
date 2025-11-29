@@ -62,6 +62,7 @@ use Duyler\EventBus\Internal\Listener\State\StateMainUnresolvedEventListener;
 use Duyler\EventBus\Internal\ListenerProvider;
 use Duyler\EventBus\State\StateAction;
 use Duyler\EventBus\State\StateMain;
+use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
 
@@ -87,8 +88,13 @@ class BusConfig
         public readonly bool $continueAfterException = false,
         public readonly int $maxCountCompleteActions = 0,
         public readonly int $maxCountEvents = 0,
+        public readonly int $tickInterval = 1,
     ) {
         $this->bind = $this->getBind() + $bind;
+
+        if ($this->tickInterval < 1) {
+            throw new InvalidArgumentException('Tick interval must be greater than 0');
+        }
     }
 
     /** @return array<string, string> */
@@ -130,9 +136,9 @@ class BusConfig
                 SaveCompleteActionEventListener::class,
                 CleanByLimitEventListener::class,
                 AfterCompleteActionEventListener::class,
+                LogCompleteActionEventListener::class,
                 StateMainAfterEventListener::class,
                 ResolveTriggersEventListener::class,
-                LogCompleteActionEventListener::class,
                 ValidateCompleteActionEventListener::class,
                 ResolveHeldTasksEventListener::class,
             ],

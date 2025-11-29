@@ -12,6 +12,7 @@
         <directory name="src" />
         <ignoreFiles>
             <directory name="vendor" />
+            <file name="src/Bus/DoWhile.php" />
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
