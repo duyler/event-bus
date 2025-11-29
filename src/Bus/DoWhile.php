@@ -55,6 +55,13 @@ final readonly class DoWhile
             return;
         }
 
+        if (Mode::Queue === $this->busConfig->mode && $this->taskQueue->isEmpty()) {
+            $this->timer->stop();
+            Ev::stop(Ev::BREAK_ALL);
+            $this->eventDispatcher->dispatch(new DoWhileEndEvent());
+            return;
+        }
+
         $task = $this->taskQueue->dequeue();
 
         if ($task->isRunning()) {
@@ -81,11 +88,6 @@ final readonly class DoWhile
             }
 
             $this->process($task);
-
-            if (Mode::Queue === $this->busConfig->mode && $this->taskQueue->isEmpty()) {
-                $this->timer->stop();
-                $this->eventDispatcher->dispatch(new DoWhileEndEvent());
-            }
         } catch (Throwable $e) {
             $this->errorHandler->handle($e, $this->state->getLog());
         }
@@ -102,5 +104,11 @@ final readonly class DoWhile
                 $this->eventDispatcher->dispatch(new TaskQueueIsEmptyEvent());
             }
         }
+    }
+
+    public function stop(): void
+    {
+        $this->timer->stop();
+        Ev::stop(Ev::BREAK_ALL);
     }
 }
