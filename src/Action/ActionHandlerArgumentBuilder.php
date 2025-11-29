@@ -178,7 +178,7 @@ class ActionHandlerArgumentBuilder
     private function createContext(
         Action $action,
         ActionContainer $container,
-        object|null $argument,
+        ?object $argument,
     ): object {
         $context = new ActionContext(
             $action->getId(),
