@@ -37,10 +37,13 @@ class ActionHandlerArgumentBuilder
 
         if ($this->eventRelationStorage->has($action->getId())) {
             foreach ($action->getListen() as $eventId) {
-                $eventDto = $this->eventRelationStorage->shift($action->getId(), $eventId)->event;
+                $eventRelation = $this->eventRelationStorage->shift($action->getId(), $eventId);
+                $eventDto = $eventRelation->event;
                 $event = $this->eventStorage->get($eventDto->id);
                 if (null !== $eventDto->data && null !== $event && null !== $event->type) {
-                    $results[$event->id] = $eventDto->data;
+                    /** @var object $eventDtoData */
+                    $eventDtoData = $eventDto->data;
+                    $results[$event->id] = $eventDtoData;
                 }
             }
         }
@@ -51,7 +54,9 @@ class ActionHandlerArgumentBuilder
         );
 
         foreach ($completeActionByType as $completeAction) {
-            $results[$completeAction->action->getId()] = $completeAction->result->data;
+            /** @var object $completeActionResultData */
+            $completeActionResultData = $completeAction->result->data;
+            $results[$completeAction->action->getId()] = $completeActionResultData;
         }
 
         $completeActions = $this->completeActionStorage->getAllByArray($action->getRequired()->getArrayCopy());
@@ -62,7 +67,9 @@ class ActionHandlerArgumentBuilder
 
         if ($this->actionSubstitution->isSubstituteResult($action->getId())) {
             $actionResultSubstitution = $this->actionSubstitution->getSubstituteResult($action->getId());
-            $results[$actionResultSubstitution->requiredActionId] = $actionResultSubstitution->substitution;
+            /** @var object $substitution */
+            $substitution = $actionResultSubstitution->substitution;
+            $results[$actionResultSubstitution->requiredActionId] = $substitution;
         }
 
         if (null === $action->getArgument()) {
@@ -131,7 +138,9 @@ class ActionHandlerArgumentBuilder
         return $argument;
     }
 
-    /** @return array<string, object>  */
+    /**
+     * @return array<string, object>
+     */
     private function prepareRequiredResults(CompleteAction $completeAction): array
     {
         $results = [];
@@ -145,7 +154,9 @@ class ActionHandlerArgumentBuilder
                         continue;
                     }
 
-                    $results[$completeAction->action->getId()] = $alternateAction->result->data;
+                    /** @var object $alternateActionResultData */
+                    $alternateActionResultData = $alternateAction->result->data;
+                    $results[$completeAction->action->getId()] = $alternateActionResultData;
 
                     return $results;
                 }
@@ -153,18 +164,22 @@ class ActionHandlerArgumentBuilder
         }
 
         if (null !== $completeAction->result->data && null !== $completeAction->action->getType()) {
-            $results[$completeAction->action->getId()] = $completeAction->result->data;
+            /** @var object $completeActionResultData */
+            $completeActionResultData = $completeAction->result->data;
+            $results[$completeAction->action->getId()] = $completeActionResultData;
         }
 
         return $results;
     }
 
+    /**
+     * @param null|object $argument
+     */
     private function createContext(
         Action $action,
         ActionContainer $container,
-        mixed $argument,
+        ?object $argument,
     ): object {
-
         $context = new ActionContext(
             $action->getId(),
             $container,
@@ -182,6 +197,7 @@ class ActionHandlerArgumentBuilder
             throw new InvalidArgumentException('Custom context class must implement ' . CustomContextInterface::class);
         }
 
+        /** @var CustomContextInterface $customContext */
         return $customContext;
     }
 }

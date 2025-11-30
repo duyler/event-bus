@@ -6,6 +6,7 @@ namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
+use Duyler\EventBus\Contract\ErrorHandlerInterface;
 use Duyler\EventBus\Enum\Mode;
 use Duyler\EventBus\Enum\TaskStatus;
 use Duyler\EventBus\Internal\Event\DoCyclicEvent;
@@ -16,56 +17,89 @@ use Duyler\EventBus\Internal\Event\TaskBeforeRunEvent;
 use Duyler\EventBus\Internal\Event\TaskQueueIsEmptyEvent;
 use Duyler\EventBus\Internal\Event\TaskResumeEvent;
 use Duyler\EventBus\Internal\Event\TaskSuspendedEvent;
+use Ev;
+use EvTimer;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use RuntimeException;
+use Throwable;
 
 final readonly class DoWhile
 {
+    private EvTimer $timer;
+
     public function __construct(
         private ActionRunnerProviderInterface $actionRunnerProvider,
         private TaskQueue $taskQueue,
         private EventDispatcherInterface $eventDispatcher,
         private BusConfig $busConfig,
-    ) {}
+        private ErrorHandlerInterface $errorHandler,
+        private State $state,
+    ) {
+        $repeat = $this->busConfig->tickInterval / 1000;
+        $this->timer = new EvTimer(0.001, $repeat, function () {
+            $this->tick();
+        });
+    }
 
     public function run(): void
     {
         $this->eventDispatcher->dispatch(new DoWhileBeginEvent());
 
-        do {
-            $this->eventDispatcher->dispatch(new DoCyclicEvent());
+        if (Mode::Queue === $this->busConfig->mode && $this->taskQueue->isEmpty()) {
+            throw new RuntimeException('TaskQueue is empty');
+        }
 
-            if ($this->taskQueue->isEmpty() && Mode::Loop === $this->busConfig->mode) {
-                continue;
-            }
+        Ev::run();
+    }
 
-            $task = $this->taskQueue->dequeue();
+    private function tick(): void
+    {
+        if (Mode::Queue === $this->busConfig->mode && $this->taskQueue->isEmpty()) {
+            $this->timer->stop();
+            Ev::stop(Ev::BREAK_ALL);
+            $this->eventDispatcher->dispatch(new DoWhileEndEvent());
+            return;
+        }
 
-            if ($task->isRunning()) {
-                $this->eventDispatcher->dispatch(new TaskResumeEvent($task));
-                $this->process($task);
-                continue;
-            }
+        $this->eventDispatcher->dispatch(new DoCyclicEvent());
 
-            $this->eventDispatcher->dispatch(new TaskBeforeRunEvent($task));
+        if (Mode::Loop === $this->busConfig->mode && $this->taskQueue->isEmpty()) {
+            return;
+        }
 
-            if ($task->isRejected()) {
-                continue;
-            }
+        $task = $this->taskQueue->dequeue();
 
+        if ($task->isRunning()) {
+            $this->eventDispatcher->dispatch(new TaskResumeEvent($task));
+            $this->process($task);
+            return;
+        }
+
+        $this->eventDispatcher->dispatch(new TaskBeforeRunEvent($task));
+
+        if ($task->isRejected()) {
+            return;
+        }
+
+        try {
             if (TaskStatus::Primary === $task->getStatus()) {
                 $task->run($this->actionRunnerProvider->getRunner($task->action));
             } elseif (TaskStatus::Retry === $task->getStatus()) {
                 if (false === $task->isReady()) {
                     $this->taskQueue->push($task);
-                    continue;
+                    return;
                 }
                 $task->retry();
             }
 
             $this->process($task);
-        } while (Mode::Loop === $this->busConfig->mode || $this->taskQueue->isNotEmpty());
 
-        $this->eventDispatcher->dispatch(new DoWhileEndEvent());
+            if ($this->taskQueue->isEmpty()) {
+                $this->eventDispatcher->dispatch(new TaskQueueIsEmptyEvent());
+            }
+        } catch (Throwable $e) {
+            $this->errorHandler->handle($e, $this->state->getLog());
+        }
     }
 
     private function process(Task $task): void
@@ -75,9 +109,12 @@ final readonly class DoWhile
             $this->eventDispatcher->dispatch(new TaskSuspendedEvent($task));
         } else {
             $this->eventDispatcher->dispatch(new TaskAfterRunEvent($task));
-            if ($this->taskQueue->isEmpty()) {
-                $this->eventDispatcher->dispatch(new TaskQueueIsEmptyEvent());
-            }
         }
+    }
+
+    public function stop(): void
+    {
+        $this->timer->stop();
+        Ev::stop(Ev::BREAK_ALL);
     }
 }

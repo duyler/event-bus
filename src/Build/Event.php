@@ -6,10 +6,12 @@ namespace Duyler\EventBus\Build;
 
 use Duyler\EventBus\Formatter\IdFormatter;
 use InvalidArgumentException;
+use JsonSerializable;
+use Override;
 use ReflectionClass;
 use UnitEnum;
 
-final readonly class Event
+final readonly class Event implements JsonSerializable
 {
     public string $id;
 
@@ -17,6 +19,7 @@ final readonly class Event
         string|UnitEnum $id,
         public ?string $type = null,
         public bool $immutable = true,
+        public ?string $description = null,
     ) {
         $this->id = IdFormatter::toString($id);
 
@@ -33,5 +36,16 @@ final readonly class Event
                 }
             }
         }
+    }
+
+    #[Override]
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => IdFormatter::toString($this->id),
+            'type' => $this->type,
+            'immutable' => $this->immutable,
+            'description' => $this->description,
+        ];
     }
 }

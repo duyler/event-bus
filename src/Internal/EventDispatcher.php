@@ -10,7 +10,9 @@ use Psr\EventDispatcher\ListenerProviderInterface;
 
 final readonly class EventDispatcher implements EventDispatcherInterface
 {
-    public function __construct(private ListenerProviderInterface $listenerProvider) {}
+    public function __construct(
+        private ListenerProviderInterface $listenerProvider,
+    ) {}
 
     #[Override]
     public function dispatch(object $event): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
+use Duyler\DI\Exception\NotFoundException;
 use Duyler\EventBus\Action\Context\ActionContext;
 use Duyler\EventBus\Action\Exception\ActionHandlerMustBeCallableException;
 use Duyler\EventBus\Build\Action;
@@ -13,7 +14,6 @@ use InvalidArgumentException;
 use LogicException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
 use stdClass;
 
 class ActionHandlerTest extends TestCase
@@ -33,7 +33,7 @@ class ActionHandlerTest extends TestCase
 
         $bus = $busBuilder->build();
 
-        $this->expectException(ReflectionException::class);
+        $this->expectException(NotFoundException::class);
         $bus->run();
     }
 

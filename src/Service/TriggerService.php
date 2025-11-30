@@ -12,12 +12,16 @@ use Duyler\EventBus\Exception\TriggerAlreadyDefinedException;
 use Duyler\EventBus\Exception\TriggerNotFoundException;
 use Duyler\EventBus\Exception\TriggerOnNotDefinedActionException;
 use Duyler\EventBus\Exception\TriggerOnSilentActionException;
+use Duyler\EventBus\Internal\Event\TriggerAddedEvent;
+use Duyler\EventBus\Internal\Event\TriggerRemovedEvent;
 use Duyler\EventBus\Storage\ActionStorage;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 readonly class TriggerService
 {
     public function __construct(
         private ActionStorage $actionStorage,
+        private EventDispatcherInterface $eventDispatcher,
         private Bus $bus,
     ) {}
 
@@ -44,6 +48,8 @@ readonly class TriggerService
         $subject->addTrigger($trigger);
         $triggeredOn = $this->actionStorage->get($trigger->actionId);
         $triggeredOn->addTriggeredOn($trigger->subjectId);
+
+        $this->eventDispatcher->dispatch(new TriggerAddedEvent($trigger));
     }
 
     public function triggerIsExists(Trigger $trigger): bool
@@ -72,5 +78,7 @@ readonly class TriggerService
         }
 
         $action->removeTrigger($trigger->actionId, $trigger->status);
+
+        $this->eventDispatcher->dispatch(new TriggerRemovedEvent($trigger));
     }
 }

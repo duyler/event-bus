@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Internal\Event;
 
-use Duyler\EventBus\Build\Event;
+use Duyler\EventBus\Build\Trigger;
 
-readonly class EventRemovedEvent
+readonly class TriggerRemovedEvent
 {
     public function __construct(
-        public Event $event,
+        public Trigger $trigger,
     ) {}
 }

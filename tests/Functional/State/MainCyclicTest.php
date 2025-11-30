@@ -10,7 +10,6 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\MainCyclicStateHandlerInterface;
 use Duyler\EventBus\Dto\Event;
-use Duyler\EventBus\Exception\CircularCallActionException;
 use Duyler\EventBus\State\Service\StateMainCyclicService;
 use Duyler\EventBus\State\StateContext;
 use Duyler\EventBus\Test\Functional\State\Support\ResetBusStateHandler;
@@ -45,9 +44,9 @@ class MainCyclicTest extends TestCase
     public function cyclic_with_event(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->addStateHandler(new MainCyclicStateHandlerWithTrigger());
+        $busBuilder->addStateHandler(new MainCyclicStateHandlerWithEvent());
         $busBuilder->addStateContext(new Context(
-            [MainCyclicStateHandlerWithTrigger::class],
+            [MainCyclicStateHandlerWithEvent::class],
         ));
         $busBuilder->doAction(
             new Action(
@@ -74,36 +73,50 @@ class MainCyclicTest extends TestCase
             [MainCyclicStateHandlerWithRepeatableEvent::class],
         ));
 
+        $busBuilder->doAction(
+            new Action(
+                id: 'ActionFromBuilder',
+                handler: function (): void {},
+                externalAccess: true,
+            ),
+        );
+
         $busBuilder->addEvent(new \Duyler\EventBus\Build\Event(id: 'EventFromHandler'));
 
         $bus = $busBuilder->build();
 
-        $this->expectException(CircularCallActionException::class);
+        $bus->dispatchEvent(new Event(
+            id: 'EventFromHandler',
+        ));
 
         $bus->run();
         $this->assertTrue($bus->resultIsExists('ActionFromHandler'));
     }
 }
 
-class MainCyclicStateHandlerWithTrigger implements MainCyclicStateHandlerInterface
+class MainCyclicStateHandlerWithEvent implements MainCyclicStateHandlerInterface
 {
     #[Override]
     public function handle(StateMainCyclicService $stateService, StateContext $context): void
     {
-        $stateService->addAction(
-            new Action(
-                id: 'ActionFromHandler',
-                handler: function (): void {},
-                listen: ['EventFromHandler'],
-                externalAccess: true,
-            ),
-        );
+        if (false === $stateService->actionIsExists('ActionFromHandler')) {
+            $stateService->addAction(
+                new Action(
+                    id: 'ActionFromHandler',
+                    handler: function (): void {},
+                    listen: ['EventFromHandler'],
+                    externalAccess: true,
+                ),
+            );
+        }
 
-        $stateService->dispatchEvent(
-            new Event(
-                id: 'EventFromHandler',
-            ),
-        );
+        if (false === $stateService->resultIsExists('ActionFromHandler')) {
+            $stateService->dispatchEvent(
+                new Event(
+                    id: 'EventFromHandler',
+                ),
+            );
+        }
 
         $stateService->inQueue('ActionFromBuilder');
         $stateService->queueIsEmpty();
@@ -117,23 +130,27 @@ class MainCyclicStateHandlerWithRepeatableEvent implements MainCyclicStateHandle
     #[Override]
     public function handle(StateMainCyclicService $stateService, StateContext $context): void
     {
-        $stateService->addAction(
-            new Action(
-                id: 'ActionFromHandler',
-                handler: function (): void {
-                    Fiber::suspend();
-                },
-                listen: ['EventFromHandler'],
-                externalAccess: true,
-                repeatable: true,
-                lock: true,
-            ),
-        );
+        if (false === $stateService->actionIsExists('ActionFromHandler')) {
+            $stateService->addAction(
+                new Action(
+                    id: 'ActionFromHandler',
+                    handler: function (): void {
+                        Fiber::suspend();
+                    },
+                    listen: ['EventFromHandler'],
+                    externalAccess: true,
+                    repeatable: true,
+                    lock: true,
+                ),
+            );
+        }
 
-        $stateService->dispatchEvent(
-            new Event(
-                id: 'EventFromHandler',
-            ),
-        );
+        if (false === $stateService->resultIsExists('ActionFromHandler')) {
+            $stateService->dispatchEvent(
+                new Event(
+                    id: 'EventFromHandler',
+                ),
+            );
+        }
     }
 }

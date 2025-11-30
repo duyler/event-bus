@@ -52,7 +52,10 @@ final class State
     {
         $actionId = $completeAction->action->getId() . '.' . $completeAction->result->status->value;
 
-        if (in_array($actionId, $this->mainLog) && 0 === $completeAction->action->getRetries()) {
+        if (in_array($actionId, $this->mainLog)
+            && 0 === $completeAction->action->getRetries()
+            && false === $completeAction->action->isRepeatable()
+        ) {
             $this->pushRepeatedLog($actionId);
             $this->pushRetriesLog($actionId);
         } else {

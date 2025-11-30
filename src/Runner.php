@@ -29,6 +29,8 @@ class Runner
             $this->rollback->run();
             $this->eventDispatcher->dispatch(new ThrowExceptionEvent($exception));
             throw $exception;
+        } finally {
+            $this->doWhile->stop();
         }
     }
 }

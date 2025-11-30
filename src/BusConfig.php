@@ -12,14 +12,17 @@ use Duyler\EventBus\Contract\ActionSubstitutionInterface;
 use Duyler\EventBus\Contract\StateActionInterface;
 use Duyler\EventBus\Contract\StateMainInterface;
 use Duyler\EventBus\Enum\Mode;
+use Duyler\EventBus\Internal\Event\ActionAddedEvent;
 use Duyler\EventBus\Internal\Event\ActionAfterRunEvent;
 use Duyler\EventBus\Internal\Event\ActionBeforeRunEvent;
+use Duyler\EventBus\Internal\Event\ActionRemovedEvent;
 use Duyler\EventBus\Internal\Event\ActionThrownExceptionEvent;
 use Duyler\EventBus\Internal\Event\BusCompletedEvent;
 use Duyler\EventBus\Internal\Event\BusIsResetEvent;
 use Duyler\EventBus\Internal\Event\DoCyclicEvent;
 use Duyler\EventBus\Internal\Event\DoWhileBeginEvent;
 use Duyler\EventBus\Internal\Event\DoWhileEndEvent;
+use Duyler\EventBus\Internal\Event\EventAddedEvent;
 use Duyler\EventBus\Internal\Event\EventDispatchedEvent;
 use Duyler\EventBus\Internal\Event\EventRemovedEvent;
 use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
@@ -29,6 +32,8 @@ use Duyler\EventBus\Internal\Event\TaskResumeEvent;
 use Duyler\EventBus\Internal\Event\TaskSuspendedEvent;
 use Duyler\EventBus\Internal\Event\TaskUnresolvedEvent;
 use Duyler\EventBus\Internal\Event\ThrowExceptionEvent;
+use Duyler\EventBus\Internal\Event\TriggerAddedEvent;
+use Duyler\EventBus\Internal\Event\TriggerRemovedEvent;
 use Duyler\EventBus\Internal\EventDispatcher;
 use Duyler\EventBus\Internal\Listener\Bus\AfterCompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\CleanByLimitEventListener;
@@ -57,6 +62,7 @@ use Duyler\EventBus\Internal\Listener\State\StateMainUnresolvedEventListener;
 use Duyler\EventBus\Internal\ListenerProvider;
 use Duyler\EventBus\State\StateAction;
 use Duyler\EventBus\State\StateMain;
+use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
 
@@ -82,8 +88,13 @@ class BusConfig
         public readonly bool $continueAfterException = false,
         public readonly int $maxCountCompleteActions = 0,
         public readonly int $maxCountEvents = 0,
+        public readonly int $tickInterval = 1,
     ) {
         $this->bind = $this->getBind() + $bind;
+
+        if ($this->tickInterval < 1) {
+            throw new InvalidArgumentException('Tick interval must be greater than 0');
+        }
     }
 
     /** @return array<string, string> */
@@ -125,9 +136,9 @@ class BusConfig
                 SaveCompleteActionEventListener::class,
                 CleanByLimitEventListener::class,
                 AfterCompleteActionEventListener::class,
+                LogCompleteActionEventListener::class,
                 StateMainAfterEventListener::class,
                 ResolveTriggersEventListener::class,
-                LogCompleteActionEventListener::class,
                 ValidateCompleteActionEventListener::class,
                 ResolveHeldTasksEventListener::class,
             ],
@@ -161,6 +172,22 @@ class BusConfig
             BusIsResetEvent::class => [
                 ResetBusEventListener::class,
             ],
+        ];
+    }
+
+    /**
+     * @return class-string[]
+     */
+    public function getExternalAllowedEvents(): array
+    {
+        return [
+            ThrowExceptionEvent::class,
+            ActionAddedEvent::class,
+            EventAddedEvent::class,
+            TriggerAddedEvent::class,
+            ActionRemovedEvent::class,
+            EventRemovedEvent::class,
+            TriggerRemovedEvent::class,
         ];
     }
 }

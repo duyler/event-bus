@@ -78,7 +78,7 @@ class EventTest extends TestCase
     #[Test]
     public function run_with_not_all_condition(): void
     {
-        $builder = new BusBuilder(new BusConfig());
+        $builder = new BusBuilder(new BusConfig(allowSkipUnresolvedActions: false));
         $builder->doAction(
             new Action(
                 id: 'ForEventAction',

@@ -107,7 +107,7 @@ final class Action
         private readonly ?DateInterval $retryDelay = null,
 
         /** @var array<string|int, mixed> */
-        private readonly array $labels = [],
+        private readonly array $attributes = [],
     ) {
         if ($this->immutable) {
             if (null !== $this->type) {
@@ -214,7 +214,7 @@ final class Action
             alternates: $externalAction->alternates,
             retries: $externalAction->retries,
             retryDelay: $externalAction->retryDelay,
-            labels: $externalAction->labels,
+            attributes: $externalAction->attributes,
         );
     }
 
@@ -416,9 +416,9 @@ final class Action
         return $this->retryDelay;
     }
 
-    public function getLabels(): array
+    public function getAttributes(): array
     {
-        return $this->labels;
+        return $this->attributes;
     }
 
     public function addTrigger(Trigger $trigger): void
