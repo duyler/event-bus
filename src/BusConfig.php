@@ -44,6 +44,7 @@ use Duyler\EventBus\Internal\Listener\Bus\ResolveActionsAfterEventDeletedEventLi
 use Duyler\EventBus\Internal\Listener\Bus\ResolveHeldTasksEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveTriggersEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\SaveCompleteActionEventListener;
+use Duyler\EventBus\Internal\Listener\Bus\SchedulerTickEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\TerminateAfterExceptionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\TerminateBusEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ValidateCompleteActionEventListener;
@@ -89,6 +90,9 @@ class BusConfig
         public readonly int $maxCountCompleteActions = 0,
         public readonly int $maxCountEvents = 0,
         public readonly int $tickInterval = 1,
+        public readonly int $schedulerCheckIntervalMs = 100,
+        public readonly int $gcCollectCyclesInterval = 120000,
+        public readonly int $gcMemCachesInterval = 60000,
     ) {
         $this->bind = $this->getBind() + $bind;
 
@@ -119,6 +123,7 @@ class BusConfig
             ],
             DoCyclicEvent::class => [
                 StateMainCyclicEventListener::class,
+                SchedulerTickEventListener::class,
             ],
             DoWhileEndEvent::class => [
                 StateMainEndEventListener::class,
