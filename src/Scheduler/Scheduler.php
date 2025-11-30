@@ -22,7 +22,7 @@ final class Scheduler
 
     public function __construct(BusConfig $config)
     {
-        $checkIntervalMsFloat = (float) $config->schedulerCheckIntervalMs;
+        $checkIntervalMsFloat = (float) $config->schedulerCheckInterval;
         $checkIntervalFloat = $checkIntervalMsFloat * 1_000_000.0;
         $this->checkInterval = (int) $checkIntervalFloat;
         $this->lastCheck = hrtime(true);

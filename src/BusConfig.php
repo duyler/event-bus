@@ -90,7 +90,7 @@ class BusConfig
         public readonly int $maxCountCompleteActions = 0,
         public readonly int $maxCountEvents = 0,
         public readonly int $tickInterval = 1,
-        public readonly int $schedulerCheckIntervalMs = 100,
+        public readonly int $schedulerCheckInterval = 100,
         public readonly int $gcCollectCyclesInterval = 120000,
         public readonly int $gcMemCachesInterval = 60000,
     ) {
