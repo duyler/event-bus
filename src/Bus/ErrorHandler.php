@@ -10,7 +10,7 @@ use Override;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-final class ErrorHandler implements ErrorHandlerInterface
+final readonly class ErrorHandler implements ErrorHandlerInterface
 {
     public function __construct(
         private LoggerInterface $logger,

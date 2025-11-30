@@ -36,7 +36,7 @@ final readonly class DoWhile
         private State $state,
     ) {
         $repeat = $this->busConfig->tickInterval / 1000;
-        $this->timer = new EvTimer(0.001, $repeat, function () {
+        $this->timer = new EvTimer(0.001, $repeat, function (): void {
             $this->tick();
         });
     }

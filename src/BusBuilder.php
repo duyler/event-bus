@@ -17,11 +17,15 @@ use Duyler\EventBus\Bus\State;
 use Duyler\EventBus\Channel\Channel;
 use Duyler\EventBus\Contract\ErrorHandlerInterface;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
+use Duyler\EventBus\Dto\ScheduledTask;
 use Duyler\EventBus\Event\EventDispatcher;
 use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
 use Duyler\EventBus\Exception\TriggerAlreadyDefinedException;
 use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Internal\ListenerProvider;
+use Duyler\EventBus\Scheduler\Scheduler;
+use Duyler\EventBus\Scheduler\Task\GcCollectCyclesTask;
+use Duyler\EventBus\Scheduler\Task\GcMemCachesTask;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\EventService;
 use Duyler\EventBus\Service\StateService;
@@ -66,6 +70,9 @@ class BusBuilder
 
     private ?ErrorHandlerInterface $errorHandler = null;
 
+    /** @var ScheduledTask[] */
+    private array $scheduledTasks = [];
+
     public function __construct(private readonly BusConfig $config)
     {
         $this->logger = new NullLogger();
@@ -100,6 +107,28 @@ class BusBuilder
             $container->bind([
                 ErrorHandlerInterface::class => $this->errorHandler::class,
             ]);
+        }
+
+        /** @var Scheduler $scheduler */
+        $scheduler = $container->get(Scheduler::class);
+        $scheduler->addTask(
+            new GcCollectCyclesTask($this->logger),
+            $this->config->gcCollectCyclesInterval,
+            $this->config->gcCollectCyclesInterval,
+        );
+
+        $scheduler->addTask(
+            new GcMemCachesTask($this->logger),
+            $this->config->gcMemCachesInterval,
+            $this->config->gcMemCachesInterval,
+        );
+
+        foreach ($this->scheduledTasks as $task) {
+            $scheduler->addTask(
+                $task->getCallback(),
+                $task->getInterval(),
+                $task->getStartDelay(),
+            );
         }
 
         $container->get(IdFormatter::class);
@@ -272,6 +301,12 @@ class BusBuilder
 
         $this->listeners[$event][] = $listener;
 
+        return $this;
+    }
+
+    public function addScheduledTask(ScheduledTask $task): static
+    {
+        $this->scheduledTasks[] = $task;
         return $this;
     }
 }
