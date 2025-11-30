@@ -99,7 +99,9 @@ class ActionContainerProvider
             if (null === $sharedService->service) {
                 $this->sharedContainer->bind($sharedService->bind);
                 $this->sharedContainer->addProviders($sharedService->providers);
-                $actionContainer->set($this->sharedContainer->get($sharedService->class));
+                /** @var object $sharedObject */
+                $sharedObject = $this->sharedContainer->get($sharedService->class);
+                $actionContainer->set($sharedObject);
             } else {
                 $actionContainer->set($sharedService->service);
             }
