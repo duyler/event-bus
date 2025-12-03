@@ -36,6 +36,7 @@ use Duyler\EventBus\Internal\Event\TriggerAddedEvent;
 use Duyler\EventBus\Internal\Event\TriggerRemovedEvent;
 use Duyler\EventBus\Internal\EventDispatcher;
 use Duyler\EventBus\Internal\Listener\Bus\AfterCompleteActionEventListener;
+use Duyler\EventBus\Internal\Listener\Bus\AutoresetEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\CleanByLimitEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\DispatchEventEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\LogCompleteActionEventListener;
@@ -46,7 +47,6 @@ use Duyler\EventBus\Internal\Listener\Bus\ResolveTriggersEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\SaveCompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\SchedulerTickEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\TerminateAfterExceptionEventListener;
-use Duyler\EventBus\Internal\Listener\Bus\TerminateBusEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ValidateCompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateActionAfterEventListener;
 use Duyler\EventBus\Internal\Listener\State\StateActionBeforeEventListener;
@@ -149,6 +149,7 @@ class BusConfig
             ],
             TaskQueueIsEmptyEvent::class => [
                 StateMainEmptyListener::class,
+                AutoresetEventListener::class,
             ],
             TaskUnresolvedEvent::class => [
                 StateMainUnresolvedEventListener::class,
@@ -166,7 +167,7 @@ class BusConfig
                 DispatchEventEventListener::class,
             ],
             BusCompletedEvent::class => [
-                TerminateBusEventListener::class,
+
             ],
             ThrowExceptionEvent::class => [
                 TerminateAfterExceptionEventListener::class,

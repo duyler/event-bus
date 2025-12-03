@@ -49,6 +49,7 @@ final readonly class DoWhile
             throw new RuntimeException('TaskQueue is empty');
         }
 
+        $this->timer->is_active or $this->timer->start();
         Ev::run();
     }
 
@@ -93,10 +94,6 @@ final readonly class DoWhile
             }
 
             $this->process($task);
-
-            if ($this->taskQueue->isEmpty()) {
-                $this->eventDispatcher->dispatch(new TaskQueueIsEmptyEvent());
-            }
         } catch (Throwable $e) {
             $this->errorHandler->handle($e, $this->state->getLog());
         }
@@ -109,6 +106,9 @@ final readonly class DoWhile
             $this->eventDispatcher->dispatch(new TaskSuspendedEvent($task));
         } else {
             $this->eventDispatcher->dispatch(new TaskAfterRunEvent($task));
+            if ($this->taskQueue->isEmpty()) {
+                $this->eventDispatcher->dispatch(new TaskQueueIsEmptyEvent());
+            }
         }
     }
 

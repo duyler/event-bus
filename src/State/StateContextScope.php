@@ -36,7 +36,6 @@ class StateContextScope
 
     public function finalize(): void
     {
-        $this->contexts = [];
         $this->commonContext = new StateContext();
     }
 }
