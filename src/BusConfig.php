@@ -7,8 +7,10 @@ namespace Duyler\EventBus;
 use Duyler\DI\Definition;
 use Duyler\EventBus\Action\ActionRunnerProvider;
 use Duyler\EventBus\Action\ActionSubstitution;
+use Duyler\EventBus\Bus\DoWhile;
 use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
 use Duyler\EventBus\Contract\ActionSubstitutionInterface;
+use Duyler\EventBus\Contract\LoopInterface;
 use Duyler\EventBus\Contract\StateActionInterface;
 use Duyler\EventBus\Contract\StateMainInterface;
 use Duyler\EventBus\Enum\Mode;
@@ -111,6 +113,7 @@ class BusConfig
             ActionSubstitutionInterface::class => ActionSubstitution::class,
             ListenerProviderInterface::class => ListenerProvider::class,
             EventDispatcherInterface::class => EventDispatcher::class,
+            LoopInterface::class => DoWhile::class,
         ];
     }
 

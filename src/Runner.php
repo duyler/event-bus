@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus;
 
-use Duyler\EventBus\Bus\DoWhile;
 use Duyler\EventBus\Bus\Rollback;
+use Duyler\EventBus\Contract\LoopInterface;
 use Duyler\EventBus\Internal\Event\ThrowExceptionEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Throwable;
@@ -13,7 +13,7 @@ use Throwable;
 class Runner
 {
     public function __construct(
-        private readonly DoWhile $doWhile,
+        private readonly LoopInterface $doWhile,
         private readonly Rollback $rollback,
         private readonly EventDispatcherInterface $eventDispatcher,
     ) {}

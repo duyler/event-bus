@@ -7,6 +7,7 @@ namespace Duyler\EventBus\Bus;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
 use Duyler\EventBus\Contract\ErrorHandlerInterface;
+use Duyler\EventBus\Contract\LoopInterface;
 use Duyler\EventBus\Enum\Mode;
 use Duyler\EventBus\Enum\TaskStatus;
 use Duyler\EventBus\Internal\Event\DoCyclicEvent;
@@ -23,8 +24,10 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use RuntimeException;
 use Throwable;
 
-final readonly class DoWhile
+final readonly class DoWhile implements LoopInterface
 {
+    private const float DELAY_BEFORE_RUN = 0.001;
+
     private EvTimer $timer;
 
     public function __construct(
@@ -36,7 +39,7 @@ final readonly class DoWhile
         private State $state,
     ) {
         $repeat = $this->busConfig->tickInterval / 1000;
-        $this->timer = new EvTimer(0.001, $repeat, function (): void {
+        $this->timer = new EvTimer(self::DELAY_BEFORE_RUN, $repeat, function (): void {
             $this->tick();
         });
     }
