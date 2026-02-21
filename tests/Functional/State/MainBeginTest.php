@@ -6,7 +6,6 @@ namespace Duyler\EventBus\Test\Functional\State;
 
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Build\Context;
-use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\MainBeginStateHandlerInterface;
@@ -38,7 +37,6 @@ class MainBeginTest extends TestCase
         $bus->run();
 
         $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
-        $this->assertTrue($bus->resultIsExists('ActionFromStateMainBegin'));
     }
 
     #[Test]
@@ -75,13 +73,6 @@ class MainBeginStateHandler implements MainBeginStateHandlerInterface
                 id: 'ActionFromStateMainBegin',
                 handler: function (): void {},
                 externalAccess: true,
-            ),
-        );
-
-        $stateService->addTrigger(
-            new Trigger(
-                subjectId: 'ActionFromBuilder',
-                actionId: 'ActionFromStateMainBegin',
             ),
         );
     }

@@ -39,21 +39,9 @@ class EventService
             throw new DispatchedEventNotDefinedException($eventDto->id);
         }
 
-        if (null !== $eventDto->data) {
-            if (null === $event->type) {
-                throw new ContractForDataNotReceivedException($eventDto->id);
-            }
+        $this->validateEventData($eventDto->id, $eventDto->data, $event->type);
 
-            if (false === $eventDto->data instanceof $event->type) {
-                throw new DataMustBeCompatibleWithContractException($eventDto->id, $event->type);
-            }
-        } else {
-            if (null !== $event->type) {
-                throw new DataForContractNotReceivedException($eventDto->id, $event->type);
-            }
-        }
-
-        $actions = $this->actionStorage->getByEvent($eventDto->id);
+        $actions = $this->actionStorage->getBySubscriptionEvent($eventDto->id);
 
         foreach ($actions as $action) {
             $this->eventRelationStorage->save(new EventRelation($action, $eventDto));
@@ -92,6 +80,46 @@ class EventService
             $this->eventDispatcher->dispatch(
                 new EventRemovedEvent($event),
             );
+        }
+    }
+
+    public function dispatchActionEvent(
+        string $eventId,
+        ?object $data,
+        Event $eventDefinition,
+    ): void {
+        $this->validateEventData($eventId, $data, $eventDefinition->type);
+
+        $eventDto = new EventDto($eventId, $data);
+
+        $this->eventStorage->saveDynamic($eventDefinition);
+
+        $actions = $this->actionStorage->getBySubscriptionEvent($eventId);
+
+        foreach ($actions as $action) {
+            $this->eventRelationStorage->save(new EventRelation($action, $eventDto));
+            $this->bus->doAction($action);
+        }
+
+        if ($this->eventRelationStorage->isExists($eventId)) {
+            $this->state->pushEventLog($eventId);
+        }
+    }
+
+    private function validateEventData(string $eventId, ?object $data, ?string $type): void
+    {
+        if (null !== $data) {
+            if (null === $type) {
+                throw new ContractForDataNotReceivedException($eventId);
+            }
+
+            if (false === $data instanceof $type) {
+                throw new DataMustBeCompatibleWithContractException($eventId, $type);
+            }
+        } else {
+            if (null !== $type) {
+                throw new DataForContractNotReceivedException($eventId, $type);
+            }
         }
     }
 }

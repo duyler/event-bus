@@ -10,13 +10,11 @@ use Duyler\EventBus\Service\EventService;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\ResultService;
 use Duyler\EventBus\Service\RollbackService;
-use Duyler\EventBus\Service\TriggerService;
 use Duyler\EventBus\State\Service\Trait\ActionServiceTrait;
 use Duyler\EventBus\State\Service\Trait\EventServiceTrait;
 use Duyler\EventBus\State\Service\Trait\LogServiceTrait;
 use Duyler\EventBus\State\Service\Trait\ResultServiceTrait;
 use Duyler\EventBus\State\Service\Trait\RollbackServiceTrait;
-use Duyler\EventBus\State\Service\Trait\TriggerServiceTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 class StateMainEmptyService
@@ -26,7 +24,6 @@ class StateMainEmptyService
     use LogServiceTrait;
     use EventServiceTrait;
     use RollbackServiceTrait;
-    use TriggerServiceTrait;
 
     public function __construct(
         private readonly ActionService $actionService,
@@ -34,7 +31,6 @@ class StateMainEmptyService
         private readonly LogService $logService,
         private readonly EventService $eventService,
         private readonly RollbackService $rollbackService,
-        private readonly TriggerService $triggerService,
         private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 

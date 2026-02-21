@@ -1,7 +1,9 @@
 .idea/
 vendor/
+coverage/
 .phpunit.cache/
 composer.lock
 /.php-cs-fixer.cache
 /coverage.xml
 /docs/
+.duyler/

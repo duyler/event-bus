@@ -10,6 +10,7 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\MainCyclicStateHandlerInterface;
 use Duyler\EventBus\Dto\Event;
+use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\State\Service\StateMainCyclicService;
 use Duyler\EventBus\State\StateContext;
 use Duyler\EventBus\Test\Functional\State\Support\ResetBusStateHandler;
@@ -86,7 +87,7 @@ class MainCyclicTest extends TestCase
         $bus = $busBuilder->build();
 
         $bus->dispatchEvent(new Event(
-            id: 'EventFromHandler',
+            id: 'EventFromHandler' . IdFormatter::DELIMITER . 'Success',
         ));
 
         $bus->run();
@@ -104,7 +105,7 @@ class MainCyclicStateHandlerWithEvent implements MainCyclicStateHandlerInterface
                 new Action(
                     id: 'ActionFromHandler',
                     handler: function (): void {},
-                    listen: ['EventFromHandler'],
+                    onOne: 'EventFromHandler' . IdFormatter::DELIMITER . 'Success',
                     externalAccess: true,
                 ),
             );
@@ -113,7 +114,7 @@ class MainCyclicStateHandlerWithEvent implements MainCyclicStateHandlerInterface
         if (false === $stateService->resultIsExists('ActionFromHandler')) {
             $stateService->dispatchEvent(
                 new Event(
-                    id: 'EventFromHandler',
+                    id: 'EventFromHandler' . IdFormatter::DELIMITER . 'Success',
                 ),
             );
         }
@@ -137,7 +138,7 @@ class MainCyclicStateHandlerWithRepeatableEvent implements MainCyclicStateHandle
                     handler: function (): void {
                         Fiber::suspend();
                     },
-                    listen: ['EventFromHandler'],
+                    onOne: 'EventFromHandler' . IdFormatter::DELIMITER . 'Success',
                     externalAccess: true,
                     repeatable: true,
                     lock: true,
@@ -148,7 +149,7 @@ class MainCyclicStateHandlerWithRepeatableEvent implements MainCyclicStateHandle
         if (false === $stateService->resultIsExists('ActionFromHandler')) {
             $stateService->dispatchEvent(
                 new Event(
-                    id: 'EventFromHandler',
+                    id: 'EventFromHandler' . IdFormatter::DELIMITER . 'Success',
                 ),
             );
         }

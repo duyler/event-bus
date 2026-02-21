@@ -24,7 +24,7 @@ class ActionStorage
     private array $byType = [];
 
     /** @var array<string, array<string, Action>> */
-    private array $byEvent = [];
+    private array $bySubscriptionEvent = [];
 
     public function save(Action $action): void
     {
@@ -32,8 +32,8 @@ class ActionStorage
             $this->byType[$action->getType()][$action->getId()] = $action;
         }
 
-        foreach ($action->getListen() as $eventId) {
-            $this->byEvent[$eventId][$action->getId()] = $action;
+        foreach ($action->getSubscriptionEvents() as $eventId) {
+            $this->bySubscriptionEvent[$eventId][$action->getId()] = $action;
         }
 
         $this->data[$action->getId()] = $action;
@@ -80,8 +80,35 @@ class ActionStorage
     }
 
     /** @return array<string, Action> */
-    public function getByEvent(string $eventId): array
+    public function getBySubscriptionEvent(string $eventId): array
     {
-        return $this->byEvent[$eventId] ?? [];
+        return $this->bySubscriptionEvent[$eventId] ?? [];
+    }
+
+    public function remove(string $actionId): void
+    {
+        if (false === array_key_exists($actionId, $this->data)) {
+            return;
+        }
+
+        $action = $this->data[$actionId];
+
+        foreach ($action->getSubscriptionEvents() as $eventId) {
+            unset($this->bySubscriptionEvent[$eventId][$actionId]);
+        }
+
+        if (null !== $action->getType()) {
+            unset($this->byType[$action->getType()][$actionId]);
+        }
+
+        unset($this->data[$actionId]);
+    }
+
+    public function reset(): void
+    {
+        $this->data = [];
+        $this->dynamic = [];
+        $this->byType = [];
+        $this->bySubscriptionEvent = [];
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Unit;
 
-use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\Exception\ActionNotAllowExternalAccessException;
 use Duyler\EventBus\Exception\ActionNotDefinedException;
 use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
@@ -13,11 +12,6 @@ use Duyler\EventBus\Exception\DispatchedEventNotDefinedException;
 use Duyler\EventBus\Exception\EventNotDefinedException;
 use Duyler\EventBus\Exception\NotAllowedSealedActionException;
 use Duyler\EventBus\Exception\ResultNotExistsException;
-use Duyler\EventBus\Exception\SubscribedActionNotDefinedException;
-use Duyler\EventBus\Exception\TriggerAlreadyDefinedException;
-use Duyler\EventBus\Exception\TriggerNotFoundException;
-use Duyler\EventBus\Exception\TriggerOnNotDefinedActionException;
-use Duyler\EventBus\Exception\TriggerOnSilentActionException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -77,50 +71,6 @@ class ExceptionTest extends TestCase
         $this->expectException(ResultNotExistsException::class);
         $this->expectExceptionMessage('Action or event result for TestAction does not exist');
         throw new ResultNotExistsException('TestAction');
-    }
-
-    #[Test]
-    public function subscribed_action_not_defined_exception_message(): never
-    {
-        $this->expectException(SubscribedActionNotDefinedException::class);
-        $this->expectExceptionMessage('Subscribed action TestAction not defined');
-        throw new SubscribedActionNotDefinedException('TestAction');
-    }
-
-    #[Test]
-    public function trigger_already_defined_exception_message(): never
-    {
-        $trigger = new Trigger(actionId: 'A', subjectId: 'B');
-        $this->expectException(TriggerAlreadyDefinedException::class);
-        $this->expectExceptionMessage('Trigger with action id A, status Success, and subject id B already defined');
-        throw new TriggerAlreadyDefinedException($trigger);
-    }
-
-    #[Test]
-    public function trigger_not_found_exception_message(): never
-    {
-        $trigger = new Trigger(actionId: 'A', subjectId: 'B');
-
-        $this->expectException(TriggerNotFoundException::class);
-        $this->expectExceptionMessage('Trigger not found: A@B');
-        throw new TriggerNotFoundException($trigger);
-    }
-
-    #[Test]
-    public function trigger_on_not_defined_action_exception_message(): never
-    {
-        $trigger = new Trigger(actionId: 'A', subjectId: 'B');
-        $this->expectException(TriggerOnNotDefinedActionException::class);
-        $this->expectExceptionMessage('Action A not defined in the bus');
-        throw new TriggerOnNotDefinedActionException($trigger);
-    }
-
-    #[Test]
-    public function trigger_on_silent_action_exception_message(): never
-    {
-        $this->expectException(TriggerOnSilentActionException::class);
-        $this->expectExceptionMessage('Action Acan not be triggered on silent action B');
-        throw new TriggerOnSilentActionException('A', 'B');
     }
 
     #[Test]

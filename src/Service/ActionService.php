@@ -9,14 +9,12 @@ use Duyler\EventBus\Build\Action as ExternalAction;
 use Duyler\EventBus\Build\ActionHandlerSubstitution;
 use Duyler\EventBus\Build\ActionResultSubstitution;
 use Duyler\EventBus\Build\SharedService;
-use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\Bus\Action;
 use Duyler\EventBus\Bus\ActionRequiredIterator;
 use Duyler\EventBus\Bus\ActionRequiredMap;
 use Duyler\EventBus\Bus\Bus;
 use Duyler\EventBus\Bus\TaskQueue;
 use Duyler\EventBus\Contract\ActionSubstitutionInterface;
-use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Enum\TaskStatus;
 use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
 use Duyler\EventBus\Exception\ActionNotDefinedException;
@@ -28,7 +26,6 @@ use Duyler\EventBus\Exception\NotAllowedSealedActionException;
 use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Internal\Event\ActionAddedEvent;
 use Duyler\EventBus\Internal\Event\ActionRemovedEvent;
-use Duyler\EventBus\Internal\Event\TriggerRemovedEvent;
 use Duyler\EventBus\Storage\ActionContainerStorage;
 use Duyler\EventBus\Storage\ActionStorage;
 use Duyler\EventBus\Storage\CompleteActionStorage;
@@ -82,7 +79,7 @@ readonly class ActionService
             }
         }
 
-        foreach ($action->getListen() as $eventId) {
+        foreach ($action->getSubscriptionEvents() as $eventId) {
             if (false === $this->eventStorage->has($eventId)) {
                 $this->throwEventNotDefined($eventId, $action->getId());
             }
@@ -154,7 +151,7 @@ readonly class ActionService
                 }
             }
 
-            foreach ($action->getListen() as $eventId) {
+            foreach ($action->getSubscriptionEvents() as $eventId) {
                 if (false === $this->eventStorage->has($eventId)) {
                     $this->throwEventNotDefined($eventId, $action->getId());
                 }
@@ -282,33 +279,6 @@ readonly class ActionService
             }
 
             $action = $this->actionStorage->get($currentActionId);
-            $triggeredOn = $action->getTriggeredOn();
-
-            foreach ($triggeredOn as $triggeredActionId) {
-                $triggeredAction = $this->actionStorage->get($triggeredActionId);
-
-                if ($triggeredAction->triggerIsExists($currentActionId, ResultStatus::Success)) {
-                    $triggeredAction->removeTrigger($currentActionId, ResultStatus::Success);
-                    $this->eventDispatcher->dispatch(new TriggerRemovedEvent(
-                        new Trigger(
-                            $triggeredActionId,
-                            $currentActionId,
-                            ResultStatus::Success,
-                        ),
-                    ));
-                }
-
-                if ($triggeredAction->triggerIsExists($currentActionId, ResultStatus::Fail)) {
-                    $triggeredAction->removeTrigger($currentActionId, ResultStatus::Fail);
-                    $this->eventDispatcher->dispatch(new TriggerRemovedEvent(
-                        new Trigger(
-                            $triggeredActionId,
-                            $currentActionId,
-                            ResultStatus::Fail,
-                        ),
-                    ));
-                }
-            }
 
             $requiredMap = $this->actionRequiredMap->get($currentActionId);
 

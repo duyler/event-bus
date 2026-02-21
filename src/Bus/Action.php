@@ -7,9 +7,9 @@ namespace Duyler\EventBus\Bus;
 use Closure;
 use DateInterval;
 use Duyler\EventBus\Build\Action as ExternalAction;
-use Duyler\EventBus\Build\Trigger;
+use Duyler\EventBus\Build\Id;
 use Duyler\EventBus\Build\Type;
-use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Enum\SubscriptionType;
 use Duyler\EventBus\Formatter\IdFormatter;
 use InvalidArgumentException;
 use RecursiveArrayIterator;
@@ -29,12 +29,6 @@ final class Action
     private readonly array $dependsOn;
 
     /** @var string[] */
-    private readonly array $listen;
-
-    /** @var array<array-key, string|UnitEnum> */
-    private readonly array $externalListen;
-
-    /** @var string[] */
     private readonly array $sealed;
 
     /** @var array<array-key, string|UnitEnum> */
@@ -46,19 +40,17 @@ final class Action
     /** @var array<array-key, string|UnitEnum> */
     private readonly array $externalAlternates;
 
-    /** @var array<string, string> */
-    private array $triggerOnFailureFor = [];
+    private ?string $onOne = null;
 
-    /** @var array<string, string> */
-    private array $triggerOnSuccessFor = [];
+    /** @var string[] */
+    private array $onAny = [];
 
-    /** @var array<array-key, string> */
-    private array $triggeredOn = [];
+    /** @var string[] */
+    private array $onAll = [];
 
     /**
      * @param array<array-key, string|UnitEnum> $externalRequired
      * @param array<array-key, Type> $dependsOn
-     * @param array<array-key, string|UnitEnum> $listen
      * @param array<array-key, string|UnitEnum> $sealed
      * @param array<array-key, string|UnitEnum> $alternates
      */
@@ -71,7 +63,6 @@ final class Action
         /** @var array<array-key, string|UnitEnum> */
         private readonly array $externalRequired = [],
         array $dependsOn = [],
-        array $listen = [],
 
         /** @var array<string, string> */
         private readonly array $bind = [],
@@ -108,6 +99,9 @@ final class Action
 
         /** @var array<string|int, mixed> */
         private readonly array $attributes = [],
+        string|Id|null $onOne = null,
+        array $onAny = [],
+        array $onAll = [],
     ) {
         if ($this->immutable) {
             if (null !== $this->type) {
@@ -174,15 +168,19 @@ final class Action
         $this->sealed = $allowActions;
         $this->externalSealed = $sealed;
 
-        $listenEvents = [];
-
-        /** @var string|UnitEnum $eventId */
-        foreach ($listen as $eventId) {
-            $listenEvents[] = IdFormatter::toString($eventId);
+        if (null !== $onOne) {
+            $this->onOne = (string) $onOne;
         }
 
-        $this->listen = $listenEvents;
-        $this->externalListen = $listen;
+        /** @var string|Id $eventId */
+        foreach ($onAny as $eventId) {
+            $this->onAny[] = (string) $eventId;
+        }
+
+        /** @var string|Id $eventId */
+        foreach ($onAll as $eventId) {
+            $this->onAll[] = (string) $eventId;
+        }
     }
 
     public static function fromExternal(ExternalAction $externalAction): Action
@@ -194,7 +192,6 @@ final class Action
             description: $externalAction->description,
             externalRequired: $externalAction->required,
             dependsOn: $externalAction->dependsOn,
-            listen: $externalAction->listen,
             bind: $externalAction->bind,
             providers: $externalAction->providers,
             definitions: $externalAction->definitions,
@@ -215,6 +212,9 @@ final class Action
             retries: $externalAction->retries,
             retryDelay: $externalAction->retryDelay,
             attributes: $externalAction->attributes,
+            onOne: $externalAction->onOne,
+            onAny: $externalAction->onAny,
+            onAll: $externalAction->onAll,
         );
     }
 
@@ -239,20 +239,55 @@ final class Action
         return $this->typeId;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getListen(): array
+    public function getOnOne(): ?string
     {
-        return $this->listen;
+        return $this->onOne;
     }
 
     /**
-     * @return array<array-key, string|UnitEnum>
+     * @return string[]
      */
-    public function getExternalListen(): array
+    public function getOnAny(): array
     {
-        return $this->externalListen;
+        return $this->onAny;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getOnAll(): array
+    {
+        return $this->onAll;
+    }
+
+    public function getSubscriptionType(): SubscriptionType
+    {
+        if (null !== $this->onOne) {
+            return SubscriptionType::One;
+        }
+        if (count($this->onAny) > 0) {
+            return SubscriptionType::Any;
+        }
+        if (count($this->onAll) > 0) {
+            return SubscriptionType::All;
+        }
+        return SubscriptionType::None;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getSubscriptionEvents(): array
+    {
+        return match ($this->getSubscriptionType()) {
+            SubscriptionType::One => (function (): array {
+                assert(null !== $this->onOne);
+                return [$this->onOne];
+            })(),
+            SubscriptionType::Any => $this->onAny,
+            SubscriptionType::All => $this->onAll,
+            SubscriptionType::None => [],
+        };
     }
 
     /**
@@ -419,58 +454,6 @@ final class Action
     public function getAttributes(): array
     {
         return $this->attributes;
-    }
-
-    public function addTrigger(Trigger $trigger): void
-    {
-        if (ResultStatus::Fail === $trigger->status) {
-            $this->triggerOnFailureFor[$trigger->actionId] = $trigger->actionId;
-        } else {
-            $this->triggerOnSuccessFor[$trigger->actionId] = $trigger->actionId;
-        }
-    }
-
-    public function addTriggeredOn(string $actionId): void
-    {
-        $this->triggeredOn[] = $actionId;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getTriggers(ResultStatus $status): array
-    {
-        return match ($status) {
-            ResultStatus::Success => $this->triggerOnSuccessFor,
-            ResultStatus::Fail => $this->triggerOnFailureFor,
-            default => [],
-        };
-    }
-
-    public function triggerIsExists(string $actionId, ResultStatus $status): bool
-    {
-        if (ResultStatus::Success === $status) {
-            return array_key_exists($actionId, $this->triggerOnSuccessFor);
-        }
-
-        return array_key_exists($actionId, $this->triggerOnFailureFor);
-    }
-
-    public function removeTrigger(string $actionId, ResultStatus $status): void
-    {
-        if (ResultStatus::Fail === $status) {
-            unset($this->triggerOnFailureFor[$actionId]);
-        } else {
-            unset($this->triggerOnSuccessFor[$actionId]);
-        }
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getTriggeredOn(): array
-    {
-        return $this->triggeredOn;
     }
 
     public function getDescription(): ?string

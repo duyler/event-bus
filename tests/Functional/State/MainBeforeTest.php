@@ -99,7 +99,6 @@ class MainBeforeTest extends TestCase
         $bus->run();
 
         $this->assertTrue($bus->resultIsExists(TestActionEnum::ActionFromBuilder_1));
-        $this->assertTrue($bus->resultIsExists(TestActionEnum::ActionFromBuilder_2));
         $this->assertEquals(
             'Value from new result 1',
             $bus->getResult(TestActionEnum::ActionFromBuilder_1)->data->value,

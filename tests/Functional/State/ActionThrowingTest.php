@@ -29,12 +29,12 @@ class ActionThrowingTest extends TestCase
         $busBuilder->doAction(
             new Action(
                 id: 'Test',
-                handler: function (): void {throw new RuntimeException('Test exception message'); },
+                handler: function (): void {
+                    throw new RuntimeException('Test exception message');
+                },
                 externalAccess: true,
             ),
         );
-
-        $busBuilder->build();
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Test exception message');

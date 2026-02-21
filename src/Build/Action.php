@@ -7,6 +7,8 @@ namespace Duyler\EventBus\Build;
 use Closure;
 use DateInterval;
 use Duyler\EventBus\Bus\Action as InternalAction;
+use Duyler\EventBus\Enum\SubscriptionType;
+use Duyler\EventBus\Exception\InvalidSubscriptionCombinationException;
 use Duyler\EventBus\Formatter\IdFormatter;
 use JsonSerializable;
 use Override;
@@ -18,15 +20,19 @@ final readonly class Action implements JsonSerializable
         public string|UnitEnum $id,
         public string|Closure $handler,
         public ?string $description = null,
+        public string|Id|null $onOne = null,
+
+        /** @var array<array-key, string|Id> */
+        public array $onAny = [],
+
+        /** @var array<array-key, string|Id> */
+        public array $onAll = [],
 
         /** @var array<array-key, string|UnitEnum> */
         public array $required = [],
 
         /** @var array<array-key, Type> */
         public array $dependsOn = [],
-
-        /** @var array<array-key, string|UnitEnum> */
-        public array $listen = [],
 
         /** @var array<string, string> */
         public array $bind = [],
@@ -67,7 +73,30 @@ final readonly class Action implements JsonSerializable
 
         /** @var array<string|int, mixed> */
         public array $attributes = [],
-    ) {}
+    ) {
+        $this->validateSubscription();
+    }
+
+    private function validateSubscription(): void
+    {
+        $subscriptionTypes = [];
+
+        if (null !== $this->onOne) {
+            $subscriptionTypes[] = SubscriptionType::One;
+        }
+
+        if ([] !== $this->onAny) {
+            $subscriptionTypes[] = SubscriptionType::Any;
+        }
+
+        if ([] !== $this->onAll) {
+            $subscriptionTypes[] = SubscriptionType::All;
+        }
+
+        if (count($subscriptionTypes) > 1) {
+            throw new InvalidSubscriptionCombinationException($subscriptionTypes);
+        }
+    }
 
     public static function fromInternal(InternalAction $internalAction): Action
     {
@@ -75,8 +104,10 @@ final readonly class Action implements JsonSerializable
             id: $internalAction->getExternalId(),
             handler: $internalAction->getHandler(),
             description: $internalAction->getDescription(),
+            onOne: $internalAction->getOnOne(),
+            onAny: $internalAction->getOnAny(),
+            onAll: $internalAction->getOnAll(),
             required: $internalAction->getExternalRequired(),
-            listen: $internalAction->getExternalListen(),
             bind: $internalAction->getBind(),
             providers: $internalAction->getProviders(),
             definitions: $internalAction->getDefinitions(),
@@ -109,12 +140,6 @@ final readonly class Action implements JsonSerializable
             $require[] = IdFormatter::toString($actionId);
         }
 
-        $listen = [];
-
-        foreach ($this->listen as $eventId) {
-            $listen[] = IdFormatter::toString($eventId);
-        }
-
         $sealed = [];
 
         foreach ($this->sealed as $actionId) {
@@ -127,12 +152,26 @@ final readonly class Action implements JsonSerializable
             $alternates[] = IdFormatter::toString($actionId);
         }
 
+        $onAny = [];
+
+        foreach ($this->onAny as $eventId) {
+            $onAny[] = (string) $eventId;
+        }
+
+        $onAll = [];
+
+        foreach ($this->onAll as $eventId) {
+            $onAll[] = (string) $eventId;
+        }
+
         return [
             'id' => IdFormatter::toString($this->id),
             'description' => $this->description,
             'handler' => $this->handler,
+            'onOne' => null !== $this->onOne ? (string) $this->onOne : null,
+            'onAny' => $onAny,
+            'onAll' => $onAll,
             'require' => $require,
-            'listen' => $listen,
             'argument' => $this->argument,
             'argumentFactory' => $this->argumentFactory,
             'type' => $this->type,

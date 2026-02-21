@@ -12,9 +12,9 @@ use Duyler\EventBus\Bus\Action;
 use Duyler\EventBus\Bus\ActionContainer;
 use Duyler\EventBus\Bus\CompleteAction;
 use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Storage\CompleteActionStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
-use Duyler\EventBus\Storage\EventStorage;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
@@ -27,7 +27,6 @@ class ActionHandlerArgumentBuilder
         private readonly CompleteActionStorage $completeActionStorage,
         private readonly ActionSubstitution $actionSubstitution,
         private readonly EventRelationStorage $eventRelationStorage,
-        private readonly EventStorage $eventStorage,
     ) {}
 
     public function build(Action $action, ActionContainer $container): ?object
@@ -35,18 +34,7 @@ class ActionHandlerArgumentBuilder
         /** @var array<string, object> $results */
         $results = [];
 
-        if ($this->eventRelationStorage->has($action->getId())) {
-            foreach ($action->getListen() as $eventId) {
-                $eventRelation = $this->eventRelationStorage->shift($action->getId(), $eventId);
-                $eventDto = $eventRelation->event;
-                $event = $this->eventStorage->get($eventDto->id);
-                if (null !== $eventDto->data && null !== $event && null !== $event->type) {
-                    /** @var object $eventDtoData */
-                    $eventDtoData = $eventDto->data;
-                    $results[$event->id] = $eventDtoData;
-                }
-            }
-        }
+        $results = $this->collectSubscriptionResults($action) + $results;
 
         $completeActionByType = $this->completeActionStorage->getAllAllowedByTypeArray(
             $action->getDependsOn(),
@@ -136,6 +124,44 @@ class ActionHandlerArgumentBuilder
         }
 
         return $argument;
+    }
+
+    /**
+     * @return array<string, object>
+     */
+    private function collectSubscriptionResults(Action $action): array
+    {
+        $results = [];
+
+        foreach ($action->getSubscriptionEvents() as $eventId) {
+            $subjectId = $this->extractSubjectId($eventId);
+
+            if ($this->eventRelationStorage->isExists($eventId)) {
+                $eventRelation = $this->eventRelationStorage->getLast($eventId);
+                if (null !== $eventRelation->event->data) {
+                    /** @var object $eventData */
+                    $eventData = $eventRelation->event->data;
+                    $results[$subjectId] = $eventData;
+                }
+            }
+
+            if ($this->completeActionStorage->isExists($subjectId)) {
+                $completeAction = $this->completeActionStorage->get($subjectId);
+                if (null !== $completeAction->result->data) {
+                    /** @var object $resultData */
+                    $resultData = $completeAction->result->data;
+                    $results[$subjectId] = $resultData;
+                }
+            }
+        }
+
+        return $results;
+    }
+
+    private function extractSubjectId(string $eventId): string
+    {
+        $parts = explode(IdFormatter::DELIMITER, $eventId);
+        return $parts[0];
     }
 
     /**

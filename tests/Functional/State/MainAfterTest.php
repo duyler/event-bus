@@ -6,7 +6,6 @@ namespace Duyler\EventBus\Test\Functional\State;
 
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Build\Context;
-use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\RollbackActionInterface;
@@ -61,58 +60,11 @@ class MainAfterTest extends TestCase
             ),
         );
 
-        $busBuilder->addTrigger(
-            new Trigger(
-                subjectId: 'ActionFromBuilder',
-                actionId: 'NotRemovedActionFromBuilder',
-            ),
-        );
-
-        $busBuilder->addTrigger(
-            new Trigger(
-                subjectId: 'NotRemovedActionFromBuilder',
-                actionId: 'TriggeredActionFromBuilder',
-            ),
-        );
-
         $bus = $busBuilder->build();
         $bus->run();
 
         $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
         $this->assertTrue($bus->resultIsExists('NotRemovedActionFromBuilder'));
-        $this->assertTrue($bus->resultIsExists('TriggeredActionFromBuilder'));
-        $this->assertFalse($bus->resultIsExists('RemovableAction'));
-        $this->assertFalse($bus->resultIsExists('RemovableHeldAction'));
-    }
-
-    #[Test]
-    public function remove_trigger_from_state_handler(): void
-    {
-        $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->addStateHandler(new MainAfterStateHandlerWithTrigger());
-        $busBuilder->addStateContext(new Context(
-            [MainAfterStateHandlerWithTrigger::class],
-        ));
-        $busBuilder->doAction(
-            new Action(
-                id: 'ActionFromTest',
-                handler: function (): void {},
-                externalAccess: true,
-            ),
-        );
-
-        $busBuilder->addAction(
-            new Action(
-                id: 'SubscribedActionFromTest',
-                handler: function (): void {},
-                externalAccess: true,
-            ),
-        );
-
-        $bus = $busBuilder->build();
-        $bus->run();
-        $this->assertTrue($bus->resultIsExists('ActionFromTest'));
-        $this->assertFalse($bus->resultIsExists('SubscribedActionFromTest'));
     }
 
     #[Test]
@@ -264,22 +216,6 @@ class MainAfterStateHandlerWithAddDynamicAction implements MainAfterStateHandler
                 required: ['RemovableAction'],
             ),
         );
-
-        $stateService->addTrigger(
-            new Trigger(
-                subjectId: 'ActionFromBuilder',
-                actionId: 'RemovableAction',
-                status: ResultStatus::Success,
-            ),
-        );
-
-        $stateService->addTrigger(
-            new Trigger(
-                subjectId: 'ActionFromBuilder',
-                actionId: 'RemovableAction',
-                status: ResultStatus::Fail,
-            ),
-        );
     }
 
     #[Override]
@@ -305,40 +241,6 @@ class MainAfterStateHandlerWithRollback implements MainAfterStateHandlerInterfac
         if ($stateService->resultIsExists('ActionWithContract')) {
             $stateService->rollbackWithoutException();
         }
-    }
-
-    #[Override]
-    public function observed(StateContext $context): array
-    {
-        return [];
-    }
-}
-
-class MainAfterStateHandlerWithTrigger implements MainAfterStateHandlerInterface
-{
-    #[Override]
-    public function handle(StateMainAfterService $stateService, StateContext $context): void
-    {
-        $stateService->addTrigger(
-            new Trigger(
-                subjectId: 'ActionFromTest',
-                actionId: 'SubscribedActionFromTest',
-            ),
-        );
-
-        $stateService->triggerIsExists(
-            new Trigger(
-                subjectId: 'ActionFromTest',
-                actionId: 'SubscribedActionFromTest',
-            ),
-        );
-
-        $stateService->removeTrigger(
-            new Trigger(
-                subjectId: 'ActionFromTest',
-                actionId: 'SubscribedActionFromTest',
-            ),
-        );
     }
 
     #[Override]

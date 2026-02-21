@@ -20,6 +20,7 @@ use Duyler\EventBus\Internal\Event\TaskResumeEvent;
 use Duyler\EventBus\Internal\Event\TaskSuspendedEvent;
 use Ev;
 use EvTimer;
+use Override;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use RuntimeException;
 use Throwable;
@@ -44,6 +45,7 @@ final readonly class DoWhile implements LoopInterface
         });
     }
 
+    #[Override]
     public function run(): void
     {
         $this->eventDispatcher->dispatch(new DoWhileBeginEvent());
@@ -115,6 +117,7 @@ final readonly class DoWhile implements LoopInterface
         }
     }
 
+    #[Override]
     public function stop(): void
     {
         $this->timer->stop();

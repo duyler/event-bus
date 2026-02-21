@@ -17,7 +17,7 @@ class ResolveActionsAfterEventDeletedEventListener
 
     public function __invoke(EventRemovedEvent $event): void
     {
-        $actions = $this->actionStorage->getByEvent($event->event->id);
+        $actions = $this->actionStorage->getBySubscriptionEvent($event->event->id);
 
         foreach ($actions as $action) {
             $this->actionService->removeAction($action->getId());

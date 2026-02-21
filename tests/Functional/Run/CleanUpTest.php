@@ -6,11 +6,11 @@ namespace Duyler\EventBus\Test\Functional\Run;
 
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Build\Event;
-use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainBeginStateHandlerInterface;
+use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\State\Service\StateMainAfterService;
 use Duyler\EventBus\State\Service\StateMainBeginService;
 use Duyler\EventBus\State\StateContext;
@@ -71,9 +71,7 @@ class AddDynamicEventsAndActionsStateHandler implements MainBeginStateHandlerInt
             new Action(
                 id: 'RemovableActionOne',
                 handler: function (): void {},
-                listen: [
-                    'RemovableEventOne',
-                ],
+                onOne: 'RemovableEventOne' . IdFormatter::DELIMITER . 'Success',
             ),
         );
 
@@ -84,23 +82,7 @@ class AddDynamicEventsAndActionsStateHandler implements MainBeginStateHandlerInt
                 required: [
                     'RemovableActionOne',
                 ],
-                listen: [
-                    'RemovableEventTwo',
-                ],
-            ),
-        );
-
-        $stateService->addTrigger(
-            new Trigger(
-                subjectId: 'ActionFromBuilder',
-                actionId: 'RemovableActionTwo',
-            ),
-        );
-
-        $stateService->addTrigger(
-            new Trigger(
-                subjectId: 'RemovableActionTwo',
-                actionId: 'RemovableActionOne',
+                onOne: 'RemovableEventTwo' . IdFormatter::DELIMITER . 'Success',
             ),
         );
     }
@@ -112,11 +94,11 @@ class DispatchEventsStateHandler implements MainAfterStateHandlerInterface
     public function handle(StateMainAfterService $stateService, StateContext $context): void
     {
         $stateService->dispatchEvent(new \Duyler\EventBus\Dto\Event(
-            'RemovableEventOne',
+            'RemovableEventOne' . IdFormatter::DELIMITER . 'Success',
         ));
 
         $stateService->dispatchEvent(new \Duyler\EventBus\Dto\Event(
-            'RemovableEventTwo',
+            'RemovableEventTwo' . IdFormatter::DELIMITER . 'Success',
         ));
     }
 

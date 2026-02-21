@@ -44,6 +44,7 @@ final class Bus
         private readonly EventRelationStorage $eventRelationStorage,
         private readonly TaskStorage $taskStorage,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly SubscriptionChecker $subscriptionChecker,
     ) {}
 
     /**
@@ -152,7 +153,7 @@ final class Bus
     {
         return (false === $this->isRepeat($action->getId())
             || $action->isRepeatable())
-            && 0 === count($action->getListen());
+            && 0 === count($action->getSubscriptionEvents());
     }
 
     /**
@@ -213,7 +214,7 @@ final class Bus
     private function isSatisfiedEvents(Action $action): bool
     {
         return array_all(
-            $action->getListen(),
+            $action->getSubscriptionEvents(),
             fn($eventId) => false !== $this->eventRelationStorage->isExists($eventId),
         );
     }
@@ -224,6 +225,10 @@ final class Bus
     private function isSatisfiedConditions(Task $task): bool
     {
         if (true === $this->isLocked($task)) {
+            return false;
+        }
+
+        if (false === $this->subscriptionChecker->isSatisfied($task->action)) {
             return false;
         }
 

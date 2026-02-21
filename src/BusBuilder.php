@@ -10,7 +10,6 @@ use Duyler\EventBus\Build\Action as ExternalAction;
 use Duyler\EventBus\Build\Context;
 use Duyler\EventBus\Build\Event;
 use Duyler\EventBus\Build\SharedService;
-use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\Bus\Action as InternalAction;
 use Duyler\EventBus\Bus\ErrorHandler;
 use Duyler\EventBus\Bus\State;
@@ -20,7 +19,6 @@ use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Dto\ScheduledTask;
 use Duyler\EventBus\Event\EventDispatcher;
 use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
-use Duyler\EventBus\Exception\TriggerAlreadyDefinedException;
 use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Internal\ListenerProvider;
 use Duyler\EventBus\Scheduler\Scheduler;
@@ -29,7 +27,6 @@ use Duyler\EventBus\Scheduler\Task\GcMemCachesTask;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\EventService;
 use Duyler\EventBus\Service\StateService;
-use Duyler\EventBus\Service\TriggerService;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -41,9 +38,6 @@ class BusBuilder
 {
     /** @var array<string, InternalAction> */
     private array $actions = [];
-
-    /** @var Trigger[] */
-    private array $triggers = [];
 
     /** @var array<string, InternalAction> */
     private array $doActions = [];
@@ -148,9 +142,6 @@ class BusBuilder
         /** @var EventService $eventService */
         $eventService = $container->get(EventService::class);
 
-        /** @var TriggerService $triggerService */
-        $triggerService = $container->get(TriggerService::class);
-
         /** @var StateService $stateService */
         $stateService = $container->get(StateService::class);
 
@@ -164,10 +155,6 @@ class BusBuilder
 
         foreach ($this->doActions as $action) {
             $actionService->doExistsAction($action->getId());
-        }
-
-        foreach ($this->triggers as $trigger) {
-            $triggerService->addTrigger($trigger);
         }
 
         foreach ($this->stateHandlers as $stateHandler) {
@@ -226,19 +213,6 @@ class BusBuilder
         }
 
         $this->actions[$internalAction->getId()] = $internalAction;
-
-        return $this;
-    }
-
-    public function addTrigger(Trigger $trigger): static
-    {
-        $id = $trigger->subjectId . '@' . $trigger->status->value . '@' . $trigger->actionId;
-
-        if (array_key_exists($id, $this->triggers)) {
-            throw new TriggerAlreadyDefinedException($trigger);
-        }
-
-        $this->triggers[$id] = $trigger;
 
         return $this;
     }

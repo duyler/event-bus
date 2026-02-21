@@ -7,6 +7,7 @@ namespace Duyler\EventBus\Test\Functional\Build;
 use Duyler\EventBus\Build\Event;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Formatter\IdFormatter;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -21,6 +22,6 @@ class AddEventTest extends TestCase
             id: 'test',
         ));
 
-        $this->assertTrue($builder->eventIsExists('test'));
+        $this->assertTrue($builder->eventIsExists('test' . IdFormatter::DELIMITER . 'Success'));
     }
 }

@@ -15,6 +15,7 @@ use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
 use Duyler\EventBus\Exception\DispatchedEventNotDefinedException;
 use Duyler\EventBus\Exception\EventNotDefinedException;
+use Duyler\EventBus\Formatter\IdFormatter;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -32,7 +33,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: function (): void {},
-                listen: ['TestEvent'],
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 externalAccess: true,
             ),
         );
@@ -42,14 +43,14 @@ class EventTest extends TestCase
         $bus = $builder->build();
         $bus->dispatchEvent(
             new Event(
-                id: 'TestEvent',
+                id: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
             ),
         );
 
         $bus->run();
 
         $this->assertTrue($bus->resultIsExists('ForEventAction'));
-        $this->assertTrue($bus->resultIsExists('TestEvent'));
+        $this->assertTrue($bus->resultIsExists('TestEvent' . IdFormatter::DELIMITER . 'Success'));
     }
 
     #[Test]
@@ -60,7 +61,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: function (): void {},
-                listen: ['TestEvent'],
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 externalAccess: true,
             ),
         );
@@ -83,7 +84,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: function (): void {},
-                listen: ['TestEvent1', 'TestEvent2'],
+                onAll: ['TestEvent1' . IdFormatter::DELIMITER . 'Success', 'TestEvent2' . IdFormatter::DELIMITER . 'Success'],
                 externalAccess: true,
             ),
         );
@@ -95,7 +96,7 @@ class EventTest extends TestCase
 
         $bus->dispatchEvent(
             new Event(
-                id: 'TestEvent1',
+                id: 'TestEvent1' . IdFormatter::DELIMITER . 'Success',
             ),
         );
 
@@ -113,7 +114,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: function (ActionContext $context): void {},
-                listen: ['TestEvent'],
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -124,7 +125,7 @@ class EventTest extends TestCase
         $bus = $builder->build();
         $bus->dispatchEvent(
             new Event(
-                id: 'TestEvent',
+                id: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 data: new stdClass(),
             ),
         );
@@ -132,8 +133,8 @@ class EventTest extends TestCase
         $bus->run();
 
         $this->assertTrue($bus->resultIsExists('ForEventAction'));
-        $this->assertTrue($bus->resultIsExists('TestEvent'));
-        $this->assertInstanceOf(stdClass::class, $bus->getResult('TestEvent')->data);
+        $this->assertTrue($bus->resultIsExists('TestEvent' . IdFormatter::DELIMITER . 'Success'));
+        $this->assertInstanceOf(stdClass::class, $bus->getResult('TestEvent' . IdFormatter::DELIMITER . 'Success')->data);
     }
 
     #[Test]
@@ -144,7 +145,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: fn(ActionContext $context) => $context->argument(),
-                listen: ['TestEvent'],
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 argument: stdClass::class,
                 type: stdClass::class,
                 immutable: false,
@@ -167,7 +168,7 @@ class EventTest extends TestCase
         $bus = $builder->build();
         $bus->dispatchEvent(
             new Event(
-                id: 'TestEvent',
+                id: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 data: new stdClass(),
             ),
         );
@@ -175,9 +176,9 @@ class EventTest extends TestCase
         $bus->run();
 
         $this->assertTrue($bus->resultIsExists('ForEventAction'));
-        $this->assertTrue($bus->resultIsExists('TestEvent'));
+        $this->assertTrue($bus->resultIsExists('TestEvent' . IdFormatter::DELIMITER . 'Success'));
         $this->assertTrue($bus->resultIsExists('RequiredListening'));
-        $this->assertInstanceOf(stdClass::class, $bus->getResult('TestEvent')->data);
+        $this->assertInstanceOf(stdClass::class, $bus->getResult('TestEvent' . IdFormatter::DELIMITER . 'Success')->data);
         $this->assertNull($bus->getResult('RequiredListening')->data);
         $this->assertInstanceOf(stdClass::class, $bus->getResult('ForEventAction')->data);
     }
@@ -190,7 +191,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: fn(stdClass $data) => $data,
-                listen: ['TestEvent'],
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 argument: stdClass::class,
                 type: stdClass::class,
                 immutable: false,
@@ -223,7 +224,7 @@ class EventTest extends TestCase
         $bus->run();
 
         $this->assertFalse($bus->resultIsExists('ForEventAction'));
-        $this->assertFalse($bus->resultIsExists('TestEvent'));
+        $this->assertFalse($bus->resultIsExists('TestEvent' . IdFormatter::DELIMITER . 'Success'));
         $this->assertFalse($bus->resultIsExists('RequiredTriggered'));
     }
 
@@ -235,7 +236,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: function (): void {},
-                listen: ['TestEvent'],
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -249,7 +250,7 @@ class EventTest extends TestCase
 
         $bus->dispatchEvent(
             new Event(
-                id: 'TestEvent',
+                id: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
             ),
         );
     }
@@ -262,7 +263,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: function (): void {},
-                listen: ['TestEvent'],
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -276,7 +277,7 @@ class EventTest extends TestCase
 
         $bus->dispatchEvent(
             new Event(
-                id: 'TestEvent',
+                id: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 data: new stdClass(),
             ),
         );
@@ -290,7 +291,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: function (): void {},
-                listen: ['TestEvent'],
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -304,7 +305,7 @@ class EventTest extends TestCase
 
         $bus->dispatchEvent(
             new Event(
-                id: 'TestEvent',
+                id: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 data: new class {},
             ),
         );
@@ -319,7 +320,7 @@ class EventTest extends TestCase
             new Action(
                 id: 'ForEventAction',
                 handler: function (): void {},
-                listen: ['TestEvent'],
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -339,7 +340,7 @@ class EventTest extends TestCase
                 id: 'ForEventAction',
                 handler: function (): void {
                     EventDispatcher::dispatch(new Event(
-                        id: 'TestEvent1',
+                        id: 'TestEvent1' . IdFormatter::DELIMITER . 'Success',
                     ));
                 },
             ),
@@ -352,12 +353,12 @@ class EventTest extends TestCase
                     $context->call(
                         function (EventDispatcherInterface $dispatcher): void {
                             $dispatcher->dispatch(new Event(
-                                id: 'TestEvent2',
+                                id: 'TestEvent2' . IdFormatter::DELIMITER . 'Success',
                             ));
                         },
                     );
                 },
-                listen: ['TestEvent1'],
+                onOne: 'TestEvent1' . IdFormatter::DELIMITER . 'Success',
             ),
         );
 
@@ -368,9 +369,8 @@ class EventTest extends TestCase
 
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ForEventAction'));
-        $this->assertTrue($bus->resultIsExists('TestEvent1'));
-        $this->assertFalse($bus->resultIsExists('TestEvent2'));
+        $this->assertTrue($bus->resultIsExists('TestEvent1' . IdFormatter::DELIMITER . 'Success'));
+        $this->assertFalse($bus->resultIsExists('TestEvent2' . IdFormatter::DELIMITER . 'Success'));
         $this->assertTrue($bus->resultIsExists('ForEventListenAction1'));
     }
 

@@ -34,18 +34,16 @@ use Duyler\EventBus\Internal\Event\TaskResumeEvent;
 use Duyler\EventBus\Internal\Event\TaskSuspendedEvent;
 use Duyler\EventBus\Internal\Event\TaskUnresolvedEvent;
 use Duyler\EventBus\Internal\Event\ThrowExceptionEvent;
-use Duyler\EventBus\Internal\Event\TriggerAddedEvent;
-use Duyler\EventBus\Internal\Event\TriggerRemovedEvent;
 use Duyler\EventBus\Internal\EventDispatcher;
 use Duyler\EventBus\Internal\Listener\Bus\AfterCompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\AutoresetEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\CleanByLimitEventListener;
+use Duyler\EventBus\Internal\Listener\Bus\DispatchActionEventEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\DispatchEventEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\LogCompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResetBusEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveActionsAfterEventDeletedEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\ResolveHeldTasksEventListener;
-use Duyler\EventBus\Internal\Listener\Bus\ResolveTriggersEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\SaveCompleteActionEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\SchedulerTickEventListener;
 use Duyler\EventBus\Internal\Listener\Bus\TerminateAfterExceptionEventListener;
@@ -142,11 +140,11 @@ class BusConfig
             ],
             TaskAfterRunEvent::class => [
                 SaveCompleteActionEventListener::class,
+                DispatchActionEventEventListener::class,
                 CleanByLimitEventListener::class,
                 AfterCompleteActionEventListener::class,
                 LogCompleteActionEventListener::class,
                 StateMainAfterEventListener::class,
-                ResolveTriggersEventListener::class,
                 ValidateCompleteActionEventListener::class,
                 ResolveHeldTasksEventListener::class,
             ],
@@ -193,10 +191,8 @@ class BusConfig
             ThrowExceptionEvent::class,
             ActionAddedEvent::class,
             EventAddedEvent::class,
-            TriggerAddedEvent::class,
             ActionRemovedEvent::class,
             EventRemovedEvent::class,
-            TriggerRemovedEvent::class,
         ];
     }
 }

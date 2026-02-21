@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Build;
 
+use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Formatter\IdFormatter;
 use InvalidArgumentException;
 use JsonSerializable;
@@ -17,11 +18,12 @@ final readonly class Event implements JsonSerializable
 
     public function __construct(
         string|UnitEnum $id,
+        public ResultStatus $status = ResultStatus::Success,
         public ?string $type = null,
         public bool $immutable = true,
         public ?string $description = null,
     ) {
-        $this->id = IdFormatter::toString($id);
+        $this->id = IdFormatter::toString($id) . IdFormatter::DELIMITER . $status->value;
 
         if ($this->immutable) {
             if (null !== $this->type) {
@@ -38,11 +40,22 @@ final readonly class Event implements JsonSerializable
         }
     }
 
+    public static function success(string|UnitEnum $id, ?string $type = null): self
+    {
+        return new self($id, ResultStatus::Success, $type);
+    }
+
+    public static function fail(string|UnitEnum $id, ?string $type = null): self
+    {
+        return new self($id, ResultStatus::Fail, $type);
+    }
+
     #[Override]
     public function jsonSerialize(): array
     {
         return [
-            'id' => IdFormatter::toString($this->id),
+            'id' => $this->id,
+            'status' => $this->status->value,
             'type' => $this->type,
             'immutable' => $this->immutable,
             'description' => $this->description,

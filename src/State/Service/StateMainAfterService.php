@@ -10,13 +10,11 @@ use Duyler\EventBus\Service\EventService;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\ResultService;
 use Duyler\EventBus\Service\RollbackService;
-use Duyler\EventBus\Service\TriggerService;
 use Duyler\EventBus\State\Service\Trait\ActionServiceTrait;
 use Duyler\EventBus\State\Service\Trait\EventServiceTrait;
 use Duyler\EventBus\State\Service\Trait\LogServiceTrait;
 use Duyler\EventBus\State\Service\Trait\ResultServiceTrait;
 use Duyler\EventBus\State\Service\Trait\RollbackServiceTrait;
-use Duyler\EventBus\State\Service\Trait\TriggerServiceTrait;
 use UnitEnum;
 
 class StateMainAfterService
@@ -26,7 +24,6 @@ class StateMainAfterService
     use LogServiceTrait;
     use EventServiceTrait;
     use RollbackServiceTrait;
-    use TriggerServiceTrait;
 
     public function __construct(
         private readonly ResultStatus $resultStatus,
@@ -37,7 +34,6 @@ class StateMainAfterService
         private readonly LogService $logService,
         private readonly EventService $eventService,
         private readonly RollbackService $rollbackService,
-        private readonly TriggerService $triggerService,
     ) {}
 
     public function getActionId(): string|UnitEnum

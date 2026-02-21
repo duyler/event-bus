@@ -18,7 +18,6 @@ use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\QueueService;
 use Duyler\EventBus\Service\ResultService;
 use Duyler\EventBus\Service\RollbackService;
-use Duyler\EventBus\Service\TriggerService;
 use Duyler\EventBus\State\Service\StateMainAfterService;
 use Duyler\EventBus\State\Service\StateMainBeforeService;
 use Duyler\EventBus\State\Service\StateMainBeginService;
@@ -45,7 +44,6 @@ readonly class StateMain implements StateMainInterface
         private LogService $logService,
         private ResultService $resultService,
         private RollbackService $rollbackService,
-        private TriggerService $triggerService,
         private StateSuspendContext $suspendContext,
         private EventService $eventService,
         private StateContextScope $contextScope,
@@ -61,7 +59,6 @@ readonly class StateMain implements StateMainInterface
     {
         $stateService = new StateMainBeginService(
             $this->actionService,
-            $this->triggerService,
             $this->eventService,
         );
 
@@ -122,7 +119,6 @@ readonly class StateMain implements StateMainInterface
             $this->actionContainerStorage->get($task->action->getId()),
             $this->actionService,
             $this->eventService,
-            $this->triggerService,
         );
 
         $this->suspendContext->addSuspend($task->action->getId(), $suspend);
@@ -148,7 +144,6 @@ readonly class StateMain implements StateMainInterface
             $this->actionContainerStorage->get($task->action->getId()),
             $this->actionService,
             $this->eventService,
-            $this->triggerService,
         );
 
         foreach ($handlers as $handler) {
@@ -192,7 +187,6 @@ readonly class StateMain implements StateMainInterface
             $this->logService,
             $this->eventService,
             $this->rollbackService,
-            $this->triggerService,
         );
 
         foreach ($this->stateHandlerStorage->getMainAfter() as $handler) {
@@ -214,7 +208,6 @@ readonly class StateMain implements StateMainInterface
             $this->logService,
             $this->eventService,
             $this->rollbackService,
-            $this->triggerService,
             $this->eventDispatcher,
         );
 
