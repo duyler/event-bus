@@ -105,3 +105,66 @@ new Action(
     silent: true,
 );
 ```
+
+
+## Scheduler
+
+Event Bus includes a built-in task scheduler for executing periodic operations.
+
+### Adding Scheduled Tasks
+
+```php
+use Duyler\EventBus\Dto\ScheduledTask;
+
+$busBuilder->addScheduledTask(new ScheduledTask(
+    callback: function (): void {
+        // Periodic task logic
+    },
+    intervalMs: 1000,       // Execute every 1000ms
+    startDelayMs: 500,      // Optional: delay before first run
+));
+```
+
+### GC Tasks
+
+By default, Event Bus registers two garbage collection tasks:
+
+- `GcCollectCyclesTask` - collects GC cycles
+- `GcMemCachesTask` - clears memory caches
+
+Configure intervals through `BusConfig`:
+
+```php
+use Duyler\EventBus\BusConfig;
+
+new BusConfig(
+    gcCollectCyclesInterval: 120000, // 2 minutes
+    gcMemCachesInterval: 60000,      // 1 minute
+);
+```
+
+### Configuration
+
+```php
+new BusConfig(
+    schedulerCheckInterval: 100, // Task check interval (ms)
+);
+```
+
+### Scheduler API
+
+**ScheduledTask DTO**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `callback` | `callable` | Function to execute periodically |
+| `intervalMs` | `int` | Execution interval in milliseconds |
+| `startDelayMs` | `int\|null` | Optional delay before first execution |
+
+**BusConfig Scheduler Options**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `schedulerCheckInterval` | `int` | `100` | Interval between task checks (ms) |
+| `gcCollectCyclesInterval` | `int` | `120000` | GC cycle collection interval (ms) |
+| `gcMemCachesInterval` | `int` | `60000` | Memory cache cleanup interval (ms) |
