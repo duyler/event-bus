@@ -87,7 +87,7 @@ class MainCyclicTest extends TestCase
         $bus = $busBuilder->build();
 
         $bus->dispatchEvent(new Event(
-            id: 'EventFromHandler' . IdFormatter::DELIMITER . 'Success',
+            id: 'EventFromHandler',
         ));
 
         $bus->run();
@@ -114,7 +114,7 @@ class MainCyclicStateHandlerWithEvent implements MainCyclicStateHandlerInterface
         if (false === $stateService->resultIsExists('ActionFromHandler')) {
             $stateService->dispatchEvent(
                 new Event(
-                    id: 'EventFromHandler' . IdFormatter::DELIMITER . 'Success',
+                    id: 'EventFromHandler',
                 ),
             );
         }
@@ -149,7 +149,7 @@ class MainCyclicStateHandlerWithRepeatableEvent implements MainCyclicStateHandle
         if (false === $stateService->resultIsExists('ActionFromHandler')) {
             $stateService->dispatchEvent(
                 new Event(
-                    id: 'EventFromHandler' . IdFormatter::DELIMITER . 'Success',
+                    id: 'EventFromHandler',
                 ),
             );
         }

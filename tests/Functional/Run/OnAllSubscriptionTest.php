@@ -11,6 +11,7 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\MainCyclicStateHandlerInterface;
 use Duyler\EventBus\Dto\Event;
+use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\State\Service\StateMainCyclicService;
 use Duyler\EventBus\State\StateContext;
@@ -57,10 +58,10 @@ class OnAllSubscriptionTest extends TestCase
 
         $bus = $builder->build();
         $bus->dispatchEvent(new Event(
-            id: 'ValidateCart' . IdFormatter::DELIMITER . 'Success',
+            id: 'ValidateCart',
         ));
         $bus->dispatchEvent(new Event(
-            id: 'ProcessPayment' . IdFormatter::DELIMITER . 'Success',
+            id: 'ProcessPayment',
         ));
         $bus->run();
 
@@ -90,11 +91,11 @@ class OnAllSubscriptionTest extends TestCase
 
         $bus = $builder->build();
         $bus->dispatchEvent(new Event(
-            id: 'Event1' . IdFormatter::DELIMITER . 'Success',
+            id: 'Event1',
             data: new OnAllTestDTO(value: 'test'),
         ));
         $bus->dispatchEvent(new Event(
-            id: 'Event2' . IdFormatter::DELIMITER . 'Success',
+            id: 'Event2',
             data: new OnAllTestDTO2(count: 42),
         ));
         $bus->run();
@@ -137,7 +138,7 @@ class OnAllSubscriptionTest extends TestCase
 
         $bus = $builder->build();
         $bus->dispatchEvent(new Event(
-            id: 'Event1' . IdFormatter::DELIMITER . 'Success',
+            id: 'Event1',
         ));
         $bus->run();
 
@@ -175,7 +176,7 @@ class OnAllSubscriptionTest extends TestCase
 
         $bus = $builder->build();
         $bus->dispatchEvent(new Event(
-            id: 'Event1' . IdFormatter::DELIMITER . 'Success',
+            id: 'Event1',
         ));
         $bus->run();
 
@@ -258,7 +259,7 @@ class OnAllSubscriptionTest extends TestCase
 
         $bus = $builder->build();
         $bus->dispatchEvent(new Event(
-            id: 'ExternalApproval' . IdFormatter::DELIMITER . 'Success',
+            id: 'ExternalApproval',
             data: new OnAllTestDTO(value: 'approved'),
         ));
         $bus->run();
@@ -319,10 +320,12 @@ class OnAllSubscriptionTest extends TestCase
 
         $bus = $builder->build();
         $bus->dispatchEvent(new Event(
-            id: 'ValidationError' . IdFormatter::DELIMITER . 'Fail',
+            id: 'ValidationError',
+            status: ResultStatus::Fail,
         ));
         $bus->dispatchEvent(new Event(
-            id: 'PaymentError' . IdFormatter::DELIMITER . 'Fail',
+            id: 'PaymentError',
+            status: ResultStatus::Fail,
         ));
         $bus->run();
 
@@ -337,7 +340,7 @@ class OnAllHeldTaskStateHandler implements MainCyclicStateHandlerInterface
     {
         if (false === $stateService->resultIsExists('HeldTaskAction')) {
             $stateService->dispatchEvent(new Event(
-                id: 'Event2' . IdFormatter::DELIMITER . 'Success',
+                id: 'Event2',
             ));
         }
     }

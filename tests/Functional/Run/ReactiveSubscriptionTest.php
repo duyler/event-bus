@@ -13,7 +13,6 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Event;
 use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Formatter\IdFormatter;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -61,11 +60,11 @@ class ReactiveSubscriptionTest extends TestCase
 
         $bus = $builder->build();
         $bus->dispatchEvent(new Event(
-            id: 'PaymentApproved' . IdFormatter::DELIMITER . 'Success',
+            id: 'PaymentApproved',
             data: new ReactiveTestDTO(orderId: 'order-123', amount: 100),
         ));
         $bus->dispatchEvent(new Event(
-            id: 'InventoryReserved' . IdFormatter::DELIMITER . 'Success',
+            id: 'InventoryReserved',
             data: new ReactiveTestDTO(orderId: 'order-123'),
         ));
         $bus->run();
@@ -260,7 +259,7 @@ class ReactiveSubscriptionTest extends TestCase
 
         $bus = $builder->build();
         $bus->dispatchEvent(new Event(
-            id: 'Event1' . IdFormatter::DELIMITER . 'Success',
+            id: 'Event1',
             data: new ReactiveTestDTO(orderId: 'order-1', amount: 100),
         ));
         $bus->run();
@@ -316,7 +315,7 @@ class ReactiveSubscriptionTest extends TestCase
 
         $bus = $builder->build();
         $bus->dispatchEvent(new Event(
-            id: 'ExternalTrigger' . IdFormatter::DELIMITER . 'Success',
+            id: 'ExternalTrigger',
             data: new ReactiveTestDTO(orderId: 'trigger'),
         ));
         $bus->run();

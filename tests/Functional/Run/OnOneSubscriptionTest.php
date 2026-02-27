@@ -12,6 +12,8 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Event;
 use Duyler\EventBus\Dto\Result;
+use Duyler\EventBus\Enum\ResultStatus;
+use Duyler\EventBus\Exception\CannotSubscribeOnSilentActionException;
 use Duyler\EventBus\Formatter\IdFormatter;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -158,6 +160,8 @@ class OnOneSubscriptionTest extends TestCase
     #[Test]
     public function silent_action_does_not_generate_event(): void
     {
+        $this->expectException(CannotSubscribeOnSilentActionException::class);
+
         $builder = new BusBuilder(new BusConfig());
 
         $builder->addEvent(BuildEvent::success('SilentAction', OnOneTestDTO::class));
@@ -181,11 +185,7 @@ class OnOneSubscriptionTest extends TestCase
             ),
         );
 
-        $bus = $builder->build();
-        $bus->run();
-
-        $this->assertTrue($bus->resultIsExists('SilentAction'));
-        $this->assertFalse($bus->resultIsExists('SubscriberAction'));
+        $builder->build();
     }
 
     #[Test]
@@ -208,7 +208,7 @@ class OnOneSubscriptionTest extends TestCase
 
         $bus = $builder->build();
         $bus->dispatchEvent(new Event(
-            id: 'OrderCreated' . IdFormatter::DELIMITER . 'Success',
+            id: 'OrderCreated',
             data: new OnOneTestDTO(orderId: 'order-123'),
         ));
         $bus->run();
@@ -239,7 +239,8 @@ class OnOneSubscriptionTest extends TestCase
 
         $bus = $builder->build();
         $bus->dispatchEvent(new Event(
-            id: 'OrderFailed' . IdFormatter::DELIMITER . 'Fail',
+            id: 'OrderFailed',
+            status: ResultStatus::Fail,
         ));
         $bus->run();
 
@@ -274,7 +275,7 @@ class OnOneSubscriptionTest extends TestCase
 
         $bus = $builder->build();
         $bus->dispatchEvent(new Event(
-            id: 'OrderCreated' . IdFormatter::DELIMITER . 'Success',
+            id: 'OrderCreated',
         ));
         $bus->run();
 

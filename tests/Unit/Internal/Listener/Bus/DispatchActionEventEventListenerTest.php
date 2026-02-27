@@ -164,7 +164,7 @@ class DispatchActionEventEventListenerTest extends TestCase
         $event = new TaskAfterRunEvent($task);
         ($this->listener)($event);
 
-        $this->assertSame('MyAction::Success', $capturedEventId);
+        $this->assertSame('MyAction', $capturedEventId);
     }
 
     //#[Test]

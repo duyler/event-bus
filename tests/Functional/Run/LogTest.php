@@ -21,10 +21,10 @@ class LogTest extends TestCase
         $bus->reset();
         $log = $bus->getLog();
 
-        $this->assertSame($log->actionLog, ['Test']);
-        $this->assertSame($log->mainEventLog, ['Test.Success']);
-        $this->assertSame($log->eventLog, []);
-        $this->assertSame($log->repeatedEventLog, []);
+        $this->assertSame(['Test'], $log->actionLog);
+        $this->assertSame(['Test.Success'], $log->mainEventLog);
+        $this->assertSame(['Test::Success'], $log->eventLog);
+        $this->assertSame([], $log->repeatedEventLog);
     }
 
     #[Test]
@@ -34,17 +34,16 @@ class LogTest extends TestCase
         $busBuilder->doAction(new Action(id: 'Test', handler: function (): void {}));
         $bus = $busBuilder->build()->run();
         $log = $bus->getLog();
-
-        $this->assertSame($log->actionLog, ['Test']);
-        $this->assertSame($log->mainEventLog, ['Test.Success']);
-        $this->assertSame($log->eventLog, []);
-        $this->assertSame($log->repeatedEventLog, []);
-        $this->assertSame($log->retriesLog, []);
-        $this->assertSame($log->successLog, ['Test']);
-        $this->assertSame($log->failLog, []);
-        $this->assertSame($log->suspendedLog, []);
-        $this->assertEquals($log->beginAction, 'Test');
-        $this->assertEquals($log->errorAction, null);
+        $this->assertSame(['Test'], $log->actionLog);
+        $this->assertSame(['Test.Success'], $log->mainEventLog);
+        $this->assertSame(['Test::Success'], $log->eventLog);
+        $this->assertSame([], $log->repeatedEventLog);
+        $this->assertSame([], $log->retriesLog);
+        $this->assertSame(['Test'], $log->successLog);
+        $this->assertSame([], $log->failLog);
+        $this->assertSame([], $log->suspendedLog);
+        $this->assertEquals('Test', $log->beginAction);
+        $this->assertEquals(null, $log->errorAction);
     }
 
     #[Test]

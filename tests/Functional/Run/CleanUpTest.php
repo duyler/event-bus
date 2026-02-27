@@ -94,11 +94,11 @@ class DispatchEventsStateHandler implements MainAfterStateHandlerInterface
     public function handle(StateMainAfterService $stateService, StateContext $context): void
     {
         $stateService->dispatchEvent(new \Duyler\EventBus\Dto\Event(
-            'RemovableEventOne' . IdFormatter::DELIMITER . 'Success',
+            'RemovableEventOne',
         ));
 
         $stateService->dispatchEvent(new \Duyler\EventBus\Dto\Event(
-            'RemovableEventTwo' . IdFormatter::DELIMITER . 'Success',
+            'RemovableEventTwo',
         ));
     }
 

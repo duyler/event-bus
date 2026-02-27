@@ -46,7 +46,7 @@ class OnAnySubscriptionTest extends TestCase
         $bus = $builder->build();
 
         $bus->dispatchEvent(new Event(
-            id: 'Event1' . IdFormatter::DELIMITER . 'Success',
+            id: 'Event1',
         ));
 
         $bus->run();
@@ -77,7 +77,7 @@ class OnAnySubscriptionTest extends TestCase
         $bus = $builder->build();
 
         $bus->dispatchEvent(new Event(
-            id: 'Event1' . IdFormatter::DELIMITER . 'Success',
+            id: 'Event1',
             data: new OnAnyTestDTO(source: 'Event1'),
         ));
 
@@ -206,7 +206,7 @@ class OnAnySubscriptionTest extends TestCase
         $bus = $builder->build();
 
         $bus->dispatchEvent(new Event(
-            id: 'Event1' . IdFormatter::DELIMITER . 'Success',
+            id: 'Event1',
             data: new OnAnyTestDTO(source: 'Event1'),
         ));
 

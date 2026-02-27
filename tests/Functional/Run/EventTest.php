@@ -43,7 +43,7 @@ class EventTest extends TestCase
         $bus = $builder->build();
         $bus->dispatchEvent(
             new Event(
-                id: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
+                id: 'TestEvent',
             ),
         );
 
@@ -96,7 +96,7 @@ class EventTest extends TestCase
 
         $bus->dispatchEvent(
             new Event(
-                id: 'TestEvent1' . IdFormatter::DELIMITER . 'Success',
+                id: 'TestEvent1',
             ),
         );
 
@@ -125,7 +125,7 @@ class EventTest extends TestCase
         $bus = $builder->build();
         $bus->dispatchEvent(
             new Event(
-                id: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
+                id: 'TestEvent',
                 data: new stdClass(),
             ),
         );
@@ -168,7 +168,7 @@ class EventTest extends TestCase
         $bus = $builder->build();
         $bus->dispatchEvent(
             new Event(
-                id: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
+                id: 'TestEvent',
                 data: new stdClass(),
             ),
         );
@@ -250,7 +250,7 @@ class EventTest extends TestCase
 
         $bus->dispatchEvent(
             new Event(
-                id: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
+                id: 'TestEvent',
             ),
         );
     }
@@ -277,7 +277,7 @@ class EventTest extends TestCase
 
         $bus->dispatchEvent(
             new Event(
-                id: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
+                id: 'TestEvent',
                 data: new stdClass(),
             ),
         );
@@ -305,7 +305,7 @@ class EventTest extends TestCase
 
         $bus->dispatchEvent(
             new Event(
-                id: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
+                id: 'TestEvent',
                 data: new class {},
             ),
         );
@@ -340,12 +340,11 @@ class EventTest extends TestCase
                 id: 'ForEventAction',
                 handler: function (): void {
                     EventDispatcher::dispatch(new Event(
-                        id: 'TestEvent1' . IdFormatter::DELIMITER . 'Success',
+                        id: 'TestEvent1',
                     ));
                 },
             ),
         );
-
         $builder->addAction(
             new Action(
                 id: 'ForEventListenAction1',
@@ -353,7 +352,7 @@ class EventTest extends TestCase
                     $context->call(
                         function (EventDispatcherInterface $dispatcher): void {
                             $dispatcher->dispatch(new Event(
-                                id: 'TestEvent2' . IdFormatter::DELIMITER . 'Success',
+                                id: 'TestEvent2',
                             ));
                         },
                     );

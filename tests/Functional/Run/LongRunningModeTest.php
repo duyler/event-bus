@@ -13,7 +13,6 @@ use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\MainCyclicStateHandlerInterface;
 use Duyler\EventBus\Dto\Event;
-use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\State\Service\StateMainCyclicService;
 use Duyler\EventBus\State\StateContext;
 use Override;
@@ -228,7 +227,7 @@ class LoopModeOnOneStateHandler implements MainCyclicStateHandlerInterface
             }
 
             $stateService->dispatchEvent(new Event(
-                id: 'TriggerEvent' . IdFormatter::DELIMITER . 'Success',
+                id: 'TriggerEvent',
                 data: new LoopTestDTO(iteration: $this->counter),
             ));
 
@@ -249,7 +248,7 @@ class LoopModeAccumulationStateHandler implements MainCyclicStateHandlerInterfac
             $this->iteration++;
 
             $stateService->dispatchEvent(new Event(
-                id: 'AccumulateEvent' . IdFormatter::DELIMITER . 'Success',
+                id: 'AccumulateEvent',
                 data: new LoopTestDTO(iteration: $this->iteration),
             ));
 
@@ -267,7 +266,7 @@ class LoopModeMultipleCyclesStateHandler implements MainCyclicStateHandlerInterf
     {
         if ($this->cycleCount < 5) {
             $stateService->dispatchEvent(new Event(
-                id: 'CycleEvent' . IdFormatter::DELIMITER . 'Success',
+                id: 'CycleEvent',
             ));
 
             $this->cycleCount++;
@@ -284,7 +283,7 @@ class LoopModeOnAnyStateHandler implements MainCyclicStateHandlerInterface
     {
         if (0 === $this->executionCount) {
             $stateService->dispatchEvent(new Event(
-                id: 'Event1' . IdFormatter::DELIMITER . 'Success',
+                id: 'Event1',
             ));
 
             $this->executionCount++;
@@ -304,11 +303,11 @@ class LoopModeOnAllStateHandler implements MainCyclicStateHandlerInterface
             $this->iteration++;
 
             $stateService->dispatchEvent(new Event(
-                id: 'RequiredEvent1' . IdFormatter::DELIMITER . 'Success',
+                id: 'RequiredEvent1',
             ));
 
             $stateService->dispatchEvent(new Event(
-                id: 'RequiredEvent2' . IdFormatter::DELIMITER . 'Success',
+                id: 'RequiredEvent2',
             ));
 
             $this->executionCount++;
