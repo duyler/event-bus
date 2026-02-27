@@ -4,24 +4,27 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Channel;
 
+use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\Service\QueueService;
-use Duyler\EventBus\Storage\MessageStorage;
 
-final readonly class Transfer
+#[Finalize]
+final class Transfer
 {
-    public function __construct(
-        private MessageStorage $messageStorage,
-        private QueueService $queueService,
-    ) {}
+    /**
+     * @var array<string, mixed[]>
+     */
+    private array $published = [];
 
-    public function push(Message $message): void
+    public function __construct(private readonly QueueService $queueService) {}
+
+    public function push(string $channel, mixed $value): void
     {
-        $this->messageStorage->set($message);
+        $this->published[$channel][] = $value;
     }
 
-    public function has(string $channel, string $tag): bool
+    public function has(string $channel): bool
     {
-        return $this->messageStorage->has($channel, $tag);
+        return isset($this->published[$channel]);
     }
 
     public function isValid(): bool
@@ -29,8 +32,13 @@ final readonly class Transfer
         return $this->queueService->isNotEmpty();
     }
 
-    public function get(string $channel, string $tag): Message
+    public function get(string $channel): mixed
     {
-        return $this->messageStorage->get($channel, $tag);
+        return array_shift($this->published[$channel]);
+    }
+
+    public function finalize(): void
+    {
+        $this->published = [];
     }
 }

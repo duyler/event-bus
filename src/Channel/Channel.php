@@ -4,25 +4,54 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Channel;
 
-final class Channel
+use Closure;
+use Fiber;
+use Override;
+
+final class Channel implements ChannelInterface
 {
-    public const string DEFAULT_CHANNEL = 'common';
+    public const string DEFAULT_CHANNEL = "common";
 
     private static Transfer $transfer;
 
     public function __construct(
         Transfer $transfer,
+        private readonly string $name = self::DEFAULT_CHANNEL,
     ) {
         self::$transfer = $transfer;
     }
 
-    public static function read(string $channel = 'common'): Listener
-    {
-        return new Listener($channel, self::$transfer);
+    public static function open(
+        string $name = self::DEFAULT_CHANNEL,
+    ): ChannelInterface {
+        return new Channel(self::$transfer, $name);
     }
 
-    public static function write(string $channel = 'common'): Message
+    #[Override]
+    public function recv(): mixed
     {
-        return new Message($channel, self::$transfer);
+        $transfer = self::$transfer;
+
+        /**
+         * @var Closure $callback
+         */
+        $callback = Fiber::suspend(fn(): Closure => function (Transfer $transfer): mixed {
+            while ($transfer->isValid()) {
+                if ($transfer->has($this->name)) {
+                    return $transfer->get($this->name);
+                }
+                Fiber::suspend();
+            }
+            return null;
+        });
+
+        return $callback($transfer);
+    }
+
+    #[Override]
+    public function send(mixed $value): void
+    {
+        self::$transfer->push($this->name, $value);
+        Fiber::suspend();
     }
 }

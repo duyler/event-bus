@@ -6,12 +6,9 @@ namespace Duyler\EventBus\State;
 
 use Duyler\EventBus\Bus\Task;
 use Duyler\EventBus\BusConfig;
-use Duyler\EventBus\Channel\Channel;
-use Duyler\EventBus\Channel\Message;
 use Duyler\EventBus\Channel\Transfer;
 use Duyler\EventBus\Contract\State\StateHandlerObservedInterface;
 use Duyler\EventBus\Contract\StateMainInterface;
-use Duyler\EventBus\Enum\Mode;
 use Duyler\EventBus\Service\ActionService;
 use Duyler\EventBus\Service\EventService;
 use Duyler\EventBus\Service\LogService;
@@ -28,7 +25,6 @@ use Duyler\EventBus\State\Service\StateMainResumeService;
 use Duyler\EventBus\State\Service\StateMainSuspendService;
 use Duyler\EventBus\State\Service\StateMainUnresolvedService;
 use Duyler\EventBus\Storage\ActionContainerStorage;
-use Duyler\EventBus\Storage\MessageStorage;
 use Override;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -49,7 +45,6 @@ readonly class StateMain implements StateMainInterface
         private StateContextScope $contextScope,
         private QueueService $queueService,
         private EventDispatcherInterface $eventDispatcher,
-        private MessageStorage $messageStorage,
         private Transfer $transfer,
         private BusConfig $busConfig,
     ) {}
@@ -70,11 +65,6 @@ readonly class StateMain implements StateMainInterface
     #[Override]
     public function cyclic(): void
     {
-        // TODO Move into listener
-        if (Mode::Loop === $this->busConfig->mode) {
-            $this->messageStorage->recount();
-        }
-
         $stateService = new StateMainCyclicService(
             $this->queueService,
             $this->actionService,
@@ -166,11 +156,6 @@ readonly class StateMain implements StateMainInterface
         if (is_callable($suspend->value)) {
             $task->resume(($suspend->value)());
         } else {
-            // TODO Wrap into callback
-            $message = new Message(Channel::DEFAULT_CHANNEL, $this->transfer);
-            $message->setPayload($suspend->value, $task->action->getId());
-
-            $this->messageStorage->set($message);
             $task->resume();
         }
     }
@@ -200,8 +185,6 @@ readonly class StateMain implements StateMainInterface
     #[Override]
     public function empty(): void
     {
-        $this->messageStorage->cleanUp();
-
         $stateService = new StateMainEmptyService(
             $this->actionService,
             $this->resultService,
