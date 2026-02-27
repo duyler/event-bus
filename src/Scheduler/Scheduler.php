@@ -5,17 +5,11 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Scheduler;
 
 use Duyler\EventBus\BusConfig;
+use Duyler\EventBus\Dto\ScheduledTask;
 
 final class Scheduler
 {
-    /**
-     * @var array<array{
-     *     callback: callable,
-     *     interval: int,
-     *     next_run: int,
-     *     last_run: int
-     * }>
-     */
+    /** @var Task[] */
     private array $tasks = [];
     private int $lastCheck;
     private readonly int $checkInterval;
@@ -28,21 +22,16 @@ final class Scheduler
         $this->lastCheck = hrtime(true);
     }
 
-    public function addTask(callable $callback, int $intervalMs, ?int $startDelayMs = null): void
+    public function addTask(ScheduledTask $task): void
     {
-        $nowNs = hrtime(true);
-        $nowNsFloat = (float) $nowNs;
-        $nowFloat = $nowNsFloat / 1_000_000.0;
-        $now = (int) $nowFloat;
-
-        $startTime = $startDelayMs !== null ? $now + $startDelayMs : $now;
-
-        $this->tasks[] = [
-            'callback' => $callback,
-            'interval' => $intervalMs,
-            'next_run' => $startTime,
-            'last_run' => 0,
-        ];
+        $now = $this->nowMs();
+        $startTime = null !== $task->getStartDelay() ? $now + $task->getStartDelay() : $now;
+        $this->tasks[] = new Task(
+            callback: $task->getCallback(),
+            interval: $task->getInterval(),
+            nextRun: $startTime,
+            lastRun: 0,
+        );
     }
 
     public function tick(): void
@@ -54,32 +43,30 @@ final class Scheduler
         }
 
         $this->lastCheck = $nowNs;
+        $nowMs = $this->nowMs();
 
-        $nowNsFloat = (float) $nowNs;
-        $nowMsFloat = $nowNsFloat / 1_000_000.0;
-        $nowMs = (int) $nowMsFloat;
-
-        foreach ($this->tasks as &$task) {
-            if ($nowMs >= $task['next_run']) {
-                $task['callback']();
-                $task['last_run'] = $nowMs;
-                $task['next_run'] = $nowMs + $task['interval'];
+        foreach ($this->tasks as $i => $task) {
+            if ($nowMs >= $task->nextRun) {
+                ($task->callback)();
+                $this->tasks[$i] = new Task(
+                    callback: $task->callback,
+                    interval: $task->interval,
+                    nextRun: $nowMs + $task->interval,
+                    lastRun: $nowMs,
+                );
             }
         }
     }
 
     public function getStats(): array
     {
-        $nowNs = hrtime(true);
-        $nowNsFloat = (float) $nowNs;
-        $nowMsFloat = $nowNsFloat / 1_000_000.0;
-        $nowMs = (int) $nowMsFloat;
+        $nowMs = $this->nowMs();
 
         $stats = [];
 
         foreach ($this->tasks as $i => $task) {
-            $nextRunIn = max(0, $task['next_run'] - $nowMs);
-            $lastRunAgo = $task['last_run'] !== 0 ? $nowMs - $task['last_run'] : null;
+            $nextRunIn = max(0, $task->nextRun - $nowMs);
+            $lastRunAgo = 0 !== $task->lastRun ? $nowMs - $task->lastRun : null;
 
             $stats[$i] = [
                 'next_run_in' => $nextRunIn,
@@ -88,5 +75,11 @@ final class Scheduler
         }
 
         return $stats;
+    }
+
+    private function nowMs(): int
+    {
+        $nowNsFloat = (float) hrtime(true);
+        return (int) ($nowNsFloat / 1_000_000.0);
     }
 }

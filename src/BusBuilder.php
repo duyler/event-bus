@@ -105,24 +105,20 @@ class BusBuilder
 
         /** @var Scheduler $scheduler */
         $scheduler = $container->get(Scheduler::class);
-        $scheduler->addTask(
-            new GcCollectCyclesTask($this->logger),
-            $this->config->gcCollectCyclesInterval,
-            $this->config->gcCollectCyclesInterval,
-        );
+        $scheduler->addTask(new ScheduledTask(
+            callback: new GcCollectCyclesTask($this->logger),
+            intervalMs: $this->config->gcCollectCyclesInterval,
+            startDelayMs: $this->config->gcCollectCyclesInterval,
+        ));
 
-        $scheduler->addTask(
-            new GcMemCachesTask($this->logger),
-            $this->config->gcMemCachesInterval,
-            $this->config->gcMemCachesInterval,
-        );
+        $scheduler->addTask(new ScheduledTask(
+            callback: new GcMemCachesTask($this->logger),
+            intervalMs: $this->config->gcMemCachesInterval,
+            startDelayMs: $this->config->gcMemCachesInterval,
+        ));
 
         foreach ($this->scheduledTasks as $task) {
-            $scheduler->addTask(
-                $task->getCallback(),
-                $task->getInterval(),
-                $task->getStartDelay(),
-            );
+            $scheduler->addTask($task);
         }
 
         $container->get(IdFormatter::class);
