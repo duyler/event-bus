@@ -25,7 +25,10 @@ final class Scheduler
     public function addTask(ScheduledTask $task): void
     {
         $now = $this->nowMs();
-        $startTime = null !== $task->getStartDelay() ? $now + $task->getStartDelay() : $now;
+        $startTime
+            = null !== $task->getStartDelay()
+                ? $now + $task->getStartDelay()
+                : $now;
         $this->tasks[] = new Task(
             callback: $task->getCallback(),
             interval: $task->getInterval(),
@@ -58,6 +61,9 @@ final class Scheduler
         }
     }
 
+    /**
+     * @return array<array-key, array{last_run_ago: int|null, next_run_in: int<0, max>}>
+     */
     public function getStats(): array
     {
         $nowMs = $this->nowMs();
@@ -69,8 +75,8 @@ final class Scheduler
             $lastRunAgo = 0 !== $task->lastRun ? $nowMs - $task->lastRun : null;
 
             $stats[$i] = [
-                'next_run_in' => $nextRunIn,
-                'last_run_ago' => $lastRunAgo,
+                "next_run_in" => $nextRunIn,
+                "last_run_ago" => $lastRunAgo,
             ];
         }
 
