@@ -43,6 +43,17 @@ final class IdFormatter
         unset(self::$idMap[$id]);
     }
 
+    public static function fromEventId(string $eventId): string
+    {
+        $lastDelimiterPos = strrpos($eventId, self::DELIMITER);
+
+        if (false === $lastDelimiterPos) {
+            return $eventId;
+        }
+
+        return substr($eventId, 0, $lastDelimiterPos);
+    }
+
     public function finalize(): void
     {
         self::$idMap = [];

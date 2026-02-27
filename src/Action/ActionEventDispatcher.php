@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Action;
 
-use Duyler\EventBus\Build\Event as EventDefinition;
 use Duyler\EventBus\Dto\Event;
 use Duyler\EventBus\Service\EventService;
 use Fiber;
@@ -37,20 +36,5 @@ class ActionEventDispatcher implements EventDispatcherInterface
         );
 
         return $event;
-    }
-
-    /**
-     * @throws Throwable
-     */
-    public function dispatchActionEvent(
-        string $eventId,
-        ?object $data,
-        EventDefinition $eventDefinition,
-    ): void {
-        Fiber::suspend(
-            function () use ($eventId, $data, $eventDefinition): void {
-                $this->eventService->dispatchActionEvent($eventId, $data, $eventDefinition);
-            },
-        );
     }
 }

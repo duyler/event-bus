@@ -195,4 +195,28 @@ class BusConfig
             EventRemovedEvent::class,
         ];
     }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
+    {
+        return [
+            'bind' => $this->bind,
+            'providers' => $this->providers,
+            'definitions' => $this->definitions,
+            'allowSkipUnresolvedActions' => $this->allowSkipUnresolvedActions,
+            'autoreset' => $this->autoreset,
+            'allowCircularCall' => $this->allowCircularCall,
+            'logMaxSize' => $this->logMaxSize,
+            'mode' => $this->mode,
+            'continueAfterException' => $this->continueAfterException,
+            'maxCountCompleteActions' => $this->maxCountCompleteActions,
+            'maxCountEvents' => $this->maxCountEvents,
+            'tickInterval' => $this->tickInterval,
+            'schedulerCheckInterval' => $this->schedulerCheckInterval,
+            'gcCollectCyclesInterval' => $this->gcCollectCyclesInterval,
+            'gcMemCachesInterval' => $this->gcMemCachesInterval,
+        ];
+    }
 }

@@ -9,6 +9,7 @@ use Duyler\EventBus\Bus\Bus;
 use Duyler\EventBus\Bus\EventRelation;
 use Duyler\EventBus\Bus\State;
 use Duyler\EventBus\Dto\Event as EventDto;
+use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
@@ -83,27 +84,18 @@ class EventService
         }
     }
 
-    public function dispatchActionEvent(
-        string $eventId,
-        ?object $data,
-        Event $eventDefinition,
-    ): void {
-        $this->validateEventData($eventId, $data, $eventDefinition->type);
+    public function dispatchActionEvent(string $actionId, Result $result): void
+    {
+        $eventDto = new EventDto($actionId, $result->status, $result->data);
 
-        $eventDto = new EventDto($eventId, $data);
-
-        $this->eventStorage->saveDynamic($eventDefinition);
-
-        $actions = $this->actionStorage->getBySubscriptionEvent($eventId);
+        $actions = $this->actionStorage->getBySubscriptionEvent($eventDto->id);
 
         foreach ($actions as $action) {
             $this->eventRelationStorage->save(new EventRelation($action, $eventDto));
             $this->bus->doAction($action);
         }
 
-        if ($this->eventRelationStorage->isExists($eventId)) {
-            $this->state->pushEventLog($eventId);
-        }
+        $this->state->pushEventLog($eventDto->id);
     }
 
     private function validateEventData(string $eventId, ?object $data, ?string $type): void

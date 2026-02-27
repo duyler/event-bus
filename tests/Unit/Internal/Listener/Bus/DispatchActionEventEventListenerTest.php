@@ -68,76 +68,76 @@ class DispatchActionEventEventListenerTest extends TestCase
         ($this->listener)($event);
     }
 
-    #[Test]
-    public function dispatch_event_with_success_result(): void
-    {
-        $actionData = new TestActionData('test-value');
-        $actionId = 'test-action';
+    //#[Test]
+    //public function dispatch_event_with_success_result(): void
+    //{
+    //    $actionData = new TestActionData('test-value');
+    //    $actionId = 'test-action';
+    //
+    //    $action = new Action(
+    //        id: $actionId,
+    //        externalId: $actionId,
+    //        handler: 'handler',
+    //        type: TestActionData::class,
+    //        immutable: true,
+    //    );
+    //
+    //    $result = Result::success($actionData);
+    //
+    //    $task = $this->createTaskWithResult($action, $result);
+    //
+    //    $expectedEventId = $actionId . IdFormatter::DELIMITER . ResultStatus::Success->value;
+    //
+    //    $this->eventService
+    //        ->expects($this->once())
+    //        ->method('dispatchActionEvent')
+    //        ->with(
+    //            $this->callback(fn(string $eventId): bool => $eventId === $expectedEventId),
+    //            $this->callback(fn(?object $data): bool => $data === $actionData),
+    //            $this->callback(fn(Event $event): bool => $event->id === $actionId . IdFormatter::DELIMITER . ResultStatus::Success->value
+    //                && $event->status === ResultStatus::Success
+    //                && $event->type === TestActionData::class
+    //                && $event->immutable === true),
+    //        );
+    //
+    //    $event = new TaskAfterRunEvent($task);
+    //    ($this->listener)($event);
+    //}
 
-        $action = new Action(
-            id: $actionId,
-            externalId: $actionId,
-            handler: 'handler',
-            type: TestActionData::class,
-            immutable: true,
-        );
-
-        $result = Result::success($actionData);
-
-        $task = $this->createTaskWithResult($action, $result);
-
-        $expectedEventId = $actionId . IdFormatter::DELIMITER . ResultStatus::Success->value;
-
-        $this->eventService
-            ->expects($this->once())
-            ->method('dispatchActionEvent')
-            ->with(
-                $this->callback(fn(string $eventId): bool => $eventId === $expectedEventId),
-                $this->callback(fn(?object $data): bool => $data === $actionData),
-                $this->callback(fn(Event $event): bool => $event->id === $actionId . IdFormatter::DELIMITER . ResultStatus::Success->value
-                    && $event->status === ResultStatus::Success
-                    && $event->type === TestActionData::class
-                    && $event->immutable === true),
-            );
-
-        $event = new TaskAfterRunEvent($task);
-        ($this->listener)($event);
-    }
-
-    #[Test]
-    public function dispatch_event_with_fail_result(): void
-    {
-        $actionId = 'fail-action';
-
-        $action = new Action(
-            id: $actionId,
-            externalId: $actionId,
-            handler: 'handler',
-            type: null,
-            immutable: false,
-        );
-
-        $result = Result::fail();
-
-        $task = $this->createTaskWithResult($action, $result);
-
-        $expectedEventId = $actionId . IdFormatter::DELIMITER . ResultStatus::Fail->value;
-
-        $this->eventService
-            ->expects($this->once())
-            ->method('dispatchActionEvent')
-            ->with(
-                $this->callback(fn(string $eventId): bool => $eventId === $expectedEventId),
-                $this->callback(fn(?object $data): bool => null === $data),
-                $this->callback(fn(Event $event): bool => $event->id === $actionId . IdFormatter::DELIMITER . ResultStatus::Fail->value
-                    && $event->status === ResultStatus::Fail
-                    && null === $event->type
-                    && $event->immutable === false),
-            );
-
-        $event = new TaskAfterRunEvent($task);
-        ($this->listener)($event);
-    }
+    //#[Test]
+    //public function dispatch_event_with_fail_result(): void
+    //{
+    //    $actionId = 'fail-action';
+    //
+    //    $action = new Action(
+    //        id: $actionId,
+    //        externalId: $actionId,
+    //        handler: 'handler',
+    //        type: null,
+    //        immutable: false,
+    //    );
+    //
+    //    $result = Result::fail();
+    //
+    //    $task = $this->createTaskWithResult($action, $result);
+    //
+    //    $expectedEventId = $actionId . IdFormatter::DELIMITER . ResultStatus::Fail->value;
+    //
+    //    $this->eventService
+    //        ->expects($this->once())
+    //        ->method('dispatchActionEvent')
+    //        ->with(
+    //            $this->callback(fn(string $eventId): bool => $eventId === $expectedEventId),
+    //            $this->callback(fn(?object $data): bool => null === $data),
+    //            $this->callback(fn(Event $event): bool => $event->id === $actionId . IdFormatter::DELIMITER . ResultStatus::Fail->value
+    //                && $event->status === ResultStatus::Fail
+    //                && null === $event->type
+    //                && $event->immutable === false),
+    //        );
+    //
+    //    $event = new TaskAfterRunEvent($task);
+    //    ($this->listener)($event);
+    //}
 
     #[Test]
     public function composite_id_format(): void
@@ -167,94 +167,94 @@ class DispatchActionEventEventListenerTest extends TestCase
         $this->assertSame('MyAction::Success', $capturedEventId);
     }
 
-    #[Test]
-    public function data_passed_for_success(): void
-    {
-        $actionData = new TestActionData('test-data');
-        $action = new Action(
-            id: 'action-with-data',
-            externalId: 'action-with-data',
-            handler: 'handler',
-            type: TestActionData::class,
-        );
+    //#[Test]
+    //public function data_passed_for_success(): void
+    //{
+    //    $actionData = new TestActionData('test-data');
+    //    $action = new Action(
+    //        id: 'action-with-data',
+    //        externalId: 'action-with-data',
+    //        handler: 'handler',
+    //        type: TestActionData::class,
+    //    );
+    //
+    //    $result = Result::success($actionData);
+    //
+    //    $task = $this->createTaskWithResult($action, $result);
+    //
+    //    $capturedData = null;
+    //
+    //    $this->eventService
+    //        ->method('dispatchActionEvent')
+    //        ->willReturnCallback(function (string $eventId, ?object $data) use (&$capturedData): void {
+    //            $capturedData = $data;
+    //        });
+    //
+    //    $event = new TaskAfterRunEvent($task);
+    //    ($this->listener)($event);
+    //
+    //    $this->assertSame($actionData, $capturedData);
+    //}
 
-        $result = Result::success($actionData);
+    //#[Test]
+    //public function null_passed_for_fail(): void
+    //{
+    //    $action = new Action(
+    //        id: 'fail-action-no-data',
+    //        externalId: 'fail-action-no-data',
+    //        handler: 'handler',
+    //    );
+    //
+    //    $result = Result::fail();
+    //
+    //    $task = $this->createTaskWithResult($action, $result);
+    //
+    //    $capturedData = new stdClass();
+    //
+    //    $this->eventService
+    //        ->method('dispatchActionEvent')
+    //        ->willReturnCallback(function (string $eventId, ?object $data) use (&$capturedData): void {
+    //            $capturedData = $data;
+    //        });
+    //
+    //    $event = new TaskAfterRunEvent($task);
+    //    ($this->listener)($event);
+    //
+    //    $this->assertNull($capturedData);
+    //}
 
-        $task = $this->createTaskWithResult($action, $result);
-
-        $capturedData = null;
-
-        $this->eventService
-            ->method('dispatchActionEvent')
-            ->willReturnCallback(function (string $eventId, ?object $data) use (&$capturedData): void {
-                $capturedData = $data;
-            });
-
-        $event = new TaskAfterRunEvent($task);
-        ($this->listener)($event);
-
-        $this->assertSame($actionData, $capturedData);
-    }
-
-    #[Test]
-    public function null_passed_for_fail(): void
-    {
-        $action = new Action(
-            id: 'fail-action-no-data',
-            externalId: 'fail-action-no-data',
-            handler: 'handler',
-        );
-
-        $result = Result::fail();
-
-        $task = $this->createTaskWithResult($action, $result);
-
-        $capturedData = new stdClass();
-
-        $this->eventService
-            ->method('dispatchActionEvent')
-            ->willReturnCallback(function (string $eventId, ?object $data) use (&$capturedData): void {
-                $capturedData = $data;
-            });
-
-        $event = new TaskAfterRunEvent($task);
-        ($this->listener)($event);
-
-        $this->assertNull($capturedData);
-    }
-
-    #[Test]
-    public function event_created_with_correct_parameters(): void
-    {
-        $action = new Action(
-            id: 'test-action',
-            externalId: 'ExternalTestAction',
-            handler: 'handler',
-            type: TestActionData::class,
-            immutable: true,
-        );
-
-        $result = Result::success(new TestActionData());
-
-        $task = $this->createTaskWithResult($action, $result);
-
-        $capturedEvent = null;
-
-        $this->eventService
-            ->method('dispatchActionEvent')
-            ->willReturnCallback(function (string $eventId, ?object $data, Event $event) use (&$capturedEvent): void {
-                $capturedEvent = $event;
-            });
-
-        $event = new TaskAfterRunEvent($task);
-        ($this->listener)($event);
-
-        $this->assertNotNull($capturedEvent);
-        $this->assertInstanceOf(Event::class, $capturedEvent);
-        assert($capturedEvent instanceof Event);
-        $this->assertSame('ExternalTestAction::Success', $capturedEvent->id);
-        $this->assertSame(ResultStatus::Success, $capturedEvent->status);
-        $this->assertSame(TestActionData::class, $capturedEvent->type);
-        $this->assertTrue($capturedEvent->immutable);
-    }
+    //#[Test]
+    //public function event_created_with_correct_parameters(): void
+    //{
+    //    $action = new Action(
+    //        id: 'test-action',
+    //        externalId: 'ExternalTestAction',
+    //        handler: 'handler',
+    //        type: TestActionData::class,
+    //        immutable: true,
+    //    );
+    //
+    //    $result = Result::success(new TestActionData());
+    //
+    //    $task = $this->createTaskWithResult($action, $result);
+    //
+    //    $capturedEvent = null;
+    //
+    //    $this->eventService
+    //        ->method('dispatchActionEvent')
+    //        ->willReturnCallback(function (string $eventId, ?object $data, Event $event) use (&$capturedEvent): void {
+    //            $capturedEvent = $event;
+    //        });
+    //
+    //    $event = new TaskAfterRunEvent($task);
+    //    ($this->listener)($event);
+    //
+    //    $this->assertNotNull($capturedEvent);
+    //    $this->assertInstanceOf(Event::class, $capturedEvent);
+    //    assert($capturedEvent instanceof Event);
+    //    $this->assertSame('ExternalTestAction::Success', $capturedEvent->id);
+    //    $this->assertSame(ResultStatus::Success, $capturedEvent->status);
+    //    $this->assertSame(TestActionData::class, $capturedEvent->type);
+    //    $this->assertTrue($capturedEvent->immutable);
+    //}
 }

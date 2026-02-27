@@ -20,6 +20,9 @@ use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
 use Duyler\EventBus\Exception\ActionNotDefinedException;
 use Duyler\EventBus\Exception\ActionWithNotResolvedDependsException;
 use Duyler\EventBus\Exception\CannotRequirePrivateActionException;
+use Duyler\EventBus\Exception\CannotSubscribeOnPrivateActionException;
+use Duyler\EventBus\Exception\CannotSubscribeOnRequiredActionException;
+use Duyler\EventBus\Exception\CannotSubscribeOnSilentActionException;
 use Duyler\EventBus\Exception\CircularCallActionException;
 use Duyler\EventBus\Exception\EventNotDefinedException;
 use Duyler\EventBus\Exception\NotAllowedSealedActionException;
@@ -152,7 +155,18 @@ readonly class ActionService
             }
 
             foreach ($action->getSubscriptionEvents() as $eventId) {
-                if (false === $this->eventStorage->has($eventId)) {
+                $actionId = IdFormatter::fromEventId($eventId);
+
+                if (in_array($actionId, $action->getRequired()->getArrayCopy())) {
+                    throw new CannotSubscribeOnRequiredActionException($action->getId(), $actionId);
+                }
+
+                if (array_key_exists($actionId, $actions)) {
+                    $subscriptionAction = $actions[$actionId];
+                    $this->checkSubscriptionAction($actionId, $subscriptionAction);
+                }
+
+                if (false === $this->eventStorage->has($eventId) && false === array_key_exists($actionId, $actions)) {
                     $this->throwEventNotDefined($eventId, $action->getId());
                 }
             }
@@ -176,8 +190,25 @@ readonly class ActionService
             throw new CannotRequirePrivateActionException($subject, $requiredAction->getId());
         }
 
-        if (count($requiredAction->getSealed()) > 0 && !in_array($subject, $requiredAction->getSealed())) {
+        if (count($requiredAction->getSealed()) > 0 && false === in_array($subject, $requiredAction->getSealed())) {
             throw new NotAllowedSealedActionException($subject, $requiredAction->getId());
+        }
+    }
+
+    private function checkSubscriptionAction(string $subject, Action $subscriptionAction): void
+    {
+        if ($subscriptionAction->isPrivate()) {
+            throw new CannotSubscribeOnPrivateActionException($subject, $subscriptionAction->getId());
+        }
+
+        if ($subscriptionAction->isSilent()) {
+            throw new CannotSubscribeOnSilentActionException($subject, $subscriptionAction->getId());
+        }
+
+        if (count($subscriptionAction->getSealed()) > 0
+            && false === in_array($subject, $subscriptionAction->getSealed())
+        ) {
+            throw new NotAllowedSealedActionException($subject, $subscriptionAction->getId());
         }
     }
 
