@@ -11,10 +11,12 @@ use Duyler\EventBus\Build\Context;
 use Duyler\EventBus\Build\Event;
 use Duyler\EventBus\Build\SharedService;
 use Duyler\EventBus\Bus\Action as InternalAction;
+use Duyler\EventBus\Bus\DoWhile;
 use Duyler\EventBus\Bus\ErrorHandler;
 use Duyler\EventBus\Bus\State;
 use Duyler\EventBus\Channel\Channel;
 use Duyler\EventBus\Contract\ErrorHandlerInterface;
+use Duyler\EventBus\Contract\ResourceInterface;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Dto\ScheduledTask;
 use Duyler\EventBus\Event\EventDispatcher;
@@ -66,6 +68,8 @@ class BusBuilder
 
     /** @var ScheduledTask[] */
     private array $scheduledTasks = [];
+
+    private ?ResourceInterface $ioResource = null;
 
     public function __construct(private readonly BusConfig $config)
     {
@@ -180,6 +184,12 @@ class BusBuilder
         /** @var BusInterface $bus */
         $bus = $container->get(Bus::class);
 
+        if (null !== $this->ioResource) {
+            /** @var DoWhile $doWhile */
+            $doWhile = $container->get(DoWhile::class);
+            $doWhile->setResource($this->ioResource);
+        }
+
         gc_collect_cycles();
 
         return $bus;
@@ -277,6 +287,12 @@ class BusBuilder
     public function addScheduledTask(ScheduledTask $task): static
     {
         $this->scheduledTasks[] = $task;
+        return $this;
+    }
+    
+    public function withIoResource(ResourceInterface $resource): static
+    {
+        $this->ioResource = $resource;
         return $this;
     }
 }

@@ -20,3 +20,6 @@ composer.lock
 .opencode/
 .cursor/
 .sisyphus/
+
+# MacOS
+/.DS_Store
