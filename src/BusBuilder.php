@@ -289,7 +289,7 @@ class BusBuilder
         $this->scheduledTasks[] = $task;
         return $this;
     }
-    
+
     public function withIoResource(ResourceInterface $resource): static
     {
         $this->ioResource = $resource;

@@ -26,26 +26,21 @@ use EvWatcher;
 use Override;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use RuntimeException;
-use Socket;
 use Throwable;
 
 final class DoWhile implements LoopInterface
 {
     private const float DELAY_BEFORE_RUN = 0.001;
 
-    private ?EvTimer $timer = null;
-
-    private ?EvWatcher $watcher = null;
-
-    private ?ResourceInterface $ioResource = null;
+    private EvWatcher $watcher;
 
     public function __construct(
-        private ActionRunnerProviderInterface $actionRunnerProvider,
-        private TaskQueue $taskQueue,
-        private EventDispatcherInterface $eventDispatcher,
-        private BusConfig $busConfig,
-        private ErrorHandlerInterface $errorHandler,
-        private State $state,
+        private readonly ActionRunnerProviderInterface $actionRunnerProvider,
+        private readonly TaskQueue $taskQueue,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly BusConfig $busConfig,
+        private readonly ErrorHandlerInterface $errorHandler,
+        private readonly State $state,
     ) {
         $repeat = $this->busConfig->tickInterval / 1000;
         $this->watcher = new EvTimer(self::DELAY_BEFORE_RUN, $repeat, function (): void {
@@ -140,19 +135,17 @@ final class DoWhile implements LoopInterface
 
     public function setResource(ResourceInterface $resource): void
     {
-        $this->ioResource = $resource;
+        $stream = $resource->getResource();
 
-        /** @var Socket $socket */
-        $socket = $this->ioResource->getResource();
-
-        if (null !== $socket) {
-
-            $stream = socket_export_stream($socket);
+        if (null !== $stream) {
 
             stream_set_blocking($stream, false);
 
-            $this->watcher = new EvIo($stream, Ev::READ, function () {
+            $this->watcher = new EvIo($stream, Ev::READ, function () use ($stream): void {
+                fread($stream, 4096);
+                $this->watcher->stop();
                 $this->tick();
+                $this->watcher->start();
             });
         }
     }
