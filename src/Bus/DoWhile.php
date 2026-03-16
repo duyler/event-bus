@@ -133,6 +133,7 @@ final class DoWhile implements LoopInterface
         Ev::stop(Ev::BREAK_ALL);
     }
 
+    #[Override]
     public function setResource(ResourceInterface $resource): void
     {
         $stream = $resource->getResource();
