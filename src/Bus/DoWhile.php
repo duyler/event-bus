@@ -63,18 +63,18 @@ final class DoWhile implements LoopInterface
 
     private function tick(): void
     {
-        while (true) {
+        do {
             if (Mode::Queue === $this->busConfig->mode && $this->taskQueue->isEmpty()) {
                 $this->watcher->stop();
                 Ev::stop(Ev::BREAK_ALL);
                 $this->eventDispatcher->dispatch(new DoWhileEndEvent());
-                return;
+                continue;
             }
 
             $this->eventDispatcher->dispatch(new DoCyclicEvent());
 
             if (Mode::Loop === $this->busConfig->mode && $this->taskQueue->isEmpty()) {
-                return;
+                continue;
             }
 
             $task = $this->taskQueue->dequeue();
@@ -107,10 +107,7 @@ final class DoWhile implements LoopInterface
                 $this->errorHandler->handle($e, $this->state->getLog());
             }
 
-            if ($this->taskQueue->isEmpty()) {
-                return;
-            }
-        }
+        } while ($this->taskQueue->isNotEmpty());
     }
 
     private function process(Task $task): void
