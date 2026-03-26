@@ -15,12 +15,12 @@ class ActionContainerStorage
 
     public function save(ActionContainer $container): void
     {
-        $this->data[$container->actionId . '.' . $container->correlationId] = $container;
+        $this->data[$container->actionId . '.' . $container->scope] = $container;
     }
 
-    public function get(string $actionId, string $correlationId = 'common'): ActionContainer
+    public function get(string $actionId, string $scope = 'common'): ActionContainer
     {
-        return $this->data[$actionId . '.' . $correlationId];
+        return $this->data[$actionId . '.' . $scope];
     }
 
     public function reset(): void
@@ -35,9 +35,9 @@ class ActionContainerStorage
         return $this->data;
     }
 
-    public function isExists(string $actionId, string $correlationId = 'common'): bool
+    public function isExists(string $actionId, string $scope = 'common'): bool
     {
-        return isset($this->data[$actionId . '.' . $correlationId]);
+        return isset($this->data[$actionId . '.' . $scope]);
     }
 
     public function remove(string $actionId): void

@@ -150,7 +150,7 @@ readonly class StateMain implements StateMainInterface
         }
 
         if (is_callable($suspend->value)) {
-            $task->resume(($suspend->value)($task->getCorrelationId()));
+            $task->resume(($suspend->value)($task->getScope()));
         } else {
             $task->resume();
         }
@@ -163,7 +163,7 @@ readonly class StateMain implements StateMainInterface
             $task->getResult()->status,
             $task->getResult()->data,
             $task->action->getExternalId(),
-            $task->getCorrelationId(),
+            $task->getScope(),
             $this->actionService,
             $this->resultService,
             $this->logService,

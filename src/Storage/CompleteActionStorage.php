@@ -20,39 +20,39 @@ class CompleteActionStorage
      */
     private array $data = [];
 
-    public function save(CompleteAction $completeAction, string $correlationId = 'common'): void
+    public function save(CompleteAction $completeAction, string $scope = 'common'): void
     {
-        $this->data[$completeAction->action->getId() . '.' . $correlationId] = $completeAction;
+        $this->data[$completeAction->action->getId() . '.' . $scope] = $completeAction;
     }
 
     /**
      * @param array<array-key, string> $array
      * @return array<string, CompleteAction>
      */
-    public function getAllByArray(array $array, string $correlationId = 'common'): array
+    public function getAllByArray(array $array, string $scope = 'common'): array
     {
-        $withCorrelationId = [];
+        $withScope = [];
 
         foreach ($array as $actionId) {
-            $withCorrelationId[] = $actionId . '.' . $correlationId;
+            $withScope[] = $actionId . '.' . $scope;
         }
 
-        return array_intersect_key($this->data, array_flip($withCorrelationId));
+        return array_intersect_key($this->data, array_flip($withScope));
     }
 
-    public function getResult(string $actionId, string $correlationId = 'common'): Result
+    public function getResult(string $actionId, string $scope = 'common'): Result
     {
-        return $this->data[$actionId . '.' . $correlationId]->result;
+        return $this->data[$actionId . '.' . $scope]->result;
     }
 
-    public function get(string $actionId, string $correlationId = 'common'): CompleteAction
+    public function get(string $actionId, string $scope = 'common'): CompleteAction
     {
-        return $this->data[$actionId . '.' . $correlationId];
+        return $this->data[$actionId . '.' . $scope];
     }
 
-    public function isExists(string $actionId, string $correlationId = 'common'): bool
+    public function isExists(string $actionId, string $scope = 'common'): bool
     {
-        return array_key_exists($actionId . '.' . $correlationId, $this->data);
+        return array_key_exists($actionId . '.' . $scope, $this->data);
     }
 
     /**
@@ -68,8 +68,8 @@ class CompleteActionStorage
         $this->data = [];
     }
 
-    public function remove(string $actionId, string $correlationId = 'common'): void
+    public function remove(string $actionId, string $scope = 'common'): void
     {
-        unset($this->data[$actionId . '.' . $correlationId]);
+        unset($this->data[$actionId . '.' . $scope]);
     }
 }

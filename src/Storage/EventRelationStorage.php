@@ -21,36 +21,36 @@ class EventRelationStorage
     /** @var array<string, EventRelation> */
     private array $lastById = [];
 
-    public function save(EventRelation $eventRelation, string $correlationId = 'common'): void
+    public function save(EventRelation $eventRelation, string $scope = 'common'): void
     {
-        $this->data[$eventRelation->action->getId() . '.' . $correlationId][$eventRelation->event->id . '.' . $correlationId][] = $eventRelation;
-        $this->lastById[$eventRelation->event->id . '.' . $correlationId] = $eventRelation;
+        $this->data[$eventRelation->action->getId() . '.' . $scope][$eventRelation->event->id . '.' . $scope][] = $eventRelation;
+        $this->lastById[$eventRelation->event->id . '.' . $scope] = $eventRelation;
     }
 
-    public function has(string $actionId, string $correlationId = 'common'): bool
+    public function has(string $actionId, string $scope = 'common'): bool
     {
-        return isset($this->data[$actionId . '.' . $correlationId]);
+        return isset($this->data[$actionId . '.' . $scope]);
     }
 
-    public function shift(string $actionId, string $eventId, string $correlationId = 'common'): EventRelation
+    public function shift(string $actionId, string $eventId, string $scope = 'common'): EventRelation
     {
-        $this->data[$actionId . '.' . $correlationId][$eventId . '.' . $correlationId]
+        $this->data[$actionId . '.' . $scope][$eventId . '.' . $scope]
             ?? throw new RuntimeException('Event relation for action ' . $actionId . ' not found');
 
         /** @var EventRelation $eventRelation */
-        $eventRelation = array_shift($this->data[$actionId . '.' . $correlationId][$eventId . '.' . $correlationId]);
+        $eventRelation = array_shift($this->data[$actionId . '.' . $scope][$eventId . '.' . $scope]);
 
         return $eventRelation;
     }
 
-    public function getLast(string $eventId, string $correlationId = 'common'): EventRelation
+    public function getLast(string $eventId, string $scope = 'common'): EventRelation
     {
-        return $this->lastById[$eventId . '.' . $correlationId];
+        return $this->lastById[$eventId . '.' . $scope];
     }
 
-    public function isExists(string $eventId, string $correlationId = 'common'): bool
+    public function isExists(string $eventId, string $scope = 'common'): bool
     {
-        return isset($this->lastById[$eventId . '.' . $correlationId]);
+        return isset($this->lastById[$eventId . '.' . $scope]);
     }
 
     public function getAll(): array
@@ -65,15 +65,15 @@ class EventRelationStorage
     }
 
     // @toto Need refactor to remove from lastById without foreach
-    public function removeByActionId(string $actionId, string $correlationId = 'common'): void
+    public function removeByActionId(string $actionId, string $scope = 'common'): void
     {
-        if (isset($this->data[$actionId . '.' . $correlationId])) {
-            unset($this->data[$actionId . '.' . $correlationId]);
+        if (isset($this->data[$actionId . '.' . $scope])) {
+            unset($this->data[$actionId . '.' . $scope]);
         }
 
         foreach ($this->lastById as $relation) {
-            if ($relation->action->getId() . '.' . $correlationId === $actionId . '.' . $correlationId) {
-                unset($this->lastById[$relation->event->id . '.' . $correlationId]);
+            if ($relation->action->getId() . '.' . $scope === $actionId . '.' . $scope) {
+                unset($this->lastById[$relation->event->id . '.' . $scope]);
             }
         }
     }

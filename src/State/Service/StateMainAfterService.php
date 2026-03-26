@@ -29,7 +29,7 @@ class StateMainAfterService
         private readonly ResultStatus $resultStatus,
         private readonly ?object $resultData,
         private readonly string|UnitEnum $actionId,
-        private readonly string $correlationId,
+        private readonly string $scope,
         private readonly ActionService $actionService,
         private readonly ResultService $resultService,
         private readonly LogService $logService,
@@ -52,8 +52,8 @@ class StateMainAfterService
         return $this->resultStatus;
     }
 
-    public function getCorrelationId(): string
+    public function getScope(): string
     {
-        return $this->correlationId;
+        return $this->scope;
     }
 }

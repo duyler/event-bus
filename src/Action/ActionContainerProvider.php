@@ -36,16 +36,16 @@ class ActionContainerProvider
         $this->sharedContainer = new Container();
     }
 
-    public function get(Action $action, string $correlationId = 'common'): ActionContainer
+    public function get(Action $action, string $scope = 'common'): ActionContainer
     {
-        if (false === $this->containerStorage->isExists($action->getId(), $correlationId)) {
-            $this->buildContainer($action, $correlationId);
+        if (false === $this->containerStorage->isExists($action->getId(), $scope)) {
+            $this->buildContainer($action, $scope);
         }
 
-        return $this->containerStorage->get($action->getId(), $correlationId);
+        return $this->containerStorage->get($action->getId(), $scope);
     }
 
-    private function buildContainer(Action $action, string $correlationId): void
+    private function buildContainer(Action $action, string $scope): void
     {
         $externalConfigDefinitions = [];
 
@@ -64,7 +64,7 @@ class ActionContainerProvider
         $actionContainer = new ActionContainer(
             $action->getId(),
             $this->config,
-            $correlationId,
+            $scope,
         );
 
         $actionContainer->bind($action->getBind());

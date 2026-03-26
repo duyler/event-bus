@@ -29,16 +29,16 @@ class ActionHandlerArgumentBuilder
         private readonly EventRelationStorage $eventRelationStorage,
     ) {}
 
-    public function build(Action $action, ActionContainer $container, string $correlationId): ?object
+    public function build(Action $action, ActionContainer $container, string $scope): ?object
     {
         /** @var array<string, object> $results */
         $results = [];
 
-        $results = $this->collectSubscriptionResults($action, $correlationId) + $results;
+        $results = $this->collectSubscriptionResults($action, $scope) + $results;
 
         $completeActions = $this->completeActionStorage->getAllByArray(
             $action->getRequired()->getArrayCopy(),
-            $correlationId,
+            $scope,
         );
 
         foreach ($completeActions as $completeAction) {
@@ -117,15 +117,15 @@ class ActionHandlerArgumentBuilder
     /**
      * @return array<string, object>
      */
-    private function collectSubscriptionResults(Action $action, string $correlationId): array
+    private function collectSubscriptionResults(Action $action, string $scope): array
     {
         $results = [];
 
         foreach ($action->getSubscriptionEvents() as $eventId) {
-            $subjectId = $this->extractSubjectId($eventId);
+            $subjectId = IdFormatter::fromEventId($eventId);
 
-            if ($this->eventRelationStorage->isExists($eventId, $correlationId)) {
-                $eventRelation = $this->eventRelationStorage->getLast($eventId, $correlationId);
+            if ($this->eventRelationStorage->isExists($eventId, $scope)) {
+                $eventRelation = $this->eventRelationStorage->getLast($eventId, $scope);
                 if (null !== $eventRelation->event->data) {
                     /** @var object $eventData */
                     $eventData = $eventRelation->event->data;
@@ -133,8 +133,8 @@ class ActionHandlerArgumentBuilder
                 }
             }
 
-            if ($this->completeActionStorage->isExists($subjectId, $correlationId)) {
-                $completeAction = $this->completeActionStorage->get($subjectId, $correlationId);
+            if ($this->completeActionStorage->isExists($subjectId, $scope)) {
+                $completeAction = $this->completeActionStorage->get($subjectId, $scope);
                 if (null !== $completeAction->result->data) {
                     /** @var object $resultData */
                     $resultData = $completeAction->result->data;
@@ -144,12 +144,6 @@ class ActionHandlerArgumentBuilder
         }
 
         return $results;
-    }
-
-    private function extractSubjectId(string $eventId): string
-    {
-        $parts = explode(IdFormatter::DELIMITER, $eventId);
-        return $parts[0];
     }
 
     /**

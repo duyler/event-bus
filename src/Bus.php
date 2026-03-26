@@ -34,21 +34,21 @@ class Bus implements BusInterface
     }
 
     #[Override]
-    public function getResult(string|UnitEnum $actionId, string $correlationId = 'common'): Result
+    public function getResult(string|UnitEnum $actionId, string $scope = 'common'): Result
     {
-        return $this->resultService->getResult(IdFormatter::toString($actionId), $correlationId);
+        return $this->resultService->getResult(IdFormatter::toString($actionId), $scope);
     }
 
     #[Override]
-    public function resultIsExists(string|UnitEnum $actionId, string $correlationId = 'common'): bool
+    public function resultIsExists(string|UnitEnum $actionId, string $scope = 'common'): bool
     {
-        return $this->resultService->resultIsExists(IdFormatter::toString($actionId), $correlationId);
+        return $this->resultService->resultIsExists(IdFormatter::toString($actionId), $scope);
     }
 
     #[Override]
-    public function dispatchEvent(Event $event, string $correlationId = 'common'): BusInterface
+    public function dispatchEvent(Event $event, string $scope = 'common'): BusInterface
     {
-        $this->eventDispatcher->dispatch(new EventDispatchedEvent($event, $correlationId));
+        $this->eventDispatcher->dispatch(new EventDispatchedEvent($event, $scope));
 
         return $this;
     }

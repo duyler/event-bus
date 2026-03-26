@@ -29,7 +29,7 @@ final class Task
 
     public function __construct(
         public readonly Action $action,
-        private readonly string $correlationId,
+        private readonly string $scope,
     ) {
         $this->taskId = spl_object_hash($this);
         $this->retryTimestamp = new DateTimeImmutable();
@@ -96,9 +96,9 @@ final class Task
         return $this->taskId;
     }
 
-    public function getCorrelationId(): string
+    public function getScope(): string
     {
-        return $this->correlationId;
+        return $this->scope;
     }
 
     public function getRunner(): ?ActionRunnerInterface

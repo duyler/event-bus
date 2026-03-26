@@ -32,7 +32,7 @@ class EventService
         private readonly State $state,
     ) {}
 
-    public function dispatch(EventDto $eventDto, string $correlationId = 'common'): void
+    public function dispatch(EventDto $eventDto, string $scope = 'common'): void
     {
         $event = $this->eventStorage->get($eventDto->id);
 
@@ -45,8 +45,8 @@ class EventService
         $actions = $this->actionStorage->getBySubscriptionEvent($eventDto->id);
 
         foreach ($actions as $action) {
-            $this->eventRelationStorage->save(new EventRelation($action, $eventDto), $correlationId);
-            $this->bus->doAction($action, $correlationId);
+            $this->eventRelationStorage->save(new EventRelation($action, $eventDto), $scope);
+            $this->bus->doAction($action, $scope);
         }
 
         if ($this->eventRelationStorage->isExists($eventDto->id)) {
@@ -84,15 +84,15 @@ class EventService
         }
     }
 
-    public function dispatchActionEvent(string $actionId, string $correlationId, Result $result): void
+    public function dispatchActionEvent(string $actionId, string $scope, Result $result): void
     {
         $eventDto = new EventDto($actionId, $result->status, $result->data);
 
         $actions = $this->actionStorage->getBySubscriptionEvent($eventDto->id);
 
         foreach ($actions as $action) {
-            $this->eventRelationStorage->save(new EventRelation($action, $eventDto), $correlationId);
-            $this->bus->doAction($action, $correlationId);
+            $this->eventRelationStorage->save(new EventRelation($action, $eventDto), $scope);
+            $this->bus->doAction($action, $scope);
         }
 
         $this->state->pushEventLog($eventDto->id);

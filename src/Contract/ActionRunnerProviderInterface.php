@@ -8,5 +8,5 @@ use Duyler\EventBus\Bus\Action;
 
 interface ActionRunnerProviderInterface
 {
-    public function getRunner(Action $action, string $correlationId): ActionRunnerInterface;
+    public function getRunner(Action $action, string $scope): ActionRunnerInterface;
 }

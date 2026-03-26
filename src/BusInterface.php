@@ -17,11 +17,11 @@ interface BusInterface
      */
     public function run(): BusInterface;
 
-    public function getResult(string|UnitEnum $actionId, string $correlationId): Result;
+    public function getResult(string|UnitEnum $actionId, string $scope): Result;
 
-    public function resultIsExists(string|UnitEnum $actionId, string $correlationId): bool;
+    public function resultIsExists(string|UnitEnum $actionId, string $scope): bool;
 
-    public function dispatchEvent(Event $event, string $correlationId): BusInterface;
+    public function dispatchEvent(Event $event, string $scope): BusInterface;
 
     public function reset(): BusInterface;
 

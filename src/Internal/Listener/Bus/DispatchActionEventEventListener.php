@@ -29,6 +29,6 @@ final readonly class DispatchActionEventEventListener
         $actionId = $action->getId();
         $result = $task->getResult();
 
-        $this->eventService->dispatchActionEvent($actionId, $task->getCorrelationId(), $result);
+        $this->eventService->dispatchActionEvent($actionId, $task->getScope(), $result);
     }
 }

@@ -15,6 +15,6 @@ class DispatchEventEventListener
 
     public function __invoke(EventDispatchedEvent $event): void
     {
-        $this->eventService->dispatch($event->event, $event->correlationId);
+        $this->eventService->dispatch($event->event, $event->scope);
     }
 }

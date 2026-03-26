@@ -19,16 +19,16 @@ final readonly class AfterCompleteActionEventListener
 
     public function __invoke(TaskAfterRunEvent $event): void
     {
-        if (false === $this->completeActionStorage->isExists($event->task->action->getId(), $event->task->getCorrelationId())) {
+        if (false === $this->completeActionStorage->isExists($event->task->action->getId(), $event->task->getScope())) {
             return;
         }
 
-        $completeAction = $this->completeActionStorage->get($event->task->action->getId(), $event->task->getCorrelationId());
+        $completeAction = $this->completeActionStorage->get($event->task->action->getId(), $event->task->getScope());
 
         $this->bus->afterCompleteAction($completeAction);
 
-        if ($this->containerStorage->isExists($event->task->action->getId(), $event->task->getCorrelationId())) {
-            $actionContainer = $this->containerStorage->get($event->task->action->getId(), $event->task->getCorrelationId());
+        if ($this->containerStorage->isExists($event->task->action->getId(), $event->task->getScope())) {
+            $actionContainer = $this->containerStorage->get($event->task->action->getId(), $event->task->getScope());
             $actionContainer->finalize();
         }
     }
