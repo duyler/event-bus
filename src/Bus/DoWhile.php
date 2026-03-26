@@ -93,7 +93,7 @@ final class DoWhile implements LoopInterface
 
             try {
                 if (TaskStatus::Primary === $task->getStatus()) {
-                    $task->run($this->actionRunnerProvider->getRunner($task->action));
+                    $task->run($this->actionRunnerProvider->getRunner($task->action, $task->getCorrelationId()));
                 } elseif (TaskStatus::Retry === $task->getStatus()) {
                     if (false === $task->isReady()) {
                         $this->taskQueue->push($task);

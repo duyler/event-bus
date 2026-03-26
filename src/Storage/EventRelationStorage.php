@@ -21,35 +21,36 @@ class EventRelationStorage
     /** @var array<string, EventRelation> */
     private array $lastById = [];
 
-    public function save(EventRelation $eventRelation): void
+    public function save(EventRelation $eventRelation, string $correlationId = 'common'): void
     {
-        $this->data[$eventRelation->action->getId()][$eventRelation->event->id][] = $eventRelation;
-        $this->lastById[$eventRelation->event->id] = $eventRelation;
+        $this->data[$eventRelation->action->getId() . '.' . $correlationId][$eventRelation->event->id . '.' . $correlationId][] = $eventRelation;
+        $this->lastById[$eventRelation->event->id . '.' . $correlationId] = $eventRelation;
     }
 
-    public function has(string $actionId): bool
+    public function has(string $actionId, string $correlationId = 'common'): bool
     {
-        return isset($this->data[$actionId]);
+        return isset($this->data[$actionId . '.' . $correlationId]);
     }
 
-    public function shift(string $actionId, string $eventId): EventRelation
+    public function shift(string $actionId, string $eventId, string $correlationId = 'common'): EventRelation
     {
-        $this->data[$actionId][$eventId] ?? throw new RuntimeException('Event relation for action ' . $actionId . ' not found');
+        $this->data[$actionId . '.' . $correlationId][$eventId . '.' . $correlationId]
+            ?? throw new RuntimeException('Event relation for action ' . $actionId . ' not found');
 
         /** @var EventRelation $eventRelation */
-        $eventRelation = array_shift($this->data[$actionId][$eventId]);
+        $eventRelation = array_shift($this->data[$actionId . '.' . $correlationId][$eventId . '.' . $correlationId]);
 
         return $eventRelation;
     }
 
-    public function getLast(string $eventId): EventRelation
+    public function getLast(string $eventId, string $correlationId = 'common'): EventRelation
     {
-        return $this->lastById[$eventId];
+        return $this->lastById[$eventId . '.' . $correlationId];
     }
 
-    public function isExists(string $eventId): bool
+    public function isExists(string $eventId, string $correlationId = 'common'): bool
     {
-        return isset($this->lastById[$eventId]);
+        return isset($this->lastById[$eventId . '.' . $correlationId]);
     }
 
     public function getAll(): array
@@ -64,15 +65,15 @@ class EventRelationStorage
     }
 
     // @toto Need refactor to remove from lastById without foreach
-    public function removeByActionId(string $actionId): void
+    public function removeByActionId(string $actionId, string $correlationId = 'common'): void
     {
-        if (isset($this->data[$actionId])) {
-            unset($this->data[$actionId]);
+        if (isset($this->data[$actionId . '.' . $correlationId])) {
+            unset($this->data[$actionId . '.' . $correlationId]);
         }
 
         foreach ($this->lastById as $relation) {
-            if ($relation->action->getId() === $actionId) {
-                unset($this->lastById[$relation->event->id]);
+            if ($relation->action->getId() . '.' . $correlationId === $actionId . '.' . $correlationId) {
+                unset($this->lastById[$relation->event->id . '.' . $correlationId]);
             }
         }
     }

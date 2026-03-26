@@ -29,6 +29,7 @@ class StateMainAfterService
         private readonly ResultStatus $resultStatus,
         private readonly ?object $resultData,
         private readonly string|UnitEnum $actionId,
+        private readonly string $correlationId,
         private readonly ActionService $actionService,
         private readonly ResultService $resultService,
         private readonly LogService $logService,
@@ -49,5 +50,10 @@ class StateMainAfterService
     public function getStatus(): ResultStatus
     {
         return $this->resultStatus;
+    }
+
+    public function getCorrelationId(): string
+    {
+        return $this->correlationId;
     }
 }

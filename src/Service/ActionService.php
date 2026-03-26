@@ -91,7 +91,7 @@ readonly class ActionService
         $this->checkSealedAction($action);
     }
 
-    public function doExistsAction(string $actionId): void
+    public function doExistsAction(string $actionId, string $correlationId = 'common'): void
     {
         if (false === $this->actionStorage->isExists($actionId)) {
             $this->throwActionNotDefined($actionId);
@@ -99,7 +99,7 @@ readonly class ActionService
 
         $action = $this->actionStorage->get($actionId);
 
-        $this->bus->doAction($action);
+        $this->bus->doAction($action, $correlationId);
     }
 
     public function getById(string $actionId): Action
@@ -277,7 +277,7 @@ readonly class ActionService
         $this->eventDispatcher->dispatch(new ActionAddedEvent(ExternalAction::fromInternal($action)));
     }
 
-    public function doDynamicAction(Action $action): void
+    public function doDynamicAction(Action $action, string $correlationId = 'common'): void
     {
         $this->validateAction($action);
 
@@ -287,7 +287,7 @@ readonly class ActionService
 
         $this->eventDispatcher->dispatch(new ActionAddedEvent(ExternalAction::fromInternal($action)));
 
-        $this->bus->doAction($action);
+        $this->bus->doAction($action, $correlationId);
     }
 
     public function removeAction(string $actionId): void

@@ -46,9 +46,9 @@ class Bus implements BusInterface
     }
 
     #[Override]
-    public function dispatchEvent(Event $event): BusInterface
+    public function dispatchEvent(Event $event, string $correlationId = 'common'): BusInterface
     {
-        $this->eventDispatcher->dispatch(new EventDispatchedEvent($event));
+        $this->eventDispatcher->dispatch(new EventDispatchedEvent($event, $correlationId));
 
         return $this;
     }

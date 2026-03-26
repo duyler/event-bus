@@ -30,8 +30,8 @@ class ActionEventDispatcher implements EventDispatcherInterface
         }
 
         Fiber::suspend(
-            function () use ($event): void {
-                $this->eventService->dispatch($event);
+            function (string $correlationId = 'common') use ($event): void {
+                $this->eventService->dispatch($event, $correlationId);
             },
         );
 

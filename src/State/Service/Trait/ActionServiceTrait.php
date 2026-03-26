@@ -22,14 +22,14 @@ trait ActionServiceTrait
         $this->actionService->addDynamicAction($internalAction);
     }
 
-    public function doAction(ExternalAction $action): void
+    public function doAction(ExternalAction $action, string $correlationId = 'common'): void
     {
-        $this->actionService->doDynamicAction(InternalAction::fromExternal($action));
+        $this->actionService->doDynamicAction(InternalAction::fromExternal($action), $correlationId);
     }
 
-    public function doExistsAction(string|UnitEnum $actionId): void
+    public function doExistsAction(string|UnitEnum $actionId, string $correlationId = 'common'): void
     {
-        $this->actionService->doExistsAction(IdFormatter::toString($actionId));
+        $this->actionService->doExistsAction(IdFormatter::toString($actionId), $correlationId);
     }
 
     public function actionIsExists(string|UnitEnum $actionId): bool

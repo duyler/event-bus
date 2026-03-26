@@ -17,32 +17,32 @@ class ResultService
         private readonly EventRelationStorage $eventRelationStorage,
     ) {}
 
-    public function getResult(string $actionId): Result
+    public function getResult(string $actionId, string $correlationId = 'common'): Result
     {
-        if ($this->completeActionStorage->isExists($actionId)) {
-            $completeAction = $this->completeActionStorage->get($actionId);
+        if ($this->completeActionStorage->isExists($actionId, $correlationId)) {
+            $completeAction = $this->completeActionStorage->get($actionId, $correlationId);
 
             if (false === $completeAction->action->isExternalAccess()) {
                 throw new ActionNotAllowExternalAccessException($actionId);
             }
 
-            return $this->completeActionStorage->getResult($actionId);
+            return $this->completeActionStorage->getResult($actionId, $correlationId);
         }
 
-        if (false === $this->eventRelationStorage->isExists($actionId)) {
+        if (false === $this->eventRelationStorage->isExists($actionId, $correlationId)) {
             throw new ResultNotExistsException($actionId);
         }
 
-        $eventRelation = $this->eventRelationStorage->getLast($actionId);
+        $eventRelation = $this->eventRelationStorage->getLast($actionId, $correlationId);
 
         return Result::success(
             $eventRelation->event->data,
         );
     }
 
-    public function resultIsExists(string $actionId): bool
+    public function resultIsExists(string $actionId, string $correlationId = 'common'): bool
     {
-        return $this->completeActionStorage->isExists($actionId)
-            || $this->eventRelationStorage->isExists($actionId);
+        return $this->completeActionStorage->isExists($actionId, $correlationId)
+            || $this->eventRelationStorage->isExists($actionId, $correlationId);
     }
 }

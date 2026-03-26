@@ -45,8 +45,6 @@ readonly class StateMain implements StateMainInterface
         private StateContextScope $contextScope,
         private QueueService $queueService,
         private EventDispatcherInterface $eventDispatcher,
-        private Transfer $transfer,
-        private BusConfig $busConfig,
     ) {}
 
     #[Override]
@@ -154,7 +152,7 @@ readonly class StateMain implements StateMainInterface
         }
 
         if (is_callable($suspend->value)) {
-            $task->resume(($suspend->value)());
+            $task->resume(($suspend->value)($task->getCorrelationId()));
         } else {
             $task->resume();
         }
@@ -167,6 +165,7 @@ readonly class StateMain implements StateMainInterface
             $task->getResult()->status,
             $task->getResult()->data,
             $task->action->getExternalId(),
+            $task->getCorrelationId(),
             $this->actionService,
             $this->resultService,
             $this->logService,

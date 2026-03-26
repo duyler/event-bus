@@ -24,11 +24,11 @@ class ActionRunnerProvider implements ActionRunnerProviderInterface
     ) {}
 
     #[Override]
-    public function getRunner(Action $action): ActionRunnerInterface
+    public function getRunner(Action $action, string $correlationId): ActionRunnerInterface
     {
         $container = $this->actionContainerProvider->get($action);
         $handler = $this->handlerBuilder->build($action, $container);
-        $argument = $this->argumentBuilder->build($action, $container);
+        $argument = $this->argumentBuilder->build($action, $container, $correlationId);
 
         $runner = function () use ($action, $handler, $argument): mixed {
             $this->eventDispatcher->dispatch(new ActionBeforeRunEvent($action, $argument));

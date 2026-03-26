@@ -29,7 +29,7 @@ class ActionHandlerArgumentBuilder
         private readonly EventRelationStorage $eventRelationStorage,
     ) {}
 
-    public function build(Action $action, ActionContainer $container): ?object
+    public function build(Action $action, ActionContainer $container, string $correlationId): ?object
     {
         /** @var array<string, object> $results */
         $results = [];
@@ -47,7 +47,10 @@ class ActionHandlerArgumentBuilder
             $results[$completeAction->action->getId()] = $completeActionResultData;
         }
 
-        $completeActions = $this->completeActionStorage->getAllByArray($action->getRequired()->getArrayCopy());
+        $completeActions = $this->completeActionStorage->getAllByArray(
+            $action->getRequired()->getArrayCopy(),
+            $correlationId,
+        );
 
         foreach ($completeActions as $completeAction) {
             $results = $this->prepareRequiredResults($completeAction) + $results;

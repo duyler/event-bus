@@ -25,11 +25,18 @@ class CompleteActionStorage
     /**
      * @var array<string, CompleteAction>
      */
+    private array $withCorrelationId = [];
+
+    /**
+     * @var array<string, CompleteAction>
+     */
     private array $byTypeIdAllowed = [];
 
-    public function save(CompleteAction $completeAction): void
+    public function save(CompleteAction $completeAction, string $correlationId = 'common'): void
     {
-        $this->data[$completeAction->action->getId()] = $completeAction;
+        $this->data[$completeAction->action->getId() . '.' . $correlationId] = $completeAction;
+
+        $this->withCorrelationId[$completeAction->action->getId() . '.' . $correlationId] = $completeAction;
 
         $type = $completeAction->action->getTypeId();
 
@@ -65,24 +72,30 @@ class CompleteActionStorage
     /**
      * @return array<string, CompleteAction>
      */
-    public function getAllByArray(array $array): array
+    public function getAllByArray(array $array, string $correlationId = 'common'): array
     {
-        return array_intersect_key($this->data, array_flip($array));
+        $withCorrelationId = [];
+
+        foreach ($array as $actionId) {
+            $withCorrelationId[] = $actionId . '.' . $correlationId;
+        }
+
+        return array_intersect_key($this->withCorrelationId, array_flip($withCorrelationId));
     }
 
-    public function getResult(string $actionId): Result
+    public function getResult(string $actionId, string $correlationId = 'common'): Result
     {
-        return $this->data[$actionId]->result;
+        return $this->data[$actionId . '.' . $correlationId]->result;
     }
 
-    public function get(string $actionId): CompleteAction
+    public function get(string $actionId, string $correlationId = 'common'): CompleteAction
     {
-        return $this->data[$actionId];
+        return $this->data[$actionId . '.' . $correlationId];
     }
 
-    public function isExists(string $actionId): bool
+    public function isExists(string $actionId, string $correlationId = 'common'): bool
     {
-        return array_key_exists($actionId, $this->data);
+        return array_key_exists($actionId . '.' . $correlationId, $this->data);
     }
 
     /**

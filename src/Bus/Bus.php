@@ -50,14 +50,14 @@ final class Bus
     /**
      * Processes an action by checking conditions and adding to task queue
      */
-    public function doAction(Action $action): void
+    public function doAction(Action $action, string $correlationId): void
     {
         if (false === $this->canExecuteAction($action)) {
             return;
         }
 
-        $this->processActionRequirements($action);
-        $this->pushTask($this->createPrimaryTask($action));
+        $this->processActionRequirements($action, $correlationId);
+        $this->pushTask($this->createPrimaryTask($action, $correlationId));
     }
 
     /**
@@ -127,7 +127,7 @@ final class Bus
     /**
      * Processes all required actions for the given action
      */
-    private function processActionRequirements(Action $action): void
+    private function processActionRequirements(Action $action, string $correlationId): void
     {
         $requiredIterator = new ActionRequiredIterator(
             $action->getRequired(),
@@ -142,7 +142,7 @@ final class Bus
                 continue;
             }
 
-            $this->pushTask($this->createPrimaryTask($requiredAction));
+            $this->pushTask($this->createPrimaryTask($requiredAction, $correlationId));
         }
     }
 
@@ -159,9 +159,9 @@ final class Bus
     /**
      * Creates a primary task for an action
      */
-    private function createPrimaryTask(Action $action): Task
+    private function createPrimaryTask(Action $action, string $correlationId): Task
     {
-        $task = new Task($action);
+        $task = new Task($action, $correlationId);
         $task->setStatus(TaskStatus::Primary);
         $this->taskStorage->add($task);
         return $task;
@@ -248,7 +248,7 @@ final class Bus
             return false;
         }
 
-        if (true === $this->taskQueue->inQueue($task->action->getId())) {
+        if ($this->taskQueue->inQueue($task->action->getId())) {
             return true;
         }
 
@@ -334,7 +334,7 @@ final class Bus
         foreach ($failActions as $failAction) {
             $this->alternates[$failAction->action->getId()] = $failAction->action->getAlternates();
 
-            if (true === $this->tryReplaceFailedAction($failAction->action->getId())) {
+            if (true === $this->tryReplaceFailedAction($failAction->action->getId(), $task->getCorrelationId())) {
                 $replacedCount++;
             }
         }
@@ -349,7 +349,7 @@ final class Bus
     /**
      * Attempts to replace a failed action with alternates
      */
-    private function tryReplaceFailedAction(string $failActionId): bool
+    private function tryReplaceFailedAction(string $failActionId, string $correlationId): bool
     {
         foreach ($this->alternates[$failActionId] as $alternateId) {
             $alternate = $this->actionStorage->get($alternateId);
@@ -362,7 +362,7 @@ final class Bus
                 continue;
             }
 
-            $this->doAction($alternate);
+            $this->doAction($alternate, $correlationId);
             return false;
         }
 
