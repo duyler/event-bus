@@ -70,6 +70,7 @@ class CompleteActionStorage
     }
 
     /**
+     * @param array<array-key, string> $array
      * @return array<string, CompleteAction>
      */
     public function getAllByArray(array $array, string $correlationId = 'common'): array

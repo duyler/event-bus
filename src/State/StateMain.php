@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Duyler\EventBus\State;
 
 use Duyler\EventBus\Bus\Task;
-use Duyler\EventBus\BusConfig;
-use Duyler\EventBus\Channel\Transfer;
 use Duyler\EventBus\Contract\State\StateHandlerObservedInterface;
 use Duyler\EventBus\Contract\StateMainInterface;
 use Duyler\EventBus\Service\ActionService;

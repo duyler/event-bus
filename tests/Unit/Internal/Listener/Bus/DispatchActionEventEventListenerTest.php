@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Unit\Internal\Listener\Bus;
 
-use Duyler\EventBus\Build\Event;
 use Duyler\EventBus\Bus\Action;
 use Duyler\EventBus\Bus\Task;
 use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Enum\ResultStatus;
-use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
 use Duyler\EventBus\Internal\Listener\Bus\DispatchActionEventEventListener;
 use Duyler\EventBus\Service\EventService;
@@ -17,7 +14,6 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
-use stdClass;
 
 final readonly class TestActionData
 {
