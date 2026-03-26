@@ -34,15 +34,15 @@ class Bus implements BusInterface
     }
 
     #[Override]
-    public function getResult(string|UnitEnum $actionId): Result
+    public function getResult(string|UnitEnum $actionId, string $correlationId = 'common'): Result
     {
-        return $this->resultService->getResult(IdFormatter::toString($actionId));
+        return $this->resultService->getResult(IdFormatter::toString($actionId), $correlationId);
     }
 
     #[Override]
-    public function resultIsExists(string|UnitEnum $actionId): bool
+    public function resultIsExists(string|UnitEnum $actionId, string $correlationId = 'common'): bool
     {
-        return $this->resultService->resultIsExists(IdFormatter::toString($actionId));
+        return $this->resultService->resultIsExists(IdFormatter::toString($actionId), $correlationId);
     }
 
     #[Override]
