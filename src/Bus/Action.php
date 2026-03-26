@@ -8,7 +8,6 @@ use Closure;
 use DateInterval;
 use Duyler\EventBus\Build\Action as ExternalAction;
 use Duyler\EventBus\Build\Id;
-use Duyler\EventBus\Build\Type;
 use Duyler\EventBus\Enum\SubscriptionType;
 use Duyler\EventBus\Formatter\IdFormatter;
 use InvalidArgumentException;
@@ -24,9 +23,6 @@ final class Action
 
     /** @var RecursiveArrayIterator<array-key, string> */
     private readonly RecursiveArrayIterator $required;
-
-    /** @var array<array-key, string> */
-    private readonly array $dependsOn;
 
     /** @var string[] */
     private readonly array $sealed;
@@ -50,7 +46,6 @@ final class Action
 
     /**
      * @param array<array-key, string|UnitEnum> $externalRequired
-     * @param array<array-key, Type> $dependsOn
      * @param array<array-key, string|UnitEnum> $sealed
      * @param array<array-key, string|UnitEnum> $alternates
      */
@@ -62,7 +57,6 @@ final class Action
 
         /** @var array<array-key, string|UnitEnum> */
         private readonly array $externalRequired = [],
-        array $dependsOn = [],
 
         /** @var array<string, string> */
         private readonly array $bind = [],
@@ -134,20 +128,6 @@ final class Action
             $this->required->append(IdFormatter::toString($actionId));
         }
 
-        $dependsOnIds = [];
-
-        foreach ($dependsOn as $type) {
-            $typeId = '';
-
-            if ($type->typeCollection) {
-                $typeId = self::COLLECTION_PREFIX;
-            }
-
-            $dependsOnIds[] = $typeId . $type->type;
-        }
-
-        $this->dependsOn = $dependsOnIds;
-
         $alternatesActions = [];
 
         /** @var string|UnitEnum $actionId */
@@ -191,7 +171,6 @@ final class Action
             handler: $externalAction->handler,
             description: $externalAction->description,
             externalRequired: $externalAction->required,
-            dependsOn: $externalAction->dependsOn,
             bind: $externalAction->bind,
             providers: $externalAction->providers,
             definitions: $externalAction->definitions,
@@ -224,14 +203,6 @@ final class Action
     public function getRequired(): RecursiveArrayIterator
     {
         return $this->required;
-    }
-
-    /**
-     * @return array<array-key, string>
-     */
-    public function getDependsOn(): array
-    {
-        return $this->dependsOn;
     }
 
     public function getTypeId(): ?string

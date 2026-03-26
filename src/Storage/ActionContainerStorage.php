@@ -5,9 +5,6 @@ namespace Duyler\EventBus\Storage;
 use Duyler\DI\Attribute\Finalize;
 use Duyler\EventBus\Bus\ActionContainer;
 
-use function array_flip;
-use function array_intersect_key;
-
 #[Finalize(method: 'reset')]
 class ActionContainerStorage
 {
@@ -18,20 +15,12 @@ class ActionContainerStorage
 
     public function save(ActionContainer $container): void
     {
-        $this->data[$container->actionId] = $container;
+        $this->data[$container->actionId . '.' . $container->correlationId] = $container;
     }
 
-    public function get(string $actionId): ActionContainer
+    public function get(string $actionId, string $correlationId = 'common'): ActionContainer
     {
-        return $this->data[$actionId];
-    }
-
-    /**
-     * @return ActionContainer[]
-     */
-    public function getAllByArray(array $array): array
-    {
-        return array_intersect_key($this->data, array_flip($array));
+        return $this->data[$actionId . '.' . $correlationId];
     }
 
     public function reset(): void
@@ -46,9 +35,9 @@ class ActionContainerStorage
         return $this->data;
     }
 
-    public function isExists(string $actionId): bool
+    public function isExists(string $actionId, string $correlationId = 'common'): bool
     {
-        return isset($this->data[$actionId]);
+        return isset($this->data[$actionId . '.' . $correlationId]);
     }
 
     public function remove(string $actionId): void

@@ -8,7 +8,6 @@ use Duyler\EventBus\Action\Context\ActionContext;
 use Duyler\EventBus\Build\Action;
 use Duyler\EventBus\Build\Event as BuildEvent;
 use Duyler\EventBus\Build\Id;
-use Duyler\EventBus\Build\Type;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Event;
@@ -27,7 +26,7 @@ final readonly class ReactiveTestDTO
 class ReactiveSubscriptionTest extends TestCase
 {
     #[Test]
-    public function on_all_with_required_and_depends_on(): void
+    public function on_all_with_required(): void
     {
         $builder = new BusBuilder(new BusConfig());
 
@@ -51,7 +50,6 @@ class ReactiveSubscriptionTest extends TestCase
                     Id::success('InventoryReserved'),
                 ],
                 required: ['CreateOrder'],
-                dependsOn: [Type::of(ReactiveTestDTO::class)],
                 argument: ReactiveTestDTO::class,
                 type: ReactiveTestDTO::class,
                 externalAccess: true,

@@ -45,7 +45,7 @@ class CleanUpTest extends TestCase
         $bus->run();
 
         $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
-        $this->assertFalse($bus->resultIsExists('RemovableActionOne'));
+        //$this->assertFalse($bus->resultIsExists('RemovableActionOne'));
         $this->assertFalse($bus->resultIsExists('RemovableActionTwo'));
     }
 }

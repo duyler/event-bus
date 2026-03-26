@@ -31,9 +31,6 @@ final readonly class Action implements JsonSerializable
         /** @var array<array-key, string|UnitEnum> */
         public array $required = [],
 
-        /** @var array<array-key, Type> */
-        public array $dependsOn = [],
-
         /** @var array<string, string> */
         public array $bind = [],
 
@@ -176,7 +173,6 @@ final readonly class Action implements JsonSerializable
             'argumentFactory' => $this->argumentFactory,
             'type' => $this->type,
             'immutable' => $this->immutable,
-            'dependsOn' => $this->dependsOn,
             'lock' => $this->lock,
             'externalAccess' => $this->externalAccess,
             'silent' => $this->silent,

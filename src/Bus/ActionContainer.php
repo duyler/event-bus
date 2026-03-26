@@ -13,6 +13,7 @@ class ActionContainer extends Container
     public function __construct(
         public readonly string $actionId,
         public readonly BusConfig $config,
+        public readonly string $correlationId = 'common',
     ) {
         $containerConfig = new ContainerConfig();
         $containerConfig->withBind($config->bind);

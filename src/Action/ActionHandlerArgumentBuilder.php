@@ -34,18 +34,7 @@ class ActionHandlerArgumentBuilder
         /** @var array<string, object> $results */
         $results = [];
 
-        $results = $this->collectSubscriptionResults($action) + $results;
-
-        $completeActionByType = $this->completeActionStorage->getAllAllowedByTypeArray(
-            $action->getDependsOn(),
-            $action->getId(),
-        );
-
-        foreach ($completeActionByType as $completeAction) {
-            /** @var object $completeActionResultData */
-            $completeActionResultData = $completeAction->result->data;
-            $results[$completeAction->action->getId()] = $completeActionResultData;
-        }
+        $results = $this->collectSubscriptionResults($action, $correlationId) + $results;
 
         $completeActions = $this->completeActionStorage->getAllByArray(
             $action->getRequired()->getArrayCopy(),
@@ -99,10 +88,6 @@ class ActionHandlerArgumentBuilder
             $action->getId(),
             $container,
             $results,
-            $this->completeActionStorage->getAllAllowedByTypeArray(
-                $action->getDependsOn(),
-                $action->getId(),
-            ),
         );
 
         if (is_callable($factory)) {
@@ -111,7 +96,7 @@ class ActionHandlerArgumentBuilder
         } else {
             $factory = $container->get($factory);
 
-            if (!is_callable($factory)) {
+            if (false === is_callable($factory)) {
                 throw new InvalidArgumentFactoryException($action->getArgument());
             }
             /** @var object $argument */
@@ -132,15 +117,15 @@ class ActionHandlerArgumentBuilder
     /**
      * @return array<string, object>
      */
-    private function collectSubscriptionResults(Action $action): array
+    private function collectSubscriptionResults(Action $action, string $correlationId): array
     {
         $results = [];
 
         foreach ($action->getSubscriptionEvents() as $eventId) {
             $subjectId = $this->extractSubjectId($eventId);
 
-            if ($this->eventRelationStorage->isExists($eventId)) {
-                $eventRelation = $this->eventRelationStorage->getLast($eventId);
+            if ($this->eventRelationStorage->isExists($eventId, $correlationId)) {
+                $eventRelation = $this->eventRelationStorage->getLast($eventId, $correlationId);
                 if (null !== $eventRelation->event->data) {
                     /** @var object $eventData */
                     $eventData = $eventRelation->event->data;
@@ -148,8 +133,8 @@ class ActionHandlerArgumentBuilder
                 }
             }
 
-            if ($this->completeActionStorage->isExists($subjectId)) {
-                $completeAction = $this->completeActionStorage->get($subjectId);
+            if ($this->completeActionStorage->isExists($subjectId, $correlationId)) {
+                $completeAction = $this->completeActionStorage->get($subjectId, $correlationId);
                 if (null !== $completeAction->result->data) {
                     /** @var object $resultData */
                     $resultData = $completeAction->result->data;

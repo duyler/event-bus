@@ -232,10 +232,6 @@ final class Bus
             return false;
         }
 
-        if (false === $this->hasAllDependenciesCompleted($task)) {
-            return false;
-        }
-
         return $this->hasRequiredActionsCompleted($task);
     }
 
@@ -265,19 +261,6 @@ final class Bus
         return (TaskStatus::Primary === $otherTask->getStatus()
             && array_key_exists($otherTask->getId(), $this->heldTasks))
             || ($this->retries[$otherTask->action->getId()] ?? 0) < $otherTask->action->getRetries();
-    }
-
-    /**
-     * Checks if all task dependencies are completed
-     */
-    private function hasAllDependenciesCompleted(Task $task): bool
-    {
-        $completedCount = count($this->completeActionStorage->getAllAllowedByTypeArray(
-            $task->action->getDependsOn(),
-            $task->action->getId(),
-        ));
-
-        return $completedCount >= count($task->action->getDependsOn());
     }
 
     /**

@@ -11,8 +11,6 @@ use Duyler\EventBus\Dto\Result;
 use function array_flip;
 use function array_intersect_key;
 use function array_key_exists;
-use function count;
-use function in_array;
 
 #[Finalize(method: 'reset')]
 class CompleteActionStorage
@@ -22,51 +20,9 @@ class CompleteActionStorage
      */
     private array $data = [];
 
-    /**
-     * @var array<string, CompleteAction>
-     */
-    private array $withCorrelationId = [];
-
-    /**
-     * @var array<string, CompleteAction>
-     */
-    private array $byTypeIdAllowed = [];
-
     public function save(CompleteAction $completeAction, string $correlationId = 'common'): void
     {
         $this->data[$completeAction->action->getId() . '.' . $correlationId] = $completeAction;
-
-        $this->withCorrelationId[$completeAction->action->getId() . '.' . $correlationId] = $completeAction;
-
-        $type = $completeAction->action->getTypeId();
-
-        if (null !== $type) {
-            if (false === $completeAction->action->isPrivate()) {
-                $this->byTypeIdAllowed[$type] = $completeAction;
-            }
-        }
-    }
-
-    /**
-     * @return array<string, CompleteAction>
-     */
-    public function getAllAllowedByTypeArray(array $array, string $actionId): array
-    {
-        $withoutPrivate = array_intersect_key($this->byTypeIdAllowed, array_flip($array));
-
-        $allowed = [];
-
-        foreach ($withoutPrivate as $type => $completeAction) {
-            if (0 < count($completeAction->action->getSealed())) {
-                if (in_array($actionId, $completeAction->action->getSealed())) {
-                    $allowed[$type] = $completeAction;
-                }
-            } else {
-                $allowed[$type] = $completeAction;
-            }
-        }
-
-        return $allowed;
     }
 
     /**
@@ -81,7 +37,7 @@ class CompleteActionStorage
             $withCorrelationId[] = $actionId . '.' . $correlationId;
         }
 
-        return array_intersect_key($this->withCorrelationId, array_flip($withCorrelationId));
+        return array_intersect_key($this->data, array_flip($withCorrelationId));
     }
 
     public function getResult(string $actionId, string $correlationId = 'common'): Result
@@ -110,11 +66,10 @@ class CompleteActionStorage
     public function reset(): void
     {
         $this->data = [];
-        $this->byTypeIdAllowed = [];
     }
 
-    public function remove(string $actionId): void
+    public function remove(string $actionId, string $correlationId = 'common'): void
     {
-        unset($this->data[$actionId]);
+        unset($this->data[$actionId . '.' . $correlationId]);
     }
 }
