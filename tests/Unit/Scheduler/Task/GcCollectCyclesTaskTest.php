@@ -15,7 +15,7 @@ final class GcCollectCyclesTaskTest extends TestCase
     #[Test]
     public function invoke_executes_without_error(): void
     {
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
         $task = new GcCollectCyclesTask($logger);
 
         ($task)();
@@ -99,7 +99,7 @@ final class GcCollectCyclesTaskTest extends TestCase
     #[Test]
     public function invoke_with_logger_receives_correct_parameters(): void
     {
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
 
         $task = new GcCollectCyclesTask($logger);
 
@@ -111,7 +111,7 @@ final class GcCollectCyclesTaskTest extends TestCase
     #[Test]
     public function invoke_can_be_called_multiple_times(): void
     {
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
         $task = new GcCollectCyclesTask($logger);
 
         ($task)();
@@ -126,7 +126,7 @@ final class GcCollectCyclesTaskTest extends TestCase
     {
         gc_enable();
 
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
         $task = new GcCollectCyclesTask($logger);
 
         ($task)();
@@ -137,7 +137,7 @@ final class GcCollectCyclesTaskTest extends TestCase
     #[Test]
     public function invoke_returns_void(): void
     {
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
         $task = new GcCollectCyclesTask($logger);
 
         $result = ($task)();
@@ -160,7 +160,7 @@ final class GcCollectCyclesTaskTest extends TestCase
 
         unset($objects);
 
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
         $task = new GcCollectCyclesTask($logger);
 
         ($task)();
@@ -186,7 +186,7 @@ final class GcCollectCyclesTaskTest extends TestCase
         unset($objects);
 
         $logged = false;
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
         $logger->method('info')
             ->willReturnCallback(function () use (&$logged): void {
                 $logged = true;
@@ -225,7 +225,7 @@ final class GcCollectCyclesTaskTest extends TestCase
 
         unset($objects);
 
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
         $task = new GcCollectCyclesTask($logger);
 
         ($task)();

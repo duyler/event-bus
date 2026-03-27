@@ -45,10 +45,10 @@ class ActorRannerTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->containerBuilder = $this->createMock(ActorContainerProvider::class);
-        $this->argumentBuilder = $this->createMock(ActorHandlerArgumentBuilder::class);
-        $this->handlerBuilder = $this->createMock(ActorHandlerBuilder::class);
-        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $this->containerBuilder = $this->createStub(ActorContainerProvider::class);
+        $this->argumentBuilder = $this->createStub(ActorHandlerArgumentBuilder::class);
+        $this->handlerBuilder = $this->createStub(ActorHandlerBuilder::class);
+        $this->eventDispatcher = $this->createStub(EventDispatcherInterface::class);
 
         parent::setUp();
     }

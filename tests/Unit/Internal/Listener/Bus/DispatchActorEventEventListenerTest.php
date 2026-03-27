@@ -10,6 +10,7 @@ use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
 use Duyler\EventBus\Internal\Listener\Bus\DispatchActorEventEventListener;
 use Duyler\EventBus\Service\EventService;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -65,6 +66,7 @@ class DispatchActorEventEventListenerTest extends TestCase
     }
 
     #[Test]
+    #[AllowMockObjectsWithoutExpectations]
     public function composite_id_format(): void
     {
         $actorId = 'MyActor';

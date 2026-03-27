@@ -12,6 +12,7 @@ use Duyler\EventBus\Bus\ActorContainer;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Storage\ActorContainerStorage;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -28,7 +29,7 @@ class ActorContainerProviderTest extends TestCase
         $this->config = new BusConfig();
 
         $this->containerStorage = $this->createMock(ActorContainerStorage::class);
-        $this->actorEventDispatcher = $this->createMock(ActorEventDispatcher::class);
+        $this->actorEventDispatcher = $this->createStub(ActorEventDispatcher::class);
         $this->provider = new ActorContainerProvider(
             $this->config,
             $this->containerStorage,
@@ -56,6 +57,7 @@ class ActorContainerProviderTest extends TestCase
     }
 
     #[Test]
+    #[AllowMockObjectsWithoutExpectations]
     public function AddSharedService_with_throws_exception_when_service_is_not_instance_of_class(): void
     {
         $this->expectException(InvalidArgumentException::class);

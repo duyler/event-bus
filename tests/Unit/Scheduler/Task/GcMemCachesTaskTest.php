@@ -14,7 +14,7 @@ final class GcMemCachesTaskTest extends TestCase
     #[Test]
     public function invoke_executes_without_error(): void
     {
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
         $task = new GcMemCachesTask($logger);
 
         ($task)();
@@ -25,7 +25,7 @@ final class GcMemCachesTaskTest extends TestCase
     #[Test]
     public function invoke_calls_gc_mem_caches(): void
     {
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
         $task = new GcMemCachesTask($logger);
 
         ($task)();
@@ -125,7 +125,7 @@ final class GcMemCachesTaskTest extends TestCase
     #[Test]
     public function invoke_can_be_called_multiple_times(): void
     {
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
         $task = new GcMemCachesTask($logger);
 
         ($task)();
@@ -138,7 +138,7 @@ final class GcMemCachesTaskTest extends TestCase
     #[Test]
     public function invoke_returns_void(): void
     {
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
         $task = new GcMemCachesTask($logger);
 
         $result = ($task)();
@@ -159,7 +159,7 @@ final class GcMemCachesTaskTest extends TestCase
         }
         unset($data);
 
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
         $task = new GcMemCachesTask($logger);
 
         ($task)();
@@ -170,7 +170,7 @@ final class GcMemCachesTaskTest extends TestCase
     #[Test]
     public function invoke_multiple_times_measures_memory_accurately(): void
     {
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
         $task = new GcMemCachesTask($logger);
 
         ($task)();
@@ -191,7 +191,7 @@ final class GcMemCachesTaskTest extends TestCase
 
         gc_collect_cycles();
 
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
         $task = new GcMemCachesTask($logger);
 
         ($task)();
@@ -226,7 +226,7 @@ final class GcMemCachesTaskTest extends TestCase
 
         gc_collect_cycles();
 
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
         $logger->method('info');
 
         $task = new GcMemCachesTask($logger);
@@ -257,7 +257,7 @@ final class GcMemCachesTaskTest extends TestCase
             }
         }
 
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
         $logger->method('info');
 
         $task = new GcMemCachesTask($logger);
