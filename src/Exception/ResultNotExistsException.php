@@ -8,8 +8,8 @@ use Exception;
 
 class ResultNotExistsException extends Exception
 {
-    public function __construct(string $actionId)
+    public function __construct(string $actorId)
     {
-        parent::__construct('Action or event result for ' . $actionId . ' does not exist');
+        parent::__construct('Actor or event result for ' . $actorId . ' does not exist');
     }
 }

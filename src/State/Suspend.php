@@ -11,7 +11,7 @@ class Suspend
     private mixed $resumeValue = null;
 
     public function __construct(
-        public readonly string|UnitEnum $actionId,
+        public readonly string|UnitEnum $actorId,
         public readonly mixed $value,
     ) {}
 

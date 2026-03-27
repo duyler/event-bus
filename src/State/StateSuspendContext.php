@@ -12,15 +12,15 @@ final class StateSuspendContext
     /** @var array<string, Suspend[]> */
     private array $suspend = [];
 
-    public function addSuspend(string $actionId, Suspend $suspend): void
+    public function addSuspend(string $actorId, Suspend $suspend): void
     {
-        $this->suspend[$actionId][] = $suspend;
+        $this->suspend[$actorId][] = $suspend;
     }
 
-    public function getSuspend(string $actionId): Suspend
+    public function getSuspend(string $actorId): Suspend
     {
         /** @var Suspend $suspend */
-        $suspend = array_shift($this->suspend[$actionId]);
+        $suspend = array_shift($this->suspend[$actorId]);
 
         return $suspend;
     }

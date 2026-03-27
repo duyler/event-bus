@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\State;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\Build\Context;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
@@ -27,8 +27,8 @@ class MainSuspendTest extends TestCase
     {
         $busBuilder = new BusBuilder(new BusConfig());
 
-        $busBuilder->doAction(
-            new Action(
+        $busBuilder->doActor(
+            new Actor(
                 id: 'TestSuspend',
                 handler: function () {
                     $data = new stdClass();
@@ -61,8 +61,8 @@ class MainSuspendTest extends TestCase
             ],
         ));
 
-        $busBuilder->doAction(
-            new Action(
+        $busBuilder->doActor(
+            new Actor(
                 id: 'TestSuspend1',
                 handler: function () {
                     $callback = Fiber::suspend(fn() => 'Hello');
@@ -78,8 +78,8 @@ class MainSuspendTest extends TestCase
             ),
         );
 
-        $busBuilder->doAction(
-            new Action(
+        $busBuilder->doActor(
+            new Actor(
                 id: 'TestSuspend2',
                 handler: function () {
                     $callback = Fiber::suspend(fn() => 'Hello');
@@ -111,8 +111,8 @@ class MainSuspendStateHandler implements MainSuspendStateHandlerInterface
     #[Override]
     public function handle(StateMainSuspendService $stateService, StateContext $context): void
     {
-        if ($stateService->getActionId() === 'TestSuspend1') {
-            $stateService->getActionContainer();
+        if ($stateService->getActorId() === 'TestSuspend1') {
+            $stateService->getActorContainer();
         }
 
         /** @var callable $value */
@@ -135,12 +135,12 @@ class MainResumeStateHandler implements MainResumeStateHandlerInterface
     #[Override]
     public function handle(StateMainResumeService $stateService, StateContext $context): void
     {
-        $stateService->getActionId();
+        $stateService->getActorId();
         if ($stateService->resultIsExists('TestSuspend2')) {
             $stateService->getResult('TestSuspend2');
         }
         $stateService->resumeValueIsExists();
-        $stateService->getActionContainer();
+        $stateService->getActorContainer();
     }
 
     public function observed(Suspend $suspend, StateContext $context): bool

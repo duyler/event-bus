@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\State;
 
-use Duyler\EventBus\Build\Action;
-use Duyler\EventBus\Build\ActionHandlerSubstitution;
-use Duyler\EventBus\Build\ActionResultSubstitution;
+use Duyler\EventBus\Build\Actor;
+use Duyler\EventBus\Build\ActorHandlerSubstitution;
+use Duyler\EventBus\Build\ActorResultSubstitution;
 use Duyler\EventBus\Build\Context;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
@@ -14,7 +14,7 @@ use Duyler\EventBus\Contract\State\MainBeforeStateHandlerInterface;
 use Duyler\EventBus\State\Service\StateMainBeforeService;
 use Duyler\EventBus\State\StateContext;
 use Duyler\EventBus\Test\Functional\State\Support\FlushSuccessLogStateHandler;
-use Duyler\EventBus\Test\Functional\State\Support\RejectActionStateHandler;
+use Duyler\EventBus\Test\Functional\State\Support\RejectActorStateHandler;
 use Override;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -24,12 +24,12 @@ class MainBeforeTest extends TestCase
     #[Test]
     public function flushSuccessLog_from_state_handler(): void
     {
-        $flushSuccessLogStateHandler = new FlushSuccessLogStateHandler('TestAction');
+        $flushSuccessLogStateHandler = new FlushSuccessLogStateHandler('TestActor');
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler($flushSuccessLogStateHandler);
-        $busBuilder->doAction(
-            new Action(
-                id: 'TestAction',
+        $busBuilder->doActor(
+            new Actor(
+                id: 'TestActor',
                 handler: function (): void {},
             ),
         );
@@ -37,25 +37,25 @@ class MainBeforeTest extends TestCase
         $bus = $busBuilder->build();
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('TestAction'));
+        $this->assertTrue($bus->resultIsExists('TestActor'));
     }
 
     #[Test]
-    public function reject_action()
+    public function reject_actor()
     {
-        $rejectStateHandler = new RejectActionStateHandler('RejectAction');
+        $rejectStateHandler = new RejectActorStateHandler('RejectActor');
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler($rejectStateHandler);
-        $busBuilder->doAction(
-            new Action(
-                id: 'RejectAction',
+        $busBuilder->doActor(
+            new Actor(
+                id: 'RejectActor',
                 handler: function (): void {},
             ),
         );
 
-        $busBuilder->doAction(
-            new Action(
-                id: 'NotRejectAction',
+        $busBuilder->doActor(
+            new Actor(
+                id: 'NotRejectActor',
                 handler: function (): void {},
             ),
         );
@@ -63,21 +63,21 @@ class MainBeforeTest extends TestCase
         $bus = $busBuilder->build();
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('NotRejectAction'));
-        $this->assertFalse($bus->resultIsExists('RejectAction'));
+        $this->assertTrue($bus->resultIsExists('NotRejectActor'));
+        $this->assertFalse($bus->resultIsExists('RejectActor'));
     }
 
     #[Test]
     public function run_with_substitute_handler_from_state_handler(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->addStateHandler(new MainBeforeStateHandlerWithSubstituteActionHandler());
+        $busBuilder->addStateHandler(new MainBeforeStateHandlerWithSubstituteActorHandler());
         $busBuilder->addStateContext(new Context(
-            [MainBeforeStateHandlerWithSubstituteActionHandler::class],
+            [MainBeforeStateHandlerWithSubstituteActorHandler::class],
         ));
-        $busBuilder->doAction(
-            new Action(
-                id: TestActionEnum::ActionFromBuilder_1,
+        $busBuilder->doActor(
+            new Actor(
+                id: TestActorEnum::ActorFromBuilder_1,
                 handler: fn(): ResultInterface => new class implements ResultInterface {},
                 type: ResultInterface::class,
                 immutable: false,
@@ -85,9 +85,9 @@ class MainBeforeTest extends TestCase
             ),
         );
 
-        $busBuilder->doAction(
-            new Action(
-                id: TestActionEnum::ActionFromBuilder_2,
+        $busBuilder->doActor(
+            new Actor(
+                id: TestActorEnum::ActorFromBuilder_2,
                 handler: fn(): ResultInterface => new class implements ResultInterface {},
                 type: ResultInterface::class,
                 immutable: false,
@@ -98,15 +98,14 @@ class MainBeforeTest extends TestCase
         $bus = $busBuilder->build();
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists(TestActionEnum::ActionFromBuilder_1));
-        $this->assertTrue($bus->resultIsExists(TestActionEnum::ActionFromBuilder_2));
+        $this->assertTrue($bus->resultIsExists(TestActorEnum::ActorFromBuilder_1));
         $this->assertEquals(
             'Value from new result 1',
-            $bus->getResult(TestActionEnum::ActionFromBuilder_1)->data->value,
+            $bus->getResult(TestActorEnum::ActorFromBuilder_1)->data->value,
         );
         $this->assertEquals(
             'Value from new result 2',
-            $bus->getResult(TestActionEnum::ActionFromBuilder_2)->data->value,
+            $bus->getResult(TestActorEnum::ActorFromBuilder_2)->data->value,
         );
     }
 
@@ -114,25 +113,25 @@ class MainBeforeTest extends TestCase
     public function run_with_substitute_result_from_state_handler(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->addStateHandler(new MainBeforeStateHandlerWithSubstituteActionRequiredResult());
+        $busBuilder->addStateHandler(new MainBeforeStateHandlerWithSubstituteActorRequiredResult());
         $busBuilder->addStateContext(new Context(
-            [MainBeforeStateHandlerWithSubstituteActionRequiredResult::class],
+            [MainBeforeStateHandlerWithSubstituteActorRequiredResult::class],
         ));
-        $busBuilder->doAction(
-            new Action(
-                id: 'RequiredAction',
+        $busBuilder->doActor(
+            new Actor(
+                id: 'RequiredActor',
                 handler: fn(): ResultInterface => new class implements ResultInterface {},
                 type: ResultInterface::class,
                 immutable: false,
                 externalAccess: true,
             ),
         );
-        $busBuilder->doAction(
-            new Action(
-                id: 'ActionWithRequired',
-                handler: fn(\Duyler\EventBus\Action\Context\ActionContext $context): ResultInterface => $context->argument(),
+        $busBuilder->doActor(
+            new Actor(
+                id: 'ActorWithRequired',
+                handler: fn(\Duyler\EventBus\Actor\Context\ActorContext $context): ResultInterface => $context->argument(),
                 required: [
-                    'RequiredAction',
+                    'RequiredActor',
                 ],
                 argument: ResultInterface::class,
                 type: ResultInterface::class,
@@ -144,29 +143,29 @@ class MainBeforeTest extends TestCase
         $bus = $busBuilder->build();
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ActionWithRequired'));
-        $this->assertEquals('Value from substitute result', $bus->getResult('ActionWithRequired')->data->value);
+        $this->assertTrue($bus->resultIsExists('ActorWithRequired'));
+        $this->assertEquals('Value from substitute result', $bus->getResult('ActorWithRequired')->data->value);
     }
 }
 
-class MainBeforeStateHandlerWithSubstituteActionHandler implements MainBeforeStateHandlerInterface
+class MainBeforeStateHandlerWithSubstituteActorHandler implements MainBeforeStateHandlerInterface
 {
     #[Override]
     public function handle(StateMainBeforeService $stateService, StateContext $context): void
     {
-        if ($stateService->getActionId() === TestActionEnum::ActionFromBuilder_1) {
+        if ($stateService->getActorId() === TestActorEnum::ActorFromBuilder_1) {
             $stateService->substituteHandler(
-                new ActionHandlerSubstitution(
-                    actionId: TestActionEnum::ActionFromBuilder_1,
+                new ActorHandlerSubstitution(
+                    actorId: TestActorEnum::ActorFromBuilder_1,
                     handler: NewHandler::class,
                 ),
             );
         }
 
-        if ($stateService->getActionId() === TestActionEnum::ActionFromBuilder_2) {
+        if ($stateService->getActorId() === TestActorEnum::ActorFromBuilder_2) {
             $stateService->substituteHandler(
-                new ActionHandlerSubstitution(
-                    actionId: TestActionEnum::ActionFromBuilder_2,
+                new ActorHandlerSubstitution(
+                    actorId: TestActorEnum::ActorFromBuilder_2,
                     handler: fn() => new NewResult('Value from new result 2'),
                 ),
             );
@@ -176,19 +175,19 @@ class MainBeforeStateHandlerWithSubstituteActionHandler implements MainBeforeSta
     #[Override]
     public function observed(StateContext $context): array
     {
-        return [TestActionEnum::ActionFromBuilder_1, TestActionEnum::ActionFromBuilder_2];
+        return [TestActorEnum::ActorFromBuilder_1, TestActorEnum::ActorFromBuilder_2];
     }
 }
 
-class MainBeforeStateHandlerWithSubstituteActionRequiredResult implements MainBeforeStateHandlerInterface
+class MainBeforeStateHandlerWithSubstituteActorRequiredResult implements MainBeforeStateHandlerInterface
 {
     #[Override]
     public function handle(StateMainBeforeService $stateService, StateContext $context): void
     {
         $stateService->substituteResult(
-            new ActionResultSubstitution(
-                actionId: $stateService->getActionId(),
-                requiredActionId: 'RequiredAction',
+            new ActorResultSubstitution(
+                actorId: $stateService->getActorId(),
+                requiredActorId: 'RequiredActor',
                 substitution: new NewResult('Value from substitute result'),
             ),
         );
@@ -197,7 +196,7 @@ class MainBeforeStateHandlerWithSubstituteActionRequiredResult implements MainBe
     #[Override]
     public function observed(StateContext $context): array
     {
-        return ['ActionWithRequired'];
+        return ['ActorWithRequired'];
     }
 }
 
@@ -216,8 +215,8 @@ class NewResult implements ResultInterface
 
 interface ResultInterface {}
 
-enum TestActionEnum
+enum TestActorEnum
 {
-    case ActionFromBuilder_1;
-    case ActionFromBuilder_2;
+    case ActorFromBuilder_1;
+    case ActorFromBuilder_2;
 }

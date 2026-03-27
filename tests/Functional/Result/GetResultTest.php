@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Result;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Enum\ResultStatus;
-use Duyler\EventBus\Exception\ActionNotAllowExternalAccessException;
+use Duyler\EventBus\Exception\ActorNotAllowExternalAccessException;
 use Duyler\EventBus\Exception\ResultNotExistsException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -20,8 +20,8 @@ class GetResultTest extends TestCase
     public function getResult_without_contract()
     {
         $builder = new BusBuilder(new BusConfig());
-        $builder->doAction(
-            new Action(
+        $builder->doActor(
+            new Actor(
                 id: 'Test',
                 handler: function (): void {},
                 externalAccess: true,
@@ -41,8 +41,8 @@ class GetResultTest extends TestCase
     public function getResult_with_contract()
     {
         $builder = new BusBuilder(new BusConfig());
-        $builder->doAction(
-            new Action(
+        $builder->doActor(
+            new Actor(
                 id: 'Test',
                 handler: fn() => new stdClass(),
                 type: stdClass::class,
@@ -64,8 +64,8 @@ class GetResultTest extends TestCase
     public function getResult_with_external_access_exception()
     {
         $builder = new BusBuilder(new BusConfig());
-        $builder->doAction(
-            new Action(
+        $builder->doActor(
+            new Actor(
                 id: 'Test',
                 handler: function (): void {},
                 externalAccess: false,
@@ -75,8 +75,8 @@ class GetResultTest extends TestCase
         $bus = $builder->build();
         $bus->run();
 
-        $this->expectException(ActionNotAllowExternalAccessException::class);
-        $this->expectExceptionMessage('Action Test does not allow external access');
+        $this->expectException(ActorNotAllowExternalAccessException::class);
+        $this->expectExceptionMessage('Actor Test does not allow external access');
 
         $bus->getResult('Test');
     }
@@ -85,13 +85,13 @@ class GetResultTest extends TestCase
     public function getResult_with_not_exists_result()
     {
         $builder = new BusBuilder(new BusConfig());
-        $builder->doAction(new Action(id: 'Test', handler: function (): void {}));
+        $builder->doActor(new Actor(id: 'Test', handler: function (): void {}));
 
         $bus = $builder->build();
         $bus->run();
 
         $this->expectException(ResultNotExistsException::class);
-        $this->expectExceptionMessage('Action or event result for Test_Not_Found does not exist');
+        $this->expectExceptionMessage('Actor or event result for Test_Not_Found does not exist');
 
         $bus->getResult('Test_Not_Found');
     }

@@ -5,20 +5,14 @@ declare(strict_types=1);
 namespace Duyler\EventBus\State;
 
 use Duyler\EventBus\Bus\Task;
-use Duyler\EventBus\BusConfig;
-use Duyler\EventBus\Channel\Channel;
-use Duyler\EventBus\Channel\Message;
-use Duyler\EventBus\Channel\Transfer;
 use Duyler\EventBus\Contract\State\StateHandlerObservedInterface;
 use Duyler\EventBus\Contract\StateMainInterface;
-use Duyler\EventBus\Enum\Mode;
-use Duyler\EventBus\Service\ActionService;
+use Duyler\EventBus\Service\ActorService;
 use Duyler\EventBus\Service\EventService;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\QueueService;
 use Duyler\EventBus\Service\ResultService;
 use Duyler\EventBus\Service\RollbackService;
-use Duyler\EventBus\Service\TriggerService;
 use Duyler\EventBus\State\Service\StateMainAfterService;
 use Duyler\EventBus\State\Service\StateMainBeforeService;
 use Duyler\EventBus\State\Service\StateMainBeginService;
@@ -28,8 +22,7 @@ use Duyler\EventBus\State\Service\StateMainEndService;
 use Duyler\EventBus\State\Service\StateMainResumeService;
 use Duyler\EventBus\State\Service\StateMainSuspendService;
 use Duyler\EventBus\State\Service\StateMainUnresolvedService;
-use Duyler\EventBus\Storage\ActionContainerStorage;
-use Duyler\EventBus\Storage\MessageStorage;
+use Duyler\EventBus\Storage\ActorContainerStorage;
 use Override;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -40,28 +33,23 @@ readonly class StateMain implements StateMainInterface
 {
     public function __construct(
         private StateHandlerStorage $stateHandlerStorage,
-        private ActionContainerStorage $actionContainerStorage,
-        private ActionService $actionService,
+        private ActorContainerStorage $actorContainerStorage,
+        private ActorService $actorService,
         private LogService $logService,
         private ResultService $resultService,
         private RollbackService $rollbackService,
-        private TriggerService $triggerService,
         private StateSuspendContext $suspendContext,
         private EventService $eventService,
         private StateContextScope $contextScope,
         private QueueService $queueService,
         private EventDispatcherInterface $eventDispatcher,
-        private MessageStorage $messageStorage,
-        private Transfer $transfer,
-        private BusConfig $busConfig,
     ) {}
 
     #[Override]
     public function begin(): void
     {
         $stateService = new StateMainBeginService(
-            $this->actionService,
-            $this->triggerService,
+            $this->actorService,
             $this->eventService,
         );
 
@@ -73,14 +61,9 @@ readonly class StateMain implements StateMainInterface
     #[Override]
     public function cyclic(): void
     {
-        // TODO Move into listener
-        if (Mode::Loop === $this->busConfig->mode) {
-            $this->messageStorage->recount();
-        }
-
         $stateService = new StateMainCyclicService(
             $this->queueService,
-            $this->actionService,
+            $this->actorService,
             $this->eventService,
             $this->resultService,
             $this->eventDispatcher,
@@ -97,8 +80,9 @@ readonly class StateMain implements StateMainInterface
         $stateService = new StateMainBeforeService(
             $task,
             $this->logService,
-            $this->actionService,
+            $this->actorService,
             $this->queueService,
+            $task->getScope(),
         );
 
         foreach ($this->stateHandlerStorage->getMainBefore() as $handler) {
@@ -114,18 +98,17 @@ readonly class StateMain implements StateMainInterface
     {
         $handlers = $this->stateHandlerStorage->getMainSuspend();
 
-        $suspend = new Suspend($task->action->getExternalId(), $task->getValue());
+        $suspend = new Suspend($task->actor->getExternalId(), $task->getValue());
 
         $stateService = new StateMainSuspendService(
             $suspend,
             $this->resultService,
-            $this->actionContainerStorage->get($task->action->getId()),
-            $this->actionService,
+            $this->actorContainerStorage->get($task->actor->getId()),
+            $this->actorService,
             $this->eventService,
-            $this->triggerService,
         );
 
-        $this->suspendContext->addSuspend($task->action->getId(), $suspend);
+        $this->suspendContext->addSuspend($task->actor->getId(), $suspend);
 
         foreach ($handlers as $handler) {
             $context = $this->contextScope->getContext($handler::class);
@@ -140,15 +123,14 @@ readonly class StateMain implements StateMainInterface
     {
         $handlers = $this->stateHandlerStorage->getMainResume();
 
-        $suspend = $this->suspendContext->getSuspend($task->action->getId());
+        $suspend = $this->suspendContext->getSuspend($task->actor->getId());
 
         $stateService = new StateMainResumeService(
             $suspend,
             $this->resultService,
-            $this->actionContainerStorage->get($task->action->getId()),
-            $this->actionService,
+            $this->actorContainerStorage->get($task->actor->getId()),
+            $this->actorService,
             $this->eventService,
-            $this->triggerService,
         );
 
         foreach ($handlers as $handler) {
@@ -169,13 +151,8 @@ readonly class StateMain implements StateMainInterface
         }
 
         if (is_callable($suspend->value)) {
-            $task->resume(($suspend->value)());
+            $task->resume(($suspend->value)($task->getScope()));
         } else {
-            // TODO Wrap into callback
-            $message = new Message(Channel::DEFAULT_CHANNEL, $this->transfer);
-            $message->setPayload($suspend->value, $task->action->getId());
-
-            $this->messageStorage->set($message);
             $task->resume();
         }
     }
@@ -186,13 +163,13 @@ readonly class StateMain implements StateMainInterface
         $stateService = new StateMainAfterService(
             $task->getResult()->status,
             $task->getResult()->data,
-            $task->action->getExternalId(),
-            $this->actionService,
+            $task->actor->getExternalId(),
+            $task->getScope(),
+            $this->actorService,
             $this->resultService,
             $this->logService,
             $this->eventService,
             $this->rollbackService,
-            $this->triggerService,
         );
 
         foreach ($this->stateHandlerStorage->getMainAfter() as $handler) {
@@ -206,15 +183,12 @@ readonly class StateMain implements StateMainInterface
     #[Override]
     public function empty(): void
     {
-        $this->messageStorage->cleanUp();
-
         $stateService = new StateMainEmptyService(
-            $this->actionService,
+            $this->actorService,
             $this->resultService,
             $this->logService,
             $this->eventService,
             $this->rollbackService,
-            $this->triggerService,
             $this->eventDispatcher,
         );
 
@@ -247,7 +221,7 @@ readonly class StateMain implements StateMainInterface
             $this->resultService,
             $this->logService,
             $this->rollbackService,
-            $this->actionService,
+            $this->actorService,
             $this->queueService,
             $task,
         );
@@ -263,6 +237,6 @@ readonly class StateMain implements StateMainInterface
     private function isObserved(StateHandlerObservedInterface $handler, Task $task, StateContext $context): bool
     {
         $observed = $handler->observed($context);
-        return count($observed) === 0 || in_array($task->action->getExternalId(), $observed);
+        return count($observed) === 0 || in_array($task->actor->getExternalId(), $observed);
     }
 }

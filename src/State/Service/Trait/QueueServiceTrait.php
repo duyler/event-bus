@@ -23,9 +23,9 @@ trait QueueServiceTrait
         return $this->queueService->isNotEmpty();
     }
 
-    public function inQueue(string|UnitEnum $actionId): bool
+    public function inQueue(string|UnitEnum $actorId): bool
     {
-        return $this->queueService->inQueue(IdFormatter::toString($actionId));
+        return $this->queueService->inQueue(IdFormatter::toString($actorId));
     }
 
     public function queueCount(): int

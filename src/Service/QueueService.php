@@ -20,9 +20,9 @@ class QueueService
         return $this->taskQueue->isNotEmpty();
     }
 
-    public function inQueue(string $actionId): bool
+    public function inQueue(string $actorId): bool
     {
-        return $this->taskQueue->inQueue($actionId);
+        return $this->taskQueue->inQueue($actorId);
     }
 
     public function count(): int

@@ -18,4 +18,11 @@ class StateContext
     {
         return $this->data[$key] ?? null;
     }
+
+    public function remove(string $key): void
+    {
+        if (array_key_exists($key, $this->data)) {
+            unset($key, $this->data);
+        }
+    }
 }

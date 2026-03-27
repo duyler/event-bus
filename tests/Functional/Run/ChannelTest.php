@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Channel\Channel;
-use Duyler\EventBus\Enum\Mode;
-use Fiber;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 use stdClass;
 
 class ChannelTest extends TestCase
@@ -21,32 +18,26 @@ class ChannelTest extends TestCase
     public function with_custom_channel_name(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->doAction(
-            new Action(
-                id: 'ListenChannel',
+        $busBuilder->doActor(
+            new Actor(
+                id: "ListenChannel",
                 handler: function () {
-                    $message = Channel::read('custom')
-                        ->listen('test');
+                    $message = Channel::open("custom")->recv();
 
                     $type = new stdClass();
                     $type->message = $message;
                     return $type;
                 },
-                required: [
-                    'SendToChannel',
-                ],
                 type: stdClass::class,
                 immutable: false,
             ),
         );
 
-        $busBuilder->addAction(
-            new Action(
-                id: 'SendToChannel',
+        $busBuilder->doActor(
+            new Actor(
+                id: "SendToChannel",
                 handler: function (): void {
-                    Channel::write('custom')
-                        ->setPayload('Payload text', 'test')
-                        ->push();
+                    Channel::open("custom")->send("Payload text");
                 },
             ),
         );
@@ -54,47 +45,35 @@ class ChannelTest extends TestCase
         $bus = $busBuilder->build();
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ListenChannel'));
-        $this->assertTrue($bus->resultIsExists('SendToChannel'));
-        $this->assertEquals('Payload text', $bus->getResult('ListenChannel')->data->message);
+        $this->assertTrue($bus->resultIsExists("ListenChannel"));
+        $this->assertTrue($bus->resultIsExists("SendToChannel"));
+        $this->assertEquals("Payload text", $bus->getResult("ListenChannel")->data->message);
     }
 
     #[Test]
     public function with_common_channel_name(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->doAction(
-            new Action(
-                id: 'ListenChannel',
+        $busBuilder->doActor(
+            new Actor(
+                id: "ListenChannel",
                 handler: function () {
-
                     $type = new stdClass();
 
-                    $type->messageOne = Channel::read()
-                        ->get('test');
-
-                    $type->messageTwo = Channel::read()
-                        ->get('SendToChannel');
+                    $type->messageOne = Channel::open()->recv();
 
                     return $type;
                 },
-                required: [
-                    'SendToChannel',
-                ],
                 type: stdClass::class,
                 immutable: false,
             ),
         );
 
-        $busBuilder->addAction(
-            new Action(
-                id: 'SendToChannel',
+        $busBuilder->doActor(
+            new Actor(
+                id: "SendToChannel",
                 handler: function (): void {
-                    Channel::write()
-                        ->setPayload('Payload text', 'test')
-                        ->push();
-
-                    Fiber::suspend('Common channel message');
+                    Channel::open()->send("Payload text");
                 },
             ),
         );
@@ -102,189 +81,47 @@ class ChannelTest extends TestCase
         $bus = $busBuilder->build();
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ListenChannel'));
-        $this->assertTrue($bus->resultIsExists('SendToChannel'));
-        $this->assertEquals('Payload text', $bus->getResult('ListenChannel')->data->messageOne);
-        $this->assertEquals('Common channel message', $bus->getResult('ListenChannel')->data->messageTwo);
-    }
-
-    #[Test]
-    public function write_without_payload(): void
-    {
-        $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->doAction(
-            new Action(
-                id: 'ListenChannel',
-                handler: function () {
-                    $message = Channel::read('custom')
-                        ->listen('test');
-
-                    $type = new stdClass();
-                    $type->message = $message;
-                    return $type;
-                },
-                required: [
-                    'SendToChannel',
-                ],
-                type: stdClass::class,
-                immutable: false,
-            ),
-        );
-
-        $busBuilder->addAction(
-            new Action(
-                id: 'SendToChannel',
-                handler: function (): void {
-                    Channel::write('custom')
-                        ->push();
-                },
-            ),
-        );
-
-        $bus = $busBuilder->build();
-
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Message has no payload');
-
-        $bus->run();
-    }
-
-    #[Test]
-    public function clean_up_expire_message(): void
-    {
-        $busBuilder = new BusBuilder(new BusConfig(
-            mode: Mode::Loop,
-        ));
-
-        $busBuilder->doAction(
-            new Action(
-                id: 'ListenChannel',
-                handler: function () {
-
-                    $type = new stdClass();
-
-                    $type->messageOne = Channel::read()
-                        ->get('test');
-
-                    usleep(10000);
-
-                    $type->messageTwo = Channel::read()
-                        ->get('SendToChannel');
-
-                    throw new RuntimeException('Stop bus');
-
-                    return $type;
-                },
-                required: [
-                    'SendToChannel',
-                ],
-                type: stdClass::class,
-                immutable: false,
-            ),
-        );
-
-        $busBuilder->addAction(
-            new Action(
-                id: 'SendToChannel',
-                handler: function (): void {
-                    Channel::write()
-                        ->setPayload('Payload text', 'test')
-                        ->setTtl('10 milliseconds')
-                        ->push();
-
-                    Fiber::suspend('Common channel message');
-                },
-            ),
-        );
-
-        $bus = $busBuilder->build();
-
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Stop bus');
-
-        $bus->run();
+        $this->assertTrue($bus->resultIsExists("ListenChannel"));
+        $this->assertTrue($bus->resultIsExists("SendToChannel"));
+        $this->assertEquals("Payload text", $bus->getResult("ListenChannel")->data->messageOne);
     }
 
     #[Test]
     public function listen_channel_without_write(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->doAction(
-            new Action(
-                id: 'ListenChannel',
+        $busBuilder->doActor(
+            new Actor(
+                id: "ListenChannel",
                 handler: function () {
-                    $messageOne = Channel::read('custom')
-                        ->listen('test');
-
-                    $messageTwo = Channel::read('custom')
-                        ->get('test');
+                    $messageOne = Channel::open("custom")->recv();
 
                     $type = new stdClass();
                     $type->messageOne = $messageOne;
-                    $type->messageTwo = $messageTwo;
                     return $type;
                 },
-                required: [
-                    'SendToChannel',
-                ],
+                required: ["SendToChannel"],
                 type: stdClass::class,
                 immutable: false,
             ),
         );
 
-        $busBuilder->addAction(
-            new Action(
-                id: 'SendToChannel',
-                handler: function (): void {},
-            ),
+        $busBuilder->addActor(
+            new Actor(id: "SendToChannel", handler: function (): void {}),
         );
 
         $bus = $busBuilder->build();
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ListenChannel'));
-        $this->assertTrue($bus->resultIsExists('SendToChannel'));
-        $this->assertEquals(null, $bus->getResult('ListenChannel')->data->messageOne);
-        $this->assertEquals(null, $bus->getResult('ListenChannel')->data->messageTwo);
-    }
-
-    #[Test]
-    public function with_null_suspend_value(): void
-    {
-        $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->doAction(
-            new Action(
-                id: 'ListenChannel',
-                handler: function () {
-
-                    $type = new stdClass();
-                    $type->message = Channel::read()
-                        ->listen('SendToChannel');
-
-                    return $type;
-                },
-                required: [
-                    'SendToChannel',
-                ],
-                type: stdClass::class,
-                immutable: false,
-            ),
+        $this->assertTrue($bus->resultIsExists("ListenChannel"));
+        $this->assertTrue($bus->resultIsExists("SendToChannel"));
+        $this->assertEquals(
+            null,
+            $bus->getResult("ListenChannel")->data->messageOne,
         );
-
-        $busBuilder->addAction(
-            new Action(
-                id: 'SendToChannel',
-                handler: function (): void {
-                    Fiber::suspend();
-                },
-            ),
+        $this->assertEquals(
+            null,
+            $bus->getResult("ListenChannel")->data->messageTwo,
         );
-
-        $bus = $busBuilder->build();
-        $bus->run();
-
-        $this->assertTrue($bus->resultIsExists('ListenChannel'));
-        $this->assertTrue($bus->resultIsExists('SendToChannel'));
-        $this->assertEquals(null, $bus->getResult('ListenChannel')->data->message);
     }
 }

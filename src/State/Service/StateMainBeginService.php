@@ -4,31 +4,27 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service;
 
-use Duyler\EventBus\Build\Action as ExternalAction;
+use Duyler\EventBus\Build\Actor as ExternalActor;
 use Duyler\EventBus\Formatter\IdFormatter;
-use Duyler\EventBus\Service\ActionService;
+use Duyler\EventBus\Service\ActorService;
 use Duyler\EventBus\Service\EventService;
-use Duyler\EventBus\Service\TriggerService;
-use Duyler\EventBus\State\Service\Trait\ActionServiceTrait;
+use Duyler\EventBus\State\Service\Trait\ActorServiceTrait;
 use Duyler\EventBus\State\Service\Trait\EventServiceTrait;
-use Duyler\EventBus\State\Service\Trait\TriggerServiceTrait;
 use UnitEnum;
 
 class StateMainBeginService
 {
-    use ActionServiceTrait;
-    use TriggerServiceTrait;
+    use ActorServiceTrait;
     use EventServiceTrait;
 
     public function __construct(
-        private readonly ActionService $actionService,
-        private readonly TriggerService $triggerService,
+        private readonly ActorService $actorService,
         private readonly EventService $eventService,
     ) {}
 
-    public function getById(string|UnitEnum $actionId): ExternalAction
+    public function getById(string|UnitEnum $actorId): ExternalActor
     {
-        $internalAction = $this->actionService->getById(IdFormatter::toString($actionId));
-        return ExternalAction::fromInternal($internalAction);
+        $internalActor = $this->actorService->getById(IdFormatter::toString($actorId));
+        return ExternalActor::fromInternal($internalActor);
     }
 }

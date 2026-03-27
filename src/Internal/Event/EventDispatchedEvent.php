@@ -8,5 +8,5 @@ use Duyler\EventBus\Dto\Event;
 
 readonly class EventDispatchedEvent
 {
-    public function __construct(public Event $event) {}
+    public function __construct(public Event $event, public string $scope = 'common') {}
 }

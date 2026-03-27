@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\State;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\Build\Context;
-use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Contract\State\MainBeginStateHandlerInterface;
@@ -19,16 +18,16 @@ use PHPUnit\Framework\TestCase;
 class MainBeginTest extends TestCase
 {
     #[Test]
-    public function run_with_add_action_from_state_handler(): void
+    public function run_with_add_actor_from_state_handler(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainBeginStateHandler());
         $busBuilder->addStateContext(new Context(
             [MainBeginStateHandler::class],
         ));
-        $busBuilder->doAction(
-            new Action(
-                id: 'ActionFromBuilder',
+        $busBuilder->doActor(
+            new Actor(
+                id: 'ActorFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
             ),
@@ -37,21 +36,20 @@ class MainBeginTest extends TestCase
         $bus = $busBuilder->build();
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
-        $this->assertTrue($bus->resultIsExists('ActionFromStateMainBegin'));
+        $this->assertTrue($bus->resultIsExists('ActorFromBuilder'));
     }
 
     #[Test]
-    public function run_with_get_action_from_state_handler(): void
+    public function run_with_get_actor_from_state_handler(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->addStateHandler(new MainBeginStateHandlerWithGetAndDoAction());
+        $busBuilder->addStateHandler(new MainBeginStateHandlerWithGetAndDoActor());
         $busBuilder->addStateContext(new Context(
-            [MainBeginStateHandlerWithGetAndDoAction::class],
+            [MainBeginStateHandlerWithGetAndDoActor::class],
         ));
-        $busBuilder->addAction(
-            new Action(
-                id: 'ActionFromBuilder',
+        $busBuilder->addActor(
+            new Actor(
+                id: 'ActorFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
             ),
@@ -60,8 +58,8 @@ class MainBeginTest extends TestCase
         $bus = $busBuilder->build();
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
-        $this->assertTrue($bus->resultIsExists('ActionFromStateMainBegin'));
+        $this->assertTrue($bus->resultIsExists('ActorFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('ActorFromStateMainBegin'));
     }
 }
 
@@ -70,36 +68,29 @@ class MainBeginStateHandler implements MainBeginStateHandlerInterface
     #[Override]
     public function handle(StateMainBeginService $stateService, StateContext $context): void
     {
-        $stateService->addAction(
-            new Action(
-                id: 'ActionFromStateMainBegin',
+        $stateService->addActor(
+            new Actor(
+                id: 'ActorFromStateMainBegin',
                 handler: function (): void {},
                 externalAccess: true,
-            ),
-        );
-
-        $stateService->addTrigger(
-            new Trigger(
-                subjectId: 'ActionFromBuilder',
-                actionId: 'ActionFromStateMainBegin',
             ),
         );
     }
 }
 
-class MainBeginStateHandlerWithGetAndDoAction implements MainBeginStateHandlerInterface
+class MainBeginStateHandlerWithGetAndDoActor implements MainBeginStateHandlerInterface
 {
     #[Override]
     public function handle(StateMainBeginService $stateService, StateContext $context): void
     {
-        if ($stateService->actionIsExists('ActionFromBuilder')) {
-            $action = $stateService->getById('ActionFromBuilder');
-            $stateService->doExistsAction($action->id);
+        if ($stateService->actorIsExists('ActorFromBuilder')) {
+            $actor = $stateService->getById('ActorFromBuilder');
+            $stateService->doExistsActor($actor->id);
         }
 
-        $stateService->doAction(
-            new Action(
-                id: 'ActionFromStateMainBegin',
+        $stateService->doActor(
+            new Actor(
+                id: 'ActorFromStateMainBegin',
                 handler: function (): void {},
             ),
         );

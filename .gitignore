@@ -1,6 +1,25 @@
+# IDE
 .idea/
+.vscode/
+.duyler/
+
+# Package
 vendor/
+coverage/
 .phpunit.cache/
 composer.lock
 /.php-cs-fixer.cache
 /coverage.xml
+.phpactor.json
+
+# Duyler
+/docs/
+
+# For LLM
+.claude/
+.opencode/
+.cursor/
+.sisyphus/
+
+# MacOS
+/.DS_Store

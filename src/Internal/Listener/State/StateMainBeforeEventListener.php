@@ -21,7 +21,7 @@ class StateMainBeforeEventListener
     public function __invoke(TaskBeforeRunEvent $event): void
     {
         try {
-            $this->state->setBeginAction($event->task->action->getId());
+            $this->state->setBeginActor($event->task->actor->getId());
             $this->stateMain->before($event->task);
         } catch (Throwable $e) {
             $this->errorHandler->handle($e, $this->state->getLog());

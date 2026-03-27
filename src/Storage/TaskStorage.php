@@ -15,23 +15,23 @@ final class TaskStorage
 
     public function add(Task $task): void
     {
-        $this->tasks[$task->action->getId()][$task->getId()] = $task;
+        $this->tasks[$task->actor->getId()][$task->getId()] = $task;
     }
 
-    public function get(string $actionId, string $taskId): Task
+    public function get(string $actorId, string $taskId): Task
     {
-        return $this->tasks[$actionId][$taskId];
+        return $this->tasks[$actorId][$taskId];
     }
 
     /** @return array<string, Task> */
-    public function getAllByActionId(string $actionId): array
+    public function getAllByActorId(string $actorId): array
     {
-        return $this->tasks[$actionId] ?? [];
+        return $this->tasks[$actorId] ?? [];
     }
 
-    public function remove(string $actionId, string $taskId): void
+    public function remove(string $actorId, string $taskId): void
     {
-        unset($this->tasks[$actionId][$taskId]);
+        unset($this->tasks[$actorId][$taskId]);
     }
 
     public function finalize(): void

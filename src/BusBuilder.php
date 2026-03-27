@@ -6,30 +6,29 @@ namespace Duyler\EventBus;
 
 use Duyler\DI\Container;
 use Duyler\DI\ContainerConfig;
-use Duyler\EventBus\Build\Action as ExternalAction;
+use Duyler\EventBus\Build\Actor as ExternalActor;
 use Duyler\EventBus\Build\Context;
 use Duyler\EventBus\Build\Event;
 use Duyler\EventBus\Build\SharedService;
-use Duyler\EventBus\Build\Trigger;
-use Duyler\EventBus\Bus\Action as InternalAction;
+use Duyler\EventBus\Bus\Actor as InternalActor;
+use Duyler\EventBus\Bus\DoWhile;
 use Duyler\EventBus\Bus\ErrorHandler;
 use Duyler\EventBus\Bus\State;
 use Duyler\EventBus\Channel\Channel;
 use Duyler\EventBus\Contract\ErrorHandlerInterface;
+use Duyler\EventBus\Contract\ResourceInterface;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Dto\ScheduledTask;
 use Duyler\EventBus\Event\EventDispatcher;
-use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
-use Duyler\EventBus\Exception\TriggerAlreadyDefinedException;
+use Duyler\EventBus\Exception\ActorAlreadyDefinedException;
 use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Internal\ListenerProvider;
 use Duyler\EventBus\Scheduler\Scheduler;
 use Duyler\EventBus\Scheduler\Task\GcCollectCyclesTask;
 use Duyler\EventBus\Scheduler\Task\GcMemCachesTask;
-use Duyler\EventBus\Service\ActionService;
+use Duyler\EventBus\Service\ActorService;
 use Duyler\EventBus\Service\EventService;
 use Duyler\EventBus\Service\StateService;
-use Duyler\EventBus\Service\TriggerService;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -39,14 +38,11 @@ use function array_key_exists;
 
 class BusBuilder
 {
-    /** @var array<string, InternalAction> */
-    private array $actions = [];
+    /** @var array<string, InternalActor> */
+    private array $actors = [];
 
-    /** @var Trigger[] */
-    private array $triggers = [];
-
-    /** @var array<string, InternalAction> */
-    private array $doActions = [];
+    /** @var array<string, InternalActor> */
+    private array $doActors = [];
 
     /** @var StateHandlerInterface[] */
     private array $stateHandlers = [];
@@ -72,6 +68,8 @@ class BusBuilder
 
     /** @var ScheduledTask[] */
     private array $scheduledTasks = [];
+
+    private ?ResourceInterface $ioResource = null;
 
     public function __construct(private readonly BusConfig $config)
     {
@@ -111,24 +109,20 @@ class BusBuilder
 
         /** @var Scheduler $scheduler */
         $scheduler = $container->get(Scheduler::class);
-        $scheduler->addTask(
-            new GcCollectCyclesTask($this->logger),
-            $this->config->gcCollectCyclesInterval,
-            $this->config->gcCollectCyclesInterval,
-        );
+        $scheduler->addTask(new ScheduledTask(
+            callback: new GcCollectCyclesTask($this->logger),
+            intervalMs: $this->config->gcCollectCyclesInterval,
+            startDelayMs: $this->config->gcCollectCyclesInterval,
+        ));
 
-        $scheduler->addTask(
-            new GcMemCachesTask($this->logger),
-            $this->config->gcMemCachesInterval,
-            $this->config->gcMemCachesInterval,
-        );
+        $scheduler->addTask(new ScheduledTask(
+            callback: new GcMemCachesTask($this->logger),
+            intervalMs: $this->config->gcMemCachesInterval,
+            startDelayMs: $this->config->gcMemCachesInterval,
+        ));
 
         foreach ($this->scheduledTasks as $task) {
-            $scheduler->addTask(
-                $task->getCallback(),
-                $task->getInterval(),
-                $task->getStartDelay(),
-            );
+            $scheduler->addTask($task);
         }
 
         $container->get(IdFormatter::class);
@@ -142,14 +136,11 @@ class BusBuilder
             }
         }
 
-        /** @var ActionService $actionService */
-        $actionService = $container->get(ActionService::class);
+        /** @var ActorService $actorService */
+        $actorService = $container->get(ActorService::class);
 
         /** @var EventService $eventService */
         $eventService = $container->get(EventService::class);
-
-        /** @var TriggerService $triggerService */
-        $triggerService = $container->get(TriggerService::class);
 
         /** @var StateService $stateService */
         $stateService = $container->get(StateService::class);
@@ -157,17 +148,13 @@ class BusBuilder
         $eventService->collect($this->events);
 
         foreach ($this->sharedServices as $sharedService) {
-            $actionService->addSharedService($sharedService);
+            $actorService->addSharedService($sharedService);
         }
 
-        $actionService->collect($this->actions);
+        $actorService->collect($this->actors);
 
-        foreach ($this->doActions as $action) {
-            $actionService->doExistsAction($action->getId());
-        }
-
-        foreach ($this->triggers as $trigger) {
-            $triggerService->addTrigger($trigger);
+        foreach ($this->doActors as $actor) {
+            $actorService->doExistsActor($actor->getId());
         }
 
         foreach ($this->stateHandlers as $stateHandler) {
@@ -197,6 +184,12 @@ class BusBuilder
         /** @var BusInterface $bus */
         $bus = $container->get(Bus::class);
 
+        if (null !== $this->ioResource) {
+            /** @var DoWhile $doWhile */
+            $doWhile = $container->get(DoWhile::class);
+            $doWhile->setResource($this->ioResource);
+        }
+
         gc_collect_cycles();
 
         return $bus;
@@ -212,47 +205,34 @@ class BusBuilder
         $this->errorHandler = $errorHandler;
     }
 
-    public function actionIsExists(string|UnitEnum $actionId): bool
+    public function actorIsExists(string|UnitEnum $actorId): bool
     {
-        return array_key_exists(IdFormatter::toString($actionId), $this->actions);
+        return array_key_exists(IdFormatter::toString($actorId), $this->actors);
     }
 
-    public function addAction(ExternalAction $action): static
+    public function addActor(ExternalActor $actor): static
     {
-        $internalAction = InternalAction::fromExternal($action);
+        $internalActor = InternalActor::fromExternal($actor);
 
-        if (array_key_exists($internalAction->getId(), $this->actions)) {
-            throw new ActionAlreadyDefinedException($internalAction->getId());
+        if (array_key_exists($internalActor->getId(), $this->actors)) {
+            throw new ActorAlreadyDefinedException($internalActor->getId());
         }
 
-        $this->actions[$internalAction->getId()] = $internalAction;
+        $this->actors[$internalActor->getId()] = $internalActor;
 
         return $this;
     }
 
-    public function addTrigger(Trigger $trigger): static
+    public function doActor(ExternalActor $actor): static
     {
-        $id = $trigger->subjectId . '@' . $trigger->status->value . '@' . $trigger->actionId;
+        $internalActor = InternalActor::fromExternal($actor);
 
-        if (array_key_exists($id, $this->triggers)) {
-            throw new TriggerAlreadyDefinedException($trigger);
+        if (array_key_exists($internalActor->getId(), $this->actors)) {
+            throw new ActorAlreadyDefinedException($internalActor->getId());
         }
 
-        $this->triggers[$id] = $trigger;
-
-        return $this;
-    }
-
-    public function doAction(ExternalAction $action): static
-    {
-        $internalAction = InternalAction::fromExternal($action);
-
-        if (array_key_exists($internalAction->getId(), $this->actions)) {
-            throw new ActionAlreadyDefinedException($internalAction->getId());
-        }
-
-        $this->actions[$internalAction->getId()] = $internalAction;
-        $this->doActions[$internalAction->getId()] = $internalAction;
+        $this->actors[$internalActor->getId()] = $internalActor;
+        $this->doActors[$internalActor->getId()] = $internalActor;
 
         return $this;
     }
@@ -307,6 +287,12 @@ class BusBuilder
     public function addScheduledTask(ScheduledTask $task): static
     {
         $this->scheduledTasks[] = $task;
+        return $this;
+    }
+
+    public function withIoResource(ResourceInterface $resource): static
+    {
+        $this->ioResource = $resource;
         return $this;
     }
 }

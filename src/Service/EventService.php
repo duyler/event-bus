@@ -9,13 +9,14 @@ use Duyler\EventBus\Bus\Bus;
 use Duyler\EventBus\Bus\EventRelation;
 use Duyler\EventBus\Bus\State;
 use Duyler\EventBus\Dto\Event as EventDto;
+use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Exception\ContractForDataNotReceivedException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
 use Duyler\EventBus\Exception\DispatchedEventNotDefinedException;
 use Duyler\EventBus\Internal\Event\EventAddedEvent;
 use Duyler\EventBus\Internal\Event\EventRemovedEvent;
-use Duyler\EventBus\Storage\ActionStorage;
+use Duyler\EventBus\Storage\ActorStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\EventStorage;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -24,14 +25,14 @@ class EventService
 {
     public function __construct(
         private readonly EventRelationStorage $eventRelationStorage,
-        private readonly ActionStorage $actionStorage,
+        private readonly ActorStorage $actorStorage,
         private readonly EventStorage $eventStorage,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly Bus $bus,
         private readonly State $state,
     ) {}
 
-    public function dispatch(EventDto $eventDto): void
+    public function dispatch(EventDto $eventDto, string $scope = 'common'): void
     {
         $event = $this->eventStorage->get($eventDto->id);
 
@@ -39,25 +40,13 @@ class EventService
             throw new DispatchedEventNotDefinedException($eventDto->id);
         }
 
-        if (null !== $eventDto->data) {
-            if (null === $event->type) {
-                throw new ContractForDataNotReceivedException($eventDto->id);
-            }
+        $this->validateEventData($eventDto->id, $eventDto->data, $event->type);
 
-            if (false === $eventDto->data instanceof $event->type) {
-                throw new DataMustBeCompatibleWithContractException($eventDto->id, $event->type);
-            }
-        } else {
-            if (null !== $event->type) {
-                throw new DataForContractNotReceivedException($eventDto->id, $event->type);
-            }
-        }
+        $actors = $this->actorStorage->getBySubscriptionEvent($eventDto->id);
 
-        $actions = $this->actionStorage->getByEvent($eventDto->id);
-
-        foreach ($actions as $action) {
-            $this->eventRelationStorage->save(new EventRelation($action, $eventDto));
-            $this->bus->doAction($action);
+        foreach ($actors as $actor) {
+            $this->eventRelationStorage->save(new EventRelation($actor, $eventDto), $scope);
+            $this->bus->doActor($actor, $scope);
         }
 
         if ($this->eventRelationStorage->isExists($eventDto->id)) {
@@ -92,6 +81,37 @@ class EventService
             $this->eventDispatcher->dispatch(
                 new EventRemovedEvent($event),
             );
+        }
+    }
+
+    public function dispatchActorEvent(string $actorId, string $scope, Result $result): void
+    {
+        $eventDto = new EventDto($actorId, $result->status, $result->data);
+
+        $actors = $this->actorStorage->getBySubscriptionEvent($eventDto->id);
+
+        foreach ($actors as $actor) {
+            $this->eventRelationStorage->save(new EventRelation($actor, $eventDto), $scope);
+            $this->bus->doActor($actor, $scope);
+        }
+
+        $this->state->pushEventLog($eventDto->id);
+    }
+
+    private function validateEventData(string $eventId, ?object $data, ?string $type): void
+    {
+        if (null !== $data) {
+            if (null === $type) {
+                throw new ContractForDataNotReceivedException($eventId);
+            }
+
+            if (false === $data instanceof $type) {
+                throw new DataMustBeCompatibleWithContractException($eventId, $type);
+            }
+        } else {
+            if (null !== $type) {
+                throw new DataForContractNotReceivedException($eventId, $type);
+            }
         }
     }
 }

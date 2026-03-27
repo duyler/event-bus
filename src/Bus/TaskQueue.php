@@ -25,7 +25,7 @@ final class TaskQueue
     public function push(Task $task): void
     {
         $this->queue->push($task);
-        $this->queueLog[$task->getId()] = $task->action->getId();
+        $this->queueLog[$task->getId()] = $task->actor->getId();
     }
 
     public function isNotEmpty(): bool
@@ -52,9 +52,9 @@ final class TaskQueue
         return $task;
     }
 
-    public function inQueue(string $actionId): bool
+    public function inQueue(string $actorId): bool
     {
-        return in_array($actionId, $this->queueLog);
+        return in_array($actorId, $this->queueLog);
     }
 
     public function count(): int

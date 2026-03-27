@@ -21,8 +21,8 @@ final class EventDispatcher
     public static function dispatch(Event $event): void
     {
         Fiber::suspend(
-            function () use ($event): void {
-                self::$eventService->dispatch($event);
+            function (string $scope = 'common') use ($event): void {
+                self::$eventService->dispatch($event, $scope);
             },
         );
     }

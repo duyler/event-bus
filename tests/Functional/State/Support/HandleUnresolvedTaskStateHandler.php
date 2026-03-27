@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\State\Support;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\Contract\State\MainUnresolvedStateHandlerInterface;
 use Duyler\EventBus\State\Service\StateMainUnresolvedService;
 use Duyler\EventBus\State\StateContext;
@@ -15,14 +15,14 @@ class HandleUnresolvedTaskStateHandler implements MainUnresolvedStateHandlerInte
     #[Override]
     public function handle(StateMainUnresolvedService $stateService, StateContext $context): void
     {
-        $stateService->doAction(
-            new Action(
-                id: 'ActionFromStateHandler',
+        $stateService->doActor(
+            new Actor(
+                id: 'ActorFromStateHandler',
                 handler: function (): void {},
             ),
         );
 
-        $stateService->getActionId();
+        $stateService->getActorId();
     }
 
     #[Override]

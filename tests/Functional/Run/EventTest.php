@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
-use Duyler\EventBus\Action\Context\ActionContext;
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Actor\Context\ActorContext;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Event;
@@ -15,6 +15,7 @@ use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
 use Duyler\EventBus\Exception\DispatchedEventNotDefinedException;
 use Duyler\EventBus\Exception\EventNotDefinedException;
+use Duyler\EventBus\Formatter\IdFormatter;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -28,11 +29,11 @@ class EventTest extends TestCase
     public function run_without_contract(): void
     {
         $builder = new BusBuilder(new BusConfig());
-        $builder->addAction(
-            new Action(
-                id: 'ForEventAction',
+        $builder->addActor(
+            new Actor(
+                id: 'ForEventActor',
                 handler: function (): void {},
-                listen: ['TestEvent'],
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 externalAccess: true,
             ),
         );
@@ -48,19 +49,19 @@ class EventTest extends TestCase
 
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ForEventAction'));
-        $this->assertTrue($bus->resultIsExists('TestEvent'));
+        $this->assertTrue($bus->resultIsExists('ForEventActor'));
+        $this->assertTrue($bus->resultIsExists('TestEvent' . IdFormatter::DELIMITER . 'Success'));
     }
 
     #[Test]
     public function run_without_dispatch_event(): void
     {
         $builder = new BusBuilder(new BusConfig());
-        $builder->doAction(
-            new Action(
-                id: 'ForEventAction',
+        $builder->doActor(
+            new Actor(
+                id: 'ForEventActor',
                 handler: function (): void {},
-                listen: ['TestEvent'],
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 externalAccess: true,
             ),
         );
@@ -78,12 +79,12 @@ class EventTest extends TestCase
     #[Test]
     public function run_with_not_all_condition(): void
     {
-        $builder = new BusBuilder(new BusConfig(allowSkipUnresolvedActions: false));
-        $builder->doAction(
-            new Action(
-                id: 'ForEventAction',
+        $builder = new BusBuilder(new BusConfig(allowSkipUnresolvedActors: false));
+        $builder->doActor(
+            new Actor(
+                id: 'ForEventActor',
                 handler: function (): void {},
-                listen: ['TestEvent1', 'TestEvent2'],
+                onAll: ['TestEvent1' . IdFormatter::DELIMITER . 'Success', 'TestEvent2' . IdFormatter::DELIMITER . 'Success'],
                 externalAccess: true,
             ),
         );
@@ -109,11 +110,11 @@ class EventTest extends TestCase
     public function run_with_contract(): void
     {
         $builder = new BusBuilder(new BusConfig());
-        $builder->addAction(
-            new Action(
-                id: 'ForEventAction',
-                handler: function (ActionContext $context): void {},
-                listen: ['TestEvent'],
+        $builder->addActor(
+            new Actor(
+                id: 'ForEventActor',
+                handler: function (ActorContext $context): void {},
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -131,20 +132,20 @@ class EventTest extends TestCase
 
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ForEventAction'));
-        $this->assertTrue($bus->resultIsExists('TestEvent'));
-        $this->assertInstanceOf(stdClass::class, $bus->getResult('TestEvent')->data);
+        $this->assertTrue($bus->resultIsExists('ForEventActor'));
+        $this->assertTrue($bus->resultIsExists('TestEvent' . IdFormatter::DELIMITER . 'Success'));
+        $this->assertInstanceOf(stdClass::class, $bus->getResult('TestEvent' . IdFormatter::DELIMITER . 'Success')->data);
     }
 
     #[Test]
-    public function run_with_contract_and_required_event_action(): void
+    public function run_with_contract_and_required_event_actor(): void
     {
         $builder = new BusBuilder(new BusConfig());
-        $builder->addAction(
-            new Action(
-                id: 'ForEventAction',
-                handler: fn(ActionContext $context) => $context->argument(),
-                listen: ['TestEvent'],
+        $builder->addActor(
+            new Actor(
+                id: 'ForEventActor',
+                handler: fn(ActorContext $context) => $context->argument(),
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 argument: stdClass::class,
                 type: stdClass::class,
                 immutable: false,
@@ -152,11 +153,11 @@ class EventTest extends TestCase
             ),
         );
 
-        $builder->doAction(
-            new Action(
+        $builder->doActor(
+            new Actor(
                 id: 'RequiredListening',
                 handler: function (): void {},
-                required: ['ForEventAction'],
+                required: ['ForEventActor'],
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -174,23 +175,23 @@ class EventTest extends TestCase
 
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ForEventAction'));
-        $this->assertTrue($bus->resultIsExists('TestEvent'));
+        $this->assertTrue($bus->resultIsExists('ForEventActor'));
+        $this->assertTrue($bus->resultIsExists('TestEvent' . IdFormatter::DELIMITER . 'Success'));
         $this->assertTrue($bus->resultIsExists('RequiredListening'));
-        $this->assertInstanceOf(stdClass::class, $bus->getResult('TestEvent')->data);
+        $this->assertInstanceOf(stdClass::class, $bus->getResult('TestEvent' . IdFormatter::DELIMITER . 'Success')->data);
         $this->assertNull($bus->getResult('RequiredListening')->data);
-        $this->assertInstanceOf(stdClass::class, $bus->getResult('ForEventAction')->data);
+        $this->assertInstanceOf(stdClass::class, $bus->getResult('ForEventActor')->data);
     }
 
     #[Test]
-    public function run_with_contract_and_required_event_action_without_dispatch_event(): void
+    public function run_with_contract_and_required_event_actor_without_dispatch_event(): void
     {
         $builder = new BusBuilder(new BusConfig());
-        $builder->addAction(
-            new Action(
-                id: 'ForEventAction',
+        $builder->addActor(
+            new Actor(
+                id: 'ForEventActor',
                 handler: fn(stdClass $data) => $data,
-                listen: ['TestEvent'],
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 argument: stdClass::class,
                 type: stdClass::class,
                 immutable: false,
@@ -198,19 +199,19 @@ class EventTest extends TestCase
             ),
         );
 
-        $builder->doAction(
-            new Action(
-                id: 'SomeAction',
+        $builder->doActor(
+            new Actor(
+                id: 'SomeActor',
                 handler: function (): void {},
                 externalAccess: true,
             ),
         );
 
-        $builder->doAction(
-            new Action(
+        $builder->doActor(
+            new Actor(
                 id: 'RequiredListening',
                 handler: function (stdClass $data): void {},
-                required: ['ForEventAction'],
+                required: ['ForEventActor'],
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -222,8 +223,8 @@ class EventTest extends TestCase
 
         $bus->run();
 
-        $this->assertFalse($bus->resultIsExists('ForEventAction'));
-        $this->assertFalse($bus->resultIsExists('TestEvent'));
+        $this->assertFalse($bus->resultIsExists('ForEventActor'));
+        $this->assertFalse($bus->resultIsExists('TestEvent' . IdFormatter::DELIMITER . 'Success'));
         $this->assertFalse($bus->resultIsExists('RequiredTriggered'));
     }
 
@@ -231,11 +232,11 @@ class EventTest extends TestCase
     public function run_with_contract_and_without_data(): void
     {
         $builder = new BusBuilder(new BusConfig());
-        $builder->addAction(
-            new Action(
-                id: 'ForEventAction',
+        $builder->addActor(
+            new Actor(
+                id: 'ForEventActor',
                 handler: function (): void {},
-                listen: ['TestEvent'],
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -258,11 +259,11 @@ class EventTest extends TestCase
     public function run_with_data_and_without_contract(): void
     {
         $builder = new BusBuilder(new BusConfig());
-        $builder->addAction(
-            new Action(
-                id: 'ForEventAction',
+        $builder->addActor(
+            new Actor(
+                id: 'ForEventActor',
                 handler: function (): void {},
-                listen: ['TestEvent'],
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -286,11 +287,11 @@ class EventTest extends TestCase
     public function run_with_invalid_data_for_contract(): void
     {
         $builder = new BusBuilder(new BusConfig());
-        $builder->addAction(
-            new Action(
-                id: 'ForEventAction',
+        $builder->addActor(
+            new Actor(
+                id: 'ForEventActor',
                 handler: function (): void {},
-                listen: ['TestEvent'],
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -315,11 +316,11 @@ class EventTest extends TestCase
     {
         $builder = new BusBuilder(new BusConfig());
 
-        $builder->doAction(
-            new Action(
-                id: 'ForEventAction',
+        $builder->doActor(
+            new Actor(
+                id: 'ForEventActor',
                 handler: function (): void {},
-                listen: ['TestEvent'],
+                onOne: 'TestEvent' . IdFormatter::DELIMITER . 'Success',
                 argument: stdClass::class,
                 externalAccess: true,
             ),
@@ -331,12 +332,12 @@ class EventTest extends TestCase
     }
 
     #[Test]
-    public function run_with_dispatch_event_from_action(): void
+    public function run_with_dispatch_event_from_actor(): void
     {
         $builder = new BusBuilder(new BusConfig());
-        $builder->doAction(
-            new Action(
-                id: 'ForEventAction',
+        $builder->doActor(
+            new Actor(
+                id: 'ForEventActor',
                 handler: function (): void {
                     EventDispatcher::dispatch(new Event(
                         id: 'TestEvent1',
@@ -344,11 +345,10 @@ class EventTest extends TestCase
                 },
             ),
         );
-
-        $builder->addAction(
-            new Action(
-                id: 'ForEventListenAction1',
-                handler: function (ActionContext $context): void {
+        $builder->addActor(
+            new Actor(
+                id: 'ForEventListenActor1',
+                handler: function (ActorContext $context): void {
                     $context->call(
                         function (EventDispatcherInterface $dispatcher): void {
                             $dispatcher->dispatch(new Event(
@@ -357,7 +357,7 @@ class EventTest extends TestCase
                         },
                     );
                 },
-                listen: ['TestEvent1'],
+                onOne: 'TestEvent1' . IdFormatter::DELIMITER . 'Success',
             ),
         );
 
@@ -368,19 +368,18 @@ class EventTest extends TestCase
 
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ForEventAction'));
-        $this->assertTrue($bus->resultIsExists('TestEvent1'));
-        $this->assertFalse($bus->resultIsExists('TestEvent2'));
-        $this->assertTrue($bus->resultIsExists('ForEventListenAction1'));
+        $this->assertTrue($bus->resultIsExists('TestEvent1' . IdFormatter::DELIMITER . 'Success'));
+        $this->assertFalse($bus->resultIsExists('TestEvent2' . IdFormatter::DELIMITER . 'Success'));
+        $this->assertTrue($bus->resultIsExists('ForEventListenActor1'));
     }
 
     #[Test]
-    public function run_with_dispatch_not_defined_event_from_action(): void
+    public function run_with_dispatch_not_defined_event_from_actor(): void
     {
         $builder = new BusBuilder(new BusConfig());
-        $builder->doAction(
-            new Action(
-                id: 'ForEventAction',
+        $builder->doActor(
+            new Actor(
+                id: 'ForEventActor',
                 handler: function (): void {
                     EventDispatcher::dispatch(new Event(
                         id: 'TestNotDefinedEvent',
@@ -397,13 +396,13 @@ class EventTest extends TestCase
     }
 
     #[Test]
-    public function run_with_dispatch_invalid_event_from_action(): void
+    public function run_with_dispatch_invalid_event_from_actor(): void
     {
         $builder = new BusBuilder(new BusConfig());
-        $builder->doAction(
-            new Action(
-                id: 'ForEventAction',
-                handler: function (ActionContext $context): void {
+        $builder->doActor(
+            new Actor(
+                id: 'ForEventActor',
+                handler: function (ActorContext $context): void {
                     $context->call(
                         function (EventDispatcherInterface $dispatcher): void {
                             $dispatcher->dispatch(new stdClass());

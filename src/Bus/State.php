@@ -19,7 +19,7 @@ use function in_array;
 final class State
 {
     /** @var string[] */
-    private array $actionLog = [];
+    private array $actorLog = [];
 
     /** @var string[] */
     private array $mainLog = [];
@@ -42,84 +42,84 @@ final class State
     /** @var string[] */
     private array $suspendedLog = [];
 
-    private ?string $beginAction = null;
+    private ?string $beginActor = null;
 
-    private ?string $errorAction = null;
+    private ?string $errorActor = null;
 
     public function __construct(private readonly BusConfig $config) {}
 
-    public function pushCompleteAction(CompleteAction $completeAction): void
+    public function pushCompleteActor(CompleteActor $completeActor): void
     {
-        $actionId = $completeAction->action->getId() . '.' . $completeAction->result->status->value;
+        $actorId = $completeActor->actor->getId() . '.' . $completeActor->result->status->value;
 
-        if (in_array($actionId, $this->mainLog)
-            && 0 === $completeAction->action->getRetries()
-            && false === $completeAction->action->isRepeatable()
+        if (in_array($actorId, $this->mainLog)
+            && 0 === $completeActor->actor->getRetries()
+            && false === $completeActor->actor->isRepeatable()
         ) {
-            $this->pushRepeatedLog($actionId);
-            $this->pushRetriesLog($actionId);
+            $this->pushRepeatedLog($actorId);
+            $this->pushRetriesLog($actorId);
         } else {
-            $this->pushMainLog($actionId);
-            if (ResultStatus::Success === $completeAction->result->status) {
-                $this->pushSuccessLog($completeAction->action->getId());
+            $this->pushMainLog($actorId);
+            if (ResultStatus::Success === $completeActor->result->status) {
+                $this->pushSuccessLog($completeActor->actor->getId());
             } else {
-                $this->pushFailLog($completeAction->action->getId());
+                $this->pushFailLog($completeActor->actor->getId());
             }
         }
 
-        $this->pushActionLog($completeAction->action);
+        $this->pushActorLog($completeActor->actor);
     }
 
-    private function pushActionLog(Action $action): void
+    private function pushActorLog(Actor $actor): void
     {
-        if ($this->isLooped() && count($this->actionLog) === $this->config->logMaxSize) {
-            array_shift($this->actionLog);
+        if ($this->isLooped() && count($this->actorLog) === $this->config->logMaxSize) {
+            array_shift($this->actorLog);
         }
-        $this->actionLog[] = $action->getId();
+        $this->actorLog[] = $actor->getId();
     }
 
-    private function pushSuccessLog(string $actionId): void
+    private function pushSuccessLog(string $actorId): void
     {
         if ($this->isLooped() && count($this->successLog) === $this->config->logMaxSize) {
             array_shift($this->successLog);
         }
-        $this->successLog[] = $actionId;
+        $this->successLog[] = $actorId;
     }
 
-    public function pushSuspendedLog(string $actionId): void
+    public function pushSuspendedLog(string $actorId): void
     {
-        if ($this->isLooped() && count($this->actionLog) === $this->config->logMaxSize) {
+        if ($this->isLooped() && count($this->actorLog) === $this->config->logMaxSize) {
             array_shift($this->suspendedLog);
         }
-        $this->suspendedLog[] = $actionId;
+        $this->suspendedLog[] = $actorId;
     }
 
-    public function resolveResumeAction(string $actionId): void
+    public function resolveResumeActor(string $actorId): void
     {
-        if (in_array($actionId, $this->suspendedLog)) {
-            unset($this->suspendedLog[array_search($actionId, $this->suspendedLog)]);
+        if (in_array($actorId, $this->suspendedLog)) {
+            unset($this->suspendedLog[array_search($actorId, $this->suspendedLog)]);
         }
     }
 
-    private function pushFailLog(string $actionId): void
+    private function pushFailLog(string $actorId): void
     {
         if ($this->isLooped() && count($this->successLog) === $this->config->logMaxSize) {
             array_shift($this->failLog);
         }
-        $this->failLog[] = $actionId;
+        $this->failLog[] = $actorId;
     }
 
-    public function getActionLog(): array
+    public function getActorLog(): array
     {
-        return $this->actionLog;
+        return $this->actorLog;
     }
 
-    private function pushMainLog(string $actionIdWithStatus): void
+    private function pushMainLog(string $actorIdWithStatus): void
     {
         if ($this->isLooped() && count($this->mainLog) === $this->config->logMaxSize) {
             array_shift($this->mainLog);
         }
-        $this->mainLog[] = $actionIdWithStatus;
+        $this->mainLog[] = $actorIdWithStatus;
     }
 
     public function getMainLog(): array
@@ -127,20 +127,20 @@ final class State
         return $this->mainLog;
     }
 
-    private function pushRepeatedLog(string $actionIdWithStatus): void
+    private function pushRepeatedLog(string $actorIdWithStatus): void
     {
         if ($this->isLooped() && count($this->repeatedLog) === $this->config->logMaxSize) {
             array_shift($this->repeatedLog);
         }
-        $this->repeatedLog[] = $actionIdWithStatus;
+        $this->repeatedLog[] = $actorIdWithStatus;
     }
 
-    private function pushRetriesLog(string $actionIdWithStatus): void
+    private function pushRetriesLog(string $actorIdWithStatus): void
     {
         if ($this->isLooped() && count($this->retriesLog) === $this->config->logMaxSize) {
             array_shift($this->retriesLog);
         }
-        $this->retriesLog[] = $actionIdWithStatus;
+        $this->retriesLog[] = $actorIdWithStatus;
     }
 
     public function getRepeatedLog(): array
@@ -170,7 +170,7 @@ final class State
     public function getLog(): LogDto
     {
         return new LogDto(
-            $this->actionLog,
+            $this->actorLog,
             $this->mainLog,
             $this->repeatedLog,
             $this->eventLog,
@@ -178,8 +178,8 @@ final class State
             $this->successLog,
             $this->failLog,
             $this->suspendedLog,
-            $this->beginAction,
-            $this->errorAction,
+            $this->beginActor,
+            $this->errorActor,
         );
     }
 
@@ -188,19 +188,19 @@ final class State
         return Mode::Loop === $this->config->mode || $this->config->allowCircularCall;
     }
 
-    public function setBeginAction(string $actionId): void
+    public function setBeginActor(string $actorId): void
     {
-        $this->beginAction = $actionId;
+        $this->beginActor = $actorId;
     }
 
-    public function setErrorAction(string $actionId): void
+    public function setErrorActor(string $actorId): void
     {
-        $this->errorAction = $actionId;
+        $this->errorActor = $actorId;
     }
 
     public function reset(): void
     {
-        $this->actionLog = [];
+        $this->actorLog = [];
         $this->mainLog = [];
         $this->repeatedLog = [];
         $this->eventLog = [];
@@ -208,7 +208,7 @@ final class State
         $this->successLog = [];
         $this->failLog = [];
         $this->suspendedLog = [];
-        $this->beginAction = null;
-        $this->errorAction = null;
+        $this->beginActor = null;
+        $this->errorActor = null;
     }
 }

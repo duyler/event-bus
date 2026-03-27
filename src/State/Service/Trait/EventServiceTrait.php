@@ -13,9 +13,9 @@ use Duyler\EventBus\Service\EventService;
  */
 trait EventServiceTrait
 {
-    public function dispatchEvent(EventDto $event): void
+    public function dispatchEvent(EventDto $event, string $scope = 'common'): void
     {
-        $this->eventService->dispatch($event);
+        $this->eventService->dispatch($event, $scope);
     }
 
     public function registerEvent(Event $event): void

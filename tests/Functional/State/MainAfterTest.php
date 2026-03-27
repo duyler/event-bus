@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\State;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\Build\Context;
-use Duyler\EventBus\Build\Trigger;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
-use Duyler\EventBus\Contract\RollbackActionInterface;
+use Duyler\EventBus\Contract\RollbackActorInterface;
 use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
 use Duyler\EventBus\Dto\Rollback as RollbackDto;
 use Duyler\EventBus\Enum\ResultStatus;
@@ -23,87 +22,39 @@ use stdClass;
 class MainAfterTest extends TestCase
 {
     #[Test]
-    public function remove_action_from_state_handler(): void
+    public function remove_actor_from_state_handler(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->addStateHandler(new MainAfterStateHandlerWithAddDynamicAction());
-        $busBuilder->addStateHandler(new MainAfterStateHandlerWithRemoveAction());
+        $busBuilder->addStateHandler(new MainAfterStateHandlerWithAddDynamicActor());
+        $busBuilder->addStateHandler(new MainAfterStateHandlerWithRemoveActor());
         $busBuilder->addStateContext(new Context(
             [
-                MainAfterStateHandlerWithRemoveAction::class,
-                MainAfterStateHandlerWithAddDynamicAction::class,
+                MainAfterStateHandlerWithRemoveActor::class,
+                MainAfterStateHandlerWithAddDynamicActor::class,
             ],
         ));
-        $busBuilder->doAction(
-            new Action(
-                id: 'ActionFromBuilder',
+        $busBuilder->doActor(
+            new Actor(
+                id: 'ActorFromBuilder',
                 handler: function (): void {},
                 required: [
-                    'NotRemovedActionFromBuilder',
+                    'NotRemovedActorFromBuilder',
                 ],
                 externalAccess: true,
             ),
         );
 
-        $busBuilder->addAction(
-            new Action(
-                id: 'NotRemovedActionFromBuilder',
+        $busBuilder->addActor(
+            new Actor(
+                id: 'NotRemovedActorFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
             ),
         );
 
-        $busBuilder->addAction(
-            new Action(
-                id: 'TriggeredActionFromBuilder',
-                handler: function (): void {},
-                externalAccess: true,
-            ),
-        );
-
-        $busBuilder->addTrigger(
-            new Trigger(
-                subjectId: 'ActionFromBuilder',
-                actionId: 'NotRemovedActionFromBuilder',
-            ),
-        );
-
-        $busBuilder->addTrigger(
-            new Trigger(
-                subjectId: 'NotRemovedActionFromBuilder',
-                actionId: 'TriggeredActionFromBuilder',
-            ),
-        );
-
-        $bus = $busBuilder->build();
-        $bus->run();
-
-        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
-        $this->assertTrue($bus->resultIsExists('NotRemovedActionFromBuilder'));
-        $this->assertTrue($bus->resultIsExists('TriggeredActionFromBuilder'));
-        $this->assertFalse($bus->resultIsExists('RemovableAction'));
-        $this->assertFalse($bus->resultIsExists('RemovableHeldAction'));
-    }
-
-    #[Test]
-    public function remove_trigger_from_state_handler(): void
-    {
-        $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->addStateHandler(new MainAfterStateHandlerWithTrigger());
-        $busBuilder->addStateContext(new Context(
-            [MainAfterStateHandlerWithTrigger::class],
-        ));
-        $busBuilder->doAction(
-            new Action(
-                id: 'ActionFromTest',
-                handler: function (): void {},
-                externalAccess: true,
-            ),
-        );
-
-        $busBuilder->addAction(
-            new Action(
-                id: 'SubscribedActionFromTest',
+        $busBuilder->addActor(
+            new Actor(
+                id: 'TriggeredActorFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
             ),
@@ -111,8 +62,9 @@ class MainAfterTest extends TestCase
 
         $bus = $busBuilder->build();
         $bus->run();
-        $this->assertTrue($bus->resultIsExists('ActionFromTest'));
-        $this->assertFalse($bus->resultIsExists('SubscribedActionFromTest'));
+
+        $this->assertTrue($bus->resultIsExists('ActorFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('NotRemovedActorFromBuilder'));
     }
 
     #[Test]
@@ -123,9 +75,9 @@ class MainAfterTest extends TestCase
         $busBuilder->addStateContext(new Context(
             [MainAfterStateHandlerWithRollback::class],
         ));
-        $busBuilder->doAction(
-            new Action(
-                id: 'ActionFromBuilder',
+        $busBuilder->doActor(
+            new Actor(
+                id: 'ActorFromBuilder',
                 handler: function (): void {},
                 rollback: function (): void {},
                 externalAccess: true,
@@ -134,7 +86,7 @@ class MainAfterTest extends TestCase
 
         $bus = $busBuilder->build();
         $bus->run();
-        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('ActorFromBuilder'));
     }
 
     #[Test]
@@ -145,9 +97,9 @@ class MainAfterTest extends TestCase
         $busBuilder->addStateContext(new Context(
             [MainAfterStateHandlerWithRollback::class],
         ));
-        $busBuilder->doAction(
-            new Action(
-                id: 'ActionFromBuilder',
+        $busBuilder->doActor(
+            new Actor(
+                id: 'ActorFromBuilder',
                 handler: function (): void {},
                 rollback: Rollback::class,
                 externalAccess: true,
@@ -156,7 +108,7 @@ class MainAfterTest extends TestCase
 
         $bus = $busBuilder->build();
         $bus->run();
-        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('ActorFromBuilder'));
     }
 
     #[Test]
@@ -167,12 +119,12 @@ class MainAfterTest extends TestCase
         $busBuilder->addStateContext(new Context(
             [MainAfterStateHandlerWithRollback::class],
         ));
-        $busBuilder->doAction(
-            new Action(
-                id: 'ActionFromBuilder',
-                handler: function (\Duyler\EventBus\Action\Context\ActionContext $context): void {},
+        $busBuilder->doActor(
+            new Actor(
+                id: 'ActorFromBuilder',
+                handler: function (\Duyler\EventBus\Actor\Context\ActorContext $context): void {},
                 required: [
-                    'ActionWithContract',
+                    'ActorWithContract',
                 ],
                 argument: stdClass::class,
                 rollback: function (RollbackDto $rollbackService): void {},
@@ -180,9 +132,9 @@ class MainAfterTest extends TestCase
             ),
         );
 
-        $busBuilder->doAction(
-            new Action(
-                id: 'ActionWithContract',
+        $busBuilder->doActor(
+            new Actor(
+                id: 'ActorWithContract',
                 handler: fn(): stdClass =>  new stdClass(),
                 type: stdClass::class,
                 immutable: false,
@@ -192,21 +144,21 @@ class MainAfterTest extends TestCase
 
         $bus = $busBuilder->build();
         $bus->run();
-        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
-        $this->assertTrue($bus->resultIsExists('ActionWithContract'));
+        $this->assertTrue($bus->resultIsExists('ActorFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('ActorWithContract'));
     }
 
     #[Test]
-    public function get_action_by_contract(): void
+    public function get_actor_by_contract(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
-        $busBuilder->addStateHandler(new MainAfterStateHandlerWithAction());
+        $busBuilder->addStateHandler(new MainAfterStateHandlerWithActor());
         $busBuilder->addStateContext(new Context(
-            [MainAfterStateHandlerWithAction::class],
+            [MainAfterStateHandlerWithActor::class],
         ));
-        $busBuilder->doAction(
-            new Action(
-                id: 'ActionFromBuilder',
+        $busBuilder->doActor(
+            new Actor(
+                id: 'ActorFromBuilder',
                 handler: fn(): stdClass => new stdClass(),
                 type: stdClass::class,
                 immutable: false,
@@ -216,68 +168,52 @@ class MainAfterTest extends TestCase
 
         $bus = $busBuilder->build();
         $bus->run();
-        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('ActorFromBuilder'));
     }
 }
 
-class MainAfterStateHandlerWithRemoveAction implements MainAfterStateHandlerInterface
+class MainAfterStateHandlerWithRemoveActor implements MainAfterStateHandlerInterface
 {
     #[Override]
     public function handle(StateMainAfterService $stateService, StateContext $context): void
     {
-        $action = $stateService->getById('NotRemovedActionFromBuilder');
-        if ($stateService->resultIsExists($action->id)) {
-            $stateService->removeAction('NotRemovedActionFromBuilder');
+        $actor = $stateService->getById('NotRemovedActorFromBuilder');
+        if ($stateService->resultIsExists($actor->id)) {
+            $stateService->removeActor('NotRemovedActorFromBuilder');
         }
 
-        $stateService->removeAction('RemovableAction');
-        $stateService->removeAction('RemovableHeldAction');
+        $stateService->removeActor('RemovableActor');
+        $stateService->removeActor('RemovableHeldActor');
 
         $stateService->addSharedService(
-            new \Duyler\EventBus\Build\SharedService(class: $action::class, service: $action),
+            new \Duyler\EventBus\Build\SharedService(class: $actor::class, service: $actor),
         );
     }
 
     #[Override]
     public function observed(StateContext $context): array
     {
-        return ['ActionFromBuilder'];
+        return ['ActorFromBuilder'];
     }
 }
 
-class MainAfterStateHandlerWithAddDynamicAction implements MainAfterStateHandlerInterface
+class MainAfterStateHandlerWithAddDynamicActor implements MainAfterStateHandlerInterface
 {
     #[Override]
     public function handle(StateMainAfterService $stateService, StateContext $context): void
     {
-        $stateService->addAction(
-            new Action(
-                id: 'RemovableAction',
+        $stateService->addActor(
+            new Actor(
+                id: 'RemovableActor',
                 handler: function (): void {},
             ),
         );
 
-        $stateService->doAction(
-            new Action(
-                id: 'RemovableHeldAction',
+        $stateService->doActor(
+            new Actor(
+                id: 'RemovableHeldActor',
                 handler: function (): void {},
-                required: ['RemovableAction'],
-            ),
-        );
-
-        $stateService->addTrigger(
-            new Trigger(
-                subjectId: 'ActionFromBuilder',
-                actionId: 'RemovableAction',
-                status: ResultStatus::Success,
-            ),
-        );
-
-        $stateService->addTrigger(
-            new Trigger(
-                subjectId: 'ActionFromBuilder',
-                actionId: 'RemovableAction',
-                status: ResultStatus::Fail,
+                required: ['RemovableActor'],
             ),
         );
     }
@@ -285,7 +221,7 @@ class MainAfterStateHandlerWithAddDynamicAction implements MainAfterStateHandler
     #[Override]
     public function observed(StateContext $context): array
     {
-        return ['ActionFromBuilder'];
+        return ['ActorFromBuilder'];
     }
 }
 
@@ -294,15 +230,15 @@ class MainAfterStateHandlerWithRollback implements MainAfterStateHandlerInterfac
     #[Override]
     public function handle(StateMainAfterService $stateService, StateContext $context): void
     {
-        if ($stateService->getActionId() === 'ActionFromBuilder') {
+        if ($stateService->getActorId() === 'ActorFromBuilder') {
             $stateService->getResultData();
         }
 
-        if ($stateService->resultIsExists('ActionFromBuilder')) {
+        if ($stateService->resultIsExists('ActorFromBuilder')) {
             $stateService->rollbackWithoutException();
         }
 
-        if ($stateService->resultIsExists('ActionWithContract')) {
+        if ($stateService->resultIsExists('ActorWithContract')) {
             $stateService->rollbackWithoutException();
         }
     }
@@ -314,41 +250,7 @@ class MainAfterStateHandlerWithRollback implements MainAfterStateHandlerInterfac
     }
 }
 
-class MainAfterStateHandlerWithTrigger implements MainAfterStateHandlerInterface
-{
-    #[Override]
-    public function handle(StateMainAfterService $stateService, StateContext $context): void
-    {
-        $stateService->addTrigger(
-            new Trigger(
-                subjectId: 'ActionFromTest',
-                actionId: 'SubscribedActionFromTest',
-            ),
-        );
-
-        $stateService->triggerIsExists(
-            new Trigger(
-                subjectId: 'ActionFromTest',
-                actionId: 'SubscribedActionFromTest',
-            ),
-        );
-
-        $stateService->removeTrigger(
-            new Trigger(
-                subjectId: 'ActionFromTest',
-                actionId: 'SubscribedActionFromTest',
-            ),
-        );
-    }
-
-    #[Override]
-    public function observed(StateContext $context): array
-    {
-        return [];
-    }
-}
-
-class MainAfterStateHandlerWithAction implements MainAfterStateHandlerInterface
+class MainAfterStateHandlerWithActor implements MainAfterStateHandlerInterface
 {
     #[Override]
     public function handle(StateMainAfterService $stateService, StateContext $context): void
@@ -363,7 +265,7 @@ class MainAfterStateHandlerWithAction implements MainAfterStateHandlerInterface
     }
 }
 
-class Rollback implements RollbackActionInterface
+class Rollback implements RollbackActorInterface
 {
     #[Override]
     public function run(RollbackDto $rollback): void

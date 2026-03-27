@@ -21,7 +21,7 @@ class StateMainResumeEventListener
     public function __invoke(TaskResumeEvent $event): void
     {
         try {
-            $this->state->resolveResumeAction($event->task->action->getId());
+            $this->state->resolveResumeActor($event->task->actor->getId());
             $this->stateMain->resume($event->task);
         } catch (Throwable $e) {
             $this->errorHandler->handle($e, $this->state->getLog());
