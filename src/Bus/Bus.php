@@ -28,7 +28,7 @@ final class Bus
     private array $heldTasks = [];
 
     /** @var array<string, string[]> */
-    private array $alternates = [];
+    private array $fallbacks = [];
 
     /** @var array<string, int> */
     private array $retries = [];
@@ -100,7 +100,7 @@ final class Bus
     {
         $this->heldTasks = [];
         $this->retries = [];
-        $this->alternates = [];
+        $this->fallbacks = [];
         $this->finalized = [];
     }
 
@@ -298,7 +298,7 @@ final class Bus
     }
 
     /**
-     * Handles failed required actions and attempts alternates
+     * Handles failed required actions and attempts fallbacks
      *
      * @param array<CompleteAction> $completedRequirements
      */
@@ -315,7 +315,7 @@ final class Bus
 
         $replacedCount = 0;
         foreach ($failActions as $failAction) {
-            $this->alternates[$failAction->action->getId() . '.' . $task->getScope()] = $failAction->action->getAlternates();
+            $this->fallbacks[$failAction->action->getId() . '.' . $task->getScope()] = $failAction->action->getFallbacks();
 
             if (true === $this->tryReplaceFailedAction($failAction->action->getId(), $task->getScope())) {
                 $replacedCount++;
@@ -330,22 +330,22 @@ final class Bus
     }
 
     /**
-     * Attempts to replace a failed action with alternates
+     * Attempts to replace a failed action with fallback
      */
     private function tryReplaceFailedAction(string $failActionId, string $scope): bool
     {
-        foreach ($this->alternates[$failActionId . '.' . $scope] as $alternateId) {
-            $alternate = $this->actionStorage->get($alternateId);
+        foreach ($this->fallbacks[$failActionId . '.' . $scope] as $fallbackId) {
+            $fallback = $this->actionStorage->get($fallbackId);
 
-            if (true === $this->completeActionStorage->isExists($alternateId, $scope)) {
-                $completeAction = $this->completeActionStorage->get($alternateId, $scope);
+            if (true === $this->completeActionStorage->isExists($fallbackId, $scope)) {
+                $completeAction = $this->completeActionStorage->get($fallbackId, $scope);
                 if (ResultStatus::Success === $completeAction->result->status) {
                     return true;
                 }
                 continue;
             }
 
-            $this->doAction($alternate, $scope);
+            $this->doAction($fallback, $scope);
             return false;
         }
 
@@ -359,7 +359,7 @@ final class Bus
      */
     private function handleUnresolvedFailures(Task $task, array $failActions): bool
     {
-        if (true === $this->hasPendingAlternates($failActions, $task->getScope())) {
+        if (true === $this->hasPendingFallbacks($failActions, $task->getScope())) {
             return false;
         }
 
@@ -374,15 +374,15 @@ final class Bus
     }
 
     /**
-     * Checks if there are pending alternate actions
+     * Checks if there are pending fallback actions
      *
      * @param array<CompleteAction> $failActions
      */
-    private function hasPendingAlternates(array $failActions, string $scope): bool
+    private function hasPendingFallbacks(array $failActions, string $scope): bool
     {
         foreach ($failActions as $failAction) {
-            foreach ($this->alternates[$failAction->action->getId() . '.' . $scope] as $alternate) {
-                if ($this->taskQueue->inQueue($alternate)) {
+            foreach ($this->fallbacks[$failAction->action->getId() . '.' . $scope] as $fallback) {
+                if ($this->taskQueue->inQueue($fallback)) {
                     return true;
                 }
             }

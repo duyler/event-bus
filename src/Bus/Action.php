@@ -31,10 +31,10 @@ final class Action
     private readonly array $externalSealed;
 
     /** @var string[] */
-    private readonly array $alternates;
+    private readonly array $fallbacks;
 
     /** @var array<array-key, string|UnitEnum> */
-    private readonly array $externalAlternates;
+    private readonly array $externalFallbacks;
 
     private ?string $onOne = null;
 
@@ -47,7 +47,7 @@ final class Action
     /**
      * @param array<array-key, string|UnitEnum> $externalRequired
      * @param array<array-key, string|UnitEnum> $sealed
-     * @param array<array-key, string|UnitEnum> $alternates
+     * @param array<array-key, string|UnitEnum> $fallbacks
      */
     public function __construct(
         private readonly string $id,
@@ -87,7 +87,7 @@ final class Action
         private readonly bool $private = false,
         array $sealed = [],
         private readonly bool $silent = false,
-        array $alternates = [],
+        array $fallbacks = [],
         private readonly int $retries = 0,
         private readonly ?DateInterval $retryDelay = null,
 
@@ -128,15 +128,15 @@ final class Action
             $this->required->append(IdFormatter::toString($actionId));
         }
 
-        $alternatesActions = [];
+        $fallbackActions = [];
 
         /** @var string|UnitEnum $actionId */
-        foreach ($alternates as $actionId) {
-            $alternatesActions[] = IdFormatter::toString($actionId);
+        foreach ($fallbacks as $actionId) {
+            $fallbackActions[] = IdFormatter::toString($actionId);
         }
 
-        $this->alternates = $alternatesActions;
-        $this->externalAlternates = $alternates;
+        $this->fallbacks = $fallbackActions;
+        $this->externalFallbacks = $fallbacks;
 
         $allowActions = [];
 
@@ -187,7 +187,7 @@ final class Action
             private: $externalAction->private,
             sealed: $externalAction->sealed,
             silent: $externalAction->silent,
-            alternates: $externalAction->alternates,
+            fallbacks: $externalAction->fallbacks,
             retries: $externalAction->retries,
             retryDelay: $externalAction->retryDelay,
             attributes: $externalAction->attributes,
@@ -280,17 +280,17 @@ final class Action
     /**
      * @return string[]
      */
-    public function getAlternates(): array
+    public function getFallbacks(): array
     {
-        return $this->alternates;
+        return $this->fallbacks;
     }
 
     /**
      * @return array<array-key, string|UnitEnum>
      */
-    public function getExternalAlternates(): array
+    public function getExternalFallbacks(): array
     {
-        return $this->externalAlternates;
+        return $this->externalFallbacks;
     }
 
     public function getId(): string

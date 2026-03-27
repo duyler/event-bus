@@ -75,7 +75,7 @@ readonly class ActionService
             $this->checkRequiredAction($action->getId(), $requiredAction);
         }
 
-        foreach ($action->getAlternates() as $actionId) {
+        foreach ($action->getFallbacks() as $actionId) {
             if (false === $this->actionStorage->isExists($actionId)) {
                 $this->throwActionNotDefined($actionId);
             }
@@ -139,7 +139,7 @@ readonly class ActionService
                 $this->checkRequiredAction($action->getId(), $actions[$subject]);
             }
 
-            foreach ($action->getAlternates() as $actionId) {
+            foreach ($action->getFallbacks() as $actionId) {
                 if (false === array_key_exists($actionId, $actions)) {
                     $this->throwActionNotDefined($actionId);
                 }

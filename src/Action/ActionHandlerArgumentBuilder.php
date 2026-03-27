@@ -154,17 +154,17 @@ class ActionHandlerArgumentBuilder
         $results = [];
 
         if (ResultStatus::Fail === $completeAction->result->status && null !== $completeAction->action->getType()) {
-            $alternatesActions = $this->completeActionStorage->getAllByArray($completeAction->action->getAlternates());
+            $fallbackActions = $this->completeActionStorage->getAllByArray($completeAction->action->getFallbacks());
 
-            foreach ($alternatesActions as $alternateAction) {
-                if (ResultStatus::Success === $alternateAction->result->status) {
-                    if (null === $alternateAction->result->data) {
+            foreach ($fallbackActions as $fallbackAction) {
+                if (ResultStatus::Success === $fallbackAction->result->status) {
+                    if (null === $fallbackAction->result->data) {
                         continue;
                     }
 
-                    /** @var object $alternateActionResultData */
-                    $alternateActionResultData = $alternateAction->result->data;
-                    $results[$completeAction->action->getId()] = $alternateActionResultData;
+                    /** @var object $fallbackActionResultData */
+                    $fallbackActionResultData = $fallbackAction->result->data;
+                    $results[$completeAction->action->getId()] = $fallbackActionResultData;
 
                     return $results;
                 }

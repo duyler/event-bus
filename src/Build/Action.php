@@ -64,7 +64,7 @@ final readonly class Action implements JsonSerializable
         public bool $silent = false,
 
         /** @var array<array-key, string|UnitEnum> */
-        public array $alternates = [],
+        public array $fallbacks = [],
         public int $retries = 0,
         public ?DateInterval $retryDelay = null,
 
@@ -121,7 +121,7 @@ final readonly class Action implements JsonSerializable
             private: $internalAction->isPrivate(),
             sealed: $internalAction->getExternalSealed(),
             silent: $internalAction->isSilent(),
-            alternates: $internalAction->getExternalAlternates(),
+            fallbacks: $internalAction->getExternalFallbacks(),
             retries: $internalAction->getRetries(),
             retryDelay: $internalAction->getRetryDelay(),
             attributes: $internalAction->getAttributes(),
@@ -143,10 +143,10 @@ final readonly class Action implements JsonSerializable
             $sealed[] = IdFormatter::toString($actionId);
         }
 
-        $alternates = [];
+        $fallbacks = [];
 
-        foreach ($this->alternates as $actionId) {
-            $alternates[] = IdFormatter::toString($actionId);
+        foreach ($this->fallbacks as $actionId) {
+            $fallbacks[] = IdFormatter::toString($actionId);
         }
 
         $onAny = [];
@@ -181,7 +181,7 @@ final readonly class Action implements JsonSerializable
             'context' => $this->context,
             'private' => $this->private,
             'sealed' => $sealed,
-            'alternates' => $alternates,
+            'fallbacks' => $fallbacks,
             'rollback' => $this->rollback,
             'attributes' => $this->attributes,
         ];

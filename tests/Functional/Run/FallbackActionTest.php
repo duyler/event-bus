@@ -13,10 +13,10 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-class AlternateActionTest extends TestCase
+class FallbackActionTest extends TestCase
 {
     #[Test]
-    public function run_with_alternate_action()
+    public function run_with_fallback_action()
     {
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->doAction(
@@ -37,15 +37,15 @@ class AlternateActionTest extends TestCase
                 type: stdClass::class,
                 immutable: false,
                 externalAccess: true,
-                alternates: [
-                    'AlternateRequiredAction',
+                fallbacks: [
+                    'FallbackRequiredAction',
                 ],
             ),
         );
 
         $busBuilder->addAction(
             new Action(
-                id: 'AlternateRequiredAction',
+                id: 'FallbackRequiredAction',
                 handler: fn() => new stdClass(),
                 type: stdClass::class,
                 immutable: false,
@@ -57,11 +57,11 @@ class AlternateActionTest extends TestCase
 
         $this->assertTrue($bus->resultIsExists('Test'));
         $this->assertTrue($bus->resultIsExists('RequiredAction'));
-        $this->assertTrue($bus->resultIsExists('AlternateRequiredAction'));
+        $this->assertTrue($bus->resultIsExists('FallbackRequiredAction'));
     }
 
     #[Test]
-    public function run_with_alternate_action_with_not_allowed_skip()
+    public function run_with_fallback_action_with_not_allowed_skip()
     {
         $busBuilder = new BusBuilder(new BusConfig(allowSkipUnresolvedActions: false));
         $busBuilder->doAction(
@@ -81,15 +81,15 @@ class AlternateActionTest extends TestCase
                 type: stdClass::class,
                 immutable: false,
                 externalAccess: true,
-                alternates: [
-                    'AlternateRequiredAction',
+                fallbacks: [
+                    'FallbackRequiredAction',
                 ],
             ),
         );
 
         $busBuilder->addAction(
             new Action(
-                id: 'AlternateRequiredAction',
+                id: 'FallbackRequiredAction',
                 handler: fn() => Result::fail(),
                 type: stdClass::class,
                 immutable: false,
@@ -103,11 +103,11 @@ class AlternateActionTest extends TestCase
 
         $this->assertFalse($bus->resultIsExists('Test'));
         $this->assertTrue($bus->resultIsExists('RequiredAction'));
-        $this->assertTrue($bus->resultIsExists('AlternateRequiredAction'));
+        $this->assertTrue($bus->resultIsExists('FallbackRequiredAction'));
     }
 
     #[Test]
-    public function run_with_alternate_action_with_allowed_skip()
+    public function run_with_fallback_action_with_allowed_skip()
     {
         $busBuilder = new BusBuilder(new BusConfig(allowSkipUnresolvedActions: true));
         $busBuilder->doAction(
@@ -127,15 +127,15 @@ class AlternateActionTest extends TestCase
                 type: stdClass::class,
                 immutable: false,
                 externalAccess: true,
-                alternates: [
-                    'AlternateRequiredAction',
+                fallbacks: [
+                    'FallbackRequiredAction',
                 ],
             ),
         );
 
         $busBuilder->addAction(
             new Action(
-                id: 'AlternateRequiredAction',
+                id: 'FallbackRequiredAction',
                 handler: fn() => Result::fail(),
                 type: stdClass::class,
                 immutable: false,
@@ -148,7 +148,7 @@ class AlternateActionTest extends TestCase
 
         $this->assertFalse($bus->resultIsExists('Test'));
         $this->assertTrue($bus->resultIsExists('RequiredAction'));
-        $this->assertTrue($bus->resultIsExists('AlternateRequiredAction'));
+        $this->assertTrue($bus->resultIsExists('FallbackRequiredAction'));
     }
 
     #[Test]
@@ -171,8 +171,8 @@ class AlternateActionTest extends TestCase
                 type: stdClass::class,
                 immutable: false,
                 externalAccess: true,
-                alternates: [
-                    'AlternateRequiredAction',
+                fallbacks: [
+                    'FallbackRequiredAction',
                 ],
                 retries: 2,
             ),
@@ -180,7 +180,7 @@ class AlternateActionTest extends TestCase
 
         $busBuilder->addAction(
             new Action(
-                id: 'AlternateRequiredAction',
+                id: 'FallbackRequiredAction',
                 handler: fn() => new stdClass(),
                 type: stdClass::class,
                 immutable: false,
@@ -192,6 +192,6 @@ class AlternateActionTest extends TestCase
 
         $this->assertTrue($bus->resultIsExists('Test'));
         $this->assertTrue($bus->resultIsExists('RequiredAction'));
-        $this->assertTrue($bus->resultIsExists('AlternateRequiredAction'));
+        $this->assertTrue($bus->resultIsExists('FallbackRequiredAction'));
     }
 }
