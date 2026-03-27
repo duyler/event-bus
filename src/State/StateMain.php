@@ -82,6 +82,7 @@ readonly class StateMain implements StateMainInterface
             $this->logService,
             $this->actorService,
             $this->queueService,
+            $task->getScope(),
         );
 
         foreach ($this->stateHandlerStorage->getMainBefore() as $handler) {

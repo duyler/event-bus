@@ -24,6 +24,7 @@ class StateMainBeforeService
         private readonly LogService $logService,
         private readonly ActorService $actorService,
         private readonly QueueService $queueService,
+        private readonly string $scope,
     ) {}
 
     public function substituteResult(ActorResultSubstitution $actorResultSubstitution): void
@@ -44,5 +45,10 @@ class StateMainBeforeService
     public function reject(): void
     {
         $this->task->reject();
+    }
+
+    public function getCurrentScope(): string
+    {
+        return $this->scope;
     }
 }

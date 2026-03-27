@@ -52,7 +52,7 @@ class StateMainAfterService
         return $this->resultStatus;
     }
 
-    public function getScope(): string
+    public function getCurrentScope(): string
     {
         return $this->scope;
     }
