@@ -28,8 +28,12 @@ final readonly class AfterCompleteActorEventListener
         $this->bus->afterCompleteActor($completeActor);
 
         if ($this->containerStorage->isExists($event->task->actor->getId(), $event->task->getScope())) {
-            $actorContainer = $this->containerStorage->get($event->task->actor->getId(), $event->task->getScope());
-            $actorContainer->finalize();
+            if ('common' === $event->task->getScope()) {
+                $actorContainer = $this->containerStorage->get($event->task->actor->getId(), $event->task->getScope());
+                $actorContainer->finalize();
+            } else {
+                $this->containerStorage->remove($event->task->actor->getId(), $event->task->getScope());
+            }
         }
     }
 }

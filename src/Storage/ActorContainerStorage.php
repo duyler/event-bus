@@ -40,8 +40,8 @@ class ActorContainerStorage
         return isset($this->data[$actorId . '.' . $scope]);
     }
 
-    public function remove(string $actorId): void
+    public function remove(string $actorId, string $scope = 'common'): void
     {
-        unset($this->data[$actorId]);
+        unset($this->data[$actorId . '.' . $scope]);
     }
 }
