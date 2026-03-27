@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
-use Duyler\EventBus\Action\Context\ActionContext;
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Actor\Context\ActorContext;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\Build\Event as BuildEvent;
 use Duyler\EventBus\Build\Id;
 use Duyler\EventBus\BusBuilder;
@@ -33,18 +33,18 @@ class ReactiveSubscriptionTest extends TestCase
         $builder->addEvent(BuildEvent::success('PaymentApproved', ReactiveTestDTO::class));
         $builder->addEvent(BuildEvent::success('InventoryReserved', ReactiveTestDTO::class));
 
-        $builder->doAction(
-            new Action(
+        $builder->doActor(
+            new Actor(
                 id: 'CreateOrder',
                 handler: fn() => new ReactiveTestDTO(orderId: 'order-123', amount: 100),
                 type: ReactiveTestDTO::class,
             ),
         );
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'CompleteOrder',
-                handler: fn(ActionContext $context) => $context->argument(),
+                handler: fn(ActorContext $context) => $context->argument(),
                 onAll: [
                     Id::success('PaymentApproved'),
                     Id::success('InventoryReserved'),
@@ -72,7 +72,7 @@ class ReactiveSubscriptionTest extends TestCase
     }
 
     #[Test]
-    public function chain_of_actions_via_on_one(): void
+    public function chain_of_actors_via_on_one(): void
     {
         $builder = new BusBuilder(new BusConfig());
 
@@ -80,8 +80,8 @@ class ReactiveSubscriptionTest extends TestCase
         $builder->addEvent(BuildEvent::success('ValidateOrder', ReactiveTestDTO::class));
         $builder->addEvent(BuildEvent::success('ProcessPayment', ReactiveTestDTO::class));
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'ValidateOrder',
                 handler: fn() => new ReactiveTestDTO(orderId: 'validated'),
                 onOne: Id::success('CreateOrder'),
@@ -90,8 +90,8 @@ class ReactiveSubscriptionTest extends TestCase
             ),
         );
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'ProcessPayment',
                 handler: fn() => new ReactiveTestDTO(orderId: 'paid'),
                 onOne: Id::success('ValidateOrder'),
@@ -100,8 +100,8 @@ class ReactiveSubscriptionTest extends TestCase
             ),
         );
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'ShipOrder',
                 handler: fn() => new ReactiveTestDTO(orderId: 'shipped'),
                 onOne: Id::success('ProcessPayment'),
@@ -110,8 +110,8 @@ class ReactiveSubscriptionTest extends TestCase
             ),
         );
 
-        $builder->doAction(
-            new Action(
+        $builder->doActor(
+            new Actor(
                 id: 'CreateOrder',
                 handler: fn() => new ReactiveTestDTO(orderId: 'created'),
                 type: ReactiveTestDTO::class,
@@ -128,7 +128,7 @@ class ReactiveSubscriptionTest extends TestCase
     }
 
     #[Test]
-    public function branching_different_actions_on_success_fail(): void
+    public function branching_different_actors_on_success_fail(): void
     {
         $builder = new BusBuilder(new BusConfig());
 
@@ -137,8 +137,8 @@ class ReactiveSubscriptionTest extends TestCase
         $builder->addEvent(BuildEvent::success('RiskCheck'));
         $builder->addEvent(BuildEvent::fail('RiskCheck'));
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'HandleSuccess',
                 handler: fn() => new ReactiveTestDTO(orderId: 'success'),
                 onOne: Id::success('RiskCheck'),
@@ -147,8 +147,8 @@ class ReactiveSubscriptionTest extends TestCase
             ),
         );
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'HandleFailure',
                 handler: fn() => new ReactiveTestDTO(orderId: 'failure'),
                 onOne: Id::fail('RiskCheck'),
@@ -157,8 +157,8 @@ class ReactiveSubscriptionTest extends TestCase
             ),
         );
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'FinalSuccess',
                 handler: fn() => new ReactiveTestDTO(orderId: 'final-success'),
                 onOne: Id::success('HandleSuccess'),
@@ -167,8 +167,8 @@ class ReactiveSubscriptionTest extends TestCase
             ),
         );
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'FinalFailure',
                 handler: fn() => new ReactiveTestDTO(orderId: 'final-failure'),
                 onOne: Id::success('HandleFailure'),
@@ -177,8 +177,8 @@ class ReactiveSubscriptionTest extends TestCase
             ),
         );
 
-        $builder->doAction(
-            new Action(
+        $builder->doActor(
+            new Actor(
                 id: 'RiskCheck',
                 handler: fn() => Result::fail(),
             ),
@@ -194,30 +194,30 @@ class ReactiveSubscriptionTest extends TestCase
     }
 
     #[Test]
-    public function on_one_with_required_actions(): void
+    public function on_one_with_required_actors(): void
     {
         $builder = new BusBuilder(new BusConfig());
 
         $builder->addEvent(BuildEvent::success('LoadConfig', ReactiveTestDTO::class));
 
-        $builder->doAction(
-            new Action(
+        $builder->doActor(
+            new Actor(
                 id: 'LoadConfig',
                 handler: fn() => new ReactiveTestDTO(orderId: 'config'),
                 type: ReactiveTestDTO::class,
             ),
         );
 
-        $builder->doAction(
-            new Action(
+        $builder->doActor(
+            new Actor(
                 id: 'ConnectDatabase',
                 handler: fn() => new ReactiveTestDTO(orderId: 'db'),
                 type: ReactiveTestDTO::class,
             ),
         );
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'StartApplication',
                 handler: fn() => new ReactiveTestDTO(orderId: 'started'),
                 onOne: Id::success('LoadConfig'),
@@ -242,10 +242,10 @@ class ReactiveSubscriptionTest extends TestCase
 
         $builder->addEvent(BuildEvent::success('Event1', ReactiveTestDTO::class));
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'DataProcessor',
-                handler: fn(ActionContext $context) => $context->argument(),
+                handler: fn(ActorContext $context) => $context->argument(),
                 onAny: [
                     Id::success('Event1'),
                 ],
@@ -273,11 +273,11 @@ class ReactiveSubscriptionTest extends TestCase
         $builder = new BusBuilder(new BusConfig());
 
         $builder->addEvent(BuildEvent::success('ExternalTrigger', ReactiveTestDTO::class));
-        $builder->addEvent(BuildEvent::success('OnOneAction', ReactiveTestDTO::class));
+        $builder->addEvent(BuildEvent::success('OnOneActor', ReactiveTestDTO::class));
 
-        $builder->addAction(
-            new Action(
-                id: 'OnOneAction',
+        $builder->addActor(
+            new Actor(
+                id: 'OnOneActor',
                 handler: fn() => new ReactiveTestDTO(orderId: 'on-one'),
                 onOne: Id::success('ExternalTrigger'),
                 type: ReactiveTestDTO::class,
@@ -285,26 +285,26 @@ class ReactiveSubscriptionTest extends TestCase
             ),
         );
 
-        $builder->addAction(
-            new Action(
-                id: 'OnAnyAction',
+        $builder->addActor(
+            new Actor(
+                id: 'OnAnyActor',
                 handler: fn() => new ReactiveTestDTO(orderId: 'on-any'),
                 onAny: [
                     Id::success('ExternalTrigger'),
-                    Id::success('OnOneAction'),
+                    Id::success('OnOneActor'),
                 ],
                 type: ReactiveTestDTO::class,
                 externalAccess: true,
             ),
         );
 
-        $builder->addAction(
-            new Action(
-                id: 'OnAllAction',
+        $builder->addActor(
+            new Actor(
+                id: 'OnAllActor',
                 handler: fn() => new ReactiveTestDTO(orderId: 'on-all'),
                 onAll: [
                     Id::success('ExternalTrigger'),
-                    Id::success('OnOneAction'),
+                    Id::success('OnOneActor'),
                 ],
                 type: ReactiveTestDTO::class,
                 externalAccess: true,
@@ -318,9 +318,9 @@ class ReactiveSubscriptionTest extends TestCase
         ));
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('OnOneAction'));
-        $this->assertTrue($bus->resultIsExists('OnAnyAction'));
-        $this->assertTrue($bus->resultIsExists('OnAllAction'));
+        $this->assertTrue($bus->resultIsExists('OnOneActor'));
+        $this->assertTrue($bus->resultIsExists('OnAnyActor'));
+        $this->assertTrue($bus->resultIsExists('OnAllActor'));
     }
 
     #[Test]
@@ -332,16 +332,16 @@ class ReactiveSubscriptionTest extends TestCase
         $builder->addEvent(BuildEvent::success('BranchA', ReactiveTestDTO::class));
         $builder->addEvent(BuildEvent::success('BranchB', ReactiveTestDTO::class));
 
-        $builder->doAction(
-            new Action(
+        $builder->doActor(
+            new Actor(
                 id: 'Start',
                 handler: fn() => new ReactiveTestDTO(orderId: 'start'),
                 type: ReactiveTestDTO::class,
             ),
         );
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'BranchA',
                 handler: fn() => new ReactiveTestDTO(orderId: 'a'),
                 onOne: Id::success('Start'),
@@ -350,8 +350,8 @@ class ReactiveSubscriptionTest extends TestCase
             ),
         );
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'BranchB',
                 handler: fn() => new ReactiveTestDTO(orderId: 'b'),
                 onOne: Id::success('Start'),
@@ -360,8 +360,8 @@ class ReactiveSubscriptionTest extends TestCase
             ),
         );
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'Merge',
                 handler: fn() => new ReactiveTestDTO(orderId: 'merge'),
                 onAll: [
@@ -389,20 +389,20 @@ class ReactiveSubscriptionTest extends TestCase
 
         $builder->addEvent(BuildEvent::success('FallbackHandler', ReactiveTestDTO::class));
         $builder->addEvent(BuildEvent::success('NotificationService', ReactiveTestDTO::class));
-        $builder->addEvent(BuildEvent::fail('MainAction'));
+        $builder->addEvent(BuildEvent::fail('MainActor'));
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'FallbackHandler',
                 handler: fn() => new ReactiveTestDTO(orderId: 'fallback'),
-                onOne: Id::fail('MainAction'),
+                onOne: Id::fail('MainActor'),
                 type: ReactiveTestDTO::class,
                 externalAccess: true,
             ),
         );
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'NotificationService',
                 handler: fn() => new ReactiveTestDTO(orderId: 'notified'),
                 onAny: [
@@ -413,9 +413,9 @@ class ReactiveSubscriptionTest extends TestCase
             ),
         );
 
-        $builder->doAction(
-            new Action(
-                id: 'MainAction',
+        $builder->doActor(
+            new Actor(
+                id: 'MainActor',
                 handler: fn() => Result::fail(),
             ),
         );

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Bus;
 
-use Duyler\EventBus\Contract\RollbackActionInterface;
+use Duyler\EventBus\Contract\RollbackActorInterface;
 use Duyler\EventBus\Dto\Rollback as RollbackDto;
-use Duyler\EventBus\Storage\ActionContainerStorage;
+use Duyler\EventBus\Storage\ActorContainerStorage;
 use Duyler\EventBus\Storage\TaskStorage;
 
 use function is_callable;
@@ -14,7 +14,7 @@ use function is_callable;
 final readonly class Rollback
 {
     public function __construct(
-        private ActionContainerStorage $containerStorage,
+        private ActorContainerStorage $containerStorage,
         private TaskStorage $taskStorage,
         private State $state,
     ) {}
@@ -23,38 +23,38 @@ final readonly class Rollback
     {
         $successLog = $this->state->getSuccessLog();
 
-        foreach ($successLog as $actionId) {
-            $tasks = $this->taskStorage->getAllByActionId($actionId);
+        foreach ($successLog as $actorId) {
+            $tasks = $this->taskStorage->getAllByActorId($actorId);
             foreach ($tasks as $task) {
 
-                $actionRollback = $task->action->getRollback();
+                $actorRollback = $task->actor->getRollback();
 
-                if (null === $actionRollback) {
+                if (null === $actorRollback) {
                     continue;
                 }
 
-                $actionContainer = $this->containerStorage->get($task->action->getId());
+                $actorContainer = $this->containerStorage->get($task->actor->getId());
 
                 $rollbackDto = new RollbackDto(
-                    container: $actionContainer,
-                    action: $task->action,
+                    container: $actorContainer,
+                    actor: $task->actor,
                     argument: $task->getRunner()?->getArgument(),
                     result: $task->getResult(),
                 );
 
-                if (is_callable($actionRollback)) {
-                    ($actionRollback)($rollbackDto);
+                if (is_callable($actorRollback)) {
+                    ($actorRollback)($rollbackDto);
                     continue;
                 }
 
-                /** @var RollbackActionInterface $rollback */
-                $rollback = $actionContainer->get($actionRollback);
+                /** @var RollbackActorInterface $rollback */
+                $rollback = $actorContainer->get($actorRollback);
                 $this->rollback($rollback, $rollbackDto);
             }
         }
     }
 
-    private function rollback(RollbackActionInterface $rollback, RollbackDto $rollbackService): void
+    private function rollback(RollbackActorInterface $rollback, RollbackDto $rollbackService): void
     {
         $rollback->run($rollbackService);
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\State;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\Build\Context;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
@@ -25,9 +25,9 @@ class MainEndTest extends TestCase
         $busBuilder->addStateContext(new Context(
             [MainEndStateHandler::class],
         ));
-        $busBuilder->doAction(
-            new Action(
-                id: 'ActionFromBuilder',
+        $busBuilder->doActor(
+            new Actor(
+                id: 'ActorFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
             ),
@@ -35,7 +35,7 @@ class MainEndTest extends TestCase
 
         $bus = $busBuilder->build()->run();
 
-        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('ActorFromBuilder'));
     }
 }
 
@@ -44,9 +44,9 @@ class MainEndStateHandler implements MainEndStateHandlerInterface
     #[Override]
     public function handle(StateMainEndService $stateService, StateContext $context): void
     {
-        $stateService->resultIsExists('ActionFromBuilder');
-        $stateService->getResult('ActionFromBuilder');
-        'ActionFromBuilder' === $stateService->getFirstAction();
-        'ActionFromBuilder' === $stateService->getLastAction();
+        $stateService->resultIsExists('ActorFromBuilder');
+        $stateService->getResult('ActorFromBuilder');
+        'ActorFromBuilder' === $stateService->getFirstActor();
+        'ActorFromBuilder' === $stateService->getLastActor();
     }
 }

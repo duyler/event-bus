@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use PHPUnit\Framework\Attributes\Test;
@@ -17,8 +17,8 @@ class ResetTest extends TestCase
     {
         $busBuilder = new BusBuilder(new BusConfig());
 
-        $busBuilder->doAction(
-            new Action(
+        $busBuilder->doActor(
+            new Actor(
                 id: 'Test',
                 handler: function (): void {},
                 externalAccess: true,

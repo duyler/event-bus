@@ -20,7 +20,7 @@ class InvalidSubscriptionCombinationException extends Exception
         );
 
         parent::__construct(
-            'Action cannot have multiple subscription types: ' . implode(', ', $typeNames),
+            'Actor cannot have multiple subscription types: ' . implode(', ', $typeNames),
         );
     }
 }

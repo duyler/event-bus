@@ -6,11 +6,11 @@ namespace Duyler\EventBus;
 
 use Duyler\DI\Container;
 use Duyler\DI\ContainerConfig;
-use Duyler\EventBus\Build\Action as ExternalAction;
+use Duyler\EventBus\Build\Actor as ExternalActor;
 use Duyler\EventBus\Build\Context;
 use Duyler\EventBus\Build\Event;
 use Duyler\EventBus\Build\SharedService;
-use Duyler\EventBus\Bus\Action as InternalAction;
+use Duyler\EventBus\Bus\Actor as InternalActor;
 use Duyler\EventBus\Bus\DoWhile;
 use Duyler\EventBus\Bus\ErrorHandler;
 use Duyler\EventBus\Bus\State;
@@ -20,13 +20,13 @@ use Duyler\EventBus\Contract\ResourceInterface;
 use Duyler\EventBus\Contract\State\StateHandlerInterface;
 use Duyler\EventBus\Dto\ScheduledTask;
 use Duyler\EventBus\Event\EventDispatcher;
-use Duyler\EventBus\Exception\ActionAlreadyDefinedException;
+use Duyler\EventBus\Exception\ActorAlreadyDefinedException;
 use Duyler\EventBus\Formatter\IdFormatter;
 use Duyler\EventBus\Internal\ListenerProvider;
 use Duyler\EventBus\Scheduler\Scheduler;
 use Duyler\EventBus\Scheduler\Task\GcCollectCyclesTask;
 use Duyler\EventBus\Scheduler\Task\GcMemCachesTask;
-use Duyler\EventBus\Service\ActionService;
+use Duyler\EventBus\Service\ActorService;
 use Duyler\EventBus\Service\EventService;
 use Duyler\EventBus\Service\StateService;
 use InvalidArgumentException;
@@ -38,11 +38,11 @@ use function array_key_exists;
 
 class BusBuilder
 {
-    /** @var array<string, InternalAction> */
-    private array $actions = [];
+    /** @var array<string, InternalActor> */
+    private array $actors = [];
 
-    /** @var array<string, InternalAction> */
-    private array $doActions = [];
+    /** @var array<string, InternalActor> */
+    private array $doActors = [];
 
     /** @var StateHandlerInterface[] */
     private array $stateHandlers = [];
@@ -136,8 +136,8 @@ class BusBuilder
             }
         }
 
-        /** @var ActionService $actionService */
-        $actionService = $container->get(ActionService::class);
+        /** @var ActorService $actorService */
+        $actorService = $container->get(ActorService::class);
 
         /** @var EventService $eventService */
         $eventService = $container->get(EventService::class);
@@ -148,13 +148,13 @@ class BusBuilder
         $eventService->collect($this->events);
 
         foreach ($this->sharedServices as $sharedService) {
-            $actionService->addSharedService($sharedService);
+            $actorService->addSharedService($sharedService);
         }
 
-        $actionService->collect($this->actions);
+        $actorService->collect($this->actors);
 
-        foreach ($this->doActions as $action) {
-            $actionService->doExistsAction($action->getId());
+        foreach ($this->doActors as $actor) {
+            $actorService->doExistsActor($actor->getId());
         }
 
         foreach ($this->stateHandlers as $stateHandler) {
@@ -205,34 +205,34 @@ class BusBuilder
         $this->errorHandler = $errorHandler;
     }
 
-    public function actionIsExists(string|UnitEnum $actionId): bool
+    public function actorIsExists(string|UnitEnum $actorId): bool
     {
-        return array_key_exists(IdFormatter::toString($actionId), $this->actions);
+        return array_key_exists(IdFormatter::toString($actorId), $this->actors);
     }
 
-    public function addAction(ExternalAction $action): static
+    public function addActor(ExternalActor $actor): static
     {
-        $internalAction = InternalAction::fromExternal($action);
+        $internalActor = InternalActor::fromExternal($actor);
 
-        if (array_key_exists($internalAction->getId(), $this->actions)) {
-            throw new ActionAlreadyDefinedException($internalAction->getId());
+        if (array_key_exists($internalActor->getId(), $this->actors)) {
+            throw new ActorAlreadyDefinedException($internalActor->getId());
         }
 
-        $this->actions[$internalAction->getId()] = $internalAction;
+        $this->actors[$internalActor->getId()] = $internalActor;
 
         return $this;
     }
 
-    public function doAction(ExternalAction $action): static
+    public function doActor(ExternalActor $actor): static
     {
-        $internalAction = InternalAction::fromExternal($action);
+        $internalActor = InternalActor::fromExternal($actor);
 
-        if (array_key_exists($internalAction->getId(), $this->actions)) {
-            throw new ActionAlreadyDefinedException($internalAction->getId());
+        if (array_key_exists($internalActor->getId(), $this->actors)) {
+            throw new ActorAlreadyDefinedException($internalActor->getId());
         }
 
-        $this->actions[$internalAction->getId()] = $internalAction;
-        $this->doActions[$internalAction->getId()] = $internalAction;
+        $this->actors[$internalActor->getId()] = $internalActor;
+        $this->doActors[$internalActor->getId()] = $internalActor;
 
         return $this;
     }

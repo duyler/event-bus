@@ -8,7 +8,7 @@ final readonly class Log
 {
     public function __construct(
         /** @var string[] */
-        public array $actionLog,
+        public array $actorLog,
 
         /** @var string[] */
         public array $mainEventLog,
@@ -30,14 +30,14 @@ final readonly class Log
 
         /** @var string[] */
         public array $failLog,
-        public ?string $beginAction,
-        public ?string $errorAction,
+        public ?string $beginActor,
+        public ?string $errorActor,
     ) {}
 
     public function toArray(): array
     {
         return [
-            'action' => $this->actionLog,
+            'actor' => $this->actorLog,
             'main_event' => $this->mainEventLog,
             'repeated_event' => $this->repeatedEventLog,
             'event' => $this->eventLog,
@@ -45,8 +45,8 @@ final readonly class Log
             'success' => $this->successLog,
             'suspended' => $this->suspendedLog,
             'fail' => $this->failLog,
-            'begin_action' => $this->beginAction,
-            'error_action' => $this->errorAction,
+            'begin_actor' => $this->beginActor,
+            'error_actor' => $this->errorActor,
         ];
     }
 }

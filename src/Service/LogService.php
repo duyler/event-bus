@@ -15,26 +15,26 @@ readonly class LogService
         private State $state,
     ) {}
 
-    public function getFirstAction(): ?string
+    public function getFirstActor(): ?string
     {
-        $actionLog = $this->state->getActionLog();
+        $actorLog = $this->state->getActorLog();
 
-        if (empty($actionLog)) {
+        if (empty($actorLog)) {
             return null;
         }
 
-        return (string) current($actionLog);
+        return (string) current($actorLog);
     }
 
-    public function getLastAction(): ?string
+    public function getLastActor(): ?string
     {
-        $actionLog = $this->state->getActionLog();
+        $actorLog = $this->state->getActorLog();
 
-        if (empty($actionLog)) {
+        if (empty($actorLog)) {
             return null;
         }
 
-        return (string) end($actionLog);
+        return (string) end($actorLog);
     }
 
     public function flushSuccessLog(): void

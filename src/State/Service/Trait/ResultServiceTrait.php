@@ -14,13 +14,13 @@ use UnitEnum;
  */
 trait ResultServiceTrait
 {
-    public function getResult(string|UnitEnum $actionId, string $scope = 'common'): Result
+    public function getResult(string|UnitEnum $actorId, string $scope = 'common'): Result
     {
-        return $this->resultService->getResult(IdFormatter::toString($actionId), $scope);
+        return $this->resultService->getResult(IdFormatter::toString($actorId), $scope);
     }
 
-    public function resultIsExists(string|UnitEnum $actionId, string $scope = 'common'): bool
+    public function resultIsExists(string|UnitEnum $actorId, string $scope = 'common'): bool
     {
-        return $this->resultService->resultIsExists(IdFormatter::toString($actionId), $scope);
+        return $this->resultService->resultIsExists(IdFormatter::toString($actorId), $scope);
     }
 }

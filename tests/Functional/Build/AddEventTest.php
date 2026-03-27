@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 class AddEventTest extends TestCase
 {
     #[Test]
-    public function eventIsExists_with_action()
+    public function eventIsExists_with_actor()
     {
         $builder = new BusBuilder(new BusConfig());
 

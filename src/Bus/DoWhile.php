@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Bus;
 
 use Duyler\EventBus\BusConfig;
-use Duyler\EventBus\Contract\ActionRunnerProviderInterface;
+use Duyler\EventBus\Contract\ActorRunnerProviderInterface;
 use Duyler\EventBus\Contract\ErrorHandlerInterface;
 use Duyler\EventBus\Contract\LoopInterface;
 use Duyler\EventBus\Contract\ResourceInterface;
@@ -35,7 +35,7 @@ final class DoWhile implements LoopInterface
     private EvWatcher $watcher;
 
     public function __construct(
-        private readonly ActionRunnerProviderInterface $actionRunnerProvider,
+        private readonly ActorRunnerProviderInterface $actorRunnerProvider,
         private readonly TaskQueue $taskQueue,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly BusConfig $busConfig,
@@ -93,7 +93,7 @@ final class DoWhile implements LoopInterface
 
             try {
                 if (TaskStatus::Primary === $task->getStatus()) {
-                    $task->run($this->actionRunnerProvider->getRunner($task->action, $task->getScope()));
+                    $task->run($this->actorRunnerProvider->getRunner($task->actor, $task->getScope()));
                 } elseif (TaskStatus::Retry === $task->getStatus()) {
                     if (false === $task->isReady()) {
                         $this->taskQueue->push($task);

@@ -7,7 +7,7 @@ namespace Duyler\EventBus\Bus;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Enum\SubscriptionType;
 use Duyler\EventBus\Formatter\IdFormatter;
-use Duyler\EventBus\Storage\CompleteActionStorage;
+use Duyler\EventBus\Storage\CompleteActorStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
 
 use function strrpos;
@@ -16,42 +16,42 @@ use function substr;
 final readonly class SubscriptionChecker
 {
     public function __construct(
-        private CompleteActionStorage $completeActionStorage,
+        private CompleteActorStorage $completeActorStorage,
         private EventRelationStorage $eventRelationStorage,
     ) {}
 
-    public function isSatisfied(Action $action): bool
+    public function isSatisfied(Actor $actor): bool
     {
-        return match ($action->getSubscriptionType()) {
+        return match ($actor->getSubscriptionType()) {
             SubscriptionType::None => true,
-            SubscriptionType::One => $this->isOnOneSatisfied($action),
-            SubscriptionType::Any => $this->isOnAnySatisfied($action),
-            SubscriptionType::All => $this->isOnAllSatisfied($action),
+            SubscriptionType::One => $this->isOnOneSatisfied($actor),
+            SubscriptionType::Any => $this->isOnAnySatisfied($actor),
+            SubscriptionType::All => $this->isOnAllSatisfied($actor),
         };
     }
 
-    private function isOnOneSatisfied(Action $action): bool
+    private function isOnOneSatisfied(Actor $actor): bool
     {
-        $eventId = $action->getOnOne();
+        $eventId = $actor->getOnOne();
         assert(null !== $eventId);
 
         return $this->isEventTriggered($eventId);
     }
 
-    private function isOnAnySatisfied(Action $action): bool
+    private function isOnAnySatisfied(Actor $actor): bool
     {
-        return array_any($action->getOnAny(), fn($eventId) => $this->isEventTriggered($eventId));
+        return array_any($actor->getOnAny(), fn($eventId) => $this->isEventTriggered($eventId));
     }
 
-    private function isOnAllSatisfied(Action $action): bool
+    private function isOnAllSatisfied(Actor $actor): bool
     {
-        foreach ($action->getOnAll() as $eventId) {
+        foreach ($actor->getOnAll() as $eventId) {
             if (false === $this->isEventTriggered($eventId)) {
                 return false;
             }
         }
 
-        return [] !== $action->getOnAll();
+        return [] !== $actor->getOnAll();
     }
 
     private function isEventTriggered(string $eventId): bool
@@ -67,10 +67,10 @@ final readonly class SubscriptionChecker
             return false;
         }
 
-        if ($this->completeActionStorage->isExists($subjectId)) {
-            $completeAction = $this->completeActionStorage->get($subjectId);
+        if ($this->completeActorStorage->isExists($subjectId)) {
+            $completeActor = $this->completeActorStorage->get($subjectId);
 
-            return $completeAction->result->status === $expectedStatus;
+            return $completeActor->result->status === $expectedStatus;
         }
 
         return false;

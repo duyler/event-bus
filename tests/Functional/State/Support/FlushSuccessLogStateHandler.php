@@ -12,7 +12,7 @@ use Override;
 class FlushSuccessLogStateHandler implements MainBeforeStateHandlerInterface
 {
     public function __construct(
-        private readonly string $actionId,
+        private readonly string $actorId,
     ) {}
 
     #[Override]
@@ -24,6 +24,6 @@ class FlushSuccessLogStateHandler implements MainBeforeStateHandlerInterface
     #[Override]
     public function observed(StateContext $context): array
     {
-        return [$this->actionId];
+        return [$this->actorId];
     }
 }

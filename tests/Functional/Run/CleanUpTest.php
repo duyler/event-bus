@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\Build\Event;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
@@ -21,21 +21,21 @@ use PHPUnit\Framework\TestCase;
 class CleanUpTest extends TestCase
 {
     #[Test]
-    public function clean_up_max_count_events_and_actions(): void
+    public function clean_up_max_count_events_and_actors(): void
     {
         $busBuilder = new BusBuilder(
             new BusConfig(
-                maxCountCompleteActions: 1,
+                maxCountCompleteActors: 1,
                 maxCountEvents: 1,
             ),
         );
 
-        $busBuilder->addStateHandler(new AddDynamicEventsAndActionsStateHandler());
+        $busBuilder->addStateHandler(new AddDynamicEventsAndActorsStateHandler());
         $busBuilder->addStateHandler(new DispatchEventsStateHandler());
 
-        $busBuilder->doAction(
-            new Action(
-                id: 'ActionFromBuilder',
+        $busBuilder->doActor(
+            new Actor(
+                id: 'ActorFromBuilder',
                 handler: function (): void {},
             ),
         );
@@ -44,13 +44,13 @@ class CleanUpTest extends TestCase
 
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
-        //$this->assertFalse($bus->resultIsExists('RemovableActionOne'));
-        $this->assertFalse($bus->resultIsExists('RemovableActionTwo'));
+        $this->assertTrue($bus->resultIsExists('ActorFromBuilder'));
+        //$this->assertFalse($bus->resultIsExists('RemovableActorOne'));
+        $this->assertFalse($bus->resultIsExists('RemovableActorTwo'));
     }
 }
 
-class AddDynamicEventsAndActionsStateHandler implements MainBeginStateHandlerInterface
+class AddDynamicEventsAndActorsStateHandler implements MainBeginStateHandlerInterface
 {
     #[Override]
     public function handle(StateMainBeginService $stateService, StateContext $context): void
@@ -67,20 +67,20 @@ class AddDynamicEventsAndActionsStateHandler implements MainBeginStateHandlerInt
             ),
         );
 
-        $stateService->addAction(
-            new Action(
-                id: 'RemovableActionOne',
+        $stateService->addActor(
+            new Actor(
+                id: 'RemovableActorOne',
                 handler: function (): void {},
                 onOne: 'RemovableEventOne' . IdFormatter::DELIMITER . 'Success',
             ),
         );
 
-        $stateService->addAction(
-            new Action(
-                id: 'RemovableActionTwo',
+        $stateService->addActor(
+            new Actor(
+                id: 'RemovableActorTwo',
                 handler: function (): void {},
                 required: [
-                    'RemovableActionOne',
+                    'RemovableActorOne',
                 ],
                 onOne: 'RemovableEventTwo' . IdFormatter::DELIMITER . 'Success',
             ),
@@ -105,6 +105,6 @@ class DispatchEventsStateHandler implements MainAfterStateHandlerInterface
     #[Override]
     public function observed(StateContext $context): array
     {
-        return ['ActionFromBuilder'];
+        return ['ActorFromBuilder'];
     }
 }

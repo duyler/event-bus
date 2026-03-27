@@ -17,9 +17,9 @@ trait TaskSuspendResumeServiceTrait
         return $this->suspend->value;
     }
 
-    public function getActionId(): string|UnitEnum
+    public function getActorId(): string|UnitEnum
     {
-        return $this->suspend->actionId;
+        return $this->suspend->actorId;
     }
 
     public function setResumeValue(mixed $value): void

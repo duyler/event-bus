@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Unit\Storage;
 
-use Duyler\EventBus\Bus\Action;
-use Duyler\EventBus\Bus\CompleteAction;
+use Duyler\EventBus\Bus\Actor;
+use Duyler\EventBus\Bus\CompleteActor;
 use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Storage\CompleteActionStorage;
+use Duyler\EventBus\Storage\CompleteActorStorage;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class EventStorageTest extends TestCase
 {
-    private CompleteActionStorage $eventStorage;
+    private CompleteActorStorage $eventStorage;
 
     #[Test]
     public function save_event(): void
     {
-        $action = new Action(id: 'test', externalId: 'Empty.Required.Action', handler: 'test');
-        $event = new CompleteAction(
-            action: $action,
+        $actor = new Actor(id: 'test', externalId: 'Empty.Required.Actor', handler: 'test');
+        $event = new CompleteActor(
+            actor: $actor,
             result: Result::success(),
             taskId: 'taskId',
             scope: 'common',
@@ -28,13 +28,13 @@ class EventStorageTest extends TestCase
 
         $this->eventStorage->save($event);
 
-        $this->assertEquals($event, $this->eventStorage->get($event->action->getId()));
-        $this->assertTrue($this->eventStorage->isExists($event->action->getId()));
-        $this->assertEquals($event->result, $this->eventStorage->getResult($event->action->getId()));
+        $this->assertEquals($event, $this->eventStorage->get($event->actor->getId()));
+        $this->assertTrue($this->eventStorage->isExists($event->actor->getId()));
+        $this->assertEquals($event->result, $this->eventStorage->getResult($event->actor->getId()));
     }
 
     protected function setUp(): void
     {
-        $this->eventStorage = new CompleteActionStorage();
+        $this->eventStorage = new CompleteActorStorage();
     }
 }

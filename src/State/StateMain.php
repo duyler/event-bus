@@ -7,7 +7,7 @@ namespace Duyler\EventBus\State;
 use Duyler\EventBus\Bus\Task;
 use Duyler\EventBus\Contract\State\StateHandlerObservedInterface;
 use Duyler\EventBus\Contract\StateMainInterface;
-use Duyler\EventBus\Service\ActionService;
+use Duyler\EventBus\Service\ActorService;
 use Duyler\EventBus\Service\EventService;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\QueueService;
@@ -22,7 +22,7 @@ use Duyler\EventBus\State\Service\StateMainEndService;
 use Duyler\EventBus\State\Service\StateMainResumeService;
 use Duyler\EventBus\State\Service\StateMainSuspendService;
 use Duyler\EventBus\State\Service\StateMainUnresolvedService;
-use Duyler\EventBus\Storage\ActionContainerStorage;
+use Duyler\EventBus\Storage\ActorContainerStorage;
 use Override;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -33,8 +33,8 @@ readonly class StateMain implements StateMainInterface
 {
     public function __construct(
         private StateHandlerStorage $stateHandlerStorage,
-        private ActionContainerStorage $actionContainerStorage,
-        private ActionService $actionService,
+        private ActorContainerStorage $actorContainerStorage,
+        private ActorService $actorService,
         private LogService $logService,
         private ResultService $resultService,
         private RollbackService $rollbackService,
@@ -49,7 +49,7 @@ readonly class StateMain implements StateMainInterface
     public function begin(): void
     {
         $stateService = new StateMainBeginService(
-            $this->actionService,
+            $this->actorService,
             $this->eventService,
         );
 
@@ -63,7 +63,7 @@ readonly class StateMain implements StateMainInterface
     {
         $stateService = new StateMainCyclicService(
             $this->queueService,
-            $this->actionService,
+            $this->actorService,
             $this->eventService,
             $this->resultService,
             $this->eventDispatcher,
@@ -80,7 +80,7 @@ readonly class StateMain implements StateMainInterface
         $stateService = new StateMainBeforeService(
             $task,
             $this->logService,
-            $this->actionService,
+            $this->actorService,
             $this->queueService,
         );
 
@@ -97,17 +97,17 @@ readonly class StateMain implements StateMainInterface
     {
         $handlers = $this->stateHandlerStorage->getMainSuspend();
 
-        $suspend = new Suspend($task->action->getExternalId(), $task->getValue());
+        $suspend = new Suspend($task->actor->getExternalId(), $task->getValue());
 
         $stateService = new StateMainSuspendService(
             $suspend,
             $this->resultService,
-            $this->actionContainerStorage->get($task->action->getId()),
-            $this->actionService,
+            $this->actorContainerStorage->get($task->actor->getId()),
+            $this->actorService,
             $this->eventService,
         );
 
-        $this->suspendContext->addSuspend($task->action->getId(), $suspend);
+        $this->suspendContext->addSuspend($task->actor->getId(), $suspend);
 
         foreach ($handlers as $handler) {
             $context = $this->contextScope->getContext($handler::class);
@@ -122,13 +122,13 @@ readonly class StateMain implements StateMainInterface
     {
         $handlers = $this->stateHandlerStorage->getMainResume();
 
-        $suspend = $this->suspendContext->getSuspend($task->action->getId());
+        $suspend = $this->suspendContext->getSuspend($task->actor->getId());
 
         $stateService = new StateMainResumeService(
             $suspend,
             $this->resultService,
-            $this->actionContainerStorage->get($task->action->getId()),
-            $this->actionService,
+            $this->actorContainerStorage->get($task->actor->getId()),
+            $this->actorService,
             $this->eventService,
         );
 
@@ -162,9 +162,9 @@ readonly class StateMain implements StateMainInterface
         $stateService = new StateMainAfterService(
             $task->getResult()->status,
             $task->getResult()->data,
-            $task->action->getExternalId(),
+            $task->actor->getExternalId(),
             $task->getScope(),
-            $this->actionService,
+            $this->actorService,
             $this->resultService,
             $this->logService,
             $this->eventService,
@@ -183,7 +183,7 @@ readonly class StateMain implements StateMainInterface
     public function empty(): void
     {
         $stateService = new StateMainEmptyService(
-            $this->actionService,
+            $this->actorService,
             $this->resultService,
             $this->logService,
             $this->eventService,
@@ -220,7 +220,7 @@ readonly class StateMain implements StateMainInterface
             $this->resultService,
             $this->logService,
             $this->rollbackService,
-            $this->actionService,
+            $this->actorService,
             $this->queueService,
             $task,
         );
@@ -236,6 +236,6 @@ readonly class StateMain implements StateMainInterface
     private function isObserved(StateHandlerObservedInterface $handler, Task $task, StateContext $context): bool
     {
         $observed = $handler->observed($context);
-        return count($observed) === 0 || in_array($task->action->getExternalId(), $observed);
+        return count($observed) === 0 || in_array($task->actor->getExternalId(), $observed);
     }
 }

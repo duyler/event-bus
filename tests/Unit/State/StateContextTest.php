@@ -16,8 +16,8 @@ class StateContextTest extends TestCase
     #[Test]
     public function addResumeValue_with_string(): void
     {
-        $this->stateContext->addSuspend('actionId', new Suspend('actionId', 'value'));
-        $this->assertSame('value', $this->stateContext->getSuspend('actionId')->value);
+        $this->stateContext->addSuspend('actorId', new Suspend('actorId', 'value'));
+        $this->assertSame('value', $this->stateContext->getSuspend('actorId')->value);
     }
 
     protected function setUp(): void

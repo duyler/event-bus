@@ -17,9 +17,9 @@ interface BusInterface
      */
     public function run(): BusInterface;
 
-    public function getResult(string|UnitEnum $actionId, string $scope): Result;
+    public function getResult(string|UnitEnum $actorId, string $scope): Result;
 
-    public function resultIsExists(string|UnitEnum $actionId, string $scope): bool;
+    public function resultIsExists(string|UnitEnum $actorId, string $scope): bool;
 
     public function dispatchEvent(Event $event, string $scope): BusInterface;
 

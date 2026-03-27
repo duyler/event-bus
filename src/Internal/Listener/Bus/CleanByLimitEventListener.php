@@ -6,9 +6,9 @@ namespace Duyler\EventBus\Internal\Listener\Bus;
 
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Internal\Event\TaskAfterRunEvent;
-use Duyler\EventBus\Service\ActionService;
+use Duyler\EventBus\Service\ActorService;
 use Duyler\EventBus\Service\EventService;
-use Duyler\EventBus\Storage\CompleteActionStorage;
+use Duyler\EventBus\Storage\CompleteActorStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\EventStorage;
 
@@ -18,9 +18,9 @@ use function count;
 final readonly class CleanByLimitEventListener
 {
     public function __construct(
-        private CompleteActionStorage $completeActionStorage,
+        private CompleteActorStorage $completeActorStorage,
         private BusConfig $busConfig,
-        private ActionService $actionService,
+        private ActorService $actorService,
         private EventRelationStorage $eventRelationStorage,
         private EventStorage $eventStorage,
         private EventService $eventService,
@@ -28,23 +28,23 @@ final readonly class CleanByLimitEventListener
 
     public function __invoke(TaskAfterRunEvent $event): void
     {
-        $this->cleanUpActions();
+        $this->cleanUpActors();
         $this->cleanUpEvents();
     }
 
-    private function cleanUpActions(): void
+    private function cleanUpActors(): void
     {
-        if (0 === $this->busConfig->maxCountCompleteActions) {
+        if (0 === $this->busConfig->maxCountCompleteActors) {
             return;
         }
 
-        $completeActions = $this->completeActionStorage->getAll();
+        $completeActors = $this->completeActorStorage->getAll();
 
-        if (count($completeActions) > $this->busConfig->maxCountCompleteActions) {
-            /** @var string $firstCompleteActionId */
-            $firstCompleteActionId = array_key_first($completeActions);
-            $firstCompleteAction = $completeActions[$firstCompleteActionId];
-            $this->actionService->removeAction($firstCompleteAction->action->getId());
+        if (count($completeActors) > $this->busConfig->maxCountCompleteActors) {
+            /** @var string $firstCompleteActorId */
+            $firstCompleteActorId = array_key_first($completeActors);
+            $firstCompleteActor = $completeActors[$firstCompleteActorId];
+            $this->actorService->removeActor($firstCompleteActor->actor->getId());
         }
     }
 

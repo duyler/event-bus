@@ -16,7 +16,7 @@ use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
 use Duyler\EventBus\Exception\DispatchedEventNotDefinedException;
 use Duyler\EventBus\Internal\Event\EventAddedEvent;
 use Duyler\EventBus\Internal\Event\EventRemovedEvent;
-use Duyler\EventBus\Storage\ActionStorage;
+use Duyler\EventBus\Storage\ActorStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\EventStorage;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -25,7 +25,7 @@ class EventService
 {
     public function __construct(
         private readonly EventRelationStorage $eventRelationStorage,
-        private readonly ActionStorage $actionStorage,
+        private readonly ActorStorage $actorStorage,
         private readonly EventStorage $eventStorage,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly Bus $bus,
@@ -42,11 +42,11 @@ class EventService
 
         $this->validateEventData($eventDto->id, $eventDto->data, $event->type);
 
-        $actions = $this->actionStorage->getBySubscriptionEvent($eventDto->id);
+        $actors = $this->actorStorage->getBySubscriptionEvent($eventDto->id);
 
-        foreach ($actions as $action) {
-            $this->eventRelationStorage->save(new EventRelation($action, $eventDto), $scope);
-            $this->bus->doAction($action, $scope);
+        foreach ($actors as $actor) {
+            $this->eventRelationStorage->save(new EventRelation($actor, $eventDto), $scope);
+            $this->bus->doActor($actor, $scope);
         }
 
         if ($this->eventRelationStorage->isExists($eventDto->id)) {
@@ -84,15 +84,15 @@ class EventService
         }
     }
 
-    public function dispatchActionEvent(string $actionId, string $scope, Result $result): void
+    public function dispatchActorEvent(string $actorId, string $scope, Result $result): void
     {
-        $eventDto = new EventDto($actionId, $result->status, $result->data);
+        $eventDto = new EventDto($actorId, $result->status, $result->data);
 
-        $actions = $this->actionStorage->getBySubscriptionEvent($eventDto->id);
+        $actors = $this->actorStorage->getBySubscriptionEvent($eventDto->id);
 
-        foreach ($actions as $action) {
-            $this->eventRelationStorage->save(new EventRelation($action, $eventDto), $scope);
-            $this->bus->doAction($action, $scope);
+        foreach ($actors as $actor) {
+            $this->eventRelationStorage->save(new EventRelation($actor, $eventDto), $scope);
+            $this->bus->doActor($actor, $scope);
         }
 
         $this->state->pushEventLog($eventDto->id);

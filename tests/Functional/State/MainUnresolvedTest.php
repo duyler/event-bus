@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\State;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Dto\Result;
@@ -15,21 +15,21 @@ use PHPUnit\Framework\TestCase;
 class MainUnresolvedTest extends TestCase
 {
     #[Test]
-    public function handle_with_skip_unresolved_action(): void
+    public function handle_with_skip_unresolved_actor(): void
     {
         $busBuilder = new BusBuilder(new BusConfig(
-            allowSkipUnresolvedActions: true,
+            allowSkipUnresolvedActors: true,
         ));
 
         $busBuilder->addStateHandler(new HandleUnresolvedTaskStateHandler());
-        $busBuilder->addAction(
-            new Action(
+        $busBuilder->addActor(
+            new Actor(
                 id: 'Failed',
                 handler: fn() => Result::fail(),
             ),
         );
-        $busBuilder->doAction(
-            new Action(
+        $busBuilder->doActor(
+            new Actor(
                 id: 'Unresolved',
                 handler: function (): void {},
                 required: ['Failed'],
@@ -40,7 +40,7 @@ class MainUnresolvedTest extends TestCase
         $bus->run();
 
         $this->assertTrue($bus->resultIsExists('Failed'));
-        $this->assertTrue($bus->resultIsExists('ActionFromStateHandler'));
+        $this->assertTrue($bus->resultIsExists('ActorFromStateHandler'));
         $this->assertFalse($bus->resultIsExists('Unresolved'));
     }
 }

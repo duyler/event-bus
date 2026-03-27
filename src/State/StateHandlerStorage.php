@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State;
 
-use Duyler\EventBus\Contract\State\ActionAfterStateHandlerInterface;
-use Duyler\EventBus\Contract\State\ActionBeforeStateHandlerInterface;
-use Duyler\EventBus\Contract\State\ActionThrowingStateHandlerInterface;
+use Duyler\EventBus\Contract\State\ActorAfterStateHandlerInterface;
+use Duyler\EventBus\Contract\State\ActorBeforeStateHandlerInterface;
+use Duyler\EventBus\Contract\State\ActorThrowingStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainAfterStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainBeforeStateHandlerInterface;
 use Duyler\EventBus\Contract\State\MainBeginStateHandlerInterface;
@@ -48,14 +48,14 @@ class StateHandlerStorage
     /** @var MainUnresolvedStateHandlerInterface[] */
     private array $mainUnresolved = [];
 
-    /** @var ActionBeforeStateHandlerInterface[] */
-    private array $actionBefore = [];
+    /** @var ActorBeforeStateHandlerInterface[] */
+    private array $actorBefore = [];
 
-    /** @var ActionThrowingStateHandlerInterface[] */
-    private array $actionThrowing = [];
+    /** @var ActorThrowingStateHandlerInterface[] */
+    private array $actorThrowing = [];
 
-    /** @var ActionAfterStateHandlerInterface[] */
-    private array $actionAfter = [];
+    /** @var ActorAfterStateHandlerInterface[] */
+    private array $actorAfter = [];
 
     public function addStateHandler(StateHandlerInterface $stateHandler): void
     {
@@ -69,9 +69,9 @@ class StateHandlerStorage
             $stateHandler instanceof MainEmptyStateHandlerInterface => $this->mainEmpty[] = $stateHandler,
             $stateHandler instanceof MainEndStateHandlerInterface => $this->mainEnd[] = $stateHandler,
             $stateHandler instanceof MainUnresolvedStateHandlerInterface => $this->mainUnresolved[] = $stateHandler,
-            $stateHandler instanceof ActionBeforeStateHandlerInterface => $this->actionBefore[] = $stateHandler,
-            $stateHandler instanceof ActionThrowingStateHandlerInterface => $this->actionThrowing[] = $stateHandler,
-            $stateHandler instanceof ActionAfterStateHandlerInterface => $this->actionAfter[] = $stateHandler,
+            $stateHandler instanceof ActorBeforeStateHandlerInterface => $this->actorBefore[] = $stateHandler,
+            $stateHandler instanceof ActorThrowingStateHandlerInterface => $this->actorThrowing[] = $stateHandler,
+            $stateHandler instanceof ActorAfterStateHandlerInterface => $this->actorAfter[] = $stateHandler,
 
             default => throw new InvalidArgumentException(
                 sprintf(
@@ -137,21 +137,21 @@ class StateHandlerStorage
         return $this->mainUnresolved;
     }
 
-    /** @return ActionBeforeStateHandlerInterface[] */
-    public function getActionBefore(): array
+    /** @return ActorBeforeStateHandlerInterface[] */
+    public function getActorBefore(): array
     {
-        return $this->actionBefore;
+        return $this->actorBefore;
     }
 
-    /** @return ActionThrowingStateHandlerInterface[] */
-    public function getActionThrowing(): array
+    /** @return ActorThrowingStateHandlerInterface[] */
+    public function getActorThrowing(): array
     {
-        return $this->actionThrowing;
+        return $this->actorThrowing;
     }
 
-    /** @return ActionAfterStateHandlerInterface[] */
-    public function getActionAfter(): array
+    /** @return ActorAfterStateHandlerInterface[] */
+    public function getActorAfter(): array
     {
-        return $this->actionAfter;
+        return $this->actorAfter;
     }
 }

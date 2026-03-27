@@ -5,44 +5,44 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Service;
 
 use Duyler\EventBus\Dto\Result;
-use Duyler\EventBus\Exception\ActionNotAllowExternalAccessException;
+use Duyler\EventBus\Exception\ActorNotAllowExternalAccessException;
 use Duyler\EventBus\Exception\ResultNotExistsException;
-use Duyler\EventBus\Storage\CompleteActionStorage;
+use Duyler\EventBus\Storage\CompleteActorStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
 
 class ResultService
 {
     public function __construct(
-        private readonly CompleteActionStorage $completeActionStorage,
+        private readonly CompleteActorStorage $completeActorStorage,
         private readonly EventRelationStorage $eventRelationStorage,
     ) {}
 
-    public function getResult(string $actionId, string $scope = 'common'): Result
+    public function getResult(string $actorId, string $scope = 'common'): Result
     {
-        if ($this->completeActionStorage->isExists($actionId, $scope)) {
-            $completeAction = $this->completeActionStorage->get($actionId, $scope);
+        if ($this->completeActorStorage->isExists($actorId, $scope)) {
+            $completeActor = $this->completeActorStorage->get($actorId, $scope);
 
-            if (false === $completeAction->action->isExternalAccess()) {
-                throw new ActionNotAllowExternalAccessException($actionId);
+            if (false === $completeActor->actor->isExternalAccess()) {
+                throw new ActorNotAllowExternalAccessException($actorId);
             }
 
-            return $this->completeActionStorage->getResult($actionId, $scope);
+            return $this->completeActorStorage->getResult($actorId, $scope);
         }
 
-        if (false === $this->eventRelationStorage->isExists($actionId, $scope)) {
-            throw new ResultNotExistsException($actionId);
+        if (false === $this->eventRelationStorage->isExists($actorId, $scope)) {
+            throw new ResultNotExistsException($actorId);
         }
 
-        $eventRelation = $this->eventRelationStorage->getLast($actionId, $scope);
+        $eventRelation = $this->eventRelationStorage->getLast($actorId, $scope);
 
         return Result::success(
             $eventRelation->event->data,
         );
     }
 
-    public function resultIsExists(string $actionId, string $scope = 'common'): bool
+    public function resultIsExists(string $actorId, string $scope = 'common'): bool
     {
-        return $this->completeActionStorage->isExists($actionId, $scope)
-            || $this->eventRelationStorage->isExists($actionId, $scope);
+        return $this->completeActorStorage->isExists($actorId, $scope)
+            || $this->eventRelationStorage->isExists($actorId, $scope);
     }
 }

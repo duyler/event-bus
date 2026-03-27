@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
-use Duyler\EventBus\Action\Context\ActionContext;
-use Duyler\EventBus\Action\Context\CustomContextInterface;
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Actor\Context\ActorContext;
+use Duyler\EventBus\Actor\Context\CustomContextInterface;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use InvalidArgumentException;
@@ -17,19 +17,19 @@ use stdClass;
 class CustomContextTest extends TestCase
 {
     #[Test]
-    public function run_with_callable_action_handler_with_custom_context(): void
+    public function run_with_callable_actor_handler_with_custom_context(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
 
-        $busBuilder->addAction(
-            new Action(
+        $busBuilder->addActor(
+            new Actor(
                 id: 'TestDep',
-                handler: function (ActionContext $context): void {},
+                handler: function (ActorContext $context): void {},
             ),
         );
 
-        $busBuilder->doAction(
-            new Action(
+        $busBuilder->doActor(
+            new Actor(
                 id: 'Test',
                 handler: function (CustomContext $context): stdClass {
                     $hello = $context->getHello();
@@ -55,19 +55,19 @@ class CustomContextTest extends TestCase
     }
 
     #[Test]
-    public function run_with_callable_action_handler_with_exception(): void
+    public function run_with_callable_actor_handler_with_exception(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
 
-        $busBuilder->addAction(
-            new Action(
+        $busBuilder->addActor(
+            new Actor(
                 id: 'TestDep',
-                handler: function (ActionContext $context): void {},
+                handler: function (ActorContext $context): void {},
             ),
         );
 
-        $busBuilder->doAction(
-            new Action(
+        $busBuilder->doActor(
+            new Actor(
                 id: 'Test',
                 handler: function (CustomContext $context): stdClass {
                     $hello = $context->getHello();
@@ -97,7 +97,7 @@ class CustomContextTest extends TestCase
 class CustomContext implements CustomContextInterface
 {
     public function __construct(
-        private readonly ActionContext $actionContext,
+        private readonly ActorContext $actorContext,
     ) {}
 
     public function getHello(): string
@@ -109,6 +109,6 @@ class CustomContext implements CustomContextInterface
 class InvalidCustomContext
 {
     public function __construct(
-        private readonly ActionContext $actionContext,
+        private readonly ActorContext $actorContext,
     ) {}
 }

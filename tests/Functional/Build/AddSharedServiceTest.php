@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Build;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
 use InvalidArgumentException;
@@ -28,8 +28,8 @@ class AddSharedServiceTest extends TestCase
             ),
         );
 
-        $busBuilder->doAction(
-            new Action(
+        $busBuilder->doActor(
+            new Actor(
                 id: 'Test',
                 handler: Handler::class,
                 type: SharedInterface::class,
@@ -60,8 +60,8 @@ class AddSharedServiceTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
 
-        $busBuilder->doAction(
-            new Action(
+        $busBuilder->doActor(
+            new Actor(
                 id: 'Test',
                 handler: Handler::class,
                 type: SharedInterface::class,

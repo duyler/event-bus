@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
-use Duyler\EventBus\Action\Context\ActionContext;
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Actor\Context\ActorContext;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\Build\Event as BuildEvent;
 use Duyler\EventBus\Build\Id;
 use Duyler\EventBus\BusBuilder;
@@ -32,8 +32,8 @@ class OnAnySubscriptionTest extends TestCase
 
         $builder->addEvent(new BuildEvent(id: 'Event1'));
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'LogActivity',
                 handler: fn() => Result::fail(),
                 onAny: [
@@ -61,10 +61,10 @@ class OnAnySubscriptionTest extends TestCase
 
         $builder->addEvent(new BuildEvent(id: 'Event1', type: OnAnyTestDTO::class));
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'ProcessData',
-                handler: fn(ActionContext $context) => $context->argument(),
+                handler: fn(ActorContext $context) => $context->argument(),
                 onAny: [
                     'Event1' . IdFormatter::DELIMITER . 'Success',
                 ],
@@ -94,18 +94,18 @@ class OnAnySubscriptionTest extends TestCase
     {
         $builder = new BusBuilder(new BusConfig());
 
-        $builder->addAction(
-            new Action(
-                id: 'IndependentAction',
+        $builder->addActor(
+            new Actor(
+                id: 'IndependentActor',
                 handler: fn() => Result::fail(),
                 onAny: [],
                 externalAccess: true,
             ),
         );
 
-        $builder->doAction(
-            new Action(
-                id: 'TriggerAction',
+        $builder->doActor(
+            new Actor(
+                id: 'TriggerActor',
                 handler: fn() => Result::fail(),
             ),
         );
@@ -113,7 +113,7 @@ class OnAnySubscriptionTest extends TestCase
         $bus = $builder->build();
         $bus->run();
 
-        $this->assertFalse($bus->resultIsExists('IndependentAction'));
+        $this->assertFalse($bus->resultIsExists('IndependentActor'));
     }
 
     #[Test]
@@ -124,9 +124,9 @@ class OnAnySubscriptionTest extends TestCase
         $builder->addEvent(new BuildEvent(id: 'Event1'));
         $builder->addEvent(new BuildEvent(id: 'Event2'));
 
-        $builder->addAction(
-            new Action(
-                id: 'WaitingAction',
+        $builder->addActor(
+            new Actor(
+                id: 'WaitingActor',
                 handler: fn() => Result::fail(),
                 onAny: [
                     'Event1' . IdFormatter::DELIMITER . 'Success',
@@ -136,9 +136,9 @@ class OnAnySubscriptionTest extends TestCase
             ),
         );
 
-        $builder->doAction(
-            new Action(
-                id: 'MainAction',
+        $builder->doActor(
+            new Actor(
+                id: 'MainActor',
                 handler: fn() => Result::fail(),
             ),
         );
@@ -146,18 +146,18 @@ class OnAnySubscriptionTest extends TestCase
         $bus = $builder->build();
         $bus->run();
 
-        $this->assertFalse($bus->resultIsExists('WaitingAction'));
+        $this->assertFalse($bus->resultIsExists('WaitingActor'));
     }
 
     #[Test]
-    public function action_subscribes_to_action_events(): void
+    public function actor_subscribes_to_actor_events(): void
     {
         $builder = new BusBuilder(new BusConfig());
 
         $builder->addEvent(BuildEvent::success('CreateOrder', OnAnyTestDTO::class));
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'Logger',
                 handler: fn() => new OnAnyTestDTO(source: 'logger'),
                 onAny: [
@@ -168,8 +168,8 @@ class OnAnySubscriptionTest extends TestCase
             ),
         );
 
-        $builder->doAction(
-            new Action(
+        $builder->doActor(
+            new Actor(
                 id: 'CreateOrder',
                 handler: fn() => new OnAnyTestDTO(source: 'create'),
                 type: OnAnyTestDTO::class,
@@ -190,10 +190,10 @@ class OnAnySubscriptionTest extends TestCase
 
         $builder->addEvent(new BuildEvent(id: 'Event1', type: OnAnyTestDTO::class));
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'MultiSubscriber',
-                handler: fn(ActionContext $context) => $context->argument(),
+                handler: fn(ActorContext $context) => $context->argument(),
                 onAny: [
                     'Event1' . IdFormatter::DELIMITER . 'Success',
                 ],

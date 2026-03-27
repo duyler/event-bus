@@ -10,10 +10,10 @@ use Duyler\EventBus\BusConfig;
 use Duyler\EventBus\Enum\Mode;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Enum\TaskStatus;
-use Duyler\EventBus\Exception\UnableToContinueWithFailActionException;
+use Duyler\EventBus\Exception\UnableToContinueWithFailActorException;
 use Duyler\EventBus\Internal\Event\TaskUnresolvedEvent;
-use Duyler\EventBus\Storage\ActionStorage;
-use Duyler\EventBus\Storage\CompleteActionStorage;
+use Duyler\EventBus\Storage\ActorStorage;
+use Duyler\EventBus\Storage\CompleteActorStorage;
 use Duyler\EventBus\Storage\EventRelationStorage;
 use Duyler\EventBus\Storage\TaskStorage;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -38,8 +38,8 @@ final class Bus
 
     public function __construct(
         private readonly TaskQueue $taskQueue,
-        private readonly ActionStorage $actionStorage,
-        private readonly CompleteActionStorage $completeActionStorage,
+        private readonly ActorStorage $actorStorage,
+        private readonly CompleteActorStorage $completeActorStorage,
         private readonly BusConfig $config,
         private readonly EventRelationStorage $eventRelationStorage,
         private readonly TaskStorage $taskStorage,
@@ -48,16 +48,16 @@ final class Bus
     ) {}
 
     /**
-     * Processes an action by checking conditions and adding to task queue
+     * Processes an actor by checking conditions and adding to task queue
      */
-    public function doAction(Action $action, string $scope): void
+    public function doActor(Actor $actor, string $scope): void
     {
-        if (false === $this->canExecuteAction($action)) {
+        if (false === $this->canExecuteActor($actor)) {
             return;
         }
 
-        $this->processActionRequirements($action, $scope);
-        $this->pushTask($this->createPrimaryTask($action, $scope));
+        $this->processActorRequirements($actor, $scope);
+        $this->pushTask($this->createPrimaryTask($actor, $scope));
     }
 
     /**
@@ -73,16 +73,16 @@ final class Bus
     }
 
     /**
-     * Handles completion of an action (success or failure)
+     * Handles completion of an actor (success or failure)
      */
-    public function afterCompleteAction(CompleteAction $completeAction): void
+    public function afterCompleteActor(CompleteActor $completeActor): void
     {
-        if (ResultStatus::Success === $completeAction->result->status) {
-            $this->finalizeSuccessfulAction($completeAction);
+        if (ResultStatus::Success === $completeActor->result->status) {
+            $this->finalizeSuccessfulActor($completeActor);
             return;
         }
 
-        $this->handleFailedAction($completeAction);
+        $this->handleFailedActor($completeActor);
     }
 
     /**
@@ -105,63 +105,63 @@ final class Bus
     }
 
     /**
-     * Checks if an action can be executed based on events and repeatability
+     * Checks if an actor can be executed based on events and repeatability
      */
-    private function canExecuteAction(Action $action): bool
+    private function canExecuteActor(Actor $actor): bool
     {
-        return $this->isSatisfiedEvents($action)
-            && (false === $this->isRepeat($action->getId()) || $action->isRepeatable());
+        return $this->isSatisfiedEvents($actor)
+            && (false === $this->isRepeat($actor->getId()) || $actor->isRepeatable());
     }
 
     /**
-     * Checks if an action has already been executed or is in progress
+     * Checks if an actor has already been executed or is in progress
      */
-    private function isRepeat(string $actionId): bool
+    private function isRepeat(string $actorId): bool
     {
-        $isInHeldTasks = array_any($this->heldTasks, fn($task) => $task->action->getId() === $actionId);
+        $isInHeldTasks = array_any($this->heldTasks, fn($task) => $task->actor->getId() === $actorId);
         return $isInHeldTasks
-            || $this->taskQueue->inQueue($actionId)
-            || $this->completeActionStorage->isExists($actionId);
+            || $this->taskQueue->inQueue($actorId)
+            || $this->completeActorStorage->isExists($actorId);
     }
 
     /**
-     * Processes all required actions for the given action
+     * Processes all required actors for the given actor
      */
-    private function processActionRequirements(Action $action, string $scope): void
+    private function processActorRequirements(Actor $actor, string $scope): void
     {
-        $requiredIterator = new ActionRequiredIterator(
-            $action->getRequired(),
-            $this->actionStorage->getAll(),
+        $requiredIterator = new ActorRequiredIterator(
+            $actor->getRequired(),
+            $this->actorStorage->getAll(),
         );
 
         /** @var string $subject */
         foreach ($requiredIterator as $subject) {
-            $requiredAction = $this->actionStorage->get($subject);
+            $requiredActor = $this->actorStorage->get($subject);
 
-            if (false === $this->canExecuteRequiredAction($requiredAction)) {
+            if (false === $this->canExecuteRequiredActor($requiredActor)) {
                 continue;
             }
 
-            $this->pushTask($this->createPrimaryTask($requiredAction, $scope));
+            $this->pushTask($this->createPrimaryTask($requiredActor, $scope));
         }
     }
 
     /**
-     * Checks if a required action can be executed
+     * Checks if a required actor can be executed
      */
-    private function canExecuteRequiredAction(Action $action): bool
+    private function canExecuteRequiredActor(Actor $actor): bool
     {
-        return (false === $this->isRepeat($action->getId())
-            || $action->isRepeatable())
-            && 0 === count($action->getSubscriptionEvents());
+        return (false === $this->isRepeat($actor->getId())
+            || $actor->isRepeatable())
+            && 0 === count($actor->getSubscriptionEvents());
     }
 
     /**
-     * Creates a primary task for an action
+     * Creates a primary task for an actor
      */
-    private function createPrimaryTask(Action $action, string $scope): Task
+    private function createPrimaryTask(Actor $actor, string $scope): Task
     {
-        $task = new Task($action, $scope);
+        $task = new Task($actor, $scope);
         $task->setStatus(TaskStatus::Primary);
         $this->taskStorage->add($task);
         return $task;
@@ -186,7 +186,7 @@ final class Bus
     {
         $this->taskQueue->push($task);
         $this->retries[$task->getId()] = 0;
-        $this->finalized[$task->action->getId() . '.' . $task->getScope()] = false;
+        $this->finalized[$task->actor->getId() . '.' . $task->getScope()] = false;
     }
 
     /**
@@ -209,12 +209,12 @@ final class Bus
     }
 
     /**
-     * Checks if all required events for an action are satisfied
+     * Checks if all required events for an actor are satisfied
      */
-    private function isSatisfiedEvents(Action $action): bool
+    private function isSatisfiedEvents(Actor $actor): bool
     {
         return array_all(
-            $action->getSubscriptionEvents(),
+            $actor->getSubscriptionEvents(),
             fn($eventId) => false !== $this->eventRelationStorage->isExists($eventId),
         );
     }
@@ -228,11 +228,11 @@ final class Bus
             return false;
         }
 
-        if (false === $this->subscriptionChecker->isSatisfied($task->action)) {
+        if (false === $this->subscriptionChecker->isSatisfied($task->actor)) {
             return false;
         }
 
-        return $this->hasRequiredActionsCompleted($task);
+        return $this->hasRequiredActorsCompleted($task);
     }
 
     /**
@@ -240,15 +240,15 @@ final class Bus
      */
     private function isLocked(Task $task): bool
     {
-        if (false === $task->action->isLock()) {
+        if (false === $task->actor->isLock()) {
             return false;
         }
 
-        if ($this->taskQueue->inQueue($task->action->getId())) {
+        if ($this->taskQueue->inQueue($task->actor->getId())) {
             return true;
         }
 
-        $otherTasks = $this->taskStorage->getAllByActionId($task->action->getId());
+        $otherTasks = $this->taskStorage->getAllByActorId($task->actor->getId());
         unset($otherTasks[$task->getId()]);
         return array_any($otherTasks, fn($otherTask) => $this->isTaskBlocking($otherTask));
     }
@@ -260,35 +260,35 @@ final class Bus
     {
         return (TaskStatus::Primary === $otherTask->getStatus()
             && array_key_exists($otherTask->getId(), $this->heldTasks))
-            || ($this->retries[$otherTask->action->getId()] ?? 0) < $otherTask->action->getRetries();
+            || ($this->retries[$otherTask->actor->getId()] ?? 0) < $otherTask->actor->getRetries();
     }
 
     /**
-     * Checks if all required actions are completed
+     * Checks if all required actors are completed
      */
-    private function hasRequiredActionsCompleted(Task $task): bool
+    private function hasRequiredActorsCompleted(Task $task): bool
     {
-        if (0 === $task->action->getRequired()->count()) {
+        if (0 === $task->actor->getRequired()->count()) {
             return true;
         }
 
-        $requiredArray = $task->action->getRequired()->getArrayCopy();
-        $completedRequirements = $this->completeActionStorage->getAllByArray($requiredArray);
+        $requiredArray = $task->actor->getRequired()->getArrayCopy();
+        $completedRequirements = $this->completeActorStorage->getAllByArray($requiredArray);
 
-        if (count($completedRequirements) < $task->action->getRequired()->count()) {
+        if (count($completedRequirements) < $task->actor->getRequired()->count()) {
             return false;
         }
 
-        // Check for failed actions that haven't been finalized yet
-        foreach ($completedRequirements as $completeRequiredAction) {
-            if (ResultStatus::Fail === $completeRequiredAction->result->status) {
-                if (($this->retries[$completeRequiredAction->taskId] ?? 0)
-                    < $completeRequiredAction->action->getRetries()
+        // Check for failed actors that haven't been finalized yet
+        foreach ($completedRequirements as $completeRequiredActor) {
+            if (ResultStatus::Fail === $completeRequiredActor->result->status) {
+                if (($this->retries[$completeRequiredActor->taskId] ?? 0)
+                    < $completeRequiredActor->actor->getRetries()
                 ) {
                     return false;
                 }
 
-                if (false === ($this->finalized[$completeRequiredAction->action->getId() . '.' . $task->getScope()] ?? false)) {
+                if (false === ($this->finalized[$completeRequiredActor->actor->getId() . '.' . $task->getScope()] ?? false)) {
                     return false;
                 }
             }
@@ -298,54 +298,54 @@ final class Bus
     }
 
     /**
-     * Handles failed required actions and attempts fallbacks
+     * Handles failed required actors and attempts fallbacks
      *
-     * @param array<CompleteAction> $completedRequirements
+     * @param array<CompleteActor> $completedRequirements
      */
     private function handleFailedRequirements(Task $task, array $completedRequirements): bool
     {
-        $failActions = array_filter(
+        $failActors = array_filter(
             $completedRequirements,
-            fn(CompleteAction $ca) => ResultStatus::Fail === $ca->result->status,
+            fn(CompleteActor $ca) => ResultStatus::Fail === $ca->result->status,
         );
 
-        if (0 === count($failActions)) {
+        if (0 === count($failActors)) {
             return true;
         }
 
         $replacedCount = 0;
-        foreach ($failActions as $failAction) {
-            $this->fallbacks[$failAction->action->getId() . '.' . $task->getScope()] = $failAction->action->getFallbacks();
+        foreach ($failActors as $failActor) {
+            $this->fallbacks[$failActor->actor->getId() . '.' . $task->getScope()] = $failActor->actor->getFallbacks();
 
-            if (true === $this->tryReplaceFailedAction($failAction->action->getId(), $task->getScope())) {
+            if (true === $this->tryReplaceFailedActor($failActor->actor->getId(), $task->getScope())) {
                 $replacedCount++;
             }
         }
 
-        if ($replacedCount === count($failActions)) {
+        if ($replacedCount === count($failActors)) {
             return true;
         }
 
-        return $this->handleUnresolvedFailures($task, $failActions);
+        return $this->handleUnresolvedFailures($task, $failActors);
     }
 
     /**
-     * Attempts to replace a failed action with fallback
+     * Attempts to replace a failed actor with fallback
      */
-    private function tryReplaceFailedAction(string $failActionId, string $scope): bool
+    private function tryReplaceFailedActor(string $failActorId, string $scope): bool
     {
-        foreach ($this->fallbacks[$failActionId . '.' . $scope] as $fallbackId) {
-            $fallback = $this->actionStorage->get($fallbackId);
+        foreach ($this->fallbacks[$failActorId . '.' . $scope] as $fallbackId) {
+            $fallback = $this->actorStorage->get($fallbackId);
 
-            if (true === $this->completeActionStorage->isExists($fallbackId, $scope)) {
-                $completeAction = $this->completeActionStorage->get($fallbackId, $scope);
-                if (ResultStatus::Success === $completeAction->result->status) {
+            if (true === $this->completeActorStorage->isExists($fallbackId, $scope)) {
+                $completeActor = $this->completeActorStorage->get($fallbackId, $scope);
+                if (ResultStatus::Success === $completeActor->result->status) {
                     return true;
                 }
                 continue;
             }
 
-            $this->doAction($fallback, $scope);
+            $this->doActor($fallback, $scope);
             return false;
         }
 
@@ -353,35 +353,35 @@ final class Bus
     }
 
     /**
-     * Handles unresolved action failures
+     * Handles unresolved actor failures
      *
-     * @param array<CompleteAction> $failActions
+     * @param array<CompleteActor> $failActors
      */
-    private function handleUnresolvedFailures(Task $task, array $failActions): bool
+    private function handleUnresolvedFailures(Task $task, array $failActors): bool
     {
-        if (true === $this->hasPendingFallbacks($failActions, $task->getScope())) {
+        if (true === $this->hasPendingFallbacks($failActors, $task->getScope())) {
             return false;
         }
 
         $this->eventDispatcher->dispatch(new TaskUnresolvedEvent($task));
 
-        if (true === $this->config->allowSkipUnresolvedActions) {
+        if (true === $this->config->allowSkipUnresolvedActors) {
             unset($this->heldTasks[$task->getId()]);
             return false;
         }
 
-        throw new UnableToContinueWithFailActionException($task->action->getId());
+        throw new UnableToContinueWithFailActorException($task->actor->getId());
     }
 
     /**
-     * Checks if there are pending fallback actions
+     * Checks if there are pending fallback actors
      *
-     * @param array<CompleteAction> $failActions
+     * @param array<CompleteActor> $failActors
      */
-    private function hasPendingFallbacks(array $failActions, string $scope): bool
+    private function hasPendingFallbacks(array $failActors, string $scope): bool
     {
-        foreach ($failActions as $failAction) {
-            foreach ($this->fallbacks[$failAction->action->getId() . '.' . $scope] as $fallback) {
+        foreach ($failActors as $failActor) {
+            foreach ($this->fallbacks[$failActor->actor->getId() . '.' . $scope] as $fallback) {
                 if ($this->taskQueue->inQueue($fallback)) {
                     return true;
                 }
@@ -391,54 +391,54 @@ final class Bus
     }
 
     /**
-     * Finalizes a successfully completed action
+     * Finalizes a successfully completed actor
      */
-    private function finalizeSuccessfulAction(CompleteAction $completeAction): void
+    private function finalizeSuccessfulActor(CompleteActor $completeActor): void
     {
-        $this->finalized[$completeAction->action->getId() . '.' . $completeAction->scope] = true;
-        $this->removeTask($completeAction);
+        $this->finalized[$completeActor->actor->getId() . '.' . $completeActor->scope] = true;
+        $this->removeTask($completeActor);
     }
 
     /**
-     * Handles a failed action (retry or finalize)
+     * Handles a failed actor (retry or finalize)
      */
-    private function handleFailedAction(CompleteAction $completeAction): void
+    private function handleFailedActor(CompleteActor $completeActor): void
     {
-        if ($this->retries[$completeAction->taskId] < $completeAction->action->getRetries()) {
-            $this->retryTask($completeAction);
+        if ($this->retries[$completeActor->taskId] < $completeActor->actor->getRetries()) {
+            $this->retryTask($completeActor);
         } else {
-            $this->finalized[$completeAction->action->getId() . '.' . $completeAction->scope] = true;
-            $this->removeTask($completeAction);
+            $this->finalized[$completeActor->actor->getId() . '.' . $completeActor->scope] = true;
+            $this->removeTask($completeActor);
         }
     }
 
     /**
      * Retries a failed task
      */
-    private function retryTask(CompleteAction $completeAction): void
+    private function retryTask(CompleteActor $completeActor): void
     {
-        $this->taskQueue->push($this->createRetryTask($completeAction));
-        ++$this->retries[$completeAction->taskId];
+        $this->taskQueue->push($this->createRetryTask($completeActor));
+        ++$this->retries[$completeActor->taskId];
     }
 
     /**
      * Removes a task from storage
      */
-    private function removeTask(CompleteAction $completeAction): void
+    private function removeTask(CompleteActor $completeActor): void
     {
         if (Mode::Loop === $this->config->mode || $this->config->allowCircularCall) {
-            $this->taskStorage->remove($completeAction->action->getId(), $completeAction->taskId);
-            unset($this->retries[$completeAction->taskId]);
+            $this->taskStorage->remove($completeActor->actor->getId(), $completeActor->taskId);
+            unset($this->retries[$completeActor->taskId]);
         }
     }
 
     /**
-     * Creates a retry task for a failed action
+     * Creates a retry task for a failed actor
      */
-    private function createRetryTask(CompleteAction $completeAction): Task
+    private function createRetryTask(CompleteActor $completeActor): Task
     {
-        $task = $this->taskStorage->get($completeAction->action->getId(), $completeAction->taskId);
-        $task->setRetryTimestamp($this->calculateRetryTimestamp($completeAction));
+        $task = $this->taskStorage->get($completeActor->actor->getId(), $completeActor->taskId);
+        $task->setRetryTimestamp($this->calculateRetryTimestamp($completeActor));
         $task->setStatus(TaskStatus::Retry);
         return $task;
     }
@@ -446,11 +446,11 @@ final class Bus
     /**
      * Calculates retry timestamp for a task
      */
-    private function calculateRetryTimestamp(CompleteAction $completeAction): DateTimeImmutable
+    private function calculateRetryTimestamp(CompleteActor $completeActor): DateTimeImmutable
     {
         $now = new DateTimeImmutable();
-        return $completeAction->action->getRetryDelay()
-            ? $now->add($completeAction->action->getRetryDelay())
+        return $completeActor->actor->getRetryDelay()
+            ? $now->add($completeActor->actor->getRetryDelay())
             : $now;
     }
 }

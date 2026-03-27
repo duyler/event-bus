@@ -21,7 +21,7 @@ class StateMainSuspendEventListener
     public function __invoke(TaskSuspendedEvent $event): void
     {
         try {
-            $this->state->pushSuspendedLog($event->task->action->getId());
+            $this->state->pushSuspendedLog($event->task->actor->getId());
             $this->stateMain->suspend($event->task);
         } catch (Throwable $e) {
             $this->errorHandler->handle($e, $this->state->getLog());

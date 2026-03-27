@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Duyler\EventBus\Bus;
 
 use DateTimeImmutable;
-use Duyler\EventBus\Contract\ActionRunnerInterface;
+use Duyler\EventBus\Contract\ActorRunnerInterface;
 use Duyler\EventBus\Dto\Result;
 use Duyler\EventBus\Enum\ResultStatus;
 use Duyler\EventBus\Enum\TaskStatus;
-use Duyler\EventBus\Exception\ActionReturnValueExistsException;
-use Duyler\EventBus\Exception\ActionReturnValueMustBeTypeObjectException;
+use Duyler\EventBus\Exception\ActorReturnValueExistsException;
+use Duyler\EventBus\Exception\ActorReturnValueMustBeTypeObjectException;
 use Duyler\EventBus\Exception\DataForContractNotReceivedException;
 use Duyler\EventBus\Exception\DataMustBeCompatibleWithContractException;
 use Fiber;
@@ -21,24 +21,24 @@ final class Task
     private mixed $value = null;
     private ?Fiber $fiber = null;
     private TaskStatus $status = TaskStatus::Primary;
-    private ?ActionRunnerInterface $runner = null;
+    private ?ActorRunnerInterface $runner = null;
     private ?Result $result = null;
     private bool $isRejected = false;
     private DateTimeImmutable $retryTimestamp;
     private readonly string $taskId;
 
     public function __construct(
-        public readonly Action $action,
+        public readonly Actor $actor,
         private readonly string $scope,
     ) {
         $this->taskId = spl_object_hash($this);
         $this->retryTimestamp = new DateTimeImmutable();
     }
 
-    public function run(ActionRunnerInterface $actionRunner): void
+    public function run(ActorRunnerInterface $actorRunner): void
     {
-        $this->runner = $actionRunner;
-        $this->startFiber($actionRunner->getCallback());
+        $this->runner = $actorRunner;
+        $this->startFiber($actorRunner->getCallback());
     }
 
     public function reject(): void
@@ -101,7 +101,7 @@ final class Task
         return $this->scope;
     }
 
-    public function getRunner(): ?ActionRunnerInterface
+    public function getRunner(): ?ActorRunnerInterface
     {
         return $this->runner;
     }
@@ -135,10 +135,10 @@ final class Task
             return Result::success($this->assertObjectContract($resultData));
         }
 
-        if (null !== $this->action->getType() || null !== $this->action->getTypeCollection()) {
+        if (null !== $this->actor->getType() || null !== $this->actor->getTypeCollection()) {
             /** @var string $contract */
-            $contract = $this->action->getTypeCollection() ?? $this->action->getType();
-            throw new DataForContractNotReceivedException($this->action->getId(), $contract);
+            $contract = $this->actor->getTypeCollection() ?? $this->actor->getType();
+            throw new DataForContractNotReceivedException($this->actor->getId(), $contract);
         }
 
         return Result::success();
@@ -146,44 +146,44 @@ final class Task
 
     private function assertResultContract(Result $result): void
     {
-        if (null === $this->action->getType() && null !== $result->data) {
-            throw new ActionReturnValueExistsException($this->action->getId());
+        if (null === $this->actor->getType() && null !== $result->data) {
+            throw new ActorReturnValueExistsException($this->actor->getId());
         }
 
-        $type = $this->action->getTypeCollection() ?? $this->action->getType();
+        $type = $this->actor->getTypeCollection() ?? $this->actor->getType();
 
         if (null !== $type) {
             if (null !== $result->data && false === $result->data instanceof $type) {
-                $this->throwDataMustBeCompatibleWithContractException($this->action->getId(), $type);
+                $this->throwDataMustBeCompatibleWithContractException($this->actor->getId(), $type);
             }
         }
 
-        if (null !== $this->action->getType() && null === $result->data && ResultStatus::Success === $result->status) {
-            throw new DataForContractNotReceivedException($this->action->getId(), $this->action->getType());
+        if (null !== $this->actor->getType() && null === $result->data && ResultStatus::Success === $result->status) {
+            throw new DataForContractNotReceivedException($this->actor->getId(), $this->actor->getType());
         }
     }
 
     private function assertObjectContract(mixed $resultData): object
     {
         if (false === is_object($resultData)) {
-            throw new ActionReturnValueMustBeTypeObjectException($this->action->getId(), $resultData);
+            throw new ActorReturnValueMustBeTypeObjectException($this->actor->getId(), $resultData);
         }
 
-        if (null === $this->action->getType()) {
-            throw new ActionReturnValueExistsException($this->action->getId());
+        if (null === $this->actor->getType()) {
+            throw new ActorReturnValueExistsException($this->actor->getId());
         }
 
-        $type = $this->action->getTypeCollection() ?? $this->action->getType();
+        $type = $this->actor->getTypeCollection() ?? $this->actor->getType();
 
         if (false === $resultData instanceof $type) {
-            $this->throwDataMustBeCompatibleWithContractException($this->action->getId(), $type);
+            $this->throwDataMustBeCompatibleWithContractException($this->actor->getId(), $type);
         }
 
         return $resultData;
     }
 
-    private function throwDataMustBeCompatibleWithContractException(string $actionId, string $type): never
+    private function throwDataMustBeCompatibleWithContractException(string $actorId, string $type): never
     {
-        throw new DataMustBeCompatibleWithContractException($actionId, $type);
+        throw new DataMustBeCompatibleWithContractException($actorId, $type);
     }
 }

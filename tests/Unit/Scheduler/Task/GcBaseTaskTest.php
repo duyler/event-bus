@@ -56,20 +56,20 @@ final class GcBaseTaskTest extends TestCase
     }
 
     #[Test]
-    public function format_bytes_fractional_kb(): void
+    public function format_bytes_fractoral_kb(): void
     {
         $this->assertSame('1.5 KB', $this->task->formatBytesPublic(1536));
     }
 
     #[Test]
-    public function format_bytes_fractional_mb(): void
+    public function format_bytes_fractoral_mb(): void
     {
         $result = $this->task->formatBytesPublic(1572864);
         $this->assertSame('1.5 MB', $result);
     }
 
     #[Test]
-    public function format_bytes_fractional_gb(): void
+    public function format_bytes_fractoral_gb(): void
     {
         $result = $this->task->formatBytesPublic(1610612736);
         $this->assertSame('1.5 GB', $result);

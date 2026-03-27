@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
-use Duyler\EventBus\Action\Context\ActionContext;
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Actor\Context\ActorContext;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\Build\Context;
 use Duyler\EventBus\Build\Event as BuildEvent;
 use Duyler\EventBus\Build\Id;
@@ -29,7 +29,7 @@ final readonly class LoopTestDTO
 class LongRunningModeTest extends TestCase
 {
     #[Test]
-    public function repeat_action_with_on_one_in_cyclic_mode(): void
+    public function repeat_actor_with_on_one_in_cyclic_mode(): void
     {
         $stateHandler = new LoopModeOnOneStateHandler();
 
@@ -39,9 +39,9 @@ class LongRunningModeTest extends TestCase
 
         $builder->addEvent(BuildEvent::success('TriggerEvent', LoopTestDTO::class));
 
-        $builder->doAction(
-            new Action(
-                id: 'InitialAction',
+        $builder->doActor(
+            new Actor(
+                id: 'InitialActor',
                 handler: fn() => new LoopTestDTO(),
                 type: LoopTestDTO::class,
             ),
@@ -64,10 +64,10 @@ class LongRunningModeTest extends TestCase
 
         $builder->addEvent(BuildEvent::success('AccumulateEvent', LoopTestDTO::class));
 
-        $builder->addAction(
-            new Action(
-                id: 'AccumulatorAction',
-                handler: fn(ActionContext $context) => $context->argument(),
+        $builder->addActor(
+            new Actor(
+                id: 'AccumulatorActor',
+                handler: fn(ActorContext $context) => $context->argument(),
                 onOne: Id::success('AccumulateEvent'),
                 argument: LoopTestDTO::class,
                 type: LoopTestDTO::class,
@@ -76,9 +76,9 @@ class LongRunningModeTest extends TestCase
             ),
         );
 
-        $builder->doAction(
-            new Action(
-                id: 'InitialAction',
+        $builder->doActor(
+            new Actor(
+                id: 'InitialActor',
                 handler: fn() => new LoopTestDTO(),
                 type: LoopTestDTO::class,
             ),
@@ -101,9 +101,9 @@ class LongRunningModeTest extends TestCase
 
         $builder->addEvent(BuildEvent::success('CycleEvent'));
 
-        $builder->addAction(
-            new Action(
-                id: 'CycleAction',
+        $builder->addActor(
+            new Actor(
+                id: 'CycleActor',
                 handler: fn() => new LoopTestDTO(),
                 onOne: Id::success('CycleEvent'),
                 type: LoopTestDTO::class,
@@ -112,9 +112,9 @@ class LongRunningModeTest extends TestCase
             ),
         );
 
-        $builder->doAction(
-            new Action(
-                id: 'StartAction',
+        $builder->doActor(
+            new Actor(
+                id: 'StartActor',
                 handler: fn() => new LoopTestDTO(),
                 type: LoopTestDTO::class,
             ),
@@ -137,9 +137,9 @@ class LongRunningModeTest extends TestCase
 
         $builder->addEvent(BuildEvent::success('Event1'));
 
-        $builder->addAction(
-            new Action(
-                id: 'OnAnyLoopAction',
+        $builder->addActor(
+            new Actor(
+                id: 'OnAnyLoopActor',
                 handler: fn() => new LoopTestDTO(),
                 onAny: [
                     Id::success('Event1'),
@@ -150,9 +150,9 @@ class LongRunningModeTest extends TestCase
             ),
         );
 
-        $builder->doAction(
-            new Action(
-                id: 'InitialAction',
+        $builder->doActor(
+            new Actor(
+                id: 'InitialActor',
                 handler: fn() => new LoopTestDTO(),
                 type: LoopTestDTO::class,
             ),
@@ -176,9 +176,9 @@ class LongRunningModeTest extends TestCase
         $builder->addEvent(BuildEvent::success('RequiredEvent1'));
         $builder->addEvent(BuildEvent::success('RequiredEvent2'));
 
-        $builder->addAction(
-            new Action(
-                id: 'OnAllLoopAction',
+        $builder->addActor(
+            new Actor(
+                id: 'OnAllLoopActor',
                 handler: fn() => new LoopTestDTO(),
                 onAll: [
                     Id::success('RequiredEvent1'),
@@ -190,9 +190,9 @@ class LongRunningModeTest extends TestCase
             ),
         );
 
-        $builder->doAction(
-            new Action(
-                id: 'InitialAction',
+        $builder->doActor(
+            new Actor(
+                id: 'InitialActor',
                 handler: fn() => new LoopTestDTO(),
                 type: LoopTestDTO::class,
             ),
@@ -213,10 +213,10 @@ class LoopModeOnOneStateHandler implements MainCyclicStateHandlerInterface
     public function handle(StateMainCyclicService $stateService, StateContext $context): void
     {
         if ($this->counter < 3) {
-            if (false === $stateService->actionIsExists('RepeatedAction')) {
-                $stateService->addAction(
-                    new Action(
-                        id: 'RepeatedAction',
+            if (false === $stateService->actorIsExists('RepeatedActor')) {
+                $stateService->addActor(
+                    new Actor(
+                        id: 'RepeatedActor',
                         handler: fn() => new LoopTestDTO(),
                         onOne: Id::success('TriggerEvent'),
                         type: LoopTestDTO::class,

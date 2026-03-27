@@ -22,15 +22,15 @@ final class IdFormatter
             return $id;
         }
 
-        $actionId = array_search($id, self::$idMap, true);
+        $actorId = array_search($id, self::$idMap, true);
 
-        if (is_string($actionId)) {
-            return $actionId;
+        if (is_string($actorId)) {
+            return $actorId;
         }
 
-        $actionId = $id::class . self::DELIMITER . $id->name;
-        self::$idMap[$actionId] = $id;
-        return $actionId;
+        $actorId = $id::class . self::DELIMITER . $id->name;
+        self::$idMap[$actorId] = $id;
+        return $actorId;
     }
 
     public static function reverse(string $id): string|UnitEnum

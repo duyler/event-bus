@@ -21,14 +21,14 @@ final readonly class Id implements Stringable
         return new Id(IdFormatter::toString($subject) . IdFormatter::DELIMITER . $status->value);
     }
 
-    public static function success(string|UnitEnum $actionId): Id
+    public static function success(string|UnitEnum $actorId): Id
     {
-        return self::from($actionId, ResultStatus::Success);
+        return self::from($actorId, ResultStatus::Success);
     }
 
-    public static function fail(string|UnitEnum $actionId): Id
+    public static function fail(string|UnitEnum $actorId): Id
     {
-        return self::from($actionId, ResultStatus::Fail);
+        return self::from($actorId, ResultStatus::Fail);
     }
 
     public function getSubject(): string

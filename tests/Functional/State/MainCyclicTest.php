@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\State;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\Build\Context;
 use Duyler\EventBus\BusBuilder;
 use Duyler\EventBus\BusConfig;
@@ -27,9 +27,9 @@ class MainCyclicTest extends TestCase
         $resetBusStateHandler = new ResetBusStateHandler();
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler($resetBusStateHandler);
-        $busBuilder->doAction(
-            new Action(
-                id: 'TestAction',
+        $busBuilder->doActor(
+            new Actor(
+                id: 'TestActor',
                 handler: function (): void {},
             ),
         );
@@ -49,9 +49,9 @@ class MainCyclicTest extends TestCase
         $busBuilder->addStateContext(new Context(
             [MainCyclicStateHandlerWithEvent::class],
         ));
-        $busBuilder->doAction(
-            new Action(
-                id: 'ActionFromBuilder',
+        $busBuilder->doActor(
+            new Actor(
+                id: 'ActorFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
             ),
@@ -61,12 +61,12 @@ class MainCyclicTest extends TestCase
 
         $bus = $busBuilder->build();
         $bus->run();
-        $this->assertTrue($bus->resultIsExists('ActionFromBuilder'));
-        $this->assertTrue($bus->resultIsExists('ActionFromHandler'));
+        $this->assertTrue($bus->resultIsExists('ActorFromBuilder'));
+        $this->assertTrue($bus->resultIsExists('ActorFromHandler'));
     }
 
     #[Test]
-    public function cyclic_with_lock_action(): void
+    public function cyclic_with_lock_actor(): void
     {
         $busBuilder = new BusBuilder(new BusConfig());
         $busBuilder->addStateHandler(new MainCyclicStateHandlerWithRepeatableEvent());
@@ -74,9 +74,9 @@ class MainCyclicTest extends TestCase
             [MainCyclicStateHandlerWithRepeatableEvent::class],
         ));
 
-        $busBuilder->doAction(
-            new Action(
-                id: 'ActionFromBuilder',
+        $busBuilder->doActor(
+            new Actor(
+                id: 'ActorFromBuilder',
                 handler: function (): void {},
                 externalAccess: true,
             ),
@@ -91,7 +91,7 @@ class MainCyclicTest extends TestCase
         ));
 
         $bus->run();
-        $this->assertTrue($bus->resultIsExists('ActionFromHandler'));
+        $this->assertTrue($bus->resultIsExists('ActorFromHandler'));
     }
 }
 
@@ -100,10 +100,10 @@ class MainCyclicStateHandlerWithEvent implements MainCyclicStateHandlerInterface
     #[Override]
     public function handle(StateMainCyclicService $stateService, StateContext $context): void
     {
-        if (false === $stateService->actionIsExists('ActionFromHandler')) {
-            $stateService->addAction(
-                new Action(
-                    id: 'ActionFromHandler',
+        if (false === $stateService->actorIsExists('ActorFromHandler')) {
+            $stateService->addActor(
+                new Actor(
+                    id: 'ActorFromHandler',
                     handler: function (): void {},
                     onOne: 'EventFromHandler' . IdFormatter::DELIMITER . 'Success',
                     externalAccess: true,
@@ -111,7 +111,7 @@ class MainCyclicStateHandlerWithEvent implements MainCyclicStateHandlerInterface
             );
         }
 
-        if (false === $stateService->resultIsExists('ActionFromHandler')) {
+        if (false === $stateService->resultIsExists('ActorFromHandler')) {
             $stateService->dispatchEvent(
                 new Event(
                     id: 'EventFromHandler',
@@ -119,7 +119,7 @@ class MainCyclicStateHandlerWithEvent implements MainCyclicStateHandlerInterface
             );
         }
 
-        $stateService->inQueue('ActionFromBuilder');
+        $stateService->inQueue('ActorFromBuilder');
         $stateService->queueIsEmpty();
         $stateService->queueIsNotEmpty();
         $stateService->queueCount();
@@ -131,10 +131,10 @@ class MainCyclicStateHandlerWithRepeatableEvent implements MainCyclicStateHandle
     #[Override]
     public function handle(StateMainCyclicService $stateService, StateContext $context): void
     {
-        if (false === $stateService->actionIsExists('ActionFromHandler')) {
-            $stateService->addAction(
-                new Action(
-                    id: 'ActionFromHandler',
+        if (false === $stateService->actorIsExists('ActorFromHandler')) {
+            $stateService->addActor(
+                new Actor(
+                    id: 'ActorFromHandler',
                     handler: function (): void {
                         Fiber::suspend();
                     },
@@ -146,7 +146,7 @@ class MainCyclicStateHandlerWithRepeatableEvent implements MainCyclicStateHandle
             );
         }
 
-        if (false === $stateService->resultIsExists('ActionFromHandler')) {
+        if (false === $stateService->resultIsExists('ActorFromHandler')) {
             $stateService->dispatchEvent(
                 new Event(
                     id: 'EventFromHandler',

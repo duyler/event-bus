@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\State\Service;
 
-use Duyler\EventBus\Build\ActionHandlerSubstitution;
-use Duyler\EventBus\Build\ActionResultSubstitution;
+use Duyler\EventBus\Build\ActorHandlerSubstitution;
+use Duyler\EventBus\Build\ActorResultSubstitution;
 use Duyler\EventBus\Bus\Task;
-use Duyler\EventBus\Service\ActionService;
+use Duyler\EventBus\Service\ActorService;
 use Duyler\EventBus\Service\LogService;
 use Duyler\EventBus\Service\QueueService;
 use Duyler\EventBus\State\Service\Trait\LogServiceTrait;
@@ -22,23 +22,23 @@ class StateMainBeforeService
     public function __construct(
         private readonly Task $task,
         private readonly LogService $logService,
-        private readonly ActionService $actionService,
+        private readonly ActorService $actorService,
         private readonly QueueService $queueService,
     ) {}
 
-    public function substituteResult(ActionResultSubstitution $actionResultSubstitution): void
+    public function substituteResult(ActorResultSubstitution $actorResultSubstitution): void
     {
-        $this->actionService->addResultSubstitutions($actionResultSubstitution);
+        $this->actorService->addResultSubstitutions($actorResultSubstitution);
     }
 
-    public function substituteHandler(ActionHandlerSubstitution $handlerSubstitution): void
+    public function substituteHandler(ActorHandlerSubstitution $handlerSubstitution): void
     {
-        $this->actionService->addHandlerSubstitution($handlerSubstitution);
+        $this->actorService->addHandlerSubstitution($handlerSubstitution);
     }
 
-    public function getActionId(): string|UnitEnum
+    public function getActorId(): string|UnitEnum
     {
-        return $this->task->action->getExternalId();
+        return $this->task->actor->getExternalId();
     }
 
     public function reject(): void

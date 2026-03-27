@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duyler\EventBus\Test\Functional\Run;
 
-use Duyler\EventBus\Build\Action;
+use Duyler\EventBus\Build\Actor;
 use Duyler\EventBus\Build\Event as BuildEvent;
 use Duyler\EventBus\Build\Id;
 use Duyler\EventBus\BusBuilder;
@@ -43,8 +43,8 @@ class OnAllSubscriptionTest extends TestCase
         $builder->addEvent(new BuildEvent(id: 'ValidateCart'));
         $builder->addEvent(new BuildEvent(id: 'ProcessPayment'));
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'CompleteCheckout',
                 handler: fn() => new OnAllTestDTO(value: 'complete'),
                 onAll: [
@@ -76,8 +76,8 @@ class OnAllSubscriptionTest extends TestCase
         $builder->addEvent(new BuildEvent(id: 'Event1', type: OnAllTestDTO::class));
         $builder->addEvent(new BuildEvent(id: 'Event2', type: OnAllTestDTO2::class));
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'CombinedHandler',
                 handler: fn() => new OnAllTestDTO(value: 'combined'),
                 onAll: [
@@ -114,9 +114,9 @@ class OnAllSubscriptionTest extends TestCase
         $builder->addEvent(new BuildEvent(id: 'Event2'));
         $builder->addEvent(new BuildEvent(id: 'Event3'));
 
-        $builder->addAction(
-            new Action(
-                id: 'WaitingAction',
+        $builder->addActor(
+            new Actor(
+                id: 'WaitingActor',
                 handler: fn() => new OnAllTestDTO(),
                 onAll: [
                     'Event1' . IdFormatter::DELIMITER . 'Success',
@@ -128,9 +128,9 @@ class OnAllSubscriptionTest extends TestCase
             ),
         );
 
-        $builder->doAction(
-            new Action(
-                id: 'MainAction',
+        $builder->doActor(
+            new Actor(
+                id: 'MainActor',
                 handler: fn() => new OnAllTestDTO(),
                 type: OnAllTestDTO::class,
             ),
@@ -142,7 +142,7 @@ class OnAllSubscriptionTest extends TestCase
         ));
         $bus->run();
 
-        $this->assertFalse($bus->resultIsExists('WaitingAction'));
+        $this->assertFalse($bus->resultIsExists('WaitingActor'));
     }
 
     #[Test]
@@ -153,9 +153,9 @@ class OnAllSubscriptionTest extends TestCase
         $builder->addEvent(new BuildEvent(id: 'Event1'));
         $builder->addEvent(new BuildEvent(id: 'Event2'));
 
-        $builder->addAction(
-            new Action(
-                id: 'HeldTaskAction',
+        $builder->addActor(
+            new Actor(
+                id: 'HeldTaskActor',
                 handler: fn() => new OnAllTestDTO(),
                 onAll: [
                     'Event1' . IdFormatter::DELIMITER . 'Success',
@@ -166,9 +166,9 @@ class OnAllSubscriptionTest extends TestCase
             ),
         );
 
-        $builder->doAction(
-            new Action(
-                id: 'MainAction',
+        $builder->doActor(
+            new Actor(
+                id: 'MainActor',
                 handler: fn() => new OnAllTestDTO(),
                 type: OnAllTestDTO::class,
             ),
@@ -180,19 +180,19 @@ class OnAllSubscriptionTest extends TestCase
         ));
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('HeldTaskAction'));
+        $this->assertTrue($bus->resultIsExists('HeldTaskActor'));
     }
 
     #[Test]
-    public function on_all_with_action_events(): void
+    public function on_all_with_actor_events(): void
     {
         $builder = new BusBuilder(new BusConfig());
 
         $builder->addEvent(BuildEvent::success('ValidateOrder', OnAllTestDTO::class));
         $builder->addEvent(BuildEvent::success('ProcessPayment', OnAllTestDTO::class));
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'FinalizeOrder',
                 handler: fn() => new OnAllTestDTO(value: 'finalized'),
                 onAll: [
@@ -204,16 +204,16 @@ class OnAllSubscriptionTest extends TestCase
             ),
         );
 
-        $builder->doAction(
-            new Action(
+        $builder->doActor(
+            new Actor(
                 id: 'ValidateOrder',
                 handler: fn() => new OnAllTestDTO(value: 'validated'),
                 type: OnAllTestDTO::class,
             ),
         );
 
-        $builder->doAction(
-            new Action(
+        $builder->doActor(
+            new Actor(
                 id: 'ProcessPayment',
                 handler: fn() => new OnAllTestDTO(value: 'paid'),
                 type: OnAllTestDTO::class,
@@ -229,19 +229,19 @@ class OnAllSubscriptionTest extends TestCase
     }
 
     #[Test]
-    public function on_all_with_mixed_action_and_external_events(): void
+    public function on_all_with_mixed_actor_and_external_events(): void
     {
         $builder = new BusBuilder(new BusConfig());
 
         $builder->addEvent(BuildEvent::success('ExternalApproval', OnAllTestDTO::class));
-        $builder->addEvent(BuildEvent::success('InternalAction', OnAllTestDTO::class));
+        $builder->addEvent(BuildEvent::success('InternalActor', OnAllTestDTO::class));
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'CompleteWorkflow',
                 handler: fn() => new OnAllTestDTO(value: 'complete'),
                 onAll: [
-                    Id::success('InternalAction'),
+                    Id::success('InternalActor'),
                     Id::success('ExternalApproval'),
                 ],
                 type: OnAllTestDTO::class,
@@ -249,9 +249,9 @@ class OnAllSubscriptionTest extends TestCase
             ),
         );
 
-        $builder->doAction(
-            new Action(
-                id: 'InternalAction',
+        $builder->doActor(
+            new Actor(
+                id: 'InternalActor',
                 handler: fn() => new OnAllTestDTO(value: 'internal'),
                 type: OnAllTestDTO::class,
             ),
@@ -264,7 +264,7 @@ class OnAllSubscriptionTest extends TestCase
         ));
         $bus->run();
 
-        $this->assertTrue($bus->resultIsExists('InternalAction'));
+        $this->assertTrue($bus->resultIsExists('InternalActor'));
         $this->assertTrue($bus->resultIsExists('CompleteWorkflow'));
     }
 
@@ -273,9 +273,9 @@ class OnAllSubscriptionTest extends TestCase
     {
         $builder = new BusBuilder(new BusConfig());
 
-        $builder->addAction(
-            new Action(
-                id: 'EmptyOnAllAction',
+        $builder->addActor(
+            new Actor(
+                id: 'EmptyOnAllActor',
                 handler: fn() => new OnAllTestDTO(),
                 onAll: [],
                 type: OnAllTestDTO::class,
@@ -283,9 +283,9 @@ class OnAllSubscriptionTest extends TestCase
             ),
         );
 
-        $builder->doAction(
-            new Action(
-                id: 'MainAction',
+        $builder->doActor(
+            new Actor(
+                id: 'MainActor',
                 handler: fn() => new OnAllTestDTO(),
                 type: OnAllTestDTO::class,
             ),
@@ -294,7 +294,7 @@ class OnAllSubscriptionTest extends TestCase
         $bus = $builder->build();
         $bus->run();
 
-        $this->assertFalse($bus->resultIsExists('EmptyOnAllAction'));
+        $this->assertFalse($bus->resultIsExists('EmptyOnAllActor'));
     }
 
     #[Test]
@@ -305,8 +305,8 @@ class OnAllSubscriptionTest extends TestCase
         $builder->addEvent(BuildEvent::fail('ValidationError'));
         $builder->addEvent(BuildEvent::fail('PaymentError'));
 
-        $builder->addAction(
-            new Action(
+        $builder->addActor(
+            new Actor(
                 id: 'CriticalErrorHandler',
                 handler: fn() => new OnAllTestDTO(value: 'error-handled'),
                 onAll: [
@@ -338,7 +338,7 @@ class OnAllHeldTaskStateHandler implements MainCyclicStateHandlerInterface
     #[Override]
     public function handle(StateMainCyclicService $stateService, StateContext $context): void
     {
-        if (false === $stateService->resultIsExists('HeldTaskAction')) {
+        if (false === $stateService->resultIsExists('HeldTaskActor')) {
             $stateService->dispatchEvent(new Event(
                 id: 'Event2',
             ));
