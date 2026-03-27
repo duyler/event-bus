@@ -20,6 +20,7 @@ final readonly class SaveCompleteActionEventListener
             action: $event->task->action,
             result: $event->task->getResult(),
             taskId: $event->task->getId(),
+            scope: $event->task->getScope(),
         );
 
         $this->completeActionStorage->save($completeAction);

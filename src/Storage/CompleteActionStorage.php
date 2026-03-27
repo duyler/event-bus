@@ -20,9 +20,9 @@ class CompleteActionStorage
      */
     private array $data = [];
 
-    public function save(CompleteAction $completeAction, string $scope = 'common'): void
+    public function save(CompleteAction $completeAction): void
     {
-        $this->data[$completeAction->action->getId() . '.' . $scope] = $completeAction;
+        $this->data[$completeAction->action->getId() . '.' . $completeAction->scope] = $completeAction;
     }
 
     /**

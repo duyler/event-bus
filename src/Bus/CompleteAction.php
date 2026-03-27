@@ -12,5 +12,6 @@ final readonly class CompleteAction
         public Action $action,
         public Result $result,
         public string $taskId,
+        public string $scope,
     ) {}
 }

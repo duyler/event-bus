@@ -186,7 +186,7 @@ final class Bus
     {
         $this->taskQueue->push($task);
         $this->retries[$task->getId()] = 0;
-        $this->finalized[$task->action->getId()] = false;
+        $this->finalized[$task->action->getId() . '.' . $task->getScope()] = false;
     }
 
     /**
@@ -288,7 +288,7 @@ final class Bus
                     return false;
                 }
 
-                if (false === ($this->finalized[$completeRequiredAction->action->getId()] ?? false)) {
+                if (false === ($this->finalized[$completeRequiredAction->action->getId() . '.' . $task->getScope()] ?? false)) {
                     return false;
                 }
             }
@@ -315,7 +315,7 @@ final class Bus
 
         $replacedCount = 0;
         foreach ($failActions as $failAction) {
-            $this->alternates[$failAction->action->getId()] = $failAction->action->getAlternates();
+            $this->alternates[$failAction->action->getId() . '.' . $task->getScope()] = $failAction->action->getAlternates();
 
             if (true === $this->tryReplaceFailedAction($failAction->action->getId(), $task->getScope())) {
                 $replacedCount++;
@@ -334,11 +334,11 @@ final class Bus
      */
     private function tryReplaceFailedAction(string $failActionId, string $scope): bool
     {
-        foreach ($this->alternates[$failActionId] as $alternateId) {
+        foreach ($this->alternates[$failActionId . '.' . $scope] as $alternateId) {
             $alternate = $this->actionStorage->get($alternateId);
 
-            if (true === $this->completeActionStorage->isExists($alternateId)) {
-                $completeAction = $this->completeActionStorage->get($alternateId);
+            if (true === $this->completeActionStorage->isExists($alternateId, $scope)) {
+                $completeAction = $this->completeActionStorage->get($alternateId, $scope);
                 if (ResultStatus::Success === $completeAction->result->status) {
                     return true;
                 }
@@ -359,7 +359,7 @@ final class Bus
      */
     private function handleUnresolvedFailures(Task $task, array $failActions): bool
     {
-        if (true === $this->hasPendingAlternates($failActions)) {
+        if (true === $this->hasPendingAlternates($failActions, $task->getScope())) {
             return false;
         }
 
@@ -378,10 +378,10 @@ final class Bus
      *
      * @param array<CompleteAction> $failActions
      */
-    private function hasPendingAlternates(array $failActions): bool
+    private function hasPendingAlternates(array $failActions, string $scope): bool
     {
         foreach ($failActions as $failAction) {
-            foreach ($this->alternates[$failAction->action->getId()] as $alternate) {
+            foreach ($this->alternates[$failAction->action->getId() . '.' . $scope] as $alternate) {
                 if ($this->taskQueue->inQueue($alternate)) {
                     return true;
                 }
@@ -395,7 +395,7 @@ final class Bus
      */
     private function finalizeSuccessfulAction(CompleteAction $completeAction): void
     {
-        $this->finalized[$completeAction->action->getId()] = true;
+        $this->finalized[$completeAction->action->getId() . '.' . $completeAction->scope] = true;
         $this->removeTask($completeAction);
     }
 
@@ -407,7 +407,7 @@ final class Bus
         if ($this->retries[$completeAction->taskId] < $completeAction->action->getRetries()) {
             $this->retryTask($completeAction);
         } else {
-            $this->finalized[$completeAction->action->getId()] = true;
+            $this->finalized[$completeAction->action->getId() . '.' . $completeAction->scope] = true;
             $this->removeTask($completeAction);
         }
     }

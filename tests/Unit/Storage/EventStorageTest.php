@@ -23,6 +23,7 @@ class EventStorageTest extends TestCase
             action: $action,
             result: Result::success(),
             taskId: 'taskId',
+            scope: 'common',
         );
 
         $this->eventStorage->save($event);
