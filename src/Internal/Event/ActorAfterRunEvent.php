@@ -11,6 +11,6 @@ readonly class ActorAfterRunEvent
     public function __construct(
         public Actor $actor,
         public mixed $result = null,
-        public string $scope = 'common'
+        public string $scope = 'common',
     ) {}
 }
