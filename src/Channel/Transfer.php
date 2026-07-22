@@ -32,6 +32,11 @@ final class Transfer
         return $this->queueService->isNotEmpty();
     }
 
+    public function count(): int
+    {
+        return $this->queueService->count();
+    }
+
     public function get(string $channel): mixed
     {
         return array_shift($this->published[$channel]);

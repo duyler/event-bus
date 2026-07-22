@@ -30,17 +30,17 @@ class ActorRunnerProvider implements ActorRunnerProviderInterface
         $handler = $this->handlerBuilder->build($actor, $container);
         $argument = $this->argumentBuilder->build($actor, $container, $scope);
 
-        $runner = function () use ($actor, $handler, $argument): mixed {
-            $this->eventDispatcher->dispatch(new ActorBeforeRunEvent($actor, $argument));
+        $runner = function () use ($actor, $handler, $argument, $scope): mixed {
+            $this->eventDispatcher->dispatch(new ActorBeforeRunEvent($actor, $argument, $scope));
 
             try {
                 $resultData = $handler($argument);
             } catch (Throwable $exception) {
-                $this->eventDispatcher->dispatch(new ActorThrownExceptionEvent($actor, $exception));
+                $this->eventDispatcher->dispatch(new ActorThrownExceptionEvent($actor, $exception, $scope));
                 throw $exception;
             }
 
-            $this->eventDispatcher->dispatch(new ActorAfterRunEvent($actor, $resultData));
+            $this->eventDispatcher->dispatch(new ActorAfterRunEvent($actor, $resultData, $scope));
 
             return $resultData;
         };

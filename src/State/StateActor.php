@@ -26,10 +26,10 @@ class StateActor implements StateActorInterface
     ) {}
 
     #[Override]
-    public function before(Actor $actor, ?object $argument): void
+    public function before(Actor $actor, ?object $argument, string $scope): void
     {
         $stateService = new StateActorBeforeService(
-            $this->actorContainerStorage->get($actor->getId()),
+            $this->actorContainerStorage->get($actor->getId(), $scope),
             $actor,
             $argument,
         );
@@ -43,10 +43,10 @@ class StateActor implements StateActorInterface
     }
 
     #[Override]
-    public function after(Actor $actor, mixed $resultData): void
+    public function after(Actor $actor, mixed $resultData, string $scope): void
     {
         $stateService = new StateActorAfterService(
-            $this->actorContainerStorage->get($actor->getId()),
+            $this->actorContainerStorage->get($actor->getId(), $scope),
             $actor,
             $resultData,
         );
@@ -60,10 +60,10 @@ class StateActor implements StateActorInterface
     }
 
     #[Override]
-    public function throwing(Actor $actor, Throwable $exception): void
+    public function throwing(Actor $actor, Throwable $exception, string $scope): void
     {
         $stateService = new StateActorThrowingService(
-            $this->actorContainerStorage->get($actor->getId()),
+            $this->actorContainerStorage->get($actor->getId(), $scope),
             $exception,
             $actor,
         );

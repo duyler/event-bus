@@ -21,7 +21,7 @@ class StateActorBeforeEventListener
     public function __invoke(ActorBeforeRunEvent $event): void
     {
         try {
-            $this->stateActor->before($event->actor, $event->argument);
+            $this->stateActor->before($event->actor, $event->argument, $event->scope);
         } catch (Throwable $e) {
             $this->errorHandler->handle($e, $this->state->getLog());
         }

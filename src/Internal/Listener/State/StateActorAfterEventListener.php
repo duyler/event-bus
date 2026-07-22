@@ -21,7 +21,7 @@ class StateActorAfterEventListener
     public function __invoke(ActorAfterRunEvent $event): void
     {
         try {
-            $this->stateActor->after($event->actor, $event->result);
+            $this->stateActor->after($event->actor, $event->result, $event->scope);
         } catch (Throwable $e) {
             $this->errorHandler->handle($e, $this->state->getLog());
         }

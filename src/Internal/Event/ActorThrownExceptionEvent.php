@@ -9,5 +9,9 @@ use Throwable;
 
 readonly class ActorThrownExceptionEvent
 {
-    public function __construct(public Actor $actor, public Throwable $exception) {}
+    public function __construct(
+        public Actor $actor,
+        public Throwable $exception,
+        public string $scope = 'common',
+    ) {}
 }

@@ -103,7 +103,7 @@ readonly class StateMain implements StateMainInterface
         $stateService = new StateMainSuspendService(
             $suspend,
             $this->resultService,
-            $this->actorContainerStorage->get($task->actor->getId()),
+            $this->actorContainerStorage->get($task->actor->getId(), $task->getScope()),
             $this->actorService,
             $this->eventService,
         );
@@ -128,7 +128,7 @@ readonly class StateMain implements StateMainInterface
         $stateService = new StateMainResumeService(
             $suspend,
             $this->resultService,
-            $this->actorContainerStorage->get($task->actor->getId()),
+            $this->actorContainerStorage->get($task->actor->getId(), $task->getScope()),
             $this->actorService,
             $this->eventService,
         );

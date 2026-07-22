@@ -26,10 +26,10 @@ class StateActorThrowingEventListener
     {
         try {
             $this->state->setErrorActor($event->actor->getId());
-            $this->stateActor->throwing($event->actor, $event->exception);
+            $this->stateActor->throwing($event->actor, $event->exception, $event->scope);
 
             if ($this->config->continueAfterException) {
-                $actorContainer = $this->actorContainerStorage->get($event->actor->getId());
+                $actorContainer = $this->actorContainerStorage->get($event->actor->getId(), $event->scope);
                 $actorContainer->finalize();
             } else {
                 throw $event->exception;
