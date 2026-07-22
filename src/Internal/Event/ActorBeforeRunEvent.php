@@ -11,5 +11,6 @@ readonly class ActorBeforeRunEvent
     public function __construct(
         public Actor $actor,
         public ?object $argument = null,
+        public string $scope = 'common',
     ) {}
 }

@@ -45,6 +45,7 @@ class EventService
         $actors = $this->actorStorage->getBySubscriptionEvent($eventDto->id);
 
         foreach ($actors as $actor) {
+            var_dump($scope);
             $this->eventRelationStorage->save(new EventRelation($actor, $eventDto), $scope);
             $this->bus->doActor($actor, $scope);
         }

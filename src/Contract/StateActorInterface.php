@@ -9,9 +9,9 @@ use Throwable;
 
 interface StateActorInterface
 {
-    public function before(Actor $actor, ?object $argument): void;
+    public function before(Actor $actor, ?object $argument, string $scope): void;
 
-    public function after(Actor $actor, mixed $resultData): void;
+    public function after(Actor $actor, mixed $resultData, string $scope): void;
 
-    public function throwing(Actor $actor, Throwable $exception): void;
+    public function throwing(Actor $actor, Throwable $exception, string $scope): void;
 }
